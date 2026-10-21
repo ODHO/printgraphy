@@ -277,7 +277,7 @@ export default function BusinessCardStudioFlow({
   const [bgColor, setBgColor] = useState<string>("#18181b");
   const [backBgColor, setBackBgColor] = useState<string>("#141414");
   const [bgMode, setBgMode] = useState<"template" | "color" | "gradient" | "image" | "image-gradient">("template");
-  const [bgGradient, setBgGradient] = useState("#064FE0");
+  const [bgGradient, setBgGradient] = useState("#2196D2");
   const [bgGradientAngle, setBgGradientAngle] = useState(135);
   const [frontBgImage, setFrontBgImage] = useState<string | null>(null);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
@@ -1765,7 +1765,7 @@ export default function BusinessCardStudioFlow({
 
             <Link
               href={productIdParam ? `/customize?productId=${productIdParam}` : "/customize"}
-              className="px-5 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-md text-center inline-flex items-center justify-center gap-2"
+              className="px-5 py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-md text-center inline-flex items-center justify-center gap-2"
             >
               Start from Scratch →
             </Link>
@@ -1779,7 +1779,7 @@ export default function BusinessCardStudioFlow({
                 <button
                   key={val}
                   onClick={() => setFilterPaid(val)}
-                  className={`px-4 py-1.5 text-base font-semibold rounded-full transition-all cursor-pointer ${filterPaid === val ? "bg-[#064FE0] text-white shadow-xs" : "text-zinc-600 hover:text-zinc-900"
+                  className={`px-4 py-1.5 text-base font-semibold rounded-full transition-all cursor-pointer ${filterPaid === val ? "bg-[#2196D2] text-white shadow-xs" : "text-zinc-600 hover:text-zinc-900"
                     }`}
                 >
                   {label}
@@ -1832,7 +1832,7 @@ export default function BusinessCardStudioFlow({
                   <Link
                     key={product._id}
                     href={`/product/${product.slug || product._id}`}
-                    className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-base font-bold text-zinc-800 hover:border-[#064FE0]"
+                    className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-base font-bold text-zinc-800 hover:border-[#2196D2]"
                   >
                     {product.name}
                   </Link>
@@ -1857,7 +1857,7 @@ export default function BusinessCardStudioFlow({
               </div>
               <p className="text-zinc-500 font-semibold">{searchParam ? "No templates match that search" : "No templates available yet"}</p>
               <p className="text-zinc-400 text-base mt-1">{searchParam ? "Try another word, or clear the search." : "Check back soon or start designing from scratch."}</p>
-              <button onClick={() => setStep("review")} className="mt-4 px-5 py-2 bg-[#064FE0] text-white text-base font-semibold rounded-xl cursor-pointer hover:bg-[#064FE0] transition-all">
+              <button onClick={() => setStep("review")} className="mt-4 px-5 py-2 bg-[#2196D2] text-white text-base font-semibold rounded-xl cursor-pointer hover:bg-[#2196D2] transition-all">
                 Design from Scratch
               </button>
             </div>
@@ -1885,8 +1885,8 @@ export default function BusinessCardStudioFlow({
                     }}
                     className={`group relative rounded-3xl border-2 overflow-hidden transition-all duration-300 cursor-pointer text-left flex flex-col justify-between ${
                       selectedTemplateId === template._id
-                        ? "border-[#064FE0] shadow-2xl ring-2 ring-[#064FE0]/30"
-                        : "border-zinc-200/80 bg-white hover:border-[#064FE0] hover:shadow-2xl"
+                        ? "border-[#2196D2] shadow-2xl ring-2 ring-[#2196D2]/30"
+                        : "border-zinc-200/80 bg-white hover:border-[#2196D2] hover:shadow-2xl"
                     }`}
                   >
                     {/* Mini Studio Presentation Frame */}
@@ -1926,7 +1926,7 @@ export default function BusinessCardStudioFlow({
                         ) : (
                           <div className="relative w-full h-full p-2 select-none overflow-hidden text-white">
                             {logoText && logoText !== "Z" && (
-                              <div className="absolute top-2 right-2 w-4 h-4 rounded bg-[#064FE0] text-[8px] font-black flex items-center justify-center text-white shadow-xs">
+                              <div className="absolute top-2 right-2 w-4 h-4 rounded bg-[#2196D2] text-[8px] font-black flex items-center justify-center text-white shadow-xs">
                                 {logoText}
                               </div>
                             )}
@@ -1981,8 +1981,8 @@ export default function BusinessCardStudioFlow({
                       </div>
 
                       {/* Select Overlay */}
-                      <div className="absolute inset-0 bg-[#064FE0]/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
-                        <div className="bg-white text-[#064FE0] text-base font-black px-3.5 py-1.5 rounded-full shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1">
+                      <div className="absolute inset-0 bg-[#2196D2]/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
+                        <div className="bg-white text-[#2196D2] text-base font-black px-3.5 py-1.5 rounded-full shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1">
                           {template.isPaid && !purchasedTemplateIds.includes(template._id) ? (
                             <>
                               <span>🔒</span>
@@ -1998,12 +1998,12 @@ export default function BusinessCardStudioFlow({
                     {/* Card Info Footer */}
                     <div className="p-3 bg-white flex items-center justify-between gap-2 border-t border-zinc-100">
                       <div className="min-w-0">
-                        <h4 className="font-extrabold text-base text-zinc-900 truncate group-hover:text-[#064FE0] transition-colors">
+                        <h4 className="font-extrabold text-base text-zinc-900 truncate group-hover:text-[#2196D2] transition-colors">
                           {template.title}
                         </h4>
                         <p className="text-base text-zinc-400 font-medium mt-0.5 truncate">{template.category}</p>
                       </div>
-                      <span className="w-6 h-6 rounded-full bg-zinc-100 group-hover:bg-[#064FE0] group-hover:text-white flex items-center justify-center text-base font-bold text-zinc-600 transition-all shrink-0">
+                      <span className="w-6 h-6 rounded-full bg-zinc-100 group-hover:bg-[#2196D2] group-hover:text-white flex items-center justify-center text-base font-bold text-zinc-600 transition-all shrink-0">
                         →
                       </span>
                     </div>
@@ -2075,7 +2075,7 @@ export default function BusinessCardStudioFlow({
               {/* View Mode Selector Pills (3D Realistic vs 2D Layout Editor) */}
               <div className="w-full flex items-center justify-between bg-white px-4 py-2 rounded-2xl border border-zinc-200 shadow-xs">
                 <span className="text-base font-bold text-zinc-700 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#064FE0]" />
+                  <span className="w-2 h-2 rounded-full bg-[#2196D2]" />
                   Preview Canvas
                 </span>
 
@@ -2093,7 +2093,7 @@ export default function BusinessCardStudioFlow({
                   <button
                     onClick={() => setViewMode("2d")}
                     className={`px-3.5 py-1.5 text-base font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${viewMode === "2d"
-                        ? "bg-[#064FE0] text-white shadow-xs"
+                        ? "bg-[#2196D2] text-white shadow-xs"
                         : "text-zinc-600 hover:text-zinc-900"
                       }`}
                   >
@@ -2107,7 +2107,7 @@ export default function BusinessCardStudioFlow({
 
                 {loadingTemplate && (
                   <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-30 rounded-3xl">
-                    <div className="w-8 h-8 border-2 border-[#064FE0] border-t-transparent rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-2 border-[#2196D2] border-t-transparent rounded-full animate-spin" />
                   </div>
                 )}
 
@@ -2330,7 +2330,7 @@ export default function BusinessCardStudioFlow({
                             data-snap-id={layer.id}
                             onPointerDown={(e) => startImageLayerDrag(layer.id, e)}
                             className={`absolute z-10 cursor-grab active:cursor-grabbing touch-none rounded ${
-                              activeTextId === layer.id ? "ring-2 ring-[#064FE0] shadow-md" : "hover:ring-1 hover:ring-white/40"
+                              activeTextId === layer.id ? "ring-2 ring-[#2196D2] shadow-md" : "hover:ring-1 hover:ring-white/40"
                             }`}
                             style={{
                               left: `${layer.x}%`,
@@ -2355,7 +2355,7 @@ export default function BusinessCardStudioFlow({
                               key={layer.id}
                               data-snap-id={layer.id}
                               onMouseDown={(e) => handleMouseDown(layer.id, e)}
-                              className={`absolute select-none rounded cursor-grab active:cursor-grabbing transition-shadow ${isSelected ? "ring-2 ring-[#064FE0] bg-[#064FE0]/10 shadow-sm" : "hover:ring-1 hover:ring-white/40"}`}
+                              className={`absolute select-none rounded cursor-grab active:cursor-grabbing transition-shadow ${isSelected ? "ring-2 ring-[#2196D2] bg-[#2196D2]/10 shadow-sm" : "hover:ring-1 hover:ring-white/40"}`}
                               style={{ ...textLayerDomStyle(layer, STUDIO_LAYOUT), zIndex: 20 }}
                             >
                               {layer.textTransform === "uppercase"
@@ -2389,7 +2389,7 @@ export default function BusinessCardStudioFlow({
                             data-snap-id={layer.id}
                             onPointerDown={(e) => startImageLayerDrag(layer.id, e)}
                             className={`absolute z-10 cursor-grab active:cursor-grabbing touch-none rounded ${
-                              activeTextId === layer.id ? "ring-2 ring-[#064FE0] shadow-md" : "hover:ring-1 hover:ring-white/40"
+                              activeTextId === layer.id ? "ring-2 ring-[#2196D2] shadow-md" : "hover:ring-1 hover:ring-white/40"
                             }`}
                             style={{
                               left: `${layer.x}%`,
@@ -2414,7 +2414,7 @@ export default function BusinessCardStudioFlow({
                               key={layer.id}
                               data-snap-id={layer.id}
                               onMouseDown={(e) => handleMouseDown(layer.id, e)}
-                              className={`absolute select-none rounded cursor-grab active:cursor-grabbing transition-shadow ${isSelected ? "ring-2 ring-[#064FE0] bg-[#064FE0]/10 shadow-sm" : "hover:ring-1 hover:ring-white/40"}`}
+                              className={`absolute select-none rounded cursor-grab active:cursor-grabbing transition-shadow ${isSelected ? "ring-2 ring-[#2196D2] bg-[#2196D2]/10 shadow-sm" : "hover:ring-1 hover:ring-white/40"}`}
                               style={{ ...textLayerDomStyle(layer, STUDIO_LAYOUT), zIndex: 20 }}
                             >
                               {layer.textTransform === "uppercase"
@@ -2448,7 +2448,7 @@ export default function BusinessCardStudioFlow({
                             data-snap-id={layer.id}
                             onPointerDown={(e) => startImageLayerDrag(layer.id, e)}
                             className={`absolute z-10 cursor-grab active:cursor-grabbing touch-none rounded ${
-                              activeTextId === layer.id ? "ring-2 ring-[#064FE0] shadow-md" : "hover:ring-1 hover:ring-white/40"
+                              activeTextId === layer.id ? "ring-2 ring-[#2196D2] shadow-md" : "hover:ring-1 hover:ring-white/40"
                             }`}
                             style={{
                               left: `${layer.x}%`,
@@ -2475,7 +2475,7 @@ export default function BusinessCardStudioFlow({
                               key={layer.id}
                               data-snap-id={layer.id}
                               onMouseDown={(e) => handleMouseDown(layer.id, e)}
-                              className={`absolute select-none rounded cursor-grab active:cursor-grabbing transition-shadow ${isSelected ? "ring-2 ring-[#064FE0] bg-[#064FE0]/10 shadow-sm" : "hover:ring-1 hover:ring-white/40"
+                              className={`absolute select-none rounded cursor-grab active:cursor-grabbing transition-shadow ${isSelected ? "ring-2 ring-[#2196D2] bg-[#2196D2]/10 shadow-sm" : "hover:ring-1 hover:ring-white/40"
                                 }`}
                               style={{
                                 ...textLayerDomStyle(layer, STUDIO_LAYOUT),
@@ -2503,7 +2503,7 @@ export default function BusinessCardStudioFlow({
                       onClick={() => selectSide(idx)}
                       className={`px-4 py-1.5 text-base font-semibold rounded-full transition-all cursor-pointer ${
                         activeSideIndex === idx
-                          ? "bg-[#064FE0] text-white shadow-xs"
+                          ? "bg-[#2196D2] text-white shadow-xs"
                           : "text-zinc-600 hover:text-zinc-900"
                       }`}
                     >
@@ -2544,7 +2544,7 @@ export default function BusinessCardStudioFlow({
                       value={cardData.name}
                       onChange={(e) => handleNameChange(e.target.value)}
                       placeholder="Stephen"
-                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#064FE0] focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#2196D2] focus:outline-none"
                     />
                   </div>
                   <div>
@@ -2554,7 +2554,7 @@ export default function BusinessCardStudioFlow({
                       value={cardData.title}
                       onChange={(e) => handleTitleChange(e.target.value)}
                       placeholder="Manager"
-                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#064FE0] focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#2196D2] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -2567,7 +2567,7 @@ export default function BusinessCardStudioFlow({
                       value={cardData.phone}
                       onChange={(e) => handlePhoneChange(e.target.value)}
                       placeholder="+1 (555) 123-4567"
-                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#064FE0] focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#2196D2] focus:outline-none"
                     />
                   </div>
                   <div>
@@ -2577,7 +2577,7 @@ export default function BusinessCardStudioFlow({
                       value={cardData.email}
                       onChange={(e) => handleEmailChange(e.target.value)}
                       placeholder="stephen@zyora.com"
-                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#064FE0] focus:outline-none"
+                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#2196D2] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -2589,7 +2589,7 @@ export default function BusinessCardStudioFlow({
                     value={cardData.address}
                     onChange={(e) => handleAddressChange(e.target.value)}
                     placeholder="15 rue de la Boëtie, Poissy"
-                    className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#064FE0] focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#2196D2] focus:outline-none"
                   />
                 </div>
 
@@ -2606,7 +2606,7 @@ export default function BusinessCardStudioFlow({
                       );
                     }}
                     placeholder="www.zyora.com"
-                    className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#064FE0] focus:outline-none font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-base focus:border-[#2196D2] focus:outline-none font-mono"
                   />
                 </div>
               </div> */}
@@ -2625,7 +2625,7 @@ export default function BusinessCardStudioFlow({
                     <button
                       type="button"
                       onClick={handleAddTextLayer}
-                      className="text-base font-bold text-[#064FE0] hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-base font-bold text-[#2196D2] hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       + Add Text
                     </button>
@@ -2660,7 +2660,7 @@ export default function BusinessCardStudioFlow({
                       key={layer.id}
                       onClick={() => setActiveTextId(layer.id)}
                       className={`px-2.5 py-1 rounded-lg text-base font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${activeTextId === layer.id
-                          ? "bg-[#064FE0] text-white border-[#064FE0]"
+                          ? "bg-[#2196D2] text-white border-[#2196D2]"
                           : "bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-400"
                         }`}
                     >
@@ -2691,7 +2691,7 @@ export default function BusinessCardStudioFlow({
                       onClick={() => setActiveTextId(layer.id)}
                       className={`px-2.5 py-1 rounded-lg text-base font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
                         activeTextId === layer.id
-                          ? "bg-[#064FE0] text-white border-[#064FE0]"
+                          ? "bg-[#2196D2] text-white border-[#2196D2]"
                           : "bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-400"
                       }`}
                     >
@@ -2751,7 +2751,7 @@ export default function BusinessCardStudioFlow({
                         type="text"
                         value={activeLayer.text}
                         onChange={(e) => updateActiveTextLayer({ text: e.target.value })}
-                        className="w-full px-3 py-1.5 bg-white rounded-xl border border-zinc-300 text-base focus:border-[#064FE0] focus:outline-none"
+                        className="w-full px-3 py-1.5 bg-white rounded-xl border border-zinc-300 text-base focus:border-[#2196D2] focus:outline-none"
                       />
                     </div>
 
@@ -2766,7 +2766,7 @@ export default function BusinessCardStudioFlow({
                           max={42}
                           value={activeLayer.fontSize}
                           onChange={(e) => updateActiveTextLayer({ fontSize: Number(e.target.value) })}
-                          className="w-full accent-[#064FE0]"
+                          className="w-full accent-[#2196D2]"
                         />
                       </div>
 
@@ -2836,7 +2836,7 @@ export default function BusinessCardStudioFlow({
                             })
                           }
                           className={`px-2.5 py-1.5 rounded-lg border text-left cursor-pointer ${
-                            selected ? "border-[#064FE0] bg-sky-50" : "border-zinc-200 bg-white hover:border-zinc-400"
+                            selected ? "border-[#2196D2] bg-sky-50" : "border-zinc-200 bg-white hover:border-zinc-400"
                           }`}
                         >
                           <span className="block text-base font-bold text-zinc-800">{size.name}</span>
@@ -2918,7 +2918,7 @@ export default function BusinessCardStudioFlow({
                         }}
                         className={`py-1.5 rounded-lg border text-base font-bold cursor-pointer ${
                           bgMode === mode
-                            ? "bg-[#064FE0] border-[#064FE0] text-white"
+                            ? "bg-[#2196D2] border-[#2196D2] text-white"
                             : "border-zinc-300 text-zinc-700"
                         }`}
                       >
@@ -2975,7 +2975,7 @@ export default function BusinessCardStudioFlow({
                             onClick={() => setBgGradientAngle(item.angle)}
                             className={`w-8 h-8 rounded-lg border text-base cursor-pointer ${
                               bgGradientAngle === item.angle
-                                ? "bg-[#064FE0] border-[#064FE0] text-white"
+                                ? "bg-[#2196D2] border-[#2196D2] text-white"
                                 : "border-zinc-300 text-zinc-700"
                             }`}
                           >
@@ -2990,7 +2990,7 @@ export default function BusinessCardStudioFlow({
                       <button
                         type="button"
                         onClick={() => bgFileRef.current?.click()}
-                        className="w-full py-2 px-3 border border-dashed border-zinc-300 hover:border-[#064FE0] text-base font-semibold text-zinc-700 rounded-xl cursor-pointer"
+                        className="w-full py-2 px-3 border border-dashed border-zinc-300 hover:border-[#2196D2] text-base font-semibold text-zinc-700 rounded-xl cursor-pointer"
                       >
                         {(cardData.side === "front" ? frontBgImage : backBgImage)
                           ? `Change ${cardData.side} background image`
@@ -3031,7 +3031,7 @@ export default function BusinessCardStudioFlow({
                         <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-200/80 space-y-1">
                           <div className="flex items-center justify-between">
                             <label className="text-base font-bold text-zinc-700">Artwork Image Opacity</label>
-                            <span className="text-base font-mono font-bold text-[#064FE0]">{imageOpacity}%</span>
+                            <span className="text-base font-mono font-bold text-[#2196D2]">{imageOpacity}%</span>
                           </div>
                           <input
                             type="range"
@@ -3039,7 +3039,7 @@ export default function BusinessCardStudioFlow({
                             max={100}
                             value={imageOpacity}
                             onChange={(e) => setImageOpacity(Number(e.target.value))}
-                            className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#064FE0]"
+                            className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#2196D2]"
                           />
                         </div>
                       )}
@@ -3059,7 +3059,7 @@ export default function BusinessCardStudioFlow({
                   type="button"
                   disabled={downloadingProof}
                   onClick={() => handleDownloadProof("both")}
-                  className="w-full py-2 text-base font-semibold text-[#064FE0] hover:underline cursor-pointer disabled:opacity-50"
+                  className="w-full py-2 text-base font-semibold text-[#2196D2] hover:underline cursor-pointer disabled:opacity-50"
                 >
                   Download front and back
                 </button>
@@ -3111,7 +3111,7 @@ export default function BusinessCardStudioFlow({
                   <div key={vGroup._id || groupName} className="border-t border-zinc-100 pt-4">
                     <p className="text-base font-bold text-zinc-900">
                       {groupName}
-                      <span className="ml-2 text-base font-bold text-[#064FE0]">({selectedValName})</span>
+                      <span className="ml-2 text-base font-bold text-[#2196D2]">({selectedValName})</span>
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
                       {vGroup.values.map((val) => {
@@ -3132,7 +3132,7 @@ export default function BusinessCardStudioFlow({
                             }}
                             className={`p-3 text-left rounded-xl border text-base transition-all cursor-pointer flex flex-col justify-between ${
                               isSelected
-                                ? "border-[#064FE0] bg-sky-50/50 text-[#064FE0] font-bold shadow-2xs ring-1 ring-[#064FE0]/30"
+                                ? "border-[#2196D2] bg-sky-50/50 text-[#2196D2] font-bold shadow-2xs ring-1 ring-[#2196D2]/30"
                                 : "border-zinc-200 text-zinc-700 hover:border-zinc-300 bg-white"
                             }`}
                           >
@@ -3163,7 +3163,7 @@ export default function BusinessCardStudioFlow({
                         type="button"
                         onClick={() => setCardData((prev) => ({ ...prev, thickness: th }))}
                         className={`p-3 text-left rounded-xl border text-base transition-all cursor-pointer ${cardData.thickness === th
-                            ? "border-[#064FE0] bg-sky-50/50 text-[#064FE0] font-bold"
+                            ? "border-[#2196D2] bg-sky-50/50 text-[#2196D2] font-bold"
                             : "border-zinc-200 text-zinc-700 hover:border-zinc-300"
                           }`}
                       >
@@ -3182,7 +3182,7 @@ export default function BusinessCardStudioFlow({
                         type="button"
                         onClick={() => setCardData((prev) => ({ ...prev, corners: c }))}
                         className={`p-3 text-left rounded-xl border text-base transition-all cursor-pointer ${cardData.corners === c
-                            ? "border-[#064FE0] bg-sky-50/50 text-[#064FE0] font-bold"
+                            ? "border-[#2196D2] bg-sky-50/50 text-[#2196D2] font-bold"
                             : "border-zinc-200 text-zinc-700 hover:border-zinc-300"
                           }`}
                       >
@@ -3206,7 +3206,7 @@ export default function BusinessCardStudioFlow({
               <button
                 onClick={handleAddToCartAndProceed}
                 disabled={addingToCart}
-                className="px-8 py-3.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-[#064FE0]/20 disabled:opacity-50"
+                className="px-8 py-3.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-[#2196D2]/20 disabled:opacity-50"
               >
                 {addingToCart ? "Adding to Cart..." : "Add to Cart →"}
               </button>
@@ -3303,7 +3303,7 @@ export default function BusinessCardStudioFlow({
                     setPreviewTemplate(null);
                     loadAndPrefillTemplate(id);
                   }}
-                  className="rounded-xl bg-[#064FE0] px-4 py-2.5 text-base font-bold text-white cursor-pointer hover:bg-[#0439A8]"
+                  className="rounded-xl bg-[#2196D2] px-4 py-2.5 text-base font-bold text-white cursor-pointer hover:bg-[#1B85BD]"
                 >
                   Use Now
                 </button>

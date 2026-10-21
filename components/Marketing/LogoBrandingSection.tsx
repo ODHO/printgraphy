@@ -19,7 +19,7 @@ export default function LogoBrandingSection() {
           <div className="lg:col-span-6 space-y-6 z-10">
             {/* Top Pill Badge */}
             <div className="inline-block">
-              <span className="px-4 py-1.5 rounded-full bg-[#E8EEFD] border border-[#064FE0]/30 text-[#064FE0] text-base font-bold tracking-wide shadow-2xs">
+              <span className="px-4 py-1.5 rounded-full bg-[#E8EEFD] border border-[#2196D2]/30 text-[#2196D2] text-base font-bold tracking-wide shadow-2xs">
                 Logo & Brand Identity
               </span>
             </div>
@@ -30,7 +30,7 @@ export default function LogoBrandingSection() {
             </h2>
 
             {/* Sub-tagline */}
-            <p className="text-[#064FE0] font-bold text-lg sm:text-xl tracking-tight">
+            <p className="text-[#2196D2] font-bold text-lg sm:text-xl tracking-tight">
               Make your brand instantly recognizable
             </p>
 
@@ -44,9 +44,9 @@ export default function LogoBrandingSection() {
               {features.map((item, index) => (
                 <li key={index} className="flex items-center gap-3 text-zinc-800 font-bold text-base sm:text-base">
                   {/* Double Check Icon SVG */}
-                  <span className="shrink-0 text-[#064FE0]">
+                  <span className="shrink-0 text-[#2196D2]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M2 12L7.25 17L9.875 14M8 12L13.25 17L22 7M16 7L12.5 11" stroke="#064FE0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M2 12L7.25 17L9.875 14M8 12L13.25 17L22 7M16 7L12.5 11" stroke="#2196D2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </span>
                   <span>{item}</span>
@@ -58,7 +58,7 @@ export default function LogoBrandingSection() {
             <div className="pt-4">
               <Link
                 href="/quote"
-                className="inline-block px-8 py-3.5 bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold rounded-md text-base sm:text-base shadow-lg shadow-[#064FE0]/30 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] cursor-pointer text-center"
+                className="inline-block px-8 py-3.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold rounded-md text-base sm:text-base shadow-lg shadow-[#2196D2]/30 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] cursor-pointer text-center"
               >
                 Start Your Brand Identity
               </Link>

@@ -74,7 +74,7 @@ async function trySend(
 export async function sendVerifyEmail(email: string, otp: string): Promise<void> {
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px">
-      <h2 style="color:#064FE0;margin-bottom:8px">Verify Your Printgraphy Account</h2>
+      <h2 style="color:#2196D2;margin-bottom:8px">Verify Your Printgraphy Account</h2>
       <p style="color:#374151">Your one-time verification code is:</p>
       <div style="font-size:40px;font-weight:bold;letter-spacing:12px;color:#1a1a1a;padding:20px 0;text-align:center">${otp}</div>
       <p style="color:#6b7280;font-size:14px">This code expires in <strong>10 minutes</strong>. Do not share it with anyone.</p>
@@ -89,7 +89,7 @@ export async function sendVerifyEmail(email: string, otp: string): Promise<void>
 export async function sendPasswordResetEmail(email: string, otp: string): Promise<void> {
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px">
-      <h2 style="color:#064FE0;margin-bottom:8px">Reset Your Printgraphy Password</h2>
+      <h2 style="color:#2196D2;margin-bottom:8px">Reset Your Printgraphy Password</h2>
       <p style="color:#374151">Your one-time password reset code is:</p>
       <div style="font-size:40px;font-weight:bold;letter-spacing:12px;color:#1a1a1a;padding:20px 0;text-align:center">${otp}</div>
       <p style="color:#6b7280;font-size:14px">This code expires in <strong>10 minutes</strong>. If you didn&apos;t request this, ignore this email.</p>
@@ -109,7 +109,7 @@ export async function sendVendorWelcomeEmail(
 ): Promise<void> {
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;background:#f8fbfd;border-radius:16px;border:1px solid #e2e8f0">
-      <h2 style="color:#064FE0;margin-bottom:8px">Welcome to Printgraphy Vendor Network!</h2>
+      <h2 style="color:#2196D2;margin-bottom:8px">Welcome to Printgraphy Vendor Network!</h2>
       <p style="color:#334155;font-size:14px">Hello <strong>${vendorName}</strong>,</p>
       <p style="color:#334155;font-size:14px">Your vendor fulfillment account has been created by the Printgraphy Admin team. Below are your login credentials to access your dedicated Vendor Portal:</p>
       
@@ -130,7 +130,7 @@ export async function sendVendorWelcomeEmail(
 export async function sendDeliveryReminderEmail(email: string, vendorName: string, orderNumber: string, portalUrl: string) {
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px">
-      <h2 style="color:#064FE0">Mark order ${orderNumber} delivered</h2>
+      <h2 style="color:#2196D2">Mark order ${orderNumber} delivered</h2>
       <p>Hello ${vendorName},</p>
       <p>This order was shipped more than 24 hours ago and is still not marked delivered. Update it in the vendor portal so it can qualify for payout.</p>
       <p><a href="${portalUrl}">Open vendor portal</a></p>
@@ -141,7 +141,7 @@ export async function sendDeliveryReminderEmail(email: string, vendorName: strin
 export async function sendVendorOfferEmail(email: string, vendorName: string, orderNumber: string, amount: number, portalUrl: string) {
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px">
-      <h2 style="color:#064FE0">Order ${orderNumber} is offered to you</h2>
+      <h2 style="color:#2196D2">Order ${orderNumber} is offered to you</h2>
       <p>Hello ${vendorName},</p>
       <p>Admin assigned this order with a payment of <strong>$${amount.toFixed(2)}</strong>. Accept it in the vendor portal if you agree.</p>
       <p><a href="${portalUrl}">Open vendor portal</a></p>
@@ -152,7 +152,7 @@ export async function sendVendorOfferEmail(email: string, vendorName: string, or
 export async function sendCustomerDeliveryEmail(email: string, orderNumber: string, orderUrl: string) {
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px">
-      <h2 style="color:#064FE0">Confirm order ${orderNumber}</h2>
+      <h2 style="color:#2196D2">Confirm order ${orderNumber}</h2>
       <p>Your vendor marked this order delivered. Open the order and confirm that you received it.</p>
       <p><a href="${orderUrl}">Confirm delivery</a></p>
     </div>`;

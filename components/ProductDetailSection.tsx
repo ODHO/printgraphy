@@ -245,7 +245,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                 onClick={() => setActiveImageIndex(idx)}
                 className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer bg-white ${
                   activeImageIndex === idx
-                    ? "border-[#064FE0] ring-2 ring-[#064FE0]/30 scale-95"
+                    ? "border-[#2196D2] ring-2 ring-[#2196D2]/30 scale-95"
                     : "border-zinc-200 hover:border-zinc-300 opacity-80 hover:opacity-100"
                 }`}
               >
@@ -289,7 +289,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                 ) : null}
                 <span
                   onClick={() => document.getElementById("product-reviews-section")?.scrollIntoView({ behavior: "smooth" })}
-                  className="font-bold text-zinc-900 underline cursor-pointer hover:text-[#064FE0]"
+                  className="font-bold text-zinc-900 underline cursor-pointer hover:text-[#2196D2]"
                 >
                   {product?.reviewCount && product.reviewCount > 0
                     ? `${product.rating} (${product.reviewCount.toLocaleString()} ${product.reviewCount === 1 ? "review" : "reviews"})`
@@ -319,7 +319,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
           {/* Fast Shipping Callout */}
           {/* <div className="text-base text-zinc-700 bg-zinc-50 border border-zinc-200/80 rounded-xl p-3">
             Need your business cards right away? Explore next-day and 2-day delivery options with{" "}
-            <Link href="/browsedesigns" className="text-[#064FE0] font-bold hover:underline">
+            <Link href="/browsedesigns" className="text-[#2196D2] font-bold hover:underline">
               fast-shipping business cards
             </Link>
             . <span className="underline cursor-pointer">See details</span>
@@ -341,7 +341,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
               <span className="flex items-center gap-1.5">
                 <span>📍 Delivery to 02451</span>
               </span>
-              <button className="text-base font-bold text-[#064FE0] hover:underline cursor-pointer">
+              <button className="text-base font-bold text-[#2196D2] hover:underline cursor-pointer">
                 More options
               </button>
             </div>
@@ -373,7 +373,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                         {vGroup.name}*
                       </label>
                       {selectedVal && (
-                        <span className="text-base font-bold text-[#064FE0]">
+                        <span className="text-base font-bold text-[#2196D2]">
                           {selectedVal.name}
                         </span>
                       )}
@@ -398,7 +398,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                             onClick={() => handleSelectOption(vGroup.name, val)}
                             className={`relative flex flex-col items-center justify-between p-3 min-h-[100px] rounded-xl border-2 transition-all cursor-pointer text-center bg-white group ${
                               isSelected
-                                ? "border-[#064FE0] bg-[#e0f2fe]/40 shadow-xs ring-1 ring-[#064FE0]"
+                                ? "border-[#2196D2] bg-[#e0f2fe]/40 shadow-xs ring-1 ring-[#2196D2]"
                                 : "border-zinc-200 hover:border-zinc-300"
                             }`}
                           >
@@ -411,7 +411,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                               <div
                                 className={`w-12 h-8 border-2 rounded-md mb-2 bg-white flex items-center justify-center shadow-2xs ${
                                   val.name.toLowerCase().includes("rounded")
-                                    ? "rounded-lg border-[#064FE0]"
+                                    ? "rounded-lg border-[#2196D2]"
                                     : "border-zinc-400 rounded-none"
                                 }`}
                               />
@@ -477,7 +477,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
             <div className="pt-2 text-center">
               <Link
                 href={getFlowUrl("/quote")}
-                className="inline-flex items-center gap-2 text-base font-bold text-zinc-800 hover:text-[#064FE0] transition-colors"
+                className="inline-flex items-center gap-2 text-base font-bold text-zinc-800 hover:text-[#2196D2] transition-colors"
               >
                 <div className="flex -space-x-1.5">
                   <span className="w-5 h-5 rounded-full bg-amber-400 text-base font-bold text-white flex items-center justify-center border border-white">

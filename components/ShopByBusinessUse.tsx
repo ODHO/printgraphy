@@ -87,7 +87,7 @@ export default function ShopByBusinessUse() {
 
             {/* Content */}
             <div className="space-y-1">
-              <h3 className="text-base sm:text-base font-bold text-zinc-900 leading-tight group-hover:text-[#064FE0] transition-colors">
+              <h3 className="text-base sm:text-base font-bold text-zinc-900 leading-tight group-hover:text-[#2196D2] transition-colors">
                 {item.title}
               </h3>
               <p className="text-base text-zinc-500 leading-relaxed line-clamp-3">

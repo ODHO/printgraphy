@@ -12,7 +12,7 @@ type StylePatch = Partial<
 export default function TextStyleControls({
   layer,
   onChange,
-  accent = "#064FE0",
+  accent = "#2196D2",
 }: {
   layer: CardTextLayer;
   onChange: (patch: StylePatch) => void;
@@ -113,7 +113,7 @@ export default function TextStyleControls({
             step={0.5}
             value={layer.letterSpacing || 0}
             onChange={(e) => onChange({ letterSpacing: Number(e.target.value) })}
-            className="w-full accent-[#064FE0]"
+            className="w-full accent-[#2196D2]"
           />
         </label>
         <label className="block">
@@ -127,7 +127,7 @@ export default function TextStyleControls({
             max={100}
             value={opacityPct}
             onChange={(e) => onChange({ opacity: Number(e.target.value) / 100 })}
-            className="w-full accent-[#064FE0]"
+            className="w-full accent-[#2196D2]"
           />
         </label>
       </div>

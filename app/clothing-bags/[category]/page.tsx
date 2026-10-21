@@ -114,7 +114,7 @@ export default async function ClothingBagsCategoryPage({
           <div className="mt-6">
             <Link
               href={designHref}
-              className="inline-flex px-6 py-3 bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold rounded-xl shadow-lg transition-colors"
+              className="inline-flex px-6 py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold rounded-xl shadow-lg transition-colors"
             >
               Start designing
             </Link>
@@ -135,7 +135,7 @@ export default async function ClothingBagsCategoryPage({
           </div>
           <div className="p-6 sm:p-10 flex flex-col justify-center space-y-5">
             <div>
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#064FE0] mb-2">
+              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#2196D2] mb-2">
                 Customize
               </p>
               <h2 className="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
@@ -175,7 +175,7 @@ export default async function ClothingBagsCategoryPage({
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 href={designHref}
-                className="inline-flex px-6 py-3 bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold rounded-xl transition-colors shadow-md shadow-[#064FE0]/25"
+                className="inline-flex px-6 py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold rounded-xl transition-colors shadow-md shadow-[#2196D2]/25"
               >
                 Start designing
               </Link>

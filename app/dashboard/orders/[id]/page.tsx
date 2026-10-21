@@ -120,7 +120,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 href={`/api/orders/${order._id}/invoice`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-1.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5"
               >
                 <span>🖨️</span>
                 <span>Print Invoice</span>

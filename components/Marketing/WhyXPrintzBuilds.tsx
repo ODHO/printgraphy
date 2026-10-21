@@ -22,7 +22,7 @@ export default function WhyXPrintzBuilds() {
           <div className="lg:col-span-6 space-y-6">
             {/* Top Pill Badge */}
             <div className="inline-block">
-              <span className="px-4 py-1.5 rounded-full bg-[#E8EEFD] border border-[#064FE0]/30 text-[#064FE0] text-base font-bold tracking-wide shadow-2xs">
+              <span className="px-4 py-1.5 rounded-full bg-[#E8EEFD] border border-[#2196D2]/30 text-[#2196D2] text-base font-bold tracking-wide shadow-2xs">
                 Why Printgraphy builds this too
               </span>
             </div>
@@ -39,7 +39,7 @@ export default function WhyXPrintzBuilds() {
 
             {/* Sub-tagline in Blue Italic */}
             <div className="pt-2">
-              <p className="text-[#064FE0] font-bold text-base sm:text-lg italic tracking-tight">
+              <p className="text-[#2196D2] font-bold text-base sm:text-lg italic tracking-tight">
                 One brand system. One operating layer. Every stage in sync.
               </p>
             </div>

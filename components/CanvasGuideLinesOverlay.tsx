@@ -31,7 +31,7 @@ export default function CanvasGuideLinesOverlay({
       {lines.map((line) => {
         const pos = guideLinePositionPercent(line, canvasWidth, canvasHeight, canvasUnit);
         const dash = guideLineDash(line.lineType);
-        const color = line.color || "#064FE0";
+        const color = line.color || "#2196D2";
         const isVertical = line.orientation === "vertical";
 
         return (

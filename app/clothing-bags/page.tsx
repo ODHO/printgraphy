@@ -36,7 +36,7 @@ export default async function ClothingBagsHubPage() {
       <div className="bg-white border-b border-zinc-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
           <nav className="flex items-center gap-2 text-sm text-zinc-500 mb-3">
-            <Link href="/" className="hover:text-[#064FE0]">
+            <Link href="/" className="hover:text-[#2196D2]">
               Home
             </Link>
             <span>›</span>
@@ -83,7 +83,7 @@ export default async function ClothingBagsHubPage() {
                     <p className="text-sm text-white/80 mt-1 line-clamp-2">
                       {cat.description || "Customize with your logo or message"}
                     </p>
-                    <span className="inline-flex mt-4 text-sm font-bold text-white bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-2 group-hover:bg-[#064FE0] group-hover:border-[#064FE0] transition-colors">
+                    <span className="inline-flex mt-4 text-sm font-bold text-white bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-2 group-hover:bg-[#2196D2] group-hover:border-[#2196D2] transition-colors">
                       Shop {cat.name} →
                     </span>
                   </div>

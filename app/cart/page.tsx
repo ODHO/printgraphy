@@ -79,7 +79,7 @@ function ApparelCartDetails({ item }: { item: CartItem }) {
         ) : (
           <div className="w-full h-full flex items-center justify-center text-zinc-300 text-xs">No img</div>
         )}
-        <span className="absolute top-1 left-1 text-[9px] font-bold uppercase tracking-wide bg-[#064FE0] text-white px-1.5 py-0.5 rounded">
+        <span className="absolute top-1 left-1 text-[9px] font-bold uppercase tracking-wide bg-[#2196D2] text-white px-1.5 py-0.5 rounded">
           Apparel
         </span>
       </div>
@@ -382,12 +382,12 @@ export default function CartPage() {
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
                         placeholder="ENTER CODE"
-                        className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-base font-mono font-bold uppercase text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                        className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-base font-mono font-bold uppercase text-zinc-900 focus:outline-none focus:border-[#2196D2]"
                       />
                       <button
                         type="submit"
                         disabled={validatingCoupon}
-                        className="px-4 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+                        className="px-4 py-2 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
                       >
                         {validatingCoupon ? "..." : "Apply"}
                       </button>

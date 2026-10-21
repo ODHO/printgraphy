@@ -94,7 +94,7 @@ export default function CardDesignObjects({
                   }
                   onEditImage?.(obj.id);
                 }}
-                className="absolute z-[8] cursor-grab active:cursor-grabbing rounded-md hover:ring-2 hover:ring-[#064FE0] bg-transparent p-0"
+                className="absolute z-[8] cursor-grab active:cursor-grabbing rounded-md hover:ring-2 hover:ring-[#2196D2] bg-transparent p-0"
                 style={frame}
               >
                 {image}

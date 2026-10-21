@@ -71,7 +71,7 @@ export default function CardOrderFields({
           max={100000}
           value={quantity}
           onChange={(event) => setQuantity(Number(event.target.value))}
-          className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-bold text-zinc-900 focus:border-[#064FE0] focus:outline-none"
+          className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-bold text-zinc-900 focus:border-[#2196D2] focus:outline-none"
         />
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((preset) => (
@@ -103,7 +103,7 @@ export default function CardOrderFields({
           <button
             type="button"
             onClick={() => downloadSampleEmployeeSheet(fields)}
-            className="shrink-0 text-base font-bold text-[#064FE0] cursor-pointer"
+            className="shrink-0 text-base font-bold text-[#2196D2] cursor-pointer"
           >
             Sample Excel
           </button>
@@ -113,7 +113,7 @@ export default function CardOrderFields({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={reading}
-          className="w-full py-2.5 border border-dashed border-zinc-300 hover:border-[#064FE0] text-base font-semibold text-zinc-700 rounded-xl cursor-pointer disabled:opacity-50"
+          className="w-full py-2.5 border border-dashed border-zinc-300 hover:border-[#2196D2] text-base font-semibold text-zinc-700 rounded-xl cursor-pointer disabled:opacity-50"
         >
           {reading ? "Reading sheet..." : fileName ? `Replace ${fileName}` : "Upload Excel or CSV"}
         </button>

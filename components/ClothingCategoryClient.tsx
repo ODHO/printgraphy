@@ -102,11 +102,11 @@ export default function ClothingCategoryClient({
       <div className="w-full bg-[#f8fbfd] border-b border-zinc-100 py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 mb-2">
-            <Link href="/" className="hover:text-[#064FE0]">
+            <Link href="/" className="hover:text-[#2196D2]">
               Home
             </Link>
             <span>›</span>
-            <Link href="/clothing-bags" className="hover:text-[#064FE0]">
+            <Link href="/clothing-bags" className="hover:text-[#2196D2]">
               Clothing & Bags
             </Link>
             <span>›</span>
@@ -168,7 +168,7 @@ export default function ClothingCategoryClient({
                       onClick={() => setSelectedColorId(c.id)}
                       className={`w-10 h-10 rounded-full border-2 transition-all cursor-pointer ${
                         selectedColorId === c.id
-                          ? "border-[#064FE0] ring-2 ring-[#064FE0]/30 scale-110"
+                          ? "border-[#2196D2] ring-2 ring-[#2196D2]/30 scale-110"
                           : "border-zinc-200 hover:border-zinc-400"
                       }`}
                       style={{ backgroundColor: c.hex }}
@@ -202,7 +202,7 @@ export default function ClothingCategoryClient({
                         }
                         className={`w-full text-left flex items-center gap-3 p-3 rounded-2xl border-2 transition-all cursor-pointer ${
                           active
-                            ? "border-[#064FE0] bg-sky-50/60"
+                            ? "border-[#2196D2] bg-sky-50/60"
                             : "border-zinc-200 hover:border-zinc-300"
                         }`}
                       >
@@ -237,7 +237,7 @@ export default function ClothingCategoryClient({
 
             <Link
               href={designHref}
-              className="inline-flex w-full sm:w-auto justify-center px-6 py-3 bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold rounded-xl shadow-md shadow-[#064FE0]/25 transition-colors"
+              className="inline-flex w-full sm:w-auto justify-center px-6 py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold rounded-xl shadow-md shadow-[#2196D2]/25 transition-colors"
             >
               Start designing
             </Link>
@@ -257,7 +257,7 @@ export default function ClothingCategoryClient({
                   <Link
                     key={p._id}
                     href={`/clothing-bags/design?category=${encodeURIComponent(category.slug || category._id)}&productId=${p._id}`}
-                    className="group rounded-3xl border border-zinc-200 overflow-hidden hover:border-[#064FE0]/40 hover:shadow-md transition-all bg-white"
+                    className="group rounded-3xl border border-zinc-200 overflow-hidden hover:border-[#2196D2]/40 hover:shadow-md transition-all bg-white"
                   >
                     <div className="aspect-square bg-[#f8fbfd] relative">
                       {/* eslint-disable-next-line @next/next/no-img-element */}

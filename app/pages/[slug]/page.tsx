@@ -67,7 +67,7 @@ export default async function PublicCustomPage({ params }: PageProps) {
           <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 max-w-5xl">
             {/* Breadcrumb Navigation */}
             <nav className="flex items-center gap-2 text-base font-semibold text-zinc-400 mb-6">
-              <Link href="/" className="hover:text-[#064FE0] transition-colors">
+              <Link href="/" className="hover:text-[#2196D2] transition-colors">
                 Home
               </Link>
               <span>/</span>

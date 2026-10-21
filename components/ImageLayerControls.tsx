@@ -42,13 +42,13 @@ export default function ImageLayerControls({
             type="text"
             value={layer.label || "Image"}
             onChange={(e) => onChange({ label: e.target.value })}
-            className="w-full px-3 py-1.5 bg-white rounded-xl border border-zinc-300 text-base focus:border-[#064FE0] focus:outline-none"
+            className="w-full px-3 py-1.5 bg-white rounded-xl border border-zinc-300 text-base focus:border-[#2196D2] focus:outline-none"
             placeholder="Layer name"
           />
           <button
             type="button"
             onClick={onReplace}
-            className="px-3 py-1.5 text-base font-bold text-[#064FE0] bg-sky-50 border border-sky-200 rounded-xl cursor-pointer hover:bg-sky-100"
+            className="px-3 py-1.5 text-base font-bold text-[#2196D2] bg-sky-50 border border-sky-200 rounded-xl cursor-pointer hover:bg-sky-100"
           >
             Replace Image
           </button>
@@ -68,7 +68,7 @@ export default function ImageLayerControls({
             const width = Number(e.target.value);
             onChange({ width, height: width });
           }}
-          className="w-full accent-[#064FE0]"
+          className="w-full accent-[#2196D2]"
         />
       </div>
 
@@ -82,7 +82,7 @@ export default function ImageLayerControls({
           max={100}
           value={Math.round((layer.opacity ?? 1) * 100)}
           onChange={(e) => onChange({ opacity: Number(e.target.value) / 100 })}
-          className="w-full accent-[#064FE0]"
+          className="w-full accent-[#2196D2]"
         />
       </div>
 
@@ -95,7 +95,7 @@ export default function ImageLayerControls({
               type="button"
               onClick={() => onChange({ fit })}
               className={`px-3 py-1.5 text-base font-semibold rounded-lg cursor-pointer capitalize ${
-                layer.fit === fit ? "bg-[#064FE0] text-white" : "text-zinc-600 hover:text-zinc-900"
+                layer.fit === fit ? "bg-[#2196D2] text-white" : "text-zinc-600 hover:text-zinc-900"
               }`}
             >
               {fit}

@@ -103,7 +103,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
         {selectedCategory !== "all" && (
           <button
             onClick={() => onSelectCategory("all")}
-            className="text-base font-bold text-[#064FE0] hover:underline cursor-pointer"
+            className="text-base font-bold text-[#2196D2] hover:underline cursor-pointer"
           >
             Show All
           </button>
@@ -116,7 +116,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
           onClick={() => onSelectCategory("all")}
           className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-base font-bold transition-all text-left cursor-pointer ${
             selectedCategory === "all"
-              ? "bg-[#064FE0] text-white shadow-md shadow-[#064FE0]/25"
+              ? "bg-[#2196D2] text-white shadow-md shadow-[#2196D2]/25"
               : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900"
           }`}
         >
@@ -146,7 +146,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                 onClick={() => onSelectCategory(cat.name)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-base transition-all text-left cursor-pointer ${
                   isSelected
-                    ? "bg-[#064FE0] text-white font-bold shadow-md shadow-[#064FE0]/25"
+                    ? "bg-[#2196D2] text-white font-bold shadow-md shadow-[#2196D2]/25"
                     : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 font-medium"
                 }`}
               >
@@ -158,7 +158,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                       className="w-7 h-7 rounded-lg object-cover shrink-0 border border-white/20 bg-white"
                     />
                   ) : (
-                    <span className={`w-2 h-2 rounded-full shrink-0 transition-colors ${isSelected ? "bg-white" : "bg-zinc-300 group-hover:bg-[#064FE0]"}`} />
+                    <span className={`w-2 h-2 rounded-full shrink-0 transition-colors ${isSelected ? "bg-white" : "bg-zinc-300 group-hover:bg-[#2196D2]"}`} />
                   )}
                   <span className="truncate text-base font-semibold">{cat.name}</span>
                 </div>
@@ -168,7 +168,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                     <svg
                       className={`w-4 h-4 transition-transform duration-300 ${
                         isExpanded
-                          ? "rotate-90 " + (isSelected ? "text-white" : "text-[#064FE0]")
+                          ? "rotate-90 " + (isSelected ? "text-white" : "text-[#2196D2]")
                           : "rotate-0 " + (isSelected ? "text-white/60" : "text-zinc-400")
                       }`}
                       fill="none"
@@ -195,7 +195,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="ml-3.5 pl-3 border-l-2 border-[#064FE0]/40 space-y-2 py-1.5 bg-slate-50/70 rounded-r-xl pr-2">
+                    <div className="ml-3.5 pl-3 border-l-2 border-[#2196D2]/40 space-y-2 py-1.5 bg-slate-50/70 rounded-r-xl pr-2">
                       {cat.variations!.map((vGroup) => (
                         <div key={vGroup.name} className="space-y-1">
                           <span className="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 block">
@@ -208,7 +208,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                                 <Link
                                   key={val.name}
                                   href={`/browsedesigns?category=${encodeURIComponent(cat.name)}&specs=${encodeURIComponent(specsObj)}`}
-                                  className="text-zinc-700 hover:text-white px-2 py-1 rounded-lg text-xs font-bold border transition-all inline-flex items-center gap-1.5 bg-white hover:bg-[#064FE0] border-zinc-200/90 hover:border-[#064FE0] shadow-2xs group/val cursor-pointer"
+                                  className="text-zinc-700 hover:text-white px-2 py-1 rounded-lg text-xs font-bold border transition-all inline-flex items-center gap-1.5 bg-white hover:bg-[#2196D2] border-zinc-200/90 hover:border-[#2196D2] shadow-2xs group/val cursor-pointer"
                                   title={`Design ${cat.name} with ${vGroup.name}: ${val.name}`}
                                 >
                                   <span>{val.name}</span>
@@ -251,7 +251,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                 <Link
                   key={`${item.categoryName}-${item.optionName}-${idx}`}
                   href={`/browsedesigns?category=${encodeURIComponent(item.categoryName)}&specs=${encodeURIComponent(specsObj)}`}
-                  className="px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-[#064FE0] hover:text-white text-zinc-700 font-bold text-base transition-all flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-[#2196D2] hover:text-white text-zinc-700 font-bold text-base transition-all flex items-center gap-1 cursor-pointer"
                 >
                   <span className="text-zinc-400">•</span>
                   <span>{item.optionName}</span>
@@ -292,7 +292,7 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
     <button
       type="button"
       onClick={() => onOpen(t)}
-      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#064FE0] transition-all duration-300 flex flex-col justify-between text-left cursor-pointer"
+      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#2196D2] transition-all duration-300 flex flex-col justify-between text-left cursor-pointer"
     >
       {/* Mini Studio Presentation Frame */}
       <div className="relative w-full aspect-[4/3] bg-gradient-to-b from-[#181b26] to-[#0f1118] p-3.5 flex items-center justify-center overflow-hidden">
@@ -337,8 +337,8 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
         </div>
 
         {/* Hover Action Layer */}
-        <div className="absolute inset-0 bg-[#064FE0]/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
-          <span className="bg-white text-[#064FE0] text-base font-black px-3.5 py-1.5 rounded-full shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1">
+        <div className="absolute inset-0 bg-[#2196D2]/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
+          <span className="bg-white text-[#2196D2] text-base font-black px-3.5 py-1.5 rounded-full shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1">
             <span>Customize Design</span>
             <span>→</span>
           </span>
@@ -348,7 +348,7 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
       {/* Card Info Footer */}
       <div className="p-3 bg-white flex items-center justify-between gap-2 border-t border-zinc-100">
         <div className="min-w-0">
-          <h4 className="font-extrabold text-base text-zinc-900 truncate group-hover:text-[#064FE0] transition-colors">
+          <h4 className="font-extrabold text-base text-zinc-900 truncate group-hover:text-[#2196D2] transition-colors">
             {t.title}
           </h4>
           <p className="text-base text-zinc-400 font-medium mt-0.5 flex items-center gap-1">
@@ -356,7 +356,7 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
             {cfg.orientation && <span className="capitalize">• {cfg.orientation}</span>}
           </p>
         </div>
-        <span className="w-6 h-6 rounded-full bg-zinc-100 group-hover:bg-[#064FE0] group-hover:text-white flex items-center justify-center text-base font-bold text-zinc-600 transition-all shrink-0">
+        <span className="w-6 h-6 rounded-full bg-zinc-100 group-hover:bg-[#2196D2] group-hover:text-white flex items-center justify-center text-base font-bold text-zinc-600 transition-all shrink-0">
           →
         </span>
       </div>
@@ -382,7 +382,7 @@ function HeroBanner() {
         <div className="flex flex-wrap items-center gap-3 pt-2">
           <Link
             href="/customize"
-            className="px-5 py-2.5 bg-[#064FE0] hover:bg-theme-darkblue text-white text-base sm:text-base font-semibold rounded-lg shadow-sm transition-all duration-200 cursor-pointer"
+            className="px-5 py-2.5 bg-[#2196D2] hover:bg-theme-darkblue text-white text-base sm:text-base font-semibold rounded-lg shadow-sm transition-all duration-200 cursor-pointer"
           >
             Upload Your Design
           </Link>
@@ -455,7 +455,7 @@ function CategoryCard({ id, slug, title, subtitle, price, unitPrice, image }: Ca
 
         {/* Title */}
         <h3 className="text-base font-bold text-zinc-900 leading-snug line-clamp-1">
-          <Link href={targetHref} className="hover:text-[#064FE0] transition-colors">
+          <Link href={targetHref} className="hover:text-[#2196D2] transition-colors">
             {title}
           </Link>
         </h3>
@@ -516,7 +516,7 @@ function ShapeCard({ id, slug, title, price, unitPrice, rating, count, image }: 
 
       {/* Content */}
       <div className="space-y-1">
-        <h3 className="text-base sm:text-base font-bold text-zinc-900 leading-tight line-clamp-1 group-hover:text-[#064FE0] transition-colors">
+        <h3 className="text-base sm:text-base font-bold text-zinc-900 leading-tight line-clamp-1 group-hover:text-[#2196D2] transition-colors">
           {title}
         </h3>
 
@@ -687,7 +687,7 @@ function BusinessCardsContent() {
     <div className="min-h-screen bg-white font-sans relative z-10">
 
       {/* 1. Full-Width Top Bar / Breadcrumb */}
-      <div className="w-full bg-[#064FE0] py-2.5">
+      <div className="w-full bg-[#2196D2] py-2.5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center gap-2 text-base text-white/80">
             <Link href="/" className="hover:text-white transition-colors">
@@ -732,7 +732,7 @@ function BusinessCardsContent() {
                       <h2 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
                         {selectedCategory === "all" ? "All Product Templates" : `${selectedCategory} Templates`}
                       </h2>
-                      <span className="px-2.5 py-0.5 rounded-full text-base font-bold bg-[#064FE0]/10 text-[#064FE0]">
+                      <span className="px-2.5 py-0.5 rounded-full text-base font-bold bg-[#2196D2]/10 text-[#2196D2]">
                         {templatesLoading ? "Loading..." : `${templates.length} Designs`}
                       </span>
                     </div>
@@ -745,7 +745,7 @@ function BusinessCardsContent() {
 
                   <Link
                     href={selectedCategory === "all" ? "/browsedesigns" : `/browsedesigns?category=${encodeURIComponent(selectedCategory)}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl shadow-sm transition-all shrink-0"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl shadow-sm transition-all shrink-0"
                   >
                     <span>Open in Studio</span>
                     <span>→</span>
@@ -764,7 +764,7 @@ function BusinessCardsContent() {
                     <p className="text-base text-zinc-500 mt-1 mb-4">You can start with a blank canvas configured for this category in our 2D/3D Studio.</p>
                     <Link
                       href={`/browsedesigns?category=${encodeURIComponent(selectedCategory)}`}
-                      className="inline-block px-5 py-2 bg-[#064FE0] text-white text-base font-bold rounded-xl shadow hover:bg-[#287ba8] transition-all"
+                      className="inline-block px-5 py-2 bg-[#2196D2] text-white text-base font-bold rounded-xl shadow hover:bg-[#1B85BD] transition-all"
                     >
                       Design {selectedCategory} from Scratch
                     </Link>
@@ -917,7 +917,7 @@ function BusinessCardsContent() {
                 <button
                   type="button"
                   onClick={() => router.push(`/browsedesigns?templateId=${previewTemplate._id}`)}
-                  className="cursor-pointer rounded-xl bg-[#064FE0] px-4 py-2.5 text-base font-bold text-white hover:bg-[#0439A8]"
+                  className="cursor-pointer rounded-xl bg-[#2196D2] px-4 py-2.5 text-base font-bold text-white hover:bg-[#1B85BD]"
                 >
                   Use Now
                 </button>
@@ -945,7 +945,7 @@ export default function BusinessCardsPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#2196D2] rounded-full animate-spin" />
       </div>
     }>
       <BusinessCardsContent />

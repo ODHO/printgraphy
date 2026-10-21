@@ -47,7 +47,7 @@ export default function CorporateEcosystemSection() {
               Everything a product brand needs, under one roof.
             </h2>
 
-            <p className="text-[#064FE0] font-bold text-base sm:text-lg">
+            <p className="text-[#2196D2] font-bold text-base sm:text-lg">
               One ecosystem, from first sketch to final delivery
             </p>
           </div>
@@ -61,7 +61,7 @@ export default function CorporateEcosystemSection() {
             <div>
               <Link
                 href="/contact"
-                className="inline-block px-7 py-3 bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold rounded-xl text-base sm:text-base shadow-lg shadow-[#064FE0]/30 transition-all hover:scale-[1.02] cursor-pointer"
+                className="inline-block px-7 py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold rounded-xl text-base sm:text-base shadow-lg shadow-[#2196D2]/30 transition-all hover:scale-[1.02] cursor-pointer"
               >
                 Talk To Our Enterprise Team
               </Link>
@@ -82,7 +82,7 @@ export default function CorporateEcosystemSection() {
                 {/* Header Badge/Title */}
                 <div className="flex items-center gap-3">
                   <Image src={card.badge} alt="badge" width={40} height={40} />
-                  <h3 className="font-extrabold text-zinc-900 text-lg leading-snug group-hover:text-[#064FE0] transition-colors">
+                  <h3 className="font-extrabold text-zinc-900 text-lg leading-snug group-hover:text-[#2196D2] transition-colors">
                     {card.title}
                   </h3>
                 </div>
@@ -120,13 +120,13 @@ export default function CorporateEcosystemSection() {
         </div>
 
         {/* Color Gradient Overlay for vibrant blue */}
-        {/* <div className="absolute inset-0 bg-gradient-to-b from-[#064FE0]/90 via-[#2b88bc]/95 to-[#2476a5]/95 z-0" /> */}
+        {/* <div className="absolute inset-0 bg-gradient-to-b from-[#2196D2]/90 via-[#2b88bc]/95 to-[#2476a5]/95 z-0" /> */}
 
         <div className="relative z-10 max-w-5xl mx-auto space-y-8">
           {/* Top Floating Highlight Banner */}
-          <div className="inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-full bg-white text-[#064FE0] text-base sm:text-2xl italic font-extrabold shadow-2xl border border-sky-100 max-w-full">
+          <div className="inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-full bg-white text-[#2196D2] text-base sm:text-2xl italic font-extrabold shadow-2xl border border-sky-100 max-w-full">
             <span className="text-base"><svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 47 47" fill="none">
-<path d="M25.4591 5.8737C33.0966 5.8737 39.1674 11.9445 39.1674 19.582C39.1674 25.0654 36.0341 29.7654 31.3341 31.9195V41.1237H17.6258V35.2487H15.6674C13.5133 35.2487 11.7508 33.4862 11.7508 31.332V25.457H8.81325C8.02992 25.457 7.44242 24.4779 8.02992 23.8904L11.7508 18.9945C12.1424 11.5529 18.0174 5.8737 25.4591 5.8737ZM25.4591 1.95703C16.4508 1.95703 9.00909 8.61536 8.02992 17.4279L4.89659 21.5404C3.72159 23.107 3.72159 25.0654 4.50492 26.632C5.28825 28.0029 6.46325 28.982 7.83409 29.1779V31.332C7.83409 35.0529 10.3799 37.9904 13.7091 38.9695V45.0404H35.2508V34.2695C40.1466 30.9404 43.0841 25.6529 43.0841 19.582C43.0841 9.79037 35.2508 1.95703 25.4591 1.95703ZM27.4174 27.4154H23.5008V25.457H27.4174V27.4154ZM30.5508 18.6029C29.9633 19.3862 29.3758 20.1695 28.3966 20.757V23.4987H22.5216V20.757C19.7799 19.1904 18.8008 15.4695 20.3674 12.7279C21.9341 9.9862 25.6549 9.00703 28.3966 10.5737C31.1383 12.1404 32.1174 15.8612 30.5508 18.6029Z" fill="#064FE0"/>
+<path d="M25.4591 5.8737C33.0966 5.8737 39.1674 11.9445 39.1674 19.582C39.1674 25.0654 36.0341 29.7654 31.3341 31.9195V41.1237H17.6258V35.2487H15.6674C13.5133 35.2487 11.7508 33.4862 11.7508 31.332V25.457H8.81325C8.02992 25.457 7.44242 24.4779 8.02992 23.8904L11.7508 18.9945C12.1424 11.5529 18.0174 5.8737 25.4591 5.8737ZM25.4591 1.95703C16.4508 1.95703 9.00909 8.61536 8.02992 17.4279L4.89659 21.5404C3.72159 23.107 3.72159 25.0654 4.50492 26.632C5.28825 28.0029 6.46325 28.982 7.83409 29.1779V31.332C7.83409 35.0529 10.3799 37.9904 13.7091 38.9695V45.0404H35.2508V34.2695C40.1466 30.9404 43.0841 25.6529 43.0841 19.582C43.0841 9.79037 35.2508 1.95703 25.4591 1.95703ZM27.4174 27.4154H23.5008V25.457H27.4174V27.4154ZM30.5508 18.6029C29.9633 19.3862 29.3758 20.1695 28.3966 20.757V23.4987H22.5216V20.757C19.7799 19.1904 18.8008 15.4695 20.3674 12.7279C21.9341 9.9862 25.6549 9.00703 28.3966 10.5737C31.1383 12.1404 32.1174 15.8612 30.5508 18.6029Z" fill="#2196D2"/>
 </svg></span>
             <span>One idea in, one product delivered, The cycle never leaves our hand.</span>
           </div>
