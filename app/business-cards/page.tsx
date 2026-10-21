@@ -916,7 +916,7 @@ function BusinessCardsContent() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => router.push(`/browsedesigns?templateId=${previewTemplate._id}`)}
+                  onClick={() => router.push(`/customize?templateId=${previewTemplate._id}`)}
                   className="cursor-pointer rounded-xl bg-[#2196D2] px-4 py-2.5 text-base font-bold text-white hover:bg-[#1B85BD]"
                 >
                   Use Now
@@ -934,7 +934,7 @@ function BusinessCardsContent() {
         onSuccess={({ template }) => {
           setPurchasedTemplateIds((current) => [...current, String(template._id)]);
           setPurchaseTemplate(null);
-          router.push(`/browsedesigns?templateId=${template._id}`);
+          router.push(`/customize?templateId=${template._id}`);
         }}
       />
     </div>

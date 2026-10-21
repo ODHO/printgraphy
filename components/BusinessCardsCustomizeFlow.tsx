@@ -149,7 +149,7 @@ export default function BusinessCardsCustomizeFlow({
     const query = new URLSearchParams(window.location.search);
     const stepParam = query.get("step");
     if (stepParam === "category") return "category";
-    if (query.get("templateId") || query.get("designId") || stepParam === "upload") return "upload";
+    if (stepParam === "upload") return "upload";
     if (stepParam === "preferences") return "preferences";
     if (stepParam === "cart") return "cart";
     return "review";
@@ -295,11 +295,9 @@ export default function BusinessCardsCustomizeFlow({
 
   // Unlimited Draggable Text Layers State
   const [textLayers, setTextLayers] = useState<TextLayer[]>([
-    { id: "1", text: "Stephen", x: 10, y: 30, fontSize: 24, color: "#ffffff", fontWeight: "bold" },
-    { id: "2", text: "Manager", x: 10, y: 48, fontSize: 13, color: "#38bdf8", fontWeight: "normal" },
-    { id: "3", text: "+1 (555) 123-4567", x: 10, y: 76, fontSize: 10, color: "#e4e4e7", fontWeight: "normal" },
-    { id: "4", text: "stephen@zyora.com", x: 42, y: 76, fontSize: 10, color: "#e4e4e7", fontWeight: "normal" },
-    { id: "5", text: "Poissy 15 rue de la Boëtie", x: 68, y: 76, fontSize: 10, color: "#e4e4e7", fontWeight: "normal" },
+    { id: "1", text: "COMPANY NAME", x: 50, y: 44, fontSize: 20, color: "#ffffff", fontWeight: "bold", fontFamily: "QT Optimum", textAlign: "center" },
+    { id: "2", text: "BUSINESS TYPE", x: 50, y: 55, fontSize: 13, color: "#cbd5e1", fontWeight: "normal", fontFamily: "Inter", textAlign: "center" },
+    { id: "3", text: "WEB / OTHER", x: 50, y: 88, fontSize: 13, color: "#ffffff", fontWeight: "bold", fontFamily: "Inter", textAlign: "center" },
   ]);
   const [activeTextId, setActiveTextId] = useState<string | null>("1");
   const [backTextLayers, setBackTextLayers] = useState<TextLayer[]>(() =>
@@ -404,6 +402,12 @@ export default function BusinessCardsCustomizeFlow({
   const [saveToast, setSaveToast] = useState("");
   const [purchaseModalTemplate, setPurchaseModalTemplate] = useState<any>(null);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+  const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
+  const [customWidth, setCustomWidth] = useState<number>(105);
+  const [customHeight, setCustomHeight] = useState<number>(60);
+  const [customUnit, setCustomUnit] = useState<CanvasUnit>("mm");
+  const [customBleed, setCustomBleed] = useState<number>(3);
+  const [customSafeArea, setCustomSafeArea] = useState<number>(3);
 
   const applyCategory = (cat: PrintCategory) => {
     setSelectedCategory(cat);
@@ -473,6 +477,187 @@ export default function BusinessCardsCustomizeFlow({
     bleed: 3,
     safe_area: 3,
   };
+
+  useEffect(() => {
+    if (!selectedCategory && selectedTemplate?.category && categories.length > 0) {
+      const matchedCat = categories.find(
+        (c) => c.name.toLowerCase() === selectedTemplate.category.toLowerCase() || c.slug === selectedTemplate.category.toLowerCase()
+      );
+      if (matchedCat) setSelectedCategory(matchedCat);
+    }
+  }, [selectedTemplate, categories, selectedCategory]);
+
+  const activeCategoryName = (selectedCategory?.name || selectedTemplate?.category || searchParams?.get("category") || "").toLowerCase();
+
+  const standardSizesForCategory = useMemo((): PrintSize[] => {
+    if (activeCategoryName.includes("banner")) {
+      return [
+        { name: "Small Banner (4' × 2')", width: 1200, height: 600, unit: "mm", bleed: 10, bleedUnit: "mm", safeArea: 25, safeAreaUnit: "mm" },
+        { name: "Medium Banner (6' × 3')", width: 1800, height: 900, unit: "mm", bleed: 10, bleedUnit: "mm", safeArea: 35, safeAreaUnit: "mm" },
+        { name: "Large Banner (8' × 4')", width: 2400, height: 1200, unit: "mm", bleed: 15, bleedUnit: "mm", safeArea: 50, safeAreaUnit: "mm" },
+        { name: "Rollup Banner", width: 850, height: 2000, unit: "mm", bleed: 10, bleedUnit: "mm", safeArea: 30, safeAreaUnit: "mm" },
+        { name: "Wide Rollup Banner", width: 1000, height: 2000, unit: "mm", bleed: 10, bleedUnit: "mm", safeArea: 30, safeAreaUnit: "mm" },
+        { name: "Tabletop Banner", width: 600, height: 400, unit: "mm", bleed: 5, bleedUnit: "mm", safeArea: 15, safeAreaUnit: "mm" },
+      ];
+    }
+    if (activeCategoryName.includes("poster")) {
+      return [
+        { name: "A3 Poster (11.7\" × 16.5\")", width: 297, height: 420, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 5, safeAreaUnit: "mm" },
+        { name: "A2 Poster (16.5\" × 23.4\")", width: 420, height: 594, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 8, safeAreaUnit: "mm" },
+        { name: "A1 Large Poster (23.4\" × 33.1\")", width: 594, height: 841, unit: "mm", bleed: 4, bleedUnit: "mm", safeArea: 10, safeAreaUnit: "mm" },
+        { name: "18\" × 24\" Poster", width: 457, height: 610, unit: "mm", bleed: 4, bleedUnit: "mm", safeArea: 10, safeAreaUnit: "mm" },
+        { name: "24\" × 36\" Poster", width: 610, height: 914, unit: "mm", bleed: 5, bleedUnit: "mm", safeArea: 15, safeAreaUnit: "mm" },
+      ];
+    }
+    if (activeCategoryName.includes("flyer") || activeCategoryName.includes("leaflet") || activeCategoryName.includes("brochure")) {
+      return [
+        { name: "A4 Standard (8.3\" × 11.7\")", width: 210, height: 297, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 5, safeAreaUnit: "mm" },
+        { name: "A5 Compact (5.8\" × 8.3\")", width: 148, height: 210, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
+        { name: "A6 Pocket (4.1\" × 5.8\")", width: 105, height: 148, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
+        { name: "DL Rack Card (3.9\" × 8.3\")", width: 99, height: 210, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
+        { name: "Square Flyer (5.8\" × 5.8\")", width: 148, height: 148, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
+      ];
+    }
+    if (activeCategoryName.includes("postcard") || activeCategoryName.includes("invitation")) {
+      return [
+        { name: "Standard (6\" × 4\")", width: 152, height: 102, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
+        { name: "Large (7\" × 5\")", width: 178, height: 127, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 5, safeAreaUnit: "mm" },
+        { name: "Jumbo (9\" × 6\")", width: 229, height: 152, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 5, safeAreaUnit: "mm" },
+        { name: "Square (5\" × 5\")", width: 127, height: 127, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
+      ];
+    }
+    return [
+      { name: "Standard (3.5\" × 2.0\")", width: 89, height: 51, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 3, safeAreaUnit: "mm" },
+      { name: "Classic Studio (105 × 60 mm)", width: 105, height: 60, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 3, safeAreaUnit: "mm" },
+      { name: "European / Slim (85 × 55 mm)", width: 85, height: 55, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 3, safeAreaUnit: "mm" },
+      { name: "Square Card (2.5\" × 2.5\")", width: 65, height: 65, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 3, safeAreaUnit: "mm" },
+      { name: "Mini / Skinny (70 × 28 mm)", width: 70, height: 28, unit: "mm", bleed: 2, bleedUnit: "mm", safeArea: 2.5, safeAreaUnit: "mm" },
+      { name: "Folded Card (3.5\" × 4.0\")", width: 89, height: 102, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
+    ];
+  }, [activeCategoryName]);
+
+  const offeredSizes: PrintSize[] = useMemo(() => {
+    const list: PrintSize[] = [];
+    const seen = new Set<string>();
+
+    const addSize = (s: PrintSize) => {
+      if (!s || !s.width || !s.height) return;
+      const key = `${Math.round(s.width)}x${Math.round(s.height)}_${s.unit || "mm"}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        list.push(s);
+      }
+    };
+
+    if (selectedCategory?.printSizes && Array.isArray(selectedCategory.printSizes)) {
+      selectedCategory.printSizes.forEach(addSize);
+    }
+
+    if (selectedCategory?.canvas_width && selectedCategory?.canvas_height) {
+      addSize({
+        name: `${selectedCategory.name || "Default"} Size`,
+        width: selectedCategory.canvas_width,
+        height: selectedCategory.canvas_height,
+        unit: asCanvasUnit(selectedCategory.unit, "mm"),
+        bleed: selectedCategory.bleed ?? 3,
+        bleedUnit: selectedCategory.bleedUnit || asCanvasUnit(selectedCategory.unit, "mm"),
+        safeArea: selectedCategory.safe_area ?? 3,
+        safeAreaUnit: selectedCategory.safeAreaUnit || asCanvasUnit(selectedCategory.unit, "mm"),
+      });
+    }
+
+    standardSizesForCategory.forEach(addSize);
+    return list;
+  }, [selectedCategory, standardSizesForCategory]);
+
+  const currentSizeName = useMemo(() => {
+    const w = Math.round(Number(activeCanvasConfig.width) || 105);
+    const h = Math.round(Number(activeCanvasConfig.height) || 60);
+    const match = offeredSizes.find(
+      (s) => Math.round(s.width) === w && Math.round(s.height) === h
+    );
+    if (match) return match.name;
+    return `${w} × ${h} ${activeCanvasConfig.unit || "mm"}`;
+  }, [activeCanvasConfig, offeredSizes]);
+
+  const currentSizeShortName = useMemo(() => {
+    const raw = currentSizeName.replace(/\s*\([^)]*\)/g, "").trim();
+    return raw || `${Math.round(Number(activeCanvasConfig.width) || 105)} × ${Math.round(Number(activeCanvasConfig.height) || 60)} ${activeCanvasConfig.unit || "mm"}`;
+  }, [currentSizeName, activeCanvasConfig]);
+
+  const handleSelectSize = (size: PrintSize) => {
+    const newW = Number(size.width);
+    const newH = Number(size.height);
+    const newUnit = size.unit || "mm";
+    const newBleed = size.bleed ?? (Number(activeCanvasConfig.bleed) || 3);
+    const newSafeArea = size.safeArea ?? (Number(activeCanvasConfig.safe_area) || 3);
+
+    setSavedCanvasConfig({
+      ...activeCanvasConfig,
+      width: newW,
+      height: newH,
+      unit: newUnit,
+      bleed: newBleed,
+      bleedUnit: size.bleedUnit || newUnit,
+      safe_area: newSafeArea,
+      safeAreaUnit: size.safeAreaUnit || newUnit,
+      orientation: newW >= newH ? "landscape" : "portrait",
+    });
+
+    setCustomWidth(newW);
+    setCustomHeight(newH);
+    setCustomUnit(newUnit);
+    setCustomBleed(newBleed);
+    setCustomSafeArea(newSafeArea);
+
+    const allVars = dbVariations.length > 0 ? dbVariations : selectedCategory?.variations || [];
+    const sizeVar = allVars.find((v) => /size|dimension|format/i.test(v.name));
+    if (sizeVar) {
+      const match = sizeVar.values.find((val) =>
+        val.name.toLowerCase().includes(size.name.toLowerCase()) ||
+        size.name.toLowerCase().includes(val.name.toLowerCase()) ||
+        val.name.includes(`${newW}`)
+      );
+      if (match) {
+        setSelectedVariations((prev) => ({ ...prev, [sizeVar.name]: match.name }));
+      }
+    }
+  };
+
+  const handleSwapOrientation = () => {
+    const curW = Number(activeCanvasConfig.width) || 105;
+    const curH = Number(activeCanvasConfig.height) || 60;
+    setSavedCanvasConfig({
+      ...activeCanvasConfig,
+      width: curH,
+      height: curW,
+      orientation: curH >= curW ? "landscape" : "portrait",
+    });
+    setCustomWidth(curH);
+    setCustomHeight(curW);
+  };
+
+  const handleApplyCustomSize = () => {
+    const w = Math.max(10, Number(customWidth) || 105);
+    const h = Math.max(10, Number(customHeight) || 60);
+    const u = customUnit || "mm";
+    const b = Math.max(0, Number(customBleed) || 3);
+    const sa = Math.max(0, Number(customSafeArea) || 3);
+
+    setSavedCanvasConfig({
+      ...activeCanvasConfig,
+      width: w,
+      height: h,
+      unit: u,
+      bleed: b,
+      bleedUnit: u,
+      safe_area: sa,
+      safeAreaUnit: u,
+      orientation: w >= h ? "landscape" : "portrait",
+    });
+    setIsSizeModalOpen(false);
+  };
+
   const isMockupProduct =
     asCanvasType(
       (activeCanvasConfig as { canvas_type?: unknown }).canvas_type || selectedCategory?.canvas_type,
@@ -486,21 +671,6 @@ export default function BusinessCardsCustomizeFlow({
   const patchCanvas = (patch: Record<string, unknown>) => {
     setSavedCanvasConfig({ ...activeCanvasConfig, ...patch });
   };
-  const offeredSizes: PrintSize[] = selectedCategory
-    ? [
-      {
-        name: "Category default",
-        width: selectedCategory.canvas_width,
-        height: selectedCategory.canvas_height,
-        unit: asCanvasUnit(selectedCategory.unit, "mm"),
-        bleed: selectedCategory.bleed ?? 0,
-        bleedUnit: selectedCategory.bleedUnit || asCanvasUnit(selectedCategory.unit, "mm"),
-        safeArea: selectedCategory.safe_area ?? 0,
-        safeAreaUnit: selectedCategory.safeAreaUnit || asCanvasUnit(selectedCategory.unit, "mm"),
-      },
-      ...(selectedCategory.printSizes || []),
-    ]
-    : [];
   const fitDims = calculateFitDimensions(activeCanvasConfig as any, 520, 420);
   const fitDimsSummary = calculateFitDimensions(activeCanvasConfig as any, 440, 340);
 
@@ -802,6 +972,15 @@ export default function BusinessCardsCustomizeFlow({
               return;
             }
             setSelectedTemplate(t);
+            if (t.canvas_config || t.canvasConfig) {
+              setSavedCanvasConfig(t.canvas_config || t.canvasConfig);
+            }
+            if (t.category && categories.length > 0) {
+              const matchedCat = categories.find(
+                (c) => c.name.toLowerCase() === t.category.toLowerCase() || c.slug === t.category.toLowerCase()
+              );
+              if (matchedCat) setSelectedCategory(matchedCat);
+            }
             setImageOverrides({});
             const backLayers = backLayersFromDesign(t.back_design?.objects, {
               website: cardData.website,
@@ -820,37 +999,44 @@ export default function BusinessCardsCustomizeFlow({
               resolved.baseDesigns.slice(2).map((design) => imageLayersFromObjects(design?.objects))
             );
             setActiveSideIndex(0);
-            const frontLayers =
-              Array.isArray(t.templateData?.textLayers) && t.templateData.textLayers.length > 0
-                ? t.templateData.textLayers
-                : [
-                  { id: "1", text: cardData.name || "Stephen" },
-                  { id: "2", text: cardData.title || "Manager" },
-                  { id: "3", text: cardData.phone || "+1 (555) 123-4567" },
-                  { id: "4", text: cardData.email || "stephen@zyora.com" },
-                  { id: "5", text: cardData.address || "Poissy 15 rue de la Boëtie" },
-                ];
-            if (Array.isArray(t.templateData?.textLayers) && t.templateData.textLayers.length > 0) {
-              setTextLayers(t.templateData.textLayers);
-            }
+            const extractedFront = textLayersFromSideObjects(t.front_design?.objects);
+            const frontLayers: TextLayer[] =
+              extractedFront.length > 0
+                ? (extractedFront as TextLayer[])
+                : Array.isArray(t.templateData?.textLayers) && t.templateData.textLayers.length > 0
+                  ? (t.templateData.textLayers as TextLayer[])
+                  : [
+                    { id: "1", text: "COMPANY NAME", x: 50, y: 44, fontSize: 20, color: "#ffffff", fontWeight: "bold", fontFamily: "QT Optimum", textAlign: "center" },
+                    { id: "2", text: "BUSINESS TYPE", x: 50, y: 55, fontSize: 13, color: "#cbd5e1", fontWeight: "normal", fontFamily: "Inter", textAlign: "center" },
+                    { id: "3", text: "WEB / OTHER", x: 50, y: 88, fontSize: 13, color: "#ffffff", fontWeight: "bold", fontFamily: "Inter", textAlign: "center" },
+                  ];
+            setTextLayers(frontLayers);
+            setActiveTextId(frontLayers[0]?.id || null);
+
             const locked = lockTemplateFields(frontLayers, backLayers);
             setSheetFields(locked.fields);
             setRequiredLayerIds(locked.requiredLayerIds);
-            if (t.templateData) {
-              setCardData((prev) => ({
-                ...prev,
-                bgColor: t.templateData.bgColor || prev.bgColor,
-                textColor: t.templateData.textColor || prev.textColor,
-                logoPosition: t.templateData.logoPosition || prev.logoPosition,
-                logoX: logoPoint(t.templateData.logoPosition || prev.logoPosition).x,
-                logoY: logoPoint(t.templateData.logoPosition || prev.logoPosition).y,
-                backLogoPosition: t.templateData.logoPosition || prev.backLogoPosition,
-                backLogoX: logoPoint(t.templateData.logoPosition || prev.logoPosition).x,
-                backLogoY: logoPoint(t.templateData.logoPosition || prev.logoPosition).y,
-                logoText: "",
-                logoSize: t.templateData.logoSize || prev.logoSize,
-              }));
-            }
+
+            const bg = t.front_design?.bgColor || t.templateData?.bgColor || cardData.bgColor;
+            const bgGrad = t.front_design?.bgGradient || t.templateData?.bgGradient || "";
+            const bgImg = t.front_design?.bgImage || null;
+
+            setCardData((prev) => ({
+              ...prev,
+              bgColor: bg,
+              bgGradient: bgGrad,
+              uploadedImage: bgImg,
+              bgMode: bgImg ? "image" : bgGrad ? "gradient" : "color",
+              textColor: t.templateData?.textColor || prev.textColor,
+              logoPosition: t.templateData?.logoPosition || prev.logoPosition,
+              logoX: logoPoint(t.templateData?.logoPosition || prev.logoPosition).x,
+              logoY: logoPoint(t.templateData?.logoPosition || prev.logoPosition).y,
+              backLogoPosition: t.templateData?.logoPosition || prev.backLogoPosition,
+              backLogoX: logoPoint(t.templateData?.logoPosition || prev.logoPosition).x,
+              backLogoY: logoPoint(t.templateData?.logoPosition || prev.logoPosition).y,
+              logoText: "",
+              logoSize: t.templateData?.logoSize || prev.logoSize,
+            }));
             setStep("review");
           }
         })
@@ -1663,113 +1849,113 @@ export default function BusinessCardsCustomizeFlow({
     <div className="min-h-screen bg-[#f4f7fb] font-sans text-zinc-900 flex flex-col justify-between">
 
       {/* ─────────────────────────────────────────────────────────────
-          BREADCRUMB ROW
+          BREADCRUMB ROW (Only on non-review steps)
       ───────────────────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-[#e2e8f0] sticky top-0 z-30 shadow-xs">
-        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 xl:px-8 py-2.5 flex items-center justify-between gap-3">
+      {step !== "review" && (
+        <div className="bg-white border-b border-[#e2e8f0] sticky top-0 z-30 shadow-xs">
+          <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 xl:px-8 py-2.5 flex items-center justify-between gap-3">
 
-          {/* Left: Back Button & Step Indicators */}
-          <div className="flex items-center gap-3 min-w-0">
-            <button
-              type="button"
-              onClick={() => {
-                if (step === "cart") setStep("preferences");
-                else if (step === "preferences") setStep("review");
-                else router.push("/business-cards");
-              }}
-              className="min-h-[44px] min-w-[44px] px-3 py-2 rounded-xl text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 flex items-center gap-1.5 font-semibold text-sm transition-colors cursor-pointer shrink-0"
-              title="Go Back"
-              aria-label="Go Back"
-            >
-              <svg className="w-4 h-4 text-zinc-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-              <span className="hidden sm:inline">Back</span>
-            </button>
-
-            {/* Steps: Desktop/Tablet "1 Design > 2 Options > 3 Review" */}
-            <nav className="hidden md:flex items-center gap-2 pl-3 border-l border-[#e2e8f0] text-sm font-semibold select-none">
+            {/* Left: Back Button & Step Indicators */}
+            <div className="flex items-center gap-3 min-w-0">
               <button
                 type="button"
-                onClick={() => setStep("review")}
-                className={`transition-colors cursor-pointer flex items-center gap-1.5 ${step === "review" ? "text-[#0b6fb3] font-bold" : "text-zinc-600 hover:text-zinc-900"
-                  }`}
+                onClick={() => {
+                  if (step === "cart") setStep("preferences");
+                  else if (step === "preferences") setStep("review");
+                  else router.push("/business-cards");
+                }}
+                className="min-h-[44px] min-w-[44px] px-3 py-2 rounded-xl text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 flex items-center gap-1.5 font-semibold text-sm transition-colors cursor-pointer shrink-0"
+                title="Go Back"
+                aria-label="Go Back"
               >
-                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${step === "review" ? "bg-[#0b6fb3] text-white" : "bg-zinc-100 text-zinc-600"
-                  }`}>1</span>
-                <span>Design</span>
+                <svg className="w-4 h-4 text-zinc-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="hidden sm:inline">Back</span>
               </button>
 
-              <svg className="w-3.5 h-3.5 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
+              {/* Steps: Desktop/Tablet "1 Design > 2 Options > 3 Review" */}
+              <nav className="hidden md:flex items-center gap-2 pl-3 border-l border-[#e2e8f0] text-sm font-semibold select-none">
+                <button
+                  type="button"
+                  onClick={() => setStep("review")}
+                  className="transition-colors cursor-pointer flex items-center gap-1.5 text-zinc-600 hover:text-zinc-900"
+                >
+                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold bg-zinc-100 text-zinc-600">1</span>
+                  <span>Design</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setStep("preferences")}
-                className={`transition-colors cursor-pointer flex items-center gap-1.5 ${step === "preferences" ? "text-[#0b6fb3] font-bold" : "text-zinc-500 hover:text-zinc-800"
-                  }`}
-              >
-                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${step === "preferences" ? "bg-[#0b6fb3] text-white" : "bg-zinc-100 text-zinc-600"
-                  }`}>2</span>
-                <span>Options</span>
-              </button>
+                <svg className="w-3.5 h-3.5 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
 
-              <svg className="w-3.5 h-3.5 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
+                <button
+                  type="button"
+                  onClick={() => setStep("preferences")}
+                  className={`transition-colors cursor-pointer flex items-center gap-1.5 ${step === "preferences" ? "text-[#0b6fb3] font-bold" : "text-zinc-500 hover:text-zinc-800"
+                    }`}
+                >
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${step === "preferences" ? "bg-[#0b6fb3] text-white" : "bg-zinc-100 text-zinc-600"
+                    }`}>2</span>
+                  <span>Options</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setStep("cart")}
-                className={`transition-colors cursor-pointer flex items-center gap-1.5 ${step === "cart" ? "text-[#0b6fb3] font-bold" : "text-zinc-500 hover:text-zinc-800"
-                  }`}
-              >
-                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${step === "cart" ? "bg-[#0b6fb3] text-white" : "bg-zinc-100 text-zinc-600"
-                  }`}>3</span>
-                <span>Review</span>
-              </button>
-            </nav>
+                <svg className="w-3.5 h-3.5 text-zinc-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
 
-            {/* Mobile (under 768px): Collapses to "Step 1 of 3" with thin progress bar */}
-            <div className="md:hidden flex flex-col justify-center pl-2 border-l border-[#e2e8f0]">
-              <span className="text-xs font-bold text-zinc-800">
-                Step {step === "review" ? "1" : step === "preferences" ? "2" : "3"} of 3
-              </span>
-              <div className="w-24 h-1 bg-zinc-200 rounded-full mt-1 overflow-hidden">
-                <div
-                  className="h-full bg-[#0b6fb3] rounded-full transition-all duration-300"
-                  style={{ width: step === "review" ? "33.3%" : step === "preferences" ? "66.6%" : "100%" }}
-                />
+                <button
+                  type="button"
+                  onClick={() => setStep("cart")}
+                  className={`transition-colors cursor-pointer flex items-center gap-1.5 ${step === "cart" ? "text-[#0b6fb3] font-bold" : "text-zinc-500 hover:text-zinc-800"
+                    }`}
+                >
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${step === "cart" ? "bg-[#0b6fb3] text-white" : "bg-zinc-100 text-zinc-600"
+                    }`}>3</span>
+                  <span>Review</span>
+                </button>
+              </nav>
+
+              {/* Mobile (under 768px): Collapses to "Step 1 of 3" with thin progress bar */}
+              <div className="md:hidden flex flex-col justify-center pl-2 border-l border-[#e2e8f0]">
+                <span className="text-xs font-bold text-zinc-800">
+                  Step {step === "preferences" ? "2" : "3"} of 3
+                </span>
+                <div className="w-24 h-1 bg-zinc-200 rounded-full mt-1 overflow-hidden">
+                  <div
+                    className="h-full bg-[#0b6fb3] rounded-full transition-all duration-300"
+                    style={{ width: step === "preferences" ? "66.6%" : "100%" }}
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Right: "Draft saved" badge and Save Draft Button */}
-          <div className="flex items-center gap-2.5">
-            {/* Draft Saved Badge */}
-            <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-600 bg-[#f4f7fb] border border-[#e2e8f0] px-2.5 py-1.5 rounded-full shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
-              <span className="font-semibold text-zinc-700">Draft saved</span>
+            {/* Right: "Draft saved" badge and Save Draft Button */}
+            <div className="flex items-center gap-2.5">
+              {/* Draft Saved Badge */}
+              <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-600 bg-[#f4f7fb] border border-[#e2e8f0] px-2.5 py-1.5 rounded-full shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+                <span className="font-semibold text-zinc-700">Draft saved</span>
+              </div>
+
+              {/* Save Draft Button: Text+Icon on Desktop/Tablet, Icon-only on Mobile */}
+              <button
+                type="button"
+                onClick={handleSaveDraft}
+                disabled={savingDraft}
+                className="min-h-[44px] min-w-[44px] px-3.5 py-2 border border-[#e2e8f0] hover:border-zinc-300 text-zinc-700 hover:text-zinc-900 text-xs sm:text-sm font-semibold rounded-xl bg-white transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-2xs"
+                title="Save Draft"
+              >
+                <svg className="w-4 h-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                <span className="hidden sm:inline">{savingDraft ? "Saving..." : "Save Draft"}</span>
+              </button>
             </div>
 
-            {/* Save Draft Button: Text+Icon on Desktop/Tablet, Icon-only on Mobile */}
-            <button
-              type="button"
-              onClick={handleSaveDraft}
-              disabled={savingDraft}
-              className="min-h-[44px] min-w-[44px] px-3.5 py-2 border border-[#e2e8f0] hover:border-zinc-300 text-zinc-700 hover:text-zinc-900 text-xs sm:text-sm font-semibold rounded-xl bg-white transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-2xs"
-              title="Save Draft"
-            >
-              <svg className="w-4 h-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-              </svg>
-              <span className="hidden sm:inline">{savingDraft ? "Saving..." : "Save Draft"}</span>
-            </button>
           </div>
-
         </div>
-      </div>
+      )}
 
       {step === "category" && (
         <div className="container mx-auto px-4 sm:px-6 py-8 flex-1">
@@ -2198,1235 +2384,742 @@ export default function BusinessCardsCustomizeFlow({
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          STEP 1: DESIGN REVIEW (Printgraphy-STYLE UNLIMITED DRAGGABLE TEXT BUILDER)
+          STEP 1: DESIGN STUDIO (MATCHES USER SCREENSHOT EXACTLY)
       ───────────────────────────────────────────────────────────── */}
       {step === "review" && (
-        <div className="w-full flex-1 flex flex-col justify-between">
-
-          {/* Main Studio Grid Container */}
-          <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-6 flex-1">
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 xl:gap-8 items-start">
-
-              {/* ── LEFT COLUMN: PREVIEW AREA (DESKTOP: ~55%, TABLET: FULL-WIDTH TOP, MOBILE: ~240px) ── */}
-              <div className="xl:col-span-7 flex flex-col gap-3 xl:sticky xl:top-20 xl:self-start w-full">
-
-                {/* Preview Toolbar: 3D/2D Switch + Front/Back Segmented Control + Desktop Zoom */}
-                <div className="w-full flex items-center justify-between gap-2 flex-wrap bg-white px-3 sm:px-4 py-2 rounded-2xl border border-[#e2e8f0] shadow-xs">
-
-                  {/* 3D View / 2D Edit Toggle */}
-                  <div className="inline-flex p-1 bg-zinc-100 rounded-xl border border-[#e2e8f0]">
-                    <button
-                      type="button"
-                      onClick={() => setViewMode("3d")}
-                      className={`min-h-[38px] px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${viewMode === "3d"
-                          ? "bg-white text-zinc-900 shadow-xs font-bold"
-                          : "text-zinc-600 hover:text-zinc-900"
-                        }`}
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-                      </svg>
-                      <span>3D View</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setViewMode("2d")}
-                      className={`min-h-[38px] px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${viewMode === "2d"
-                          ? "bg-[#0b6fb3] text-white shadow-xs font-bold"
-                          : "text-zinc-600 hover:text-zinc-900"
-                        }`}
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                      </svg>
-                      <span>2D Edit</span>
-                    </button>
-                  </div>
-
-                  {/* Front / Back Segmented Control */}
-                  <div className="inline-flex p-1 bg-zinc-100 rounded-xl border border-[#e2e8f0]">
-                    <button
-                      type="button"
-                      onClick={() => selectSide(0)}
-                      className={`min-h-[38px] px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${activeSideIndex === 0
-                          ? "bg-white text-zinc-900 shadow-xs font-bold"
-                          : "text-zinc-600 hover:text-zinc-900"
-                        }`}
-                    >
-                      Front
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => selectSide(1)}
-                      className={`min-h-[38px] px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${activeSideIndex === 1
-                          ? "bg-white text-zinc-900 shadow-xs font-bold"
-                          : "text-zinc-600 hover:text-zinc-900"
-                        }`}
-                    >
-                      Back
-                    </button>
-                  </div>
-
-                  {/* Desktop & Tablet Zoom & Reset Controls */}
-                  <div className="hidden md:flex items-center gap-1 bg-zinc-50 px-2 py-1 rounded-xl border border-[#e2e8f0]">
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel((z) => Math.max(0.6, Number((z - 0.1).toFixed(1))))}
-                      className="w-8 h-8 rounded-lg hover:bg-zinc-200/80 text-zinc-700 font-bold flex items-center justify-center transition-colors cursor-pointer"
-                      title="Zoom Out"
-                      aria-label="Zoom Out"
-                    >
-                      –
-                    </button>
-                    <span className="text-xs font-mono font-bold text-zinc-700 px-1.5 min-w-[3rem] text-center">
-                      {Math.round(zoomLevel * 100)}%
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel((z) => Math.min(1.8, Number((z + 0.1).toFixed(1))))}
-                      className="w-8 h-8 rounded-lg hover:bg-zinc-200/80 text-zinc-700 font-bold flex items-center justify-center transition-colors cursor-pointer"
-                      title="Zoom In"
-                      aria-label="Zoom In"
-                    >
-                      +
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel(1)}
-                      className="px-2 py-1 rounded-lg hover:bg-zinc-200/80 text-xs text-zinc-600 font-medium transition-colors cursor-pointer ml-1"
-                      title="Reset View"
-                    >
-                      Reset
-                    </button>
-                  </div>
-
-                </div>
-
-                {/* Main Card Viewport Box (Dark stage with 3.5x2 in card) */}
-                <div className="w-full bg-[#18181b] rounded-[16px] md:rounded-[20px] p-4 sm:p-6 flex flex-col items-center justify-center min-h-[240px] md:min-h-[360px] xl:min-h-[460px] h-[240px] md:h-[360px] xl:h-[460px] shadow-xl relative overflow-hidden border border-zinc-800">
-                  <div
-                    style={{
-                      transform: `scale(${zoomLevel})`,
-                      transformOrigin: "center center",
-                      transition: "transform 0.15s ease-out",
-                    }}
-                    className="w-full h-full flex items-center justify-center relative"
-                  >
-
-                    {isMockupProduct && mockupImageSrc ? (
-                      <div className="w-full flex flex-col items-center gap-3 py-2">
-                        <MockupCanvasStage
-                          mockupImage={mockupImageSrc}
-                          printArea={mockupPrintArea}
-                          layers={layersForSide(activeSideIndex)}
-                          activeLayerId={activeTextId}
-                          onAddLayerAt={(x, y) => {
-                            const newId =
-                              typeof crypto !== "undefined" && "randomUUID" in crypto
-                                ? crypto.randomUUID()
-                                : `text_${Date.now()}`;
-                            const layer = {
-                              id: newId,
-                              text: "Your Text",
-                              x,
-                              y,
-                              fontSize: 18,
-                              color: "#111111",
-                              fontWeight: "bold" as const,
-                            };
-                            if (activeSideIndex <= 0) {
-                              setTextLayers((prev) => [...prev, layer]);
-                            } else if (activeSideIndex === 1) {
-                              setBackTextLayers((prev) => [...prev, layer]);
-                            } else {
-                              setExtraSideTextLayers((prev) => {
-                                const next = [...prev];
-                                while (next.length < activeSideIndex - 1) next.push([]);
-                                next[activeSideIndex - 2] = [...(next[activeSideIndex - 2] || []), layer];
-                                return next;
-                              });
-                            }
-                            setActiveTextId(newId);
-                          }}
-                          onSelectLayer={setActiveTextId}
-                          onMoveLayer={(id, x, y) => {
-                            const patch = (layers: typeof textLayers) =>
-                              layers.map((l) => (l.id === id ? { ...l, x, y } : l));
-                            if (activeSideIndex <= 0) setTextLayers(patch);
-                            else if (activeSideIndex === 1) setBackTextLayers(patch);
-                            else {
-                              setExtraSideTextLayers((prev) => {
-                                const next = [...prev];
-                                const idx = activeSideIndex - 2;
-                                if (!next[idx]) return prev;
-                                next[idx] = patch(next[idx]);
-                                return next;
-                              });
-                            }
-                          }}
-                        />
-                        <p className="text-sm text-zinc-400 font-medium text-center">
-                          Click inside the print area to add text · drag layers to move them
-                        </p>
-                      </div>
-                    ) : viewMode === "3d" ? (
-                      <div className="w-full h-[440px] relative flex items-center justify-center">
-                        <ThreeDCardPreview
-                          canvasConfig={{
-                            ...(activeCanvasConfig as any),
-                            side_mode: resolvedSides.sideMode,
-                            sides_count: sidesCount,
-                            sides_names: sideLabels,
-                            supports_back_side: sidesCount > 1,
-                          }}
-                          frontDesign={currentFrontDesign}
-                          backDesign={currentBackDesign}
-                          extraSideDesigns={extraSideLiveDesigns}
-                          sideDesigns={allSideDesigns}
-                          bgColor={cardData.bgColor}
-                          backBgColor={cardData.backBgColor}
-                          logoText=""
-                          logoImage={null}
-                          logoPosition={cardData.logoPosition}
-                          logoX={cardData.logoX}
-                          logoY={cardData.logoY}
-                          backLogoX={cardData.backLogoX}
-                          backLogoY={cardData.backLogoY}
-                          sideLogoPoints={Array.from({ length: sidesCount }, (_, i) => logoPointForSide(i))}
-                          logoSize={cardData.logoSize}
-                          textLayers={textLayers}
-                          side={activeSideIndex === 1 ? "back" : "front"}
-                          sideIndex={activeSideIndex}
-                          thickness={cardData.thickness}
-                          corners={cardData.corners}
-                          name={cardData.name}
-                          email={cardData.email}
-                          website={cardData.website}
-                          onSideChange={(s) => selectSide(s === "back" ? 1 : 0)}
-                          onSideIndexChange={selectSide}
-                          previewWidth={fitDims.renderWidth}
-                          previewHeight={fitDims.renderHeight}
-                          uploadedImage={null}
-                          imageOpacity={cardData.imageOpacity}
-                          imageRotation={cardData.rotation}
-                          fitMode={cardData.fitMode}
-                          safeInset={fitDims.safeAreaPx}
-                          cardLayout={CUSTOMIZE_LAYOUT}
-                          textColor={cardData.textColor}
-                          cornerRadius={cornerRadiusForFinish(cardData.corners, 16)}
-                        />
-                      </div>
-                    ) : (
-                      /* 2D Draggable Layout Canvas */
-                      <div className="w-full flex flex-col items-center justify-center">
-                        <ScaledCardStage width={fitDims.renderWidth} height={fitDims.renderHeight} className="my-4">
-                          <div
-                            ref={cardPreviewRef}
-                            onPointerMove={handlePointerMove}
-                            onPointerUp={handlePointerUp}
-                            onPointerLeave={handlePointerUp}
-                            style={{
-                              width: `${fitDims.renderWidth}px`,
-                              height: `${fitDims.renderHeight}px`,
-                              ...cardBackdrop,
-                              color: cardData.textColor,
-                            }}
-                            className={`relative ${getCornerClass()} shadow-2xl overflow-hidden border border-zinc-800 transition-all duration-300 select-none`}
-                          >
-                            {/* Canva-Style Smart Alignment Guide Lines */}
-                            <SpacingGapOverlay gap={viewMode === "2d" ? selectionGap : null} />
-                            <CanvasGuideLinesOverlay
-                              lines={activeCanvasConfig.guide_lines}
-                              canvasWidth={Number(activeCanvasConfig.width) || 105}
-                              canvasHeight={Number(activeCanvasConfig.height) || 60}
-                              canvasUnit={asCanvasUnit(activeCanvasConfig.unit, "mm")}
-                              showLabels={false}
-                            />
-                            {alignmentLines.map((line, idx) => (
-                              <div
-                                key={idx}
-                                className={`absolute pointer-events-none z-30 transition-all ${line.type === "v"
-                                    ? "top-0 bottom-0 w-[1.5px] bg-[#38bdf8] shadow-[0_0_8px_#38bdf8]"
-                                    : "left-0 right-0 h-[1.5px] bg-[#38bdf8] shadow-[0_0_8px_#38bdf8]"
-                                  }`}
-                                style={
-                                  line.type === "v"
-                                    ? { left: `${line.pos}%` }
-                                    : { top: `${line.pos}%` }
-                                }
-                              />
-                            ))}
-
-                            {/* Uploaded Image Background Layer with Opacity */}
-                            {(activeBgMode === "image" || activeBgMode === "image-gradient") && activeBgImage && (
-                              <img
-                                src={mediaSrc(activeBgImage) || activeBgImage}
-                                alt="Uploaded Card Artwork"
-                                style={{
-                                  top: cardData.fitMode === "safe" ? fitDims.safeAreaPx : 0,
-                                  left: cardData.fitMode === "safe" ? fitDims.safeAreaPx : 0,
-                                  width:
-                                    cardData.fitMode === "safe"
-                                      ? `${Math.max(1, fitDims.renderWidth - fitDims.safeAreaPx * 2)}px`
-                                      : "100%",
-                                  height:
-                                    cardData.fitMode === "safe"
-                                      ? `${Math.max(1, fitDims.renderHeight - fitDims.safeAreaPx * 2)}px`
-                                      : "100%",
-                                  objectFit: cardData.fitMode === "bleed" ? "cover" : "contain",
-                                  transform: `rotate(${cardData.rotation}deg)`,
-                                  opacity: (cardData.imageOpacity ?? 100) / 100,
-                                }}
-                                className="absolute pointer-events-none"
-                              />
-                            )}
-
-                            {editingBack ? (
-                              <>
-                                <CardDesignObjects
-                                  objects={backDecor}
-                                  layout={CUSTOMIZE_LAYOUT}
-                                  onEditImage={(id) => {
-                                    logoEditIdRef.current = id;
-                                    logoFileInputRef.current?.click();
-                                  }}
-                                />
-                                {activeImageLayers.map((layer) => (
-                                  <div
-                                    key={layer.id}
-                                    role="button"
-                                    aria-label={layer.label || "Image"}
-                                    data-snap-id={layer.id}
-                                    onPointerDown={(e) => startImageLayerDrag(layer.id, e)}
-                                    className={`absolute z-10 cursor-grab active:cursor-grabbing touch-none rounded ${activeTextId === layer.id ? "ring-2 ring-[#2196D2] shadow-md" : "hover:ring-1 hover:ring-white/50"
-                                      }`}
-                                    style={{
-                                      left: `${layer.x}%`,
-                                      top: `${layer.y}%`,
-                                      width: `${layer.width}%`,
-                                      height: `${layer.height}%`,
-                                    }}
-                                  >
-                                    <img
-                                      src={mediaSrc(layer.src) || layer.src}
-                                      alt=""
-                                      draggable={false}
-                                      className="w-full h-full pointer-events-none"
-                                      style={{ objectFit: layer.fit, opacity: layer.opacity }}
-                                    />
-                                  </div>
-                                ))}
-                                {backTextLayers.map((layer) => {
-                                  const isActive = activeTextId === layer.id;
-                                  const shown =
-                                    layer.textTransform === "uppercase"
-                                      ? layer.text.toUpperCase()
-                                      : layer.textTransform === "lowercase"
-                                        ? layer.text.toLowerCase()
-                                        : layer.text;
-                                  return (
-                                    <div
-                                      key={layer.id}
-                                      data-snap-id={layer.id}
-                                      onPointerDown={(e) => handlePointerDown(layer.id, e)}
-                                      style={textLayerDomStyle(layer, CUSTOMIZE_LAYOUT)}
-                                      className={`absolute z-20 cursor-grab active:cursor-grabbing rounded transition-all touch-none ${isActive
-                                          ? "ring-2 ring-[#2196D2] bg-[#2196D2]/20 shadow-md"
-                                          : "hover:ring-1 hover:ring-white/60"
-                                        }`}
-                                    >
-                                      {shown || "Type your text..."}
-                                    </div>
-                                  );
-                                })}
-                              </>
-                            ) : editingExtra ? (
-                              <>
-                                <CardDesignObjects
-                                  objects={extraDecor}
-                                  layout={CUSTOMIZE_LAYOUT}
-                                  onEditImage={(id) => {
-                                    logoEditIdRef.current = id;
-                                    logoFileInputRef.current?.click();
-                                  }}
-                                />
-                                {activeImageLayers.map((layer) => (
-                                  <div
-                                    key={layer.id}
-                                    role="button"
-                                    aria-label={layer.label || "Image"}
-                                    data-snap-id={layer.id}
-                                    onPointerDown={(e) => startImageLayerDrag(layer.id, e)}
-                                    className={`absolute z-10 cursor-grab active:cursor-grabbing touch-none rounded ${activeTextId === layer.id ? "ring-2 ring-[#2196D2] shadow-md" : "hover:ring-1 hover:ring-white/50"
-                                      }`}
-                                    style={{
-                                      left: `${layer.x}%`,
-                                      top: `${layer.y}%`,
-                                      width: `${layer.width}%`,
-                                      height: `${layer.height}%`,
-                                    }}
-                                  >
-                                    <img
-                                      src={mediaSrc(layer.src) || layer.src}
-                                      alt=""
-                                      draggable={false}
-                                      className="w-full h-full pointer-events-none"
-                                      style={{ objectFit: layer.fit, opacity: layer.opacity }}
-                                    />
-                                  </div>
-                                ))}
-                                {activeLayers.map((layer) => {
-                                  const isActive = activeTextId === layer.id;
-                                  const shown =
-                                    layer.textTransform === "uppercase"
-                                      ? layer.text.toUpperCase()
-                                      : layer.textTransform === "lowercase"
-                                        ? layer.text.toLowerCase()
-                                        : layer.text;
-                                  return (
-                                    <div
-                                      key={layer.id}
-                                      data-snap-id={layer.id}
-                                      onPointerDown={(e) => handlePointerDown(layer.id, e)}
-                                      style={textLayerDomStyle(layer, CUSTOMIZE_LAYOUT)}
-                                      className={`absolute z-20 cursor-grab active:cursor-grabbing rounded transition-all touch-none ${isActive
-                                          ? "ring-2 ring-[#2196D2] bg-[#2196D2]/20 shadow-md"
-                                          : "hover:ring-1 hover:ring-white/60"
-                                        }`}
-                                    >
-                                      {shown || "Type your text..."}
-                                    </div>
-                                  );
-                                })}
-                              </>
-                            ) : (
-                              <>
-                                <CardDesignObjects
-                                  objects={frontObjects}
-                                  layout={CUSTOMIZE_LAYOUT}
-                                  onEditImage={(id) => {
-                                    logoEditIdRef.current = id;
-                                    logoFileInputRef.current?.click();
-                                  }}
-                                />
-                                {activeImageLayers.map((layer) => (
-                                  <div
-                                    key={layer.id}
-                                    role="button"
-                                    aria-label={layer.label || "Image"}
-                                    data-snap-id={layer.id}
-                                    onPointerDown={(e) => startImageLayerDrag(layer.id, e)}
-                                    className={`absolute z-10 cursor-grab active:cursor-grabbing touch-none rounded ${activeTextId === layer.id ? "ring-2 ring-[#2196D2] shadow-md" : "hover:ring-1 hover:ring-white/50"
-                                      }`}
-                                    style={{
-                                      left: `${layer.x}%`,
-                                      top: `${layer.y}%`,
-                                      width: `${layer.width}%`,
-                                      height: `${layer.height}%`,
-                                    }}
-                                  >
-                                    <img
-                                      src={mediaSrc(layer.src) || layer.src}
-                                      alt=""
-                                      draggable={false}
-                                      className="w-full h-full pointer-events-none"
-                                      style={{ objectFit: layer.fit, opacity: layer.opacity }}
-                                    />
-                                  </div>
-                                ))}
-
-                                {/* Render Draggable Text Layers */}
-                                {textLayers.map((layer) => {
-                                  const isActive = activeTextId === layer.id;
-                                  return (
-                                    <div
-                                      key={layer.id}
-                                      data-snap-id={layer.id}
-                                      onPointerDown={(e) => handlePointerDown(layer.id, e)}
-                                      style={textLayerDomStyle(layer, CUSTOMIZE_LAYOUT)}
-                                      className={`absolute z-20 cursor-grab active:cursor-grabbing rounded transition-all touch-none ${isActive
-                                          ? "ring-2 ring-[#2196D2] bg-[#2196D2]/20 shadow-md"
-                                          : "hover:ring-1 hover:ring-white/60"
-                                        }`}
-                                    >
-                                      {layer.text || "Type your text..."}
-                                    </div>
-                                  );
-                                })}
-                              </>
-                            )}
-
-                          </div>
-                        </ScaledCardStage>
-
-                        <p className="text-xs text-zinc-400 mt-2 font-medium flex items-center gap-1.5">
-                          <svg className="w-3.5 h-3.5 text-[#0b6fb3]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5a1.5 1.5 0 013 0v5.5m0 0a1.5 1.5 0 013 0v-3a1.5 1.5 0 013 0" />
-                          </svg>
-                          <span>Click &amp; drag any text layer directly on the card preview to reposition it!</span>
-                        </p>
-                      </div>
-                    )}
-
-                  </div>
-                </div>
-
-                {/* Mobile Compact Controls Row Below Stage */}
-                <div className="md:hidden flex items-center justify-between bg-white px-3.5 py-2 rounded-xl border border-[#e2e8f0] shadow-xs">
-                  <span className="text-xs font-semibold text-zinc-600">Canvas Zoom</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel((z) => Math.max(0.6, Number((z - 0.1).toFixed(1))))}
-                      className="w-9 h-9 min-h-[36px] min-w-[36px] rounded-lg bg-zinc-100 font-bold text-zinc-700 flex items-center justify-center cursor-pointer hover:bg-zinc-200 transition-colors"
-                      aria-label="Zoom Out"
-                    >
-                      –
-                    </button>
-                    <span className="text-xs font-mono font-bold text-zinc-800 px-1.5 min-w-[2.5rem] text-center">
-                      {Math.round(zoomLevel * 100)}%
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel((z) => Math.min(1.8, Number((z + 0.1).toFixed(1))))}
-                      className="w-9 h-9 min-h-[36px] min-w-[36px] rounded-lg bg-zinc-100 font-bold text-zinc-700 flex items-center justify-center cursor-pointer hover:bg-zinc-200 transition-colors"
-                      aria-label="Zoom In"
-                    >
-                      +
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel(1)}
-                      className="px-2.5 py-1.5 rounded-lg bg-zinc-100 text-xs text-zinc-700 font-semibold cursor-pointer ml-1 hover:bg-zinc-200 transition-colors"
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </div>
-
-                {/* Drag-to-rotate Hint */}
-                <div className="text-xs text-zinc-500 font-medium flex items-center justify-center gap-1.5 py-0.5">
-                  <svg className="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  <span>{viewMode === "3d" ? "Drag to rotate in 3D • Double-click to flip" : "Drag elements on card to position"}</span>
-                </div>
-
-                {/* Spec Line: Size, Paper, Corners, Print-Safe Status */}
-                <div className="text-xs font-semibold text-zinc-600 flex items-center justify-center flex-wrap gap-2 pt-1 border-t border-[#e2e8f0]/80">
-                  <span>3.5 × 2.0 in</span>
-                  <span className="text-zinc-300">•</span>
-                  <span>{cardData.texture || "Matte Finish"}</span>
-                  <span className="text-zinc-300">•</span>
-                  <span>{cardData.corners || "Standard Corners"}</span>
-                  <span className="text-zinc-300">•</span>
-                  <span className="text-emerald-700 font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    Print-Safe Status: Active
-                  </span>
-                </div>
-
-                {/* Multi-side toggle pills */}
-                {sidesCount > 1 && (
-                  <div className="flex flex-wrap justify-center gap-1 p-1 bg-white rounded-full border border-[#e2e8f0] shadow-2xs max-w-full">
-                    {sideLabels.map((label, idx) => (
-                      <button
-                        key={`customize-side-${idx}`}
-                        type="button"
-                        onClick={() => selectSide(idx)}
-                        className={`min-h-[44px] px-5 py-2 text-xs sm:text-sm font-semibold rounded-full transition-all cursor-pointer ${activeSideIndex === idx
-                            ? "bg-[#0b6fb3] text-white shadow-xs font-bold"
-                            : "text-zinc-600 hover:text-zinc-900"
-                          }`}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
+        <div className="w-full flex-1 flex flex-col bg-[#eef0f4] min-h-screen">
+          {/* Top Navbar */}
+          <header className="w-full bg-white border-b border-zinc-200 px-6 py-3 flex items-center justify-between select-none shrink-0 z-30">
+            {/* Left: printgraphi logo */}
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="relative w-8 h-8 flex items-center justify-center">
+                <svg viewBox="0 0 40 40" className="w-8 h-8" fill="none">
+                  <path d="M6 10 C6 8, 8 6, 10 6 L20 6 L12 24 L6 18 Z" fill="#1d90cf" />
+                  <path d="M12 24 L20 6 L30 16 L20 34 Z" fill="#0b6fb3" />
+                  <path d="M20 34 L30 16 L34 22 C35 24, 34 28, 30 32 Z" fill="#00a6f4" />
+                </svg>
               </div>
+              <span className="text-2xl font-bold tracking-tight text-zinc-900 font-sans">
+                print<span className="text-zinc-800 font-medium">graphi</span>
+              </span>
+            </Link>
 
-              {/* ── RIGHT COLUMN: STUDIO EDITOR PANEL (DESKTOP: ~45%, TABLET: BELOW FULL-WIDTH, MOBILE: BOTTOM SHEET) ── */}
-              <div className="xl:col-span-5 w-full flex flex-col">
+            {/* Right: Preview button & Next button */}
+            <div className="flex items-center gap-6">
+              <button
+                type="button"
+                onClick={() => setViewMode((prev) => (prev === "3d" ? "2d" : "3d"))}
+                className="flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-zinc-900 transition-colors cursor-pointer"
+              >
+                <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Preview</span>
+              </button>
 
-                {/* Mobile Bottom Sheet Drag Handle */}
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setMobileSheetExpanded((prev) => !prev)}
-                  className="md:hidden w-full flex flex-col items-center py-2 cursor-pointer select-none group"
-                  aria-label="Expand or collapse design editor sheet"
+              <button
+                type="button"
+                onClick={() => setStep("preferences")}
+                className="px-8 py-2 rounded-full bg-[#1d90cf] hover:bg-[#187eb7] text-white text-sm font-semibold shadow-xs transition-all cursor-pointer"
+              >
+                Next
+              </button>
+            </div>
+          </header>
+
+          {/* Secondary Formatting Toolbar */}
+          <div className="w-full bg-white border-b border-zinc-200 px-3 sm:px-6 py-2 flex items-center justify-between gap-3 text-sm select-none shrink-0 z-20 overflow-x-auto no-scrollbar">
+            {/* Left: Text Formatting Controls + Size Selection */}
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 whitespace-nowrap">
+              {/* Font Dropdown */}
+              <div className="flex items-center gap-1 cursor-pointer relative group">
+                <span className="font-serif font-bold text-sm text-zinc-800">T</span>
+                <select
+                  value={activeLayer?.fontFamily || "QT Optimum"}
+                  onChange={(e) => {
+                    if (activeTextId) updateTextLayer(activeTextId, { fontFamily: e.target.value });
+                  }}
+                  className="bg-transparent text-xs sm:text-sm font-medium text-zinc-800 cursor-pointer outline-none pr-3.5 appearance-none max-w-[95px] sm:max-w-[130px] truncate"
                 >
-                  <div className="w-12 h-1.5 bg-zinc-300 group-hover:bg-zinc-400 rounded-full transition-colors" />
-                  <span className="text-[11px] font-semibold text-zinc-500 mt-1">
-                    {mobileSheetExpanded ? "Tap to collapse editor" : "Tap to expand editor"}
-                  </span>
-                </div>
-
-                {/* Editor Card Container */}
-                <div className="bg-white rounded-[16px] md:rounded-[20px] border border-[#e2e8f0] p-4 sm:p-6 shadow-xs flex flex-col gap-5">
-
-                  {/* Header Title & Subtitle */}
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-lg sm:text-xl font-black text-zinc-900 tracking-tight">
-                        Card Customization Studio
-                      </h2>
-                      <p className="text-xs sm:text-sm text-zinc-500 mt-0.5">
-                        Customize typography, card backdrop, and print materials.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Segmented Tabs: Text / Background / Paper & Finish (Horizontally scrollable on mobile, No emojis) */}
-                  <div className="flex items-center gap-1.5 p-1 bg-[#f4f7fb] rounded-xl border border-[#e2e8f0] overflow-x-auto scrollbar-none">
-                    <button
-                      type="button"
-                      onClick={() => setStudioTab("text")}
-                      className={`flex-1 min-h-[44px] px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center whitespace-nowrap ${studioTab === "text"
-                          ? "bg-white text-[#0b6fb3] shadow-2xs border border-[#e2e8f0]"
-                          : "text-zinc-600 hover:text-zinc-900 border border-transparent"
-                        }`}
-                    >
-                      Text
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setStudioTab("background")}
-                      className={`flex-1 min-h-[44px] px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center whitespace-nowrap ${studioTab === "background"
-                          ? "bg-white text-[#0b6fb3] shadow-2xs border border-[#e2e8f0]"
-                          : "text-zinc-600 hover:text-zinc-900 border border-transparent"
-                        }`}
-                    >
-                      Background
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setStudioTab("paper")}
-                      className={`flex-1 min-h-[44px] px-3 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center whitespace-nowrap ${studioTab === "paper"
-                          ? "bg-white text-[#0b6fb3] shadow-2xs border border-[#e2e8f0]"
-                          : "text-zinc-600 hover:text-zinc-900 border border-transparent"
-                        }`}
-                    >
-                      Paper &amp; Finish
-                    </button>
-                  </div>
-
-                  {/* ══════════════════════════════════════════════════════════
-                      TAB 1: TEXT & TYPOGRAPHY
-                  ══════════════════════════════════════════════════════════ */}
-                  {studioTab === "text" && (
-                    <div className="space-y-4 animate-in fade-in duration-150">
-
-                      {/* Primary "+ Add Text" and Secondary "+ Add Image" Buttons */}
-                      <div className="flex items-center gap-2.5">
-                        <button
-                          type="button"
-                          onClick={addTextLayer}
-                          className="flex-1 min-h-[44px] px-4 py-2.5 bg-[#0b6fb3] hover:bg-[#095a92] text-white text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
-                        >
-                          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                          </svg>
-                          <span>+ Add Text</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => imageLayerFileRef.current?.click()}
-                          className="flex-1 min-h-[44px] px-4 py-2.5 bg-white hover:bg-zinc-50 border border-[#e2e8f0] text-zinc-800 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow-2xs transition-colors cursor-pointer"
-                        >
-                          <svg className="w-4 h-4 text-zinc-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          <span>+ Add Image</span>
-                        </button>
-                        <input
-                          ref={imageLayerFileRef}
-                          type="file"
-                          accept="image/*,.svg"
-                          onChange={handleImageLayerFile}
-                          className="hidden"
-                        />
-                      </div>
-
-                      {/* Layers Pill Chips: Name, Title, Phone, Email, Address (Horizontally scrollable on mobile) */}
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">
-                            Layer Selection ({activeLayers.length})
-                          </label>
-                          <span className="text-[11px] text-zinc-400">Select to customize</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                          {activeLayers.map((layer) => {
-                            const isSelected = (activeTextId === layer.id) || (!activeTextId && layer.id === "1");
-                            const layerLabel =
-                              layer.id === "1" ? "Name" :
-                              layer.id === "2" ? "Title" :
-                              layer.id === "3" ? "Phone" :
-                              layer.id === "4" ? "Email" :
-                              layer.id === "5" ? "Address" :
-                              (layer.text.length > 12 ? layer.text.slice(0, 12) + "…" : layer.text || "Text");
-
-                            return (
-                              <button
-                                key={layer.id}
-                                type="button"
-                                onClick={() => setActiveTextId(layer.id)}
-                                className={`min-h-[44px] px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold border transition-all cursor-pointer flex items-center gap-2 shrink-0 ${isSelected
-                                    ? "bg-[#0b6fb3] text-white border-[#0b6fb3] shadow-xs font-bold"
-                                    : "bg-white border-[#e2e8f0] text-zinc-700 hover:border-zinc-300"
-                                  }`}
-                              >
-                                <span>{layerLabel}</span>
-                                {!requiredLayerIds.includes(layer.id) && (
-                                  <span
-                                    role="button"
-                                    tabIndex={0}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      deleteTextLayer(layer.id);
-                                    }}
-                                    className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold cursor-pointer transition-colors ${isSelected
-                                        ? "bg-white/20 hover:bg-red-500 text-white"
-                                        : "bg-zinc-100 hover:bg-red-500 hover:text-white text-zinc-600"
-                                      }`}
-                                    title="Delete Layer"
-                                  >
-                                    ✕
-                                  </span>
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Active Layer Inspector Card */}
-                      {activeLayer ? (
-                        <div className="bg-[#f8fbfd] p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] space-y-4">
-
-                          {/* Text Input (At least 16px to prevent iOS zoom) */}
-                          <div className="space-y-1.5">
-                            <div className="flex justify-between items-center">
-                              <label className="text-xs font-bold text-zinc-700">Text Content</label>
-                              {requiredLayerIds.includes(activeLayer.id) && (
-                                <span className="text-[11px] font-semibold text-zinc-400">Card Field</span>
-                              )}
-                            </div>
-                            <input
-                              type="text"
-                              value={activeLayer.text}
-                              onChange={(e) => updateTextLayer(activeLayer.id, { text: e.target.value })}
-                              placeholder="Enter text..."
-                              className="w-full min-h-[44px] px-3.5 py-2.5 bg-white rounded-xl border border-[#e2e8f0] text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#0b6fb3] focus:ring-2 focus:ring-[#0b6fb3]/20 focus:outline-none transition-all"
-                            />
-                          </div>
-
-                          {/* Font Dropdown & Size Slider (Stacked vertically on mobile as full-width fields) */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                            {/* Font Family Dropdown */}
-                            <div className="space-y-1.5">
-                              <label className="text-xs font-bold text-zinc-700">Font</label>
-                              <select
-                                value={activeLayer.fontFamily || "Inter"}
-                                onChange={(e) => updateTextLayer(activeLayer.id, { fontFamily: e.target.value })}
-                                className="w-full min-h-[44px] px-3 py-2 bg-white rounded-xl border border-[#e2e8f0] text-base sm:text-sm text-zinc-900 focus:border-[#0b6fb3] focus:ring-2 focus:ring-[#0b6fb3]/20 focus:outline-none cursor-pointer"
-                              >
-                                <option value="Inter">Inter (Clean Modern)</option>
-                                <option value="Arial">Arial (Standard Sans)</option>
-                                <option value="Helvetica">Helvetica (Classic)</option>
-                                <option value="Georgia">Georgia (Refined Serif)</option>
-                                <option value="Times New Roman">Times New Roman (Traditional)</option>
-                                <option value="Playfair Display">Playfair Display (Luxury Serif)</option>
-                                <option value="Montserrat">Montserrat (Geometric Sans)</option>
-                                <option value="Courier New">Courier New (Monospace)</option>
-                                <option value="Caveat">Caveat (Handwritten)</option>
-                              </select>
-                            </div>
-
-                            {/* Size Slider */}
-                            <div className="space-y-1.5">
-                              <div className="flex justify-between items-center">
-                                <label className="text-xs font-bold text-zinc-700">Size</label>
-                                <span className="text-xs font-mono font-bold text-[#0b6fb3]">{activeLayer.fontSize}px</span>
-                              </div>
-                              <div className="min-h-[44px] flex items-center">
-                                <input
-                                  type="range"
-                                  min={9}
-                                  max={48}
-                                  value={activeLayer.fontSize}
-                                  onChange={(e) => updateTextLayer(activeLayer.id, { fontSize: Number(e.target.value) })}
-                                  className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#0b6fb3]"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Color Swatches plus "Custom #" (Horizontally scrollable on mobile) */}
-                          <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-zinc-700 block">Text Color</label>
-                            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                              {[
-                                { label: "White", value: "#ffffff" },
-                                { label: "Dark", value: "#18181b" },
-                                { label: "Brand Blue", value: "#0b6fb3" },
-                                { label: "Emerald", value: "#10b981" },
-                                { label: "Amber", value: "#f59e0b" },
-                                { label: "Rose", value: "#ef4444" },
-                                { label: "Violet", value: "#8b5cf6" },
-                                { label: "Slate", value: "#64748b" },
-                              ].map((col) => {
-                                const isColorActive = activeLayer.color?.toLowerCase() === col.value.toLowerCase();
-                                return (
-                                  <button
-                                    key={col.value}
-                                    type="button"
-                                    onClick={() => updateTextLayer(activeLayer.id, { color: col.value })}
-                                    className={`w-9 h-9 min-w-[36px] rounded-full border-2 transition-transform cursor-pointer shrink-0 ${isColorActive ? "border-[#0b6fb3] scale-110 shadow-sm ring-2 ring-[#0b6fb3]/30" : "border-zinc-300"
-                                      }`}
-                                    style={{ backgroundColor: col.value }}
-                                    title={col.label}
-                                    aria-label={`Select color ${col.label}`}
-                                  />
-                                );
-                              })}
-
-                              {/* Custom Hex Color Picker */}
-                              <div className="flex items-center gap-1.5 bg-white border border-[#e2e8f0] rounded-xl px-2.5 py-1 shrink-0 min-h-[44px]">
-                                <input
-                                  type="color"
-                                  value={activeLayer.color && activeLayer.color.startsWith("#") ? activeLayer.color : "#ffffff"}
-                                  onChange={(e) => updateTextLayer(activeLayer.id, { color: e.target.value })}
-                                  className="w-7 h-7 rounded-full border border-zinc-300 cursor-pointer p-0 bg-transparent shrink-0"
-                                  title="Pick Custom Color"
-                                />
-                                <span className="text-xs font-mono font-bold text-zinc-700">
-                                  {activeLayer.color?.toUpperCase() || "Custom #"}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* B / I / U Toggles + Align Button */}
-                          <div className="flex items-center gap-2 pt-2 border-t border-[#e2e8f0] flex-wrap">
-                            {/* Bold Button */}
-                            <button
-                              type="button"
-                              onClick={() => updateTextLayer(activeLayer.id, {
-                                fontWeight: activeLayer.fontWeight === "bold" ? "normal" : "bold"
-                              })}
-                              className={`min-w-[44px] min-h-[44px] px-3 rounded-xl border font-bold text-sm transition-all cursor-pointer flex items-center justify-center ${activeLayer.fontWeight === "bold"
-                                  ? "bg-[#0b6fb3] text-white border-[#0b6fb3]"
-                                  : "bg-white text-zinc-700 border-[#e2e8f0] hover:border-zinc-300"
-                                }`}
-                              title="Toggle Bold"
-                            >
-                              B
-                            </button>
-
-                            {/* Italic Button */}
-                            <button
-                              type="button"
-                              onClick={() => updateTextLayer(activeLayer.id, {
-                                fontStyle: activeLayer.fontStyle === "italic" ? "normal" : "italic"
-                              })}
-                              className={`min-w-[44px] min-h-[44px] px-3 rounded-xl border italic font-serif font-bold text-sm transition-all cursor-pointer flex items-center justify-center ${activeLayer.fontStyle === "italic"
-                                  ? "bg-[#0b6fb3] text-white border-[#0b6fb3]"
-                                  : "bg-white text-zinc-700 border-[#e2e8f0] hover:border-zinc-300"
-                                }`}
-                              title="Toggle Italic"
-                            >
-                              I
-                            </button>
-
-                            {/* Underline Button */}
-                            <button
-                              type="button"
-                              onClick={() => updateTextLayer(activeLayer.id, {
-                                textDecoration: activeLayer.textDecoration === "underline" ? "none" : "underline"
-                              })}
-                              className={`min-w-[44px] min-h-[44px] px-3 rounded-xl border underline font-bold text-sm transition-all cursor-pointer flex items-center justify-center ${activeLayer.textDecoration === "underline"
-                                  ? "bg-[#0b6fb3] text-white border-[#0b6fb3]"
-                                  : "bg-white text-zinc-700 border-[#e2e8f0] hover:border-zinc-300"
-                                }`}
-                              title="Toggle Underline"
-                            >
-                              U
-                            </button>
-
-                            {/* Align Button */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const nextAlign = activeLayer.textAlign === "left" ? "center" : activeLayer.textAlign === "center" ? "right" : "left";
-                                updateTextLayer(activeLayer.id, { textAlign: nextAlign });
-                              }}
-                              className="min-h-[44px] px-3.5 rounded-xl border border-[#e2e8f0] bg-white text-zinc-700 hover:border-zinc-300 font-semibold text-xs flex items-center gap-1.5 cursor-pointer transition-all"
-                              title="Change Text Alignment"
-                            >
-                              <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h10M4 18h14" />
-                              </svg>
-                              <span className="capitalize">{activeLayer.textAlign || "left"}</span>
-                            </button>
-
-                            {/* More Options Link */}
-                            <button
-                              type="button"
-                              onClick={() => setShowMoreTextOptions((o) => !o)}
-                              className="min-h-[44px] px-3 ml-auto text-xs font-bold text-[#0b6fb3] hover:underline cursor-pointer flex items-center gap-1"
-                            >
-                              <span>{showMoreTextOptions ? "Fewer options" : "More options"}</span>
-                              <svg className={`w-3.5 h-3.5 transition-transform ${showMoreTextOptions ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                              </svg>
-                            </button>
-                          </div>
-
-                          {/* Expandable "More Options" Panel */}
-                          {showMoreTextOptions && (
-                            <div className="pt-3 border-t border-[#e2e8f0] space-y-3 animate-in fade-in duration-150">
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                  <label className="text-[11px] font-bold text-zinc-600 block mb-1">Letter Spacing</label>
-                                  <input
-                                    type="range"
-                                    min={-2}
-                                    max={10}
-                                    value={activeLayer.letterSpacing ?? 0}
-                                    onChange={(e) => updateTextLayer(activeLayer.id, { letterSpacing: Number(e.target.value) })}
-                                    className="w-full accent-[#0b6fb3] cursor-pointer"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="text-[11px] font-bold text-zinc-600 block mb-1">Text Transform</label>
-                                  <div className="flex gap-1.5">
-                                    {(["none", "uppercase", "lowercase"] as const).map((trans) => (
-                                      <button
-                                        key={trans}
-                                        type="button"
-                                        onClick={() => updateTextLayer(activeLayer.id, { textTransform: trans })}
-                                        className={`flex-1 py-1 px-2 rounded-lg text-xs font-semibold border capitalize cursor-pointer ${activeLayer.textTransform === trans
-                                            ? "bg-[#0b6fb3] text-white border-[#0b6fb3]"
-                                            : "bg-white text-zinc-700 border-zinc-200"
-                                          }`}
-                                      >
-                                        {trans === "none" ? "Normal" : trans}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                        </div>
-                      ) : (
-                        <p className="text-xs text-zinc-400 italic">Select a layer above to customize typography and styling.</p>
-                      )}
-
-                    </div>
-                  )}
-
-                  {/* ══════════════════════════════════════════════════════════
-                      TAB 2: BACKGROUND & PALETTE
-                  ══════════════════════════════════════════════════════════ */}
-                  {studioTab === "background" && (
-                    <div className="space-y-4 animate-in fade-in duration-150">
-                      <div>
-                        <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 block mb-2">
-                          Background Style ({editingBack ? "Back Side" : "Front Side"})
-                        </span>
-                        <div className="grid grid-cols-2 gap-2">
-                          {([
-                            ["color", "Solid Color"],
-                            ["gradient", "Linear Gradient"],
-                            ["image", "Artwork Backdrop"],
-                            ["image-gradient", "Image + Gradient"],
-                          ] as const).map(([mode, label]) => (
-                            <button
-                              key={mode}
-                              type="button"
-                              onClick={() =>
-                                setCardData((prev) =>
-                                  editingBack ? { ...prev, backBgMode: mode } : { ...prev, bgMode: mode }
-                                )
-                              }
-                              className={`min-h-[44px] py-2 px-3 rounded-xl border text-xs sm:text-sm font-bold cursor-pointer transition-all flex items-center justify-center ${activeBgMode === mode
-                                  ? "bg-[#0b6fb3] border-[#0b6fb3] text-white shadow-2xs"
-                                  : "border-[#e2e8f0] text-zinc-700 hover:border-zinc-300 bg-white"
-                                }`}
-                            >
-                              {label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Color Swatches plus "Custom #" (Horizontally scrollable on mobile) */}
-                      {activeBgMode !== "image" && (
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-zinc-700 block">Base Color</label>
-                          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                            {[
-                              { label: "Dark Obsidian", value: "#141414" },
-                              { label: "Pure White", value: "#ffffff" },
-                              { label: "Navy Blue", value: "#0f2338" },
-                              { label: "Brand Blue", value: "#0b6fb3" },
-                              { label: "Forest Green", value: "#143826" },
-                              { label: "Burgundy", value: "#38141e" },
-                              { label: "Charcoal", value: "#27272a" },
-                            ].map((color) => (
-                              <button
-                                key={color.value}
-                                type="button"
-                                onClick={() =>
-                                  setCardData((prev) =>
-                                    editingBack ? { ...prev, backBgColor: color.value } : { ...prev, bgColor: color.value }
-                                  )
-                                }
-                                className={`w-9 h-9 min-w-[36px] rounded-full border-2 transition-transform cursor-pointer shrink-0 ${activeBgColor === color.value ? "border-[#0b6fb3] scale-110 shadow-sm ring-2 ring-[#0b6fb3]/30" : "border-zinc-300"
-                                  }`}
-                                style={{ backgroundColor: color.value }}
-                                title={color.label}
-                                aria-label={`Select base color ${color.label}`}
-                              />
-                            ))}
-
-                            <div className="flex items-center gap-1.5 bg-white border border-[#e2e8f0] rounded-xl px-2.5 py-1 shrink-0 min-h-[44px]">
-                              <input
-                                type="color"
-                                value={activeBgColor}
-                                onChange={(e) =>
-                                  setCardData((prev) =>
-                                    editingBack ? { ...prev, backBgColor: e.target.value } : { ...prev, bgColor: e.target.value }
-                                  )
-                                }
-                                className="w-7 h-7 rounded-full border border-zinc-300 cursor-pointer p-0 bg-transparent shrink-0"
-                                title="Custom Background Color"
-                              />
-                              <span className="text-xs font-mono font-bold text-zinc-700">
-                                {activeBgColor?.toUpperCase() || "Custom #"}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Gradient Controls */}
-                      {(activeBgMode === "gradient" || activeBgMode === "image-gradient") && (
-                        <div className="space-y-2 bg-[#f8fbfd] p-3.5 rounded-2xl border border-[#e2e8f0]">
-                          <label className="text-xs font-bold text-zinc-700 block">Gradient Direction &amp; Secondary Color</label>
-                          <div className="flex items-center gap-3">
-                            <input
-                              type="color"
-                              value={activeBgGradient}
-                              onChange={(e) =>
-                                setCardData((prev) =>
-                                  editingBack ? { ...prev, backBgGradient: e.target.value } : { ...prev, bgGradient: e.target.value }
-                                )
-                              }
-                              className="w-9 h-9 rounded-xl border border-zinc-300 cursor-pointer p-0 bg-transparent shrink-0"
-                              title="Secondary color"
-                            />
-                            <div className="flex gap-1.5 flex-1">
-                              {[
-                                { label: "Horizontal", angle: 90 },
-                                { label: "Vertical", angle: 180 },
-                                { label: "Diagonal", angle: 135 },
-                              ].map((item) => (
-                                <button
-                                  key={item.angle}
-                                  type="button"
-                                  onClick={() =>
-                                    setCardData((prev) =>
-                                      editingBack
-                                        ? { ...prev, backBgGradientAngle: item.angle }
-                                        : { ...prev, bgGradientAngle: item.angle }
-                                    )
-                                  }
-                                  className={`flex-1 min-h-[40px] px-2 py-1.5 rounded-xl border text-xs font-bold cursor-pointer transition-all ${activeBgAngle === item.angle
-                                      ? "bg-[#0b6fb3] border-[#0b6fb3] text-white shadow-2xs"
-                                      : "border-zinc-200 text-zinc-700 bg-white hover:border-zinc-300"
-                                    }`}
-                                >
-                                  {item.label}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Backdrop Image Upload */}
-                      {(activeBgMode === "image" || activeBgMode === "image-gradient") && (
-                        <div className="space-y-3 bg-[#f8fbfd] p-3.5 rounded-2xl border border-[#e2e8f0]">
-                          <button
-                            type="button"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="w-full min-h-[44px] py-2.5 px-3 border border-dashed border-[#0b6fb3] hover:bg-sky-50/50 text-xs sm:text-sm font-bold text-[#0b6fb3] rounded-xl cursor-pointer bg-white transition-colors"
-                          >
-                            {activeBgImage ? `Replace ${editingBack ? "Back" : "Front"} Backdrop Image` : `Upload ${editingBack ? "Back" : "Front"} Artwork`}
-                          </button>
-                          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-
-                          {activeBgImage && (
-                            <div className="space-y-1">
-                              <div className="flex items-center justify-between">
-                                <label className="text-xs font-bold text-zinc-700">Artwork Opacity</label>
-                                <span className="text-xs font-mono font-bold text-[#0b6fb3]">{cardData.imageOpacity}%</span>
-                              </div>
-                              <input
-                                type="range"
-                                min={10}
-                                max={100}
-                                value={cardData.imageOpacity}
-                                onChange={(e) => setCardData((prev) => ({ ...prev, imageOpacity: Number(e.target.value) }))}
-                                className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#0b6fb3]"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* ══════════════════════════════════════════════════════════
-                      TAB 3: PAPER & FINISH
-                  ══════════════════════════════════════════════════════════ */}
-                  {studioTab === "paper" && (
-                    <div className="space-y-4 animate-in fade-in duration-150">
-
-                      {/* Paper Stock Options */}
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 block">
-                          Paper Stock &amp; Texture
-                        </label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {[
-                            { name: "Matte Finish", desc: "Smooth anti-glare premium stock", badge: "Most Popular" },
-                            { name: "Glossy Finish", desc: "Vibrant high-contrast protective sheen", badge: "Free" },
-                            { name: "Soft Touch", desc: "Velvety suede-like luxury tactile feel", badge: "+$4.00" },
-                            { name: "Linen Texture", desc: "Woven classic artisan paper finish", badge: "+$6.00" },
-                          ].map((paper) => {
-                            const isSelected = cardData.texture === paper.name;
-                            return (
-                              <button
-                                key={paper.name}
-                                type="button"
-                                onClick={() => setCardData((prev) => ({ ...prev, texture: paper.name }))}
-                                className={`min-h-[44px] p-3 rounded-xl border text-left cursor-pointer transition-all ${isSelected
-                                    ? "border-[#0b6fb3] bg-sky-50/50 shadow-2xs ring-1 ring-[#0b6fb3]"
-                                    : "border-[#e2e8f0] bg-white hover:border-zinc-300 text-zinc-700"
-                                  }`}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span className={`text-xs font-bold ${isSelected ? "text-[#0b6fb3]" : "text-zinc-900"}`}>{paper.name}</span>
-                                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full">{paper.badge}</span>
-                                </div>
-                                <p className="text-[11px] text-zinc-500 mt-0.5">{paper.desc}</p>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Corner Shape */}
-                      <div className="space-y-2 pt-2 border-t border-[#e2e8f0]">
-                        <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 block">
-                          Corner Cut
-                        </label>
-                        <div className="grid grid-cols-2 gap-2">
-                          {[
-                            { name: "Standard Corners", desc: "Crisp 90-degree corporate edge" },
-                            { name: "Rounded Corners", desc: "Smooth 5mm radius modern corners" },
-                          ].map((corner) => {
-                            const isSelected = cardData.corners === corner.name;
-                            return (
-                              <button
-                                key={corner.name}
-                                type="button"
-                                onClick={() => setCardData((prev) => ({ ...prev, corners: corner.name }))}
-                                className={`min-h-[44px] p-3 rounded-xl border text-left cursor-pointer transition-all ${isSelected
-                                    ? "border-[#0b6fb3] bg-sky-50/50 shadow-2xs ring-1 ring-[#0b6fb3]"
-                                    : "border-[#e2e8f0] bg-white hover:border-zinc-300 text-zinc-700"
-                                  }`}
-                              >
-                                <span className={`block text-xs font-bold ${isSelected ? "text-[#0b6fb3]" : "text-zinc-900"}`}>{corner.name}</span>
-                                <p className="text-[11px] text-zinc-500 mt-0.5">{corner.desc}</p>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Thickness & Weight */}
-                      <div className="space-y-2 pt-2 border-t border-[#e2e8f0]">
-                        <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 block">
-                          Card Weight
-                        </label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {[
-                            { name: "Standard 14pt", price: "Included" },
-                            { name: "Premium 16pt", price: "+$3.00" },
-                            { name: "Luxury 32pt", price: "+$8.00" },
-                          ].map((thick) => {
-                            const isSelected = cardData.thickness === thick.name;
-                            return (
-                              <button
-                                key={thick.name}
-                                type="button"
-                                onClick={() => setCardData((prev) => ({ ...prev, thickness: thick.name }))}
-                                className={`min-h-[44px] p-2.5 rounded-xl border text-center cursor-pointer transition-all ${isSelected
-                                    ? "border-[#0b6fb3] bg-sky-50/50 shadow-2xs ring-1 ring-[#0b6fb3]"
-                                    : "border-[#e2e8f0] bg-white hover:border-zinc-300 text-zinc-700"
-                                  }`}
-                              >
-                                <span className={`block text-xs font-bold ${isSelected ? "text-[#0b6fb3]" : "text-zinc-900"}`}>{thick.name}</span>
-                                <span className="block text-[10px] text-zinc-500 mt-0.5">{thick.price}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                    </div>
-                  )}
-
-                </div>
+                  <option value="QT Optimum">QT Optimum</option>
+                  <option value="Cinzel">Cinzel</option>
+                  <option value="Playfair Display">Playfair Display</option>
+                  <option value="Inter">Inter</option>
+                  <option value="Roboto">Roboto</option>
+                  <option value="Montserrat">Montserrat</option>
+                  <option value="Oswald">Oswald</option>
+                  <option value="Georgia">Georgia</option>
+                </select>
+                <svg className="w-3.5 h-3.5 text-zinc-500 pointer-events-none -ml-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
               </div>
 
+              {/* Divider */}
+              <div className="h-4 w-[1px] bg-zinc-300 mx-0.5 sm:mx-1 shrink-0" />
+
+              {/* Font Size: - 12 + */}
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (activeTextId && activeLayer) {
+                      updateTextLayer(activeTextId, { fontSize: Math.max(8, activeLayer.fontSize - 1) });
+                    }
+                  }}
+                  className="w-5 h-5 flex items-center justify-center text-zinc-700 hover:text-black font-bold text-base cursor-pointer"
+                  title="Decrease font size"
+                >
+                  −
+                </button>
+                <span className="text-xs font-semibold text-zinc-800 min-w-[18px] text-center">
+                  {activeLayer?.fontSize || 12}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (activeTextId && activeLayer) {
+                      updateTextLayer(activeTextId, { fontSize: Math.min(72, activeLayer.fontSize + 1) });
+                    }
+                  }}
+                  className="w-5 h-5 flex items-center justify-center text-zinc-700 hover:text-black font-bold text-base cursor-pointer"
+                  title="Increase font size"
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Divider */}
+              <div className="h-4 w-[1px] bg-zinc-300 mx-0.5 sm:mx-1 shrink-0" />
+
+              {/* Color Circle Picker */}
+              <div className="relative flex items-center shrink-0">
+                <label
+                  className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-cyan-400 p-0.5 flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
+                  style={{
+                    borderColor: activeLayer?.color || "#00d084",
+                    boxShadow: "0 0 0 1px #e2e8f0"
+                  }}
+                  title="Text Color"
+                >
+                  <span className="text-[11px] sm:text-xs font-bold font-serif text-zinc-800">T</span>
+                  <input
+                    type="color"
+                    value={activeLayer?.color || "#ffffff"}
+                    onChange={(e) => {
+                      if (activeTextId) updateTextLayer(activeTextId, { color: e.target.value });
+                    }}
+                    className="sr-only"
+                  />
+                </label>
+              </div>
+
+              {/* Bold (B) */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeTextId && activeLayer) {
+                    updateTextLayer(activeTextId, {
+                      fontWeight: activeLayer.fontWeight === "bold" ? "normal" : "bold",
+                    });
+                  }
+                }}
+                className={`w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center font-bold text-xs sm:text-sm cursor-pointer rounded transition-colors shrink-0 ${
+                  activeLayer?.fontWeight === "bold" ? "bg-zinc-200 text-zinc-900" : "text-zinc-700 hover:bg-zinc-100"
+                }`}
+                title="Bold"
+              >
+                B
+              </button>
+
+              {/* Italic (/) */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeTextId && activeLayer) {
+                    updateTextLayer(activeTextId, {
+                      fontStyle: activeLayer.fontStyle === "italic" ? "normal" : "italic",
+                    });
+                  }
+                }}
+                className={`w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center italic text-xs sm:text-sm cursor-pointer rounded transition-colors shrink-0 ${
+                  activeLayer?.fontStyle === "italic" ? "bg-zinc-200 text-zinc-900" : "text-zinc-700 hover:bg-zinc-100"
+                }`}
+                title="Italic"
+              >
+                /
+              </button>
+
+              {/* Underline (U) */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeTextId && activeLayer) {
+                    updateTextLayer(activeTextId, {
+                      underline: !activeLayer.underline,
+                    });
+                  }
+                }}
+                className={`w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center underline text-xs sm:text-sm cursor-pointer rounded transition-colors shrink-0 ${
+                  activeLayer?.underline ? "bg-zinc-200 text-zinc-900" : "text-zinc-700 hover:bg-zinc-100"
+                }`}
+                title="Underline"
+              >
+                U
+              </button>
+
+              {/* Divider */}
+              <div className="h-4 w-[1px] bg-zinc-300 mx-0.5 sm:mx-1 shrink-0" />
+
+              {/* Size Selector in Secondary Toolbar */}
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsSizeModalOpen(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-zinc-200 bg-white hover:border-[#1d90cf] text-zinc-700 transition-colors shadow-2xs cursor-pointer group whitespace-nowrap shrink-0"
+                  title="Select product size and dimensions"
+                >
+                  <svg className="w-3.5 h-3.5 text-[#1d90cf] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                  </svg>
+                  <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider hidden sm:inline">Size:</span>
+                  <span className="text-xs font-bold text-zinc-800 group-hover:text-[#1d90cf] whitespace-nowrap">
+                    {currentSizeShortName}
+                  </span>
+                  <span className="text-[11px] text-zinc-400 font-mono hidden xl:inline whitespace-nowrap">
+                    ({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit || "mm"})
+                  </span>
+                  <svg className="w-3 h-3 text-zinc-400 group-hover:text-[#1d90cf] ml-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Quick Orientation Swap (Landscape / Portrait) */}
+                <button
+                  type="button"
+                  onClick={handleSwapOrientation}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-200 text-zinc-600 hover:text-[#1d90cf] hover:bg-sky-50 transition-colors cursor-pointer shrink-0"
+                  title={`Swap orientation (${activeCanvasConfig.width >= activeCanvasConfig.height ? "Landscape to Portrait" : "Portrait to Landscape"})`}
+                >
+                  <svg className="w-3.5 h-3.5 rotate-90" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Center: Instruction badge (Shown on 2xl, subtle tip on xl) */}
+            <div className="hidden 2xl:flex items-center px-3.5 py-1 rounded-md border border-zinc-200 bg-white shadow-2xs text-[11px] text-zinc-600 font-medium whitespace-nowrap shrink-0 mx-2">
+              Your background should reach this line - it prevents white lines along the edges.
+            </div>
+            <div
+              className="hidden xl:flex 2xl:hidden items-center gap-1.5 px-2.5 py-1 rounded-md border border-zinc-200 bg-zinc-50 text-[11px] text-zinc-600 font-medium whitespace-nowrap shrink-0"
+              title="Your background should reach this line - it prevents white lines along the edges."
+            >
+              <span className="text-[#1d90cf]">💡</span>
+              <span>Bleed line prevents white edges</span>
+            </div>
+
+            {/* Right: Arrange & Duplicate */}
+            <div className="flex items-center gap-3 sm:gap-5 shrink-0 whitespace-nowrap">
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeTextId) {
+                    patchActiveLayers((prev) => {
+                      const idx = prev.findIndex((l) => l.id === activeTextId);
+                      if (idx < 0) return prev;
+                      const item = prev[idx];
+                      const rest = prev.filter((_, i) => i !== idx);
+                      return [...rest, item];
+                    });
+                  }
+                }}
+                className="flex items-center gap-1.5 text-xs font-semibold text-zinc-700 hover:text-zinc-900 cursor-pointer"
+              >
+                <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
+                </svg>
+                <span className="hidden sm:inline">Arrange</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeLayer) pasteText(activeLayer);
+                }}
+                className="flex items-center gap-1.5 text-xs font-semibold text-zinc-700 hover:text-zinc-900 cursor-pointer"
+              >
+                <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                </svg>
+                <span className="hidden sm:inline">Duplicate</span>
+              </button>
             </div>
           </div>
 
+          {/* Main Studio Workspace Canvas */}
+          <div className="flex-1 relative flex items-center justify-between p-4 sm:p-8 overflow-hidden min-h-[calc(100vh-115px)]">
+            {/* Left Floating Dock & "Type Your Text" Card */}
+            <div className="flex items-start gap-3 z-20">
+              {/* Slim Vertical Tool Dock */}
+              <div className="bg-white rounded-xl shadow-md p-1.5 flex flex-col items-center gap-1.5 border border-zinc-200/80">
+                {/* 0. Size / Dimensions Icon */}
+                <button
+                  type="button"
+                  onClick={() => setIsSizeModalOpen(true)}
+                  className="w-9 h-9 rounded-lg text-zinc-600 hover:bg-sky-50 hover:text-[#1d90cf] flex items-center justify-center transition-colors cursor-pointer"
+                  title="Select Size & Dimensions"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                  </svg>
+                </button>
+
+                {/* 1. 3D Cube Icon */}
+                <button
+                  type="button"
+                  onClick={() => setViewMode(viewMode === "3d" ? "2d" : "3d")}
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
+                    viewMode === "3d" ? "bg-[#1d90cf] text-white" : "text-zinc-600 hover:bg-zinc-100"
+                  }`}
+                  title="3D View"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                  </svg>
+                </button>
+
+                {/* 2. Pencil / Edit Icon with small blue right pointer arrow */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    className="w-9 h-9 rounded-lg bg-[#1d90cf] text-white flex items-center justify-center shadow-xs cursor-pointer"
+                    title="Edit Text"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
+                  {/* Right pointer arrow */}
+                  <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-0 h-0 border-y-[5px] border-y-transparent border-l-[6px] border-l-[#1d90cf]" />
+                </div>
+
+                {/* 3. Shapes / Elements Icon */}
+                <button
+                  type="button"
+                  onClick={() => addTextLayer()}
+                  className="w-9 h-9 rounded-lg text-zinc-600 hover:bg-zinc-100 flex items-center justify-center transition-colors cursor-pointer"
+                  title="Add Shape / Element"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.199l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                  </svg>
+                </button>
+
+                {/* 4. Image / Upload Icon */}
+                <button
+                  type="button"
+                  onClick={() => addImageLayer()}
+                  className="w-9 h-9 rounded-lg text-zinc-600 hover:bg-zinc-100 flex items-center justify-center transition-colors cursor-pointer"
+                  title="Add / Upload Image"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                  </svg>
+                </button>
+
+                {/* 5. T Text Icon */}
+                <button
+                  type="button"
+                  onClick={() => addTextLayer()}
+                  className="w-9 h-9 rounded-lg text-zinc-600 hover:bg-zinc-100 flex items-center justify-center transition-colors cursor-pointer"
+                  title="Add Text Layer"
+                >
+                  <span className="font-serif font-bold text-base text-zinc-700">T</span>
+                </button>
+              </div>
+
+              {/* "Type Your Text" Floating Card */}
+              <div className="bg-white rounded-2xl shadow-md p-6 w-[260px] sm:w-[280px] border border-zinc-200/80 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-lg text-zinc-900">Type Your Text</h3>
+                    <button
+                      type="button"
+                      onClick={() => addTextLayer()}
+                      className="text-xs font-semibold text-[#1d90cf] hover:text-[#187eb7] transition-colors cursor-pointer"
+                    >
+                      + Add
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-3.5 max-h-[280px] overflow-y-auto pr-1">
+                    {activeLayers.map((layer, index) => (
+                      <div key={layer.id} className="relative group/line">
+                        <input
+                          type="text"
+                          value={layer.text}
+                          onFocus={() => setActiveTextId(layer.id)}
+                          onChange={(e) => updateTextLayer(layer.id, { text: e.target.value })}
+                          placeholder={`Line ${index + 1}`}
+                          className={`w-full border-b pb-1 text-sm bg-transparent outline-none transition-colors ${
+                            activeTextId === layer.id ? "border-[#1d90cf] text-zinc-900 font-semibold" : "border-zinc-300 text-zinc-700"
+                          }`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Next button inside card */}
+                <button
+                  type="button"
+                  onClick={() => setStep("preferences")}
+                  className="w-full mt-8 py-2.5 rounded-full bg-[#1d90cf] hover:bg-[#187eb7] text-white text-sm font-semibold shadow-xs transition-all cursor-pointer text-center"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+
+            {/* Center: Dynamic Responsive Canvas Stage (Banners, Business Cards, Posters, etc.) */}
+            {(() => {
+              const cWidth = Number(activeCanvasConfig.width) || 105;
+              const cHeight = Number(activeCanvasConfig.height) || 60;
+              const cRatio = cWidth / cHeight;
+              const maxBoxW = 620;
+              const maxBoxH = 360;
+              let stageW = maxBoxW;
+              let stageH = maxBoxW / cRatio;
+              if (stageH > maxBoxH) {
+                stageH = maxBoxH;
+                stageW = maxBoxH * cRatio;
+              }
+              stageW = Math.round(stageW);
+              stageH = Math.round(stageH);
+              const safeInset = Math.max(10, Math.min(22, Math.round(stageH * 0.055)));
+
+              return (
+                <div className="relative flex-1 flex flex-col items-center justify-center px-4">
+                  {/* Callout Badges & Size Indicator */}
+                  <div style={{ width: `${stageW}px` }} className="max-w-full relative flex items-center justify-between mb-1.5 px-0.5">
+                    {/* Left: Size Selector Pill */}
+                    <button
+                      type="button"
+                      onClick={() => setIsSizeModalOpen(true)}
+                      className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/95 border border-zinc-200 text-[11px] font-semibold text-zinc-700 hover:border-[#1d90cf] hover:text-[#1d90cf] hover:shadow-xs transition-all shadow-2xs cursor-pointer group"
+                      title="Change product dimensions"
+                    >
+                      <svg className="w-3 h-3 text-[#1d90cf]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                      </svg>
+                      <span className="font-bold text-zinc-800 group-hover:text-[#1d90cf]">{currentSizeName}</span>
+                      <span className="text-[10px] text-zinc-400 font-mono">({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit || "mm"})</span>
+                      <span className="text-[10px] text-[#1d90cf] font-bold ml-0.5">Change ▾</span>
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      {/* Bleed Area Badge */}
+                      <div className="flex flex-col items-center relative">
+                        <span className="bg-[#5c68d4] text-white text-[10px] font-semibold px-2 py-0.5 rounded-xs shadow-2xs">
+                          Bleed Area
+                        </span>
+                        <div className="w-[1px] h-3 bg-[#5c68d4]" />
+                      </div>
+
+                      {/* Safe Area Badge */}
+                      <div className="flex flex-col items-center relative">
+                        <span className="bg-[#00b050] text-white text-[10px] font-semibold px-2 py-0.5 rounded-xs shadow-2xs">
+                          Safe Area
+                        </span>
+                        <div className="w-[1px] h-3 bg-[#00b050]" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* The Live Interactive Canvas Stage */}
+                  {viewMode === "3d" ? (
+                    <div style={{ width: `${stageW}px`, height: `${stageH}px` }} className="max-w-full rounded-lg overflow-hidden shadow-2xl">
+                      <ThreeDCardPreview
+                        frontDesign={currentFrontDesign}
+                        backDesign={currentBackDesign}
+                        sideDesigns={allSideDesigns}
+                        thickness={cardData.thickness}
+                        corners={cardData.corners}
+                        sideIndex={activeSideIndex}
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      ref={cardPreviewRef}
+                      onPointerMove={handlePointerMove}
+                      onPointerUp={handlePointerUp}
+                      style={{
+                        width: `${stageW}px`,
+                        height: `${stageH}px`,
+                        transform: `scale(${zoomLevel})`,
+                        transformOrigin: "center center",
+                        transition: "transform 0.1s ease-out",
+                        backgroundColor: activeBgColor || (selectedTemplate ? "#ffffff" : "#0c0d12"),
+                        ...(activeBgImage ? { backgroundImage: `url(${activeBgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
+                        ...(activeBgGradient ? { backgroundImage: activeBgGradient } : {}),
+                      }}
+                      className="max-w-full rounded-xs shadow-2xl relative overflow-hidden select-none cursor-default border border-zinc-900"
+                    >
+                      {/* Glossy diagonal sheen reflection */}
+                      <div
+                        className="absolute inset-0 pointer-events-none z-10"
+                        style={{
+                          background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 45%, transparent 65%)",
+                        }}
+                      />
+
+                      {/* Safe Area Green Dashed Border dynamically inset */}
+                      <div
+                        style={{ inset: `${safeInset}px` }}
+                        className="absolute border-2 border-dashed border-[#00d084] pointer-events-none z-20 rounded-xs"
+                      />
+
+                  {/* Render Template Shapes & Decor Objects if a template is active */}
+                  {selectedTemplate && (
+                    <div className="absolute inset-0 pointer-events-none z-12">
+                      <CardDesignObjects
+                        objects={activeSideIndex === 1 ? backDecor : frontObjects}
+                        layout={CUSTOMIZE_LAYOUT}
+                      />
+                    </div>
+                  )}
+
+                  {/* If NO template is selected, render default stylish template branding */}
+                  {!selectedTemplate && !cardData.uploadedImage && activeSideIndex === 0 && (
+                    <>
+                      {/* Geometric Emblem Logo centered near top */}
+                      <div className="absolute top-[14%] left-1/2 -translate-x-1/2 flex items-center justify-center z-15 pointer-events-none">
+                        <div className="flex items-center gap-1">
+                          {/* Left white peaked shape */}
+                          <div
+                            className="w-7 h-11 bg-white"
+                            style={{
+                              clipPath: "polygon(100% 0, 0 45%, 0 100%, 100% 100%)",
+                            }}
+                          />
+                          {/* Right cyan peaked shape */}
+                          <div
+                            className="w-7 h-11 bg-[#00a6f4]"
+                            style={{
+                              clipPath: "polygon(0 0, 100% 45%, 100% 100%, 0 100%)",
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Center Horizontal Divider Line under Company Name */}
+                      <div className="absolute top-[52%] left-1/2 -translate-x-1/2 w-[65%] h-[1.5px] bg-white pointer-events-none z-15" />
+
+                      {/* Vibrant Cyan-Blue Bottom Banner */}
+                      <div className="absolute bottom-0 left-0 right-0 h-[22%] bg-[#00a6f4] z-10" />
+                    </>
+                  )}
+
+                  {/* Front Side Dynamic Text Layers */}
+                  {activeSideIndex === 0 && (
+                    <>
+                      {textLayers.map((layer) => {
+                        const isSelected = activeTextId === layer.id;
+                        const isCentered = layer.textAlign === "center" || (!selectedTemplate && (layer.id === "1" || layer.id === "2" || layer.id === "3"));
+                        const isRightAligned = layer.textAlign === "right";
+                        return (
+                          <div
+                            key={layer.id}
+                            data-snap-id={layer.id}
+                            onPointerDown={(e) => handlePointerDown(layer.id, e)}
+                            onClick={() => setActiveTextId(layer.id)}
+                            style={{
+                              position: "absolute",
+                              left: `${layer.x}%`,
+                              top: `${layer.y}%`,
+                              transform: isCentered ? "translateX(-50%)" : isRightAligned ? "translateX(-100%)" : "none",
+                              fontSize: `${layer.fontSize}px`,
+                              color: layer.color || "#ffffff",
+                              fontWeight: layer.fontWeight || "normal",
+                              fontStyle: layer.fontStyle || "normal",
+                              fontFamily: layer.fontFamily || "Inter",
+                              textDecoration: layer.underline ? "underline" : "none",
+                              cursor: "move",
+                              zIndex: isSelected ? 30 : 25,
+                            }}
+                            className={`px-2 py-0.5 whitespace-nowrap transition-shadow ${
+                              isSelected ? "border border-[#00a6f4] ring-1 ring-[#00a6f4]/40" : "border border-transparent"
+                            }`}
+                          >
+                            {layer.text}
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {/* Back Side Dynamic Text Layers */}
+                  {activeSideIndex === 1 && (
+                    <div className="absolute inset-0 p-6 z-15">
+                      {backTextLayers.map((layer) => {
+                        const isSelected = activeTextId === layer.id;
+                        const isCentered = layer.textAlign === "center";
+                        const isRightAligned = layer.textAlign === "right";
+                        return (
+                          <div
+                            key={layer.id}
+                            data-snap-id={layer.id}
+                            onPointerDown={(e) => handlePointerDown(layer.id, e)}
+                            onClick={() => setActiveTextId(layer.id)}
+                            style={{
+                              position: "absolute",
+                              left: `${layer.x}%`,
+                              top: `${layer.y}%`,
+                              transform: isCentered ? "translateX(-50%)" : isRightAligned ? "translateX(-100%)" : "none",
+                              fontSize: `${layer.fontSize}px`,
+                              color: layer.color || "#ffffff",
+                              fontWeight: layer.fontWeight || "normal",
+                              fontStyle: layer.fontStyle || "normal",
+                              fontFamily: layer.fontFamily || "Inter",
+                              textDecoration: layer.underline ? "underline" : "none",
+                              cursor: "move",
+                              zIndex: isSelected ? 30 : 25,
+                            }}
+                            className={`px-2 py-0.5 whitespace-nowrap ${
+                              isSelected ? "border border-[#00a6f4] ring-1 ring-[#00a6f4]/40" : "border border-transparent"
+                            }`}
+                          >
+                            {layer.text}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Alignment guide lines when dragging */}
+                  {alignmentLines.map((line, i) => (
+                    <div
+                      key={i}
+                      className="absolute bg-[#00a6f4] pointer-events-none z-30"
+                      style={{
+                        left: line.type === "v" ? `${line.pos}%` : 0,
+                        top: line.type === "h" ? `${line.pos}%` : 0,
+                        width: line.type === "v" ? "1px" : "100%",
+                        height: line.type === "h" ? "1px" : "100%",
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+              );
+            })()}
+
+            {/* Right Side Panel: Side Switcher (Front & Back) */}
+            <div className="flex flex-col gap-4 w-[120px] shrink-0 z-20">
+              {/* Front Card Thumbnail */}
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => selectSide(0)}
+                className={`bg-[#e2e4e9] p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                  activeSideIndex === 0 ? "border-[#1d90cf] shadow-md" : "border-transparent hover:border-zinc-300"
+                }`}
+              >
+                <div className="w-full h-[58px] bg-white rounded-xs shadow-xs overflow-hidden relative border border-zinc-200">
+                  {/* Mini preview */}
+                  <div className="w-full h-[78%] bg-[#0c0d12]" />
+                  <div className="w-full h-[22%] bg-[#00a6f4]" />
+                </div>
+                <p className="text-xs font-semibold text-zinc-700 text-center mt-2">Front</p>
+              </div>
+
+              {/* Back Card Thumbnail */}
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => selectSide(1)}
+                className={`bg-[#e2e4e9] p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                  activeSideIndex === 1 ? "border-[#1d90cf] shadow-md" : "border-transparent hover:border-zinc-300"
+                }`}
+              >
+                <div className="w-full h-[58px] bg-white rounded-xs shadow-xs overflow-hidden relative border border-zinc-200 flex items-center justify-center">
+                  <span className="text-[10px] text-zinc-400 font-mono">Back</span>
+                </div>
+                <p className="text-xs font-semibold text-zinc-700 text-center mt-2">Back</p>
+              </div>
+            </div>
+
+            {/* Bottom-Left Floating Zoom Control */}
+            <div className="absolute bottom-6 left-6 z-20 flex items-center gap-2 select-none">
+              <button
+                type="button"
+                onClick={() => setZoomLevel((z) => Math.max(0.6, +(z - 0.1).toFixed(2)))}
+                className="text-zinc-500 hover:text-zinc-900 font-bold text-sm cursor-pointer"
+                title="Zoom Out"
+              >
+                −
+              </button>
+              <input
+                type="range"
+                min="0.6"
+                max="1.5"
+                step="0.05"
+                value={zoomLevel}
+                onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
+                className="w-24 h-1 bg-zinc-300 rounded-lg appearance-none cursor-pointer accent-zinc-900"
+              />
+              <button
+                type="button"
+                onClick={() => setZoomLevel((z) => Math.min(1.5, +(z + 0.1).toFixed(2)))}
+                className="text-zinc-500 hover:text-zinc-900 font-bold text-sm cursor-pointer"
+                title="Zoom In"
+              >
+                +
+              </button>
+            </div>
+
+            {/* Hidden Image Upload Input for imageLayerFileRef */}
+            <input
+              ref={imageLayerFileRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageLayerFile}
+              className="hidden"
+            />
+          </div>
+
           {/* ─────────────────────────────────────────────────────────────
-              STICKY BOTTOM BAR (DESKTOP: SINGLE ROW, TABLET: SINGLE ROW WITH ICON-ONLY PNG, MOBILE: TWO ROWS)
+              STICKY BOTTOM BAR (COMPLETELY DYNAMIC & RESPONSIVE)
           ───────────────────────────────────────────────────────────── */}
           <div className="sticky bottom-0 z-40 bg-white border-t border-[#e2e8f0] shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
-            <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 xl:px-8 py-3">
+            <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 xl:px-8 py-2.5 sm:py-3">
 
               {/* ── DESKTOP & TABLET LAYOUT (MD & UP): SINGLE ROW ── */}
               <div className="hidden md:flex items-center justify-between gap-4">
 
                 {/* Left: Live Price & Specification Line */}
                 <div className="flex items-center gap-3">
-                  <div className="text-2xl font-black text-zinc-900 tracking-tight">
-                    $29.00
+                  <div className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+                    ${calculatedTotalPrice > 0 ? calculatedTotalPrice.toFixed(2) : "29.00"}
                   </div>
                   <div className="text-xs text-zinc-500 leading-tight border-l border-[#e2e8f0] pl-3">
-                    <span className="font-semibold text-zinc-800">100 cards</span>
+                    <span className="font-semibold text-zinc-800">{cardData.quantity || 100} units</span>
                     <span className="mx-1">•</span>
-                    <span>{cardData.texture || "Matte"}</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsSizeModalOpen(true)}
+                      className="font-semibold text-[#1d90cf] hover:underline cursor-pointer"
+                      title="Change product size"
+                    >
+                      {currentSizeName} ({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit || "mm"})
+                    </button>
                     <span className="mx-1">•</span>
                     <span>{cardData.corners || "Standard corners"}</span>
                     <span className="mx-1">•</span>
-                    <span className="text-emerald-700 font-medium">+ shipping</span>
+                    <span className="text-emerald-700 font-semibold">+ shipping</span>
                   </div>
                 </div>
 
@@ -3438,10 +3131,10 @@ export default function BusinessCardsCustomizeFlow({
                     type="button"
                     disabled={downloadingProof}
                     onClick={() => handleDownloadProof("both")}
-                    className="hidden xl:flex min-h-[44px] px-4 py-2 bg-white hover:bg-zinc-50 border border-[#e2e8f0] text-zinc-800 rounded-xl text-xs sm:text-sm font-semibold shadow-2xs items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
+                    className="hidden xl:flex min-h-[42px] px-4 py-2 bg-white hover:bg-zinc-50 border border-[#e2e8f0] text-zinc-800 rounded-xl text-xs sm:text-sm font-semibold shadow-2xs items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                     title="Download Proof PNG"
                   >
-                    <svg className="w-4 h-4 text-[#0b6fb3]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-[#1d90cf]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     <span>{downloadingProof ? "Downloading..." : "Download PNG"}</span>
@@ -3452,22 +3145,22 @@ export default function BusinessCardsCustomizeFlow({
                     type="button"
                     disabled={downloadingProof}
                     onClick={() => handleDownloadProof("both")}
-                    className="flex xl:hidden min-h-[44px] min-w-[44px] p-2.5 bg-white hover:bg-zinc-50 border border-[#e2e8f0] text-zinc-800 rounded-xl items-center justify-center transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
+                    className="flex xl:hidden min-h-[42px] min-w-[42px] p-2.5 bg-white hover:bg-zinc-50 border border-[#e2e8f0] text-zinc-800 rounded-xl items-center justify-center transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
                     title="Download PNG"
                     aria-label="Download PNG"
                   >
-                    <svg className="w-4 h-4 text-[#0b6fb3]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-[#1d90cf]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                   </button>
 
                   {/* Approval Checkbox */}
-                  <label className="min-h-[44px] flex items-center gap-2.5 text-xs sm:text-sm text-zinc-700 font-medium cursor-pointer select-none px-2 py-1 rounded-lg hover:bg-zinc-50">
+                  <label className="min-h-[42px] flex items-center gap-2.5 text-xs sm:text-sm text-zinc-700 font-medium cursor-pointer select-none px-2 py-1 rounded-lg hover:bg-zinc-50">
                     <input
                       type="checkbox"
                       checked={cardData.approved}
                       onChange={(e) => setCardData((prev) => ({ ...prev, approved: e.target.checked }))}
-                      className="w-4 h-4 rounded border-zinc-300 text-[#0b6fb3] focus:ring-[#0b6fb3] cursor-pointer"
+                      className="w-4 h-4 rounded border-zinc-300 text-[#1d90cf] focus:ring-[#1d90cf] cursor-pointer"
                     />
                     <span>I approve my design</span>
                   </label>
@@ -3475,152 +3168,128 @@ export default function BusinessCardsCustomizeFlow({
                   {/* Primary "Continue to Options" Button */}
                   <button
                     type="button"
-                    disabled={!cardData.approved}
-                    onClick={() => setStep("preferences")}
-                    className={`min-h-[44px] px-6 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer shadow-md flex items-center justify-center gap-2 ${cardData.approved
-                        ? "bg-[#0b6fb3] hover:bg-[#095a92] text-white shadow-[#0b6fb3]/25"
-                        : "bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none"
-                      }`}
+                    onClick={() => {
+                      if (!cardData.approved) {
+                        setCardData((prev) => ({ ...prev, approved: true }));
+                      }
+                      setStep("preferences");
+                    }}
+                    className="min-h-[42px] px-6 py-2.5 rounded-full font-bold text-sm transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2 bg-[#1d90cf] hover:bg-[#187eb7] text-white"
                   >
                     <span>Continue to Options</span>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
-
                 </div>
-
               </div>
 
               {/* ── MOBILE LAYOUT (UNDER 768PX): TWO ROWS + SAFE AREA ── */}
-              <div className="flex md:hidden flex-col gap-2.5 pb-[calc(4px+env(safe-area-inset-bottom,0px))]">
-
-                {/* Mobile Row 1: Live price on top with "Details" Link */}
+              <div className="flex md:hidden flex-col gap-2 pb-[calc(4px+env(safe-area-inset-bottom,0px))]">
+                {/* Mobile Row 1: Live price on top with "Details" Link & Download PNG */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-xl font-black text-zinc-900">$29.00</span>
-                    <span className="text-xs text-zinc-500 font-medium">/ 100 cards</span>
+                    <span className="text-xl font-black text-zinc-900">
+                      ${calculatedTotalPrice > 0 ? calculatedTotalPrice.toFixed(2) : "29.00"}
+                    </span>
+                    <span className="text-xs text-zinc-500 font-medium">/ {cardData.quantity || 100} units</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowDetailsModal(true)}
-                    className="min-h-[44px] px-2 text-xs font-bold text-[#0b6fb3] hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>Details &amp; Proof</span>
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={downloadingProof}
+                      onClick={() => handleDownloadProof("both")}
+                      className="p-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                      title="Download PNG Proof"
+                    >
+                      <svg className="w-3.5 h-3.5 text-[#1d90cf]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      <span>PNG</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowDetailsModal((prev) => !prev)}
+                      className="px-2 py-1 text-xs font-bold text-[#1d90cf] hover:underline flex items-center gap-0.5 cursor-pointer"
+                    >
+                      <span>Details</span>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
-                {/* Mobile Row 2: "I approve my design" checkbox placed above full-width Continue Button */}
-                <div className="space-y-2">
-                  <label className="min-h-[44px] flex items-center gap-2.5 text-xs text-zinc-700 font-semibold cursor-pointer select-none">
+                {/* Mobile Row 2: "I approve my design" checkbox & Full-width Continue Button */}
+                <div className="flex items-center justify-between gap-3 pt-1 border-t border-zinc-100">
+                  <label className="flex items-center gap-2 text-xs text-zinc-700 font-semibold cursor-pointer select-none shrink-0">
                     <input
                       type="checkbox"
                       checked={cardData.approved}
                       onChange={(e) => setCardData((prev) => ({ ...prev, approved: e.target.checked }))}
-                      className="w-4 h-4 rounded border-zinc-300 text-[#0b6fb3] focus:ring-[#0b6fb3] cursor-pointer"
+                      className="w-4 h-4 rounded border-zinc-300 text-[#1d90cf] focus:ring-[#1d90cf] cursor-pointer"
                     />
-                    <span>I approve my design</span>
+                    <span>I approve</span>
                   </label>
 
                   <button
                     type="button"
-                    disabled={!cardData.approved}
-                    onClick={() => setStep("preferences")}
-                    className={`w-full min-h-[48px] py-3 rounded-xl font-bold text-sm transition-all cursor-pointer shadow-md flex items-center justify-center gap-2 ${cardData.approved
-                        ? "bg-[#0b6fb3] hover:bg-[#095a92] text-white shadow-[#0b6fb3]/25"
-                        : "bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none"
-                      }`}
+                    onClick={() => {
+                      if (!cardData.approved) {
+                        setCardData((prev) => ({ ...prev, approved: true }));
+                      }
+                      setStep("preferences");
+                    }}
+                    className="flex-1 py-2.5 px-4 rounded-full font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1.5 bg-[#1d90cf] hover:bg-[#187eb7] text-white text-center"
                   >
                     <span>Continue to Options</span>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
                 </div>
 
+                {/* Mobile Expandable Details Breakdown */}
+                {showDetailsModal && (
+                  <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-xs space-y-1.5 mt-1 animate-in fade-in duration-150">
+                    <div className="flex justify-between font-semibold text-zinc-800">
+                      <span>Product:</span>
+                      <span>{selectedTemplate?.title || "Custom Design"}</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-600">
+                      <span>Quantity:</span>
+                      <span>{cardData.quantity || 100} units</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-600">
+                      <span>Size / Dimensions:</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsSizeModalOpen(true)}
+                        className="font-bold text-[#1d90cf] hover:underline cursor-pointer"
+                      >
+                        {currentSizeName} ({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit || "mm"})
+                      </button>
+                    </div>
+                    <div className="flex justify-between text-zinc-600">
+                      <span>Corners / Paper:</span>
+                      <span>{cardData.corners || "Standard"} • {cardData.thickness || "Standard"}</span>
+                    </div>
+                    <div className="flex justify-between text-emerald-700 font-medium">
+                      <span>Shipping:</span>
+                      <span>Calculated at checkout</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
             </div>
           </div>
-
-          {/* ── MOBILE DETAILS MODAL ── */}
-          {showDetailsModal && (
-            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-150">
-              <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl border border-[#e2e8f0] space-y-4 max-h-[85vh] overflow-y-auto">
-                <div className="flex items-center justify-between pb-3 border-b border-[#e2e8f0]">
-                  <h3 className="text-base font-black text-zinc-900">Order Details &amp; Proof</h3>
-                  <button
-                    type="button"
-                    onClick={() => setShowDetailsModal(false)}
-                    className="min-h-[44px] min-w-[44px] text-zinc-400 hover:text-zinc-700 flex items-center justify-center rounded-xl cursor-pointer"
-                    aria-label="Close modal"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between py-1.5 border-b border-zinc-100">
-                    <span className="text-zinc-500">Card Dimensions</span>
-                    <span className="font-bold text-zinc-800">3.5 × 2.0 in (Standard)</span>
-                  </div>
-                  <div className="flex justify-between py-1.5 border-b border-zinc-100">
-                    <span className="text-zinc-500">Quantity</span>
-                    <span className="font-bold text-zinc-800">100 cards</span>
-                  </div>
-                  <div className="flex justify-between py-1.5 border-b border-zinc-100">
-                    <span className="text-zinc-500">Paper Texture</span>
-                    <span className="font-bold text-zinc-800">{cardData.texture || "Matte Finish"}</span>
-                  </div>
-                  <div className="flex justify-between py-1.5 border-b border-zinc-100">
-                    <span className="text-zinc-500">Corners</span>
-                    <span className="font-bold text-zinc-800">{cardData.corners || "Standard Corners"}</span>
-                  </div>
-                  <div className="flex justify-between py-1.5 border-b border-zinc-100">
-                    <span className="text-zinc-500">Print-Safe Status</span>
-                    <span className="font-bold text-emerald-700">Active</span>
-                  </div>
-                  <div className="flex justify-between py-2 text-sm font-black text-zinc-900 pt-2">
-                    <span>Estimated Subtotal</span>
-                    <span>$29.00</span>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex flex-col gap-2">
-                  <button
-                    type="button"
-                    disabled={downloadingProof}
-                    onClick={() => {
-                      handleDownloadProof("both");
-                      setShowDetailsModal(false);
-                    }}
-                    className="w-full min-h-[44px] py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors"
-                  >
-                    <svg className="w-4 h-4 text-[#0b6fb3]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    <span>Download High-Res Proof PNG</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowDetailsModal(false)}
-                    className="w-full min-h-[44px] py-2.5 bg-[#0b6fb3] text-white rounded-xl text-xs font-bold cursor-pointer"
-                  >
-                    Close &amp; Back to Studio
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
         </div>
       )}
 
-          {/* ─────────────────────────────────────────────────────────────
+      {/* ─────────────────────────────────────────────────────────────
           STEP 2: YOUR PREFERENCES
       ───────────────────────────────────────────────────────────── */}
           {step === "preferences" && (
@@ -4175,6 +3844,223 @@ export default function BusinessCardsCustomizeFlow({
               setStep("review");
             }}
           />
+
+          {/* Interactive Size Selection Modal */}
+          {isSizeModalOpen && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+              onClick={() => setIsSizeModalOpen(false)}
+            >
+              <div
+                className="bg-white rounded-3xl shadow-2xl border border-zinc-200 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Header */}
+                <div className="px-6 py-5 border-b border-zinc-100 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-zinc-900 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-[#1d90cf]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                      </svg>
+                      Select Product Size
+                    </h3>
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      Choose standard dimensions for {selectedCategory?.name || selectedTemplate?.category || "your product"} or enter custom dimensions.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsSizeModalOpen(false)}
+                    className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer text-sm font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-6 overflow-y-auto space-y-6">
+                  {/* Preset Standard Sizes Grid */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
+                        Available Sizes ({selectedCategory?.name || selectedTemplate?.category || "Standard"})
+                      </h4>
+                      <span className="text-xs text-zinc-400 font-medium">{offeredSizes.length} sizes available</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {offeredSizes.map((s, idx) => {
+                        const isSelected =
+                          Math.round(Number(activeCanvasConfig.width)) === Math.round(s.width) &&
+                          Math.round(Number(activeCanvasConfig.height)) === Math.round(s.height);
+                        const cardRatio = s.width / s.height;
+
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => {
+                              handleSelectSize(s);
+                              setIsSizeModalOpen(false);
+                            }}
+                            className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                              isSelected
+                                ? "border-[#1d90cf] bg-sky-50/50 shadow-xs ring-1 ring-[#1d90cf]/20"
+                                : "border-zinc-200/80 hover:border-zinc-300 bg-white hover:bg-zinc-50/60"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              {/* Visual miniature box illustrating card aspect ratio */}
+                              <div className="w-12 h-10 bg-zinc-100 rounded-lg flex items-center justify-center border border-zinc-200 shrink-0 overflow-hidden p-1">
+                                <div
+                                  style={{
+                                    width: cardRatio >= 1 ? "100%" : `${Math.max(20, Math.round(cardRatio * 100))}%`,
+                                    height: cardRatio < 1 ? "100%" : `${Math.max(20, Math.round((1 / cardRatio) * 100))}%`,
+                                    maxHeight: "26px",
+                                    maxWidth: "36px",
+                                  }}
+                                  className={`rounded-xs transition-colors ${
+                                    isSelected ? "bg-[#1d90cf]" : "bg-zinc-400"
+                                  }`}
+                                />
+                              </div>
+
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <p className="text-sm font-bold text-zinc-900">{s.name}</p>
+                                  {isSelected && (
+                                    <span className="bg-[#1d90cf] text-white text-[10px] font-bold px-1.5 py-0.2 rounded-xs">
+                                      Active
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-zinc-500 font-mono mt-0.5">
+                                  {s.width} × {s.height} {s.unit}
+                                  {s.unit === "mm" && (
+                                    <span className="text-zinc-400 ml-1.5 font-sans">
+                                      ({(s.width / 25.4).toFixed(1)}" × {(s.height / 25.4).toFixed(1)}")
+                                    </span>
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                              isSelected ? "border-[#1d90cf] bg-[#1d90cf] text-white" : "border-zinc-300"
+                            }`}>
+                              {isSelected && (
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Custom Dimensions Section */}
+                  <div className="pt-4 border-t border-zinc-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-xs font-bold text-zinc-700 uppercase tracking-wider flex items-center gap-2">
+                        <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+                        </svg>
+                        Custom Dimensions
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={handleSwapOrientation}
+                        className="text-xs font-semibold text-[#1d90cf] hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <svg className="w-3.5 h-3.5 rotate-90" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                        </svg>
+                        <span>Swap Dimensions ({activeCanvasConfig.width >= activeCanvasConfig.height ? "Portrait" : "Landscape"})</span>
+                      </button>
+                    </div>
+
+                    <div className="bg-zinc-50 rounded-2xl p-4 border border-zinc-200 space-y-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                          <label className="text-xs font-semibold text-zinc-700 block mb-1">Width</label>
+                          <input
+                            type="number"
+                            min="10"
+                            max="5000"
+                            step="1"
+                            value={customWidth}
+                            onChange={(e) => setCustomWidth(Number(e.target.value) || 0)}
+                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#1d90cf]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-semibold text-zinc-700 block mb-1">Height</label>
+                          <input
+                            type="number"
+                            min="10"
+                            max="5000"
+                            step="1"
+                            value={customHeight}
+                            onChange={(e) => setCustomHeight(Number(e.target.value) || 0)}
+                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#1d90cf]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-semibold text-zinc-700 block mb-1">Unit</label>
+                          <select
+                            value={customUnit}
+                            onChange={(e) => setCustomUnit(e.target.value as CanvasUnit)}
+                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#1d90cf] cursor-pointer"
+                          >
+                            <option value="mm">mm (millimeters)</option>
+                            <option value="cm">cm (centimeters)</option>
+                            <option value="in">in (inches)</option>
+                            <option value="px">px (pixels)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-semibold text-zinc-700 block mb-1">Bleed / Safe Area</label>
+                          <div className="flex items-center gap-1.5">
+                            <input
+                              type="number"
+                              min="0"
+                              max="50"
+                              value={customBleed}
+                              onChange={(e) => {
+                                const val = Number(e.target.value) || 0;
+                                setCustomBleed(val);
+                                setCustomSafeArea(val);
+                              }}
+                              className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#1d90cf]"
+                              placeholder="3"
+                            />
+                            <span className="text-xs font-mono text-zinc-400">{customUnit}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-1">
+                        <button
+                          type="button"
+                          onClick={handleApplyCustomSize}
+                          className="px-5 py-2.5 bg-[#1d90cf] hover:bg-[#187eb7] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-2"
+                        >
+                          <span>Apply Custom Size</span>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
       );

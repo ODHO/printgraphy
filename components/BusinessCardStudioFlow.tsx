@@ -695,16 +695,15 @@ export default function BusinessCardStudioFlow({
         })
         .catch(() => { });
     } else if (templateIdParam) {
-      loadAndPrefillTemplate(templateIdParam);
+      router.push(`/customize?templateId=${templateIdParam}`);
+      return;
     }
   }, [designIdParam, templateIdParam]);
 
   // Function to fetch and pre-fill template into editable state
   const loadAndPrefillTemplate = async (templateId: string) => {
-    setSelectedTemplateId(templateId);
-    setLoadingTemplate(true);
-    setCardData((prev) => ({ ...prev, uploadedImage: null }));
-    setStep("review");
+    window.location.href = `/customize?templateId=${templateId}`;
+    return;
 
     try {
       const res = await fetch(`/api/templates/${templateId}`);
@@ -821,14 +820,14 @@ export default function BusinessCardStudioFlow({
     const isLocked = template.isPaid && (template.price || 0) > 0 && !purchasedTemplateIds.includes(template._id);
     if (isLocked) {
       if (!(await viewerIsSignedIn())) {
-        router.push(registerHref(`/browsedesigns?templateId=${template._id}`, "paid"));
+        router.push(registerHref(`/customize?templateId=${template._id}`, "paid"));
         return;
       }
       setPurchaseModalTemplate(template);
       setIsPurchaseModalOpen(true);
       return;
     }
-    loadAndPrefillTemplate(template._id);
+    router.push(`/customize?templateId=${template._id}`);
   };
 
   const takeSnap = (): EditorSnap => ({
@@ -3301,7 +3300,7 @@ export default function BusinessCardStudioFlow({
                   onClick={() => {
                     const id = previewTemplate._id;
                     setPreviewTemplate(null);
-                    loadAndPrefillTemplate(id);
+                    router.push(`/customize?templateId=${id}`);
                   }}
                   className="rounded-xl bg-[#2196D2] px-4 py-2.5 text-base font-bold text-white cursor-pointer hover:bg-[#1B85BD]"
                 >

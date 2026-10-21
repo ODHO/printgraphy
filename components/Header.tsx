@@ -300,7 +300,7 @@ export default function Header() {
     }
   };
 
-  if (pathname?.startsWith("/vendor")) {
+  if (pathname?.startsWith("/vendor") || pathname?.startsWith("/customize")) {
     return null;
   }
 

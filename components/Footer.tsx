@@ -67,7 +67,8 @@ export default function Footer() {
   if (
     pathname?.startsWith("/auth") ||
     pathname?.startsWith("/vendor") ||
-    pathname?.startsWith("/admin")
+    pathname?.startsWith("/admin") ||
+    pathname?.startsWith("/customize")
   ) {
     return null;
   }
