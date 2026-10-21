@@ -189,11 +189,12 @@ export default function ThreeDCardPreview({
   };
 
   const isBoxProduct = () => {
-    const nameStr = (categoryName || name || "").toLowerCase();
+    const nameStr = `${categoryName || ""} ${name || ""} ${(canvasConfig as any)?.name || ""}`.toLowerCase();
     const mode = canvasConfig?.side_mode;
-    const count = canvasConfig?.sides_count || 2;
+    const count = Number(canvasConfig?.sides_count) || 2;
     return (
       nameStr.includes("box") ||
+      nameStr.includes("mailer") ||
       nameStr.includes("packag") ||
       nameStr.includes("carton") ||
       nameStr.includes("net") ||
@@ -202,12 +203,25 @@ export default function ThreeDCardPreview({
     );
   };
 
+  const isCircleProduct = () => {
+    const str = `${categoryName || ""} ${name || ""} ${corners || ""}`.toLowerCase();
+    return str.includes("circle");
+  };
+
+  const isOvalProduct = () => {
+    const str = `${categoryName || ""} ${name || ""} ${corners || ""}`.toLowerCase();
+    return str.includes("oval");
+  };
+
   // Calculate thickness value (Z dimension)
   const getThicknessVal = () => {
     if (isBoxProduct()) {
       const aspect = getAspect();
       const cardW = aspect < 1 ? 3.5 * aspect : 3.5;
-      return Math.max(1.2, Math.min(2.8, cardW * 0.75));
+      return Math.max(1.5, Math.min(2.8, cardW * 0.8));
+    }
+    if (isCircleProduct() || isOvalProduct()) {
+      return 0.05;
     }
     if (thickness === "Premium Plus") return 0.08;
     if (thickness === "Premium") return 0.05;
@@ -509,9 +523,32 @@ export default function ThreeDCardPreview({
       }
     }
 
-    // 5. Card/Box 3D Mesh
-    const geometry = new THREE.BoxGeometry(cardWidth, cardHeight, cardDepth);
-    const cardMesh = new THREE.Mesh(geometry, materials);
+    // 5. Product 3D Mesh based on shape (Box, Circle, Oval, Card)
+    const isCircle = isCircleProduct();
+    const isOval = isOvalProduct();
+
+    let cardMesh: THREE.Mesh;
+
+    if (isCircle || isOval) {
+      const radius = cardWidth / 2;
+      const cylGeo = new THREE.CylinderGeometry(radius, radius, cardDepth, 64);
+      // Rotate cylinder so top and bottom circular caps face +Z (Front) and -Z (Back)
+      cylGeo.rotateX(Math.PI / 2);
+      if (isOval) {
+        cylGeo.scale(1, 0.65, 1);
+      }
+      // Materials for cylinder: 0: Side edge, 1: Front cap (+Z), 2: Back cap (-Z)
+      const cylMaterials = [
+        edgeMaterial,
+        materials[4] || materials[0], // Front
+        materials[5] || materials[1] || materials[0], // Back
+      ];
+      cardMesh = new THREE.Mesh(cylGeo, cylMaterials);
+    } else {
+      const geometry = new THREE.BoxGeometry(cardWidth, cardHeight, cardDepth);
+      cardMesh = new THREE.Mesh(geometry, materials);
+    }
+
     cardMesh.castShadow = true;
     cardMesh.receiveShadow = true;
     scene.add(cardMesh);
@@ -601,7 +638,7 @@ export default function ThreeDCardPreview({
       if (renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
-      geometry.dispose();
+      cardMesh.geometry.dispose();
       materials.forEach((m) => m.dispose());
       sideTextureRefs.current.forEach((t) => t?.dispose());
       renderer.dispose();

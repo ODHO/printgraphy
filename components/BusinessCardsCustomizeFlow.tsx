@@ -497,6 +497,56 @@ export default function BusinessCardsCustomizeFlow({
 
   const activeCategoryName = (selectedCategory?.name || selectedTemplate?.category || searchParams?.get("category") || "").toLowerCase();
 
+  const [previewShape, setPreviewShape] = useState<"auto" | "box" | "card" | "rounded" | "circle" | "oval" | "square">("auto");
+
+  const isBox = useMemo(() => {
+    const n = `${activeCategoryName} ${selectedCategory?.name || ""} ${selectedCategory?.slug || ""} ${selectedTemplate?.category || ""}`.toLowerCase();
+    return (
+      n.includes("box") ||
+      n.includes("mailer") ||
+      n.includes("carton") ||
+      n.includes("packag") ||
+      (activeCanvasConfig as any)?.side_mode === "multi" ||
+      Number((activeCanvasConfig as any)?.sides_count) > 2
+    );
+  }, [activeCategoryName, selectedCategory, selectedTemplate, activeCanvasConfig]);
+
+  const isCircle = useMemo(() => {
+    const n = `${activeCategoryName} ${cardData.corners} ${selectedVariations["Shape"] || ""}`.toLowerCase();
+    return n.includes("circle");
+  }, [activeCategoryName, cardData.corners, selectedVariations]);
+
+  const isOval = useMemo(() => {
+    const n = `${activeCategoryName} ${cardData.corners} ${selectedVariations["Shape"] || ""}`.toLowerCase();
+    return n.includes("oval");
+  }, [activeCategoryName, cardData.corners, selectedVariations]);
+
+  const isSquare = useMemo(() => {
+    const n = `${activeCategoryName} ${cardData.corners} ${selectedVariations["Shape"] || ""}`.toLowerCase();
+    return n.includes("square") || (Number(activeCanvasConfig.width) > 0 && Number(activeCanvasConfig.width) === Number(activeCanvasConfig.height));
+  }, [activeCategoryName, cardData.corners, selectedVariations, activeCanvasConfig]);
+
+  const isRounded = useMemo(() => {
+    const n = `${cardData.corners} ${selectedVariations["Corners"] || ""} ${selectedVariations["Shape"] || ""}`.toLowerCase();
+    return n.includes("rounded");
+  }, [cardData.corners, selectedVariations]);
+
+  const effectiveShape = useMemo(() => {
+    if (previewShape !== "auto") return previewShape;
+    if (isBox) return "box";
+    if (isCircle) return "circle";
+    if (isOval) return "oval";
+    if (isSquare) return "square";
+    if (isRounded) return "rounded";
+    return "card";
+  }, [previewShape, isBox, isCircle, isOval, isSquare, isRounded]);
+
+  const activeIsBox = effectiveShape === "box";
+  const activeIsCircle = effectiveShape === "circle";
+  const activeIsOval = effectiveShape === "oval";
+  const activeIsSquare = effectiveShape === "square";
+  const activeIsRounded = effectiveShape === "rounded";
+
   const standardSizesForCategory = useMemo((): PrintSize[] => {
     if (activeCategoryName.includes("banner")) {
       return [
@@ -524,6 +574,15 @@ export default function BusinessCardsCustomizeFlow({
         { name: "A6 Pocket (4.1\" × 5.8\")", width: 105, height: 148, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
         { name: "DL Rack Card (3.9\" × 8.3\")", width: 99, height: 210, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
         { name: "Square Flyer (5.8\" × 5.8\")", width: 148, height: 148, unit: "mm", bleed: 3, bleedUnit: "mm", safeArea: 4, safeAreaUnit: "mm" },
+      ];
+    }
+    if (activeCategoryName.includes("box") || activeCategoryName.includes("mailer") || activeCategoryName.includes("carton") || activeCategoryName.includes("packag")) {
+      return [
+        { name: "Small Mailer Box (7\" × 5\" × 2\")", width: 178, height: 127, unit: "mm", bleed: 5, bleedUnit: "mm", safeArea: 8, safeAreaUnit: "mm" },
+        { name: "Medium Mailer Box (9\" × 6\" × 3\")", width: 229, height: 152, unit: "mm", bleed: 5, bleedUnit: "mm", safeArea: 10, safeAreaUnit: "mm" },
+        { name: "Large Shipping Box (12\" × 9\" × 4\")", width: 305, height: 229, unit: "mm", bleed: 6, bleedUnit: "mm", safeArea: 12, safeAreaUnit: "mm" },
+        { name: "Cube Gift Box (6\" × 6\" × 6\")", width: 152, height: 152, unit: "mm", bleed: 5, bleedUnit: "mm", safeArea: 8, safeAreaUnit: "mm" },
+        { name: "Apparel Flat Box (14\" × 10\" × 2.5\")", width: 356, height: 254, unit: "mm", bleed: 6, bleedUnit: "mm", safeArea: 15, safeAreaUnit: "mm" },
       ];
     }
     if (activeCategoryName.includes("postcard") || activeCategoryName.includes("invitation")) {
@@ -683,11 +742,21 @@ export default function BusinessCardsCustomizeFlow({
   const fitDimsSummary = calculateFitDimensions(activeCanvasConfig as any, 440, 340);
 
   const resolvedSides = useMemo(
-    () => resolveTemplateSides(selectedTemplate, selectedCategory || null),
-    [selectedTemplate, selectedCategory]
+    () => resolveTemplateSides(selectedTemplate, selectedCategory || (activeCategoryName ? { name: activeCategoryName } : null)),
+    [selectedTemplate, selectedCategory, activeCategoryName]
   );
-  const sideLabels = resolvedSides.sidesNames;
-  const sidesCount = resolvedSides.sidesCount;
+  const sideLabels = useMemo(() => {
+    if (activeIsBox) {
+      if (resolvedSides.sidesNames.length >= 6) return resolvedSides.sidesNames;
+      return ["Top Lid", "Front Panel", "Bottom Panel", "Back Panel", "Left Flap", "Right Flap"];
+    }
+    return resolvedSides.sidesNames;
+  }, [activeIsBox, resolvedSides]);
+
+  const sidesCount = useMemo(() => {
+    if (activeIsBox) return Math.max(6, resolvedSides.sidesCount);
+    return resolvedSides.sidesCount;
+  }, [activeIsBox, resolvedSides]);
 
   const layersForSide = (idx: number): TextLayer[] => {
     if (idx <= 0) return textLayers;
@@ -3142,10 +3211,20 @@ export default function BusinessCardsCustomizeFlow({
 
             {/* Center: Dynamic Responsive Canvas Stage (Banners, Business Cards, Posters, etc.) */}
             {(() => {
-              const cWidth = Number(activeCanvasConfig.width) || 105;
-              const cHeight = Number(activeCanvasConfig.height) || 60;
+              let cWidth = Number(activeCanvasConfig.width) || 105;
+              let cHeight = Number(activeCanvasConfig.height) || 60;
+              if (activeIsCircle || activeIsSquare) {
+                cWidth = 100;
+                cHeight = 100;
+              } else if (activeIsOval) {
+                cWidth = 125;
+                cHeight = 90;
+              } else if (activeIsBox) {
+                cWidth = 120;
+                cHeight = 95;
+              }
               const cRatio = cWidth / cHeight;
-              const maxBoxW = 620;
+              const maxBoxW = activeIsCircle || activeIsSquare ? 420 : 620;
               const maxBoxH = 360;
               let stageW = maxBoxW;
               let stageH = maxBoxW / cRatio;
@@ -3159,22 +3238,57 @@ export default function BusinessCardsCustomizeFlow({
 
               return (
                 <div className="relative flex-1 flex flex-col items-center justify-center px-4">
-                  {/* Callout Badges & Size Indicator */}
-                  <div style={{ width: `${stageW}px` }} className="max-w-full relative flex items-center justify-between mb-1.5 px-0.5">
-                    {/* Left: Size Selector Pill */}
-                    <button
-                      type="button"
-                      onClick={() => setIsSizeModalOpen(true)}
-                      className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/95 border border-zinc-200 text-[11px] font-semibold text-zinc-700 hover:border-[#1d90cf] hover:text-[#1d90cf] hover:shadow-xs transition-all shadow-2xs cursor-pointer group"
-                      title="Change product dimensions"
-                    >
-                      <svg className="w-3 h-3 text-[#1d90cf]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                      </svg>
-                      <span className="font-bold text-zinc-800 group-hover:text-[#1d90cf]">{currentSizeName}</span>
-                      <span className="text-[10px] text-zinc-400 font-mono">({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit || "mm"})</span>
-                      <span className="text-[10px] text-[#1d90cf] font-bold ml-0.5">Change ▾</span>
-                    </button>
+                  {/* Callout Badges & Size Indicator & Interactive Shape Tester Bar */}
+                  <div style={{ width: `${stageW}px` }} className="max-w-full relative flex items-center justify-between mb-2 px-0.5 flex-wrap gap-2">
+                    {/* Left: Size Selector Pill & Quick Shape Switcher */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => setIsSizeModalOpen(true)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 border border-zinc-200 text-[11px] font-semibold text-zinc-700 hover:border-[#1d90cf] hover:text-[#1d90cf] hover:shadow-xs transition-all shadow-2xs cursor-pointer group"
+                        title="Change product dimensions"
+                      >
+                        <svg className="w-3 h-3 text-[#1d90cf]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                        </svg>
+                        <span className="font-bold text-zinc-800 group-hover:text-[#1d90cf]">{currentSizeName}</span>
+                        <span className="text-[10px] text-zinc-400 font-mono">({cWidth} × {cHeight} {activeCanvasConfig.unit || "mm"})</span>
+                        <span className="text-[10px] text-[#1d90cf] font-bold ml-0.5">Change ▾</span>
+                      </button>
+
+                      {/* Shape Testing Quick-Switcher Bar */}
+                      <div className="flex items-center bg-white/95 p-0.5 rounded-full border border-zinc-200 shadow-2xs gap-0.5">
+                        {[
+                          { id: "box", label: "Box", icon: "📦" },
+                          { id: "card", label: "Card", icon: "💳" },
+                          { id: "rounded", label: "Rounded", icon: "🔲" },
+                          { id: "circle", label: "Circle", icon: "⭕" },
+                          { id: "oval", label: "Oval", icon: "🥚" },
+                          { id: "square", label: "Square", icon: "⬛" },
+                        ].map((sh) => {
+                          const isActive = effectiveShape === sh.id;
+                          return (
+                            <button
+                              key={sh.id}
+                              type="button"
+                              onClick={() => {
+                                setPreviewShape(sh.id as any);
+                                setActiveSideIndex(0);
+                              }}
+                              className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
+                                isActive
+                                  ? "bg-[#1d90cf] text-white shadow-xs font-bold"
+                                  : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
+                              }`}
+                              title={`Test print on ${sh.label}`}
+                            >
+                              <span className="text-xs leading-none">{sh.icon}</span>
+                              <span className="hidden sm:inline">{sh.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
 
                     <div className="flex items-center gap-2">
                       {/* Bleed Area Badge */}
@@ -3199,11 +3313,20 @@ export default function BusinessCardsCustomizeFlow({
                   {viewMode === "3d" ? (
                     <div style={{ width: `${stageW}px`, height: `${stageH}px` }} className="max-w-full rounded-lg overflow-hidden shadow-2xl">
                       <ThreeDCardPreview
+                        categoryName={activeIsBox ? "mailer-boxes" : activeIsCircle ? "circle-sticker" : activeIsOval ? "oval-sticker" : activeCategoryName}
+                        name={activeIsBox ? "Mailer Box" : activeIsCircle ? "Circle Sticker" : activeIsOval ? "Oval Sticker" : (selectedCategory?.name || activeCategoryName)}
+                        canvasConfig={{
+                          ...(activeCanvasConfig as any),
+                          name: activeIsBox ? "Mailer Box" : (selectedCategory?.name || activeCategoryName),
+                          side_mode: activeIsBox ? "multi" : (activeCanvasConfig as any)?.side_mode,
+                          sides_count: sidesCount,
+                          sides_names: sideLabels,
+                        }}
                         frontDesign={currentFrontDesign}
                         backDesign={currentBackDesign}
                         sideDesigns={allSideDesigns}
-                        thickness={cardData.thickness}
-                        corners={cardData.corners}
+                        thickness={activeIsBox ? "Extra Thick" : cardData.thickness}
+                        corners={activeIsRounded ? "Rounded Corners" : activeIsCircle ? "Circle" : activeIsOval ? "Oval" : cardData.corners}
                         sideIndex={activeSideIndex}
                       />
                     </div>
@@ -3218,25 +3341,47 @@ export default function BusinessCardsCustomizeFlow({
                         transform: `scale(${zoomLevel})`,
                         transformOrigin: "center center",
                         transition: "transform 0.1s ease-out",
-                        backgroundColor: activeBgColor || (selectedTemplate ? "#ffffff" : "#0c0d12"),
+                        backgroundColor: activeBgColor || (selectedTemplate ? "#ffffff" : activeIsBox ? "#18181b" : "#0c0d12"),
                         ...(activeBgImage ? { backgroundImage: `url(${activeBgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
                         ...(activeBgGradient ? { backgroundImage: activeBgGradient } : {}),
+                        borderRadius: activeIsCircle ? "50%" : activeIsOval ? "50% / 50%" : activeIsRounded ? "28px" : activeIsBox ? "10px" : "4px",
                       }}
-                      className="max-w-full rounded-xs shadow-2xl relative overflow-hidden select-none cursor-default border border-zinc-900"
+                      className="max-w-full shadow-2xl relative overflow-hidden select-none cursor-default border border-zinc-900"
                     >
                       {/* Glossy diagonal sheen reflection */}
                       <div
                         className="absolute inset-0 pointer-events-none z-10"
                         style={{
                           background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 45%, transparent 65%)",
+                          borderRadius: activeIsCircle ? "50%" : activeIsOval ? "50% / 50%" : activeIsRounded ? "28px" : activeIsBox ? "10px" : "4px",
                         }}
                       />
 
-                      {/* Safe Area Green Dashed Border dynamically inset */}
+                      {/* Safe Area Green Dashed Border dynamically inset with matching shape */}
                       <div
-                        style={{ inset: `${safeInset}px` }}
-                        className="absolute border-2 border-dashed border-[#00d084] pointer-events-none z-20 rounded-xs"
+                        style={{
+                          inset: `${safeInset}px`,
+                          borderRadius: activeIsCircle ? "50%" : activeIsOval ? "50% / 50%" : activeIsRounded ? "22px" : activeIsBox ? "8px" : "2px",
+                        }}
+                        className="absolute border-2 border-dashed border-[#00d084] pointer-events-none z-20"
                       />
+
+                      {/* Packaging Box Visual Elements */}
+                      {activeIsBox && (
+                        <>
+                          {/* Top-left packaging panel badge */}
+                          <div className="absolute top-2.5 left-2.5 z-25 pointer-events-none flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-500/15 border border-amber-500/30 text-[11px] font-semibold text-amber-300 backdrop-blur-xs">
+                            <span>📦</span>
+                            <span>{sideLabels[activeSideIndex] || `Face ${activeSideIndex + 1}`}</span>
+                            <span className="text-zinc-400 font-mono text-[9px] font-normal">• Packaging Box</span>
+                          </div>
+                          {/* Packaging fold crease guides */}
+                          <div className="absolute inset-x-0 top-3 border-t border-dashed border-amber-500/20 pointer-events-none z-15" />
+                          <div className="absolute inset-x-0 bottom-3 border-b border-dashed border-amber-500/20 pointer-events-none z-15" />
+                          <div className="absolute inset-y-0 left-3 border-l border-dashed border-amber-500/20 pointer-events-none z-15" />
+                          <div className="absolute inset-y-0 right-3 border-r border-dashed border-amber-500/20 pointer-events-none z-15" />
+                        </>
+                      )}
 
                   {/* Render Template Shapes & Decor Objects if a template is active */}
                   {selectedTemplate && (
@@ -3248,8 +3393,8 @@ export default function BusinessCardsCustomizeFlow({
                     </div>
                   )}
 
-                  {/* If NO template is selected, render default stylish template branding */}
-                  {!selectedTemplate && !cardData.uploadedImage && activeSideIndex === 0 && (
+                  {/* If NO template is selected, render default stylish template branding ONLY for business cards */}
+                  {!selectedTemplate && !cardData.uploadedImage && activeSideIndex === 0 && !activeIsBox && !activeIsCircle && !activeIsOval && !activeIsSquare && (activeCategoryName.includes("card") || !activeCategoryName) && (
                     <>
                       {/* Geometric Emblem Logo centered near top */}
                       <div className="absolute top-[14%] left-1/2 -translate-x-1/2 flex items-center justify-center z-15 pointer-events-none">
@@ -3277,6 +3422,14 @@ export default function BusinessCardsCustomizeFlow({
                       {/* Vibrant Cyan-Blue Bottom Banner */}
                       <div className="absolute bottom-0 left-0 right-0 h-[22%] bg-[#00a6f4] z-10" />
                     </>
+                  )}
+
+                  {/* If Box and no template, render clean packaging helper watermark */}
+                  {!selectedTemplate && !cardData.uploadedImage && activeIsBox && (
+                    <div className="absolute bottom-3 right-3 z-15 pointer-events-none flex items-center gap-1.5 text-zinc-500 text-[10px]">
+                      <span>♻️</span>
+                      <span className="font-mono uppercase tracking-wider text-[9px]">Custom Packaging</span>
+                    </div>
                   )}
 
                   {/* Active Side Dynamic Image Layers */}
@@ -3393,39 +3546,53 @@ export default function BusinessCardsCustomizeFlow({
               );
             })()}
 
-            {/* Right Side Panel: Side Switcher (Front & Back) */}
-            <div className="flex flex-col gap-4 w-[120px] shrink-0 z-20">
-              {/* Front Card Thumbnail */}
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => selectSide(0)}
-                className={`bg-[#e2e4e9] p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                  activeSideIndex === 0 ? "border-[#1d90cf] shadow-md" : "border-transparent hover:border-zinc-300"
-                }`}
-              >
-                <div className="w-full h-[58px] bg-white rounded-xs shadow-xs overflow-hidden relative border border-zinc-200">
-                  {/* Mini preview */}
-                  <div className="w-full h-[78%] bg-[#0c0d12]" />
-                  <div className="w-full h-[22%] bg-[#00a6f4]" />
-                </div>
-                <p className="text-xs font-semibold text-zinc-700 text-center mt-2">Front</p>
-              </div>
-
-              {/* Back Card Thumbnail */}
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => selectSide(1)}
-                className={`bg-[#e2e4e9] p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                  activeSideIndex === 1 ? "border-[#1d90cf] shadow-md" : "border-transparent hover:border-zinc-300"
-                }`}
-              >
-                <div className="w-full h-[58px] bg-white rounded-xs shadow-xs overflow-hidden relative border border-zinc-200 flex items-center justify-center">
-                  <span className="text-[10px] text-zinc-400 font-mono">Back</span>
-                </div>
-                <p className="text-xs font-semibold text-zinc-700 text-center mt-2">Back</p>
-              </div>
+            {/* Right Side Panel: Dynamic Side Switcher (Front, Back & All Packaging Panels) */}
+            <div className="flex flex-col gap-3 w-[125px] shrink-0 z-20 max-h-[560px] overflow-y-auto pr-1">
+              {Array.from({ length: Math.max(1, sidesCount || 1) }).map((_, idx) => {
+                const label = sideLabels[idx] || `Side ${idx + 1}`;
+                const isActive = activeSideIndex === idx;
+                return (
+                  <div
+                    key={idx}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => selectSide(idx)}
+                    className={`bg-[#e2e4e9] p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
+                      isActive ? "border-[#1d90cf] shadow-md ring-1 ring-[#1d90cf]/50" : "border-transparent hover:border-zinc-300"
+                    }`}
+                  >
+                    <div
+                      className={`w-full h-[52px] bg-white shadow-xs overflow-hidden relative border border-zinc-200 flex flex-col items-center justify-center ${
+                        activeIsCircle ? "rounded-full" : activeIsOval ? "rounded-[50%]" : activeIsRounded ? "rounded-xl" : activeIsBox ? "rounded-sm" : "rounded-xs"
+                      }`}
+                    >
+                      {/* Thumbnail mini preview */}
+                      {activeIsBox ? (
+                        <div className="flex flex-col items-center justify-center text-center p-1">
+                          <span className="text-base leading-none">📦</span>
+                          <span className="text-[9px] font-bold text-zinc-600 mt-1 truncate max-w-[85px] leading-tight">
+                            {label.replace(" Panel", "").replace(" Flap", "")}
+                          </span>
+                        </div>
+                      ) : idx === 0 && !selectedTemplate && !cardData.uploadedImage && (activeCategoryName.includes("card") || !activeCategoryName) ? (
+                        <>
+                          <div className="w-full h-[78%] bg-[#0c0d12]" />
+                          <div className="w-full h-[22%] bg-[#00a6f4]" />
+                        </>
+                      ) : (
+                        <div className="w-full h-full bg-zinc-50 flex items-center justify-center">
+                          <span className="text-[10px] text-zinc-500 font-mono font-medium truncate px-1">
+                            {label}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <p className={`text-xs font-semibold text-center mt-1.5 truncate ${isActive ? "text-[#1d90cf]" : "text-zinc-700"}`}>
+                      {label}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Bottom-Left Floating Zoom Control */}

@@ -26,7 +26,16 @@ function asMode(value: unknown, count: number, supportsBack?: boolean): SideMode
   return "multi";
 }
 
-function defaultNames(count: number): string[] {
+function isBoxProduct(str: string): boolean {
+  const lower = str.toLowerCase();
+  return lower.includes("box") || lower.includes("mailer") || lower.includes("carton") || lower.includes("packag");
+}
+
+function defaultNames(count: number, isBox = false): string[] {
+  if (isBox) {
+    const boxFaces = ["Top Lid", "Front Panel", "Bottom Panel", "Back Panel", "Left Flap", "Right Flap"];
+    return Array.from({ length: count }, (_, i) => boxFaces[i] || `Face ${i + 1}`);
+  }
   if (count <= 1) return ["Front Side"];
   if (count === 2) return ["Front Side", "Back Side"];
   return Array.from({ length: count }, (_, i) => `Side ${i + 1}`);
@@ -48,8 +57,11 @@ export function resolveTemplateSides(
     canvas_config?: any;
     canvasConfig?: any;
     supports_back_side?: boolean;
+    category?: string;
   } | null,
   category?: {
+    name?: string;
+    slug?: string;
     side_mode?: SideMode;
     sides_count?: number;
     sides_names?: string[];
@@ -62,24 +74,28 @@ export function resolveTemplateSides(
   const front = template?.front_design || null;
   const back = template?.back_design || null;
 
+  const categoryName = `${category?.name || ""} ${category?.slug || ""} ${template?.category || ""}`;
+  const isBox = isBoxProduct(categoryName);
+
   let count =
     Number(canvas.sides_count) ||
     Number(category?.sides_count) ||
     (savedSides.length > 0 ? savedSides.length : 0) ||
+    (isBox ? 6 : 0) ||
     (front || back ? 2 : 0) ||
     2;
 
-  if (!Number.isFinite(count) || count < 1) count = 2;
+  if (!Number.isFinite(count) || count < 1) count = isBox ? 6 : 2;
   count = Math.max(1, Math.min(12, Math.round(count)));
 
   const mode = asMode(
-    canvas.side_mode || category?.side_mode,
+    canvas.side_mode || category?.side_mode || (isBox ? "multi" : undefined),
     count,
     canvas.supports_back_side ?? category?.supports_back_side ?? template?.supports_back_side
   );
   if (mode === "single") count = 1;
   else if (mode === "double") count = 2;
-  else if (count < 3) count = Math.max(3, savedSides.length || 3);
+  else if (count < 3 && !isBox) count = Math.max(3, savedSides.length || 3);
 
   const namesIn =
     (Array.isArray(canvas.sides_names) && canvas.sides_names.length > 0
@@ -87,7 +103,7 @@ export function resolveTemplateSides(
       : Array.isArray(category?.sides_names) && category!.sides_names!.length > 0
         ? category!.sides_names!
         : []) || [];
-  const sidesNames = Array.from({ length: count }, (_, i) => String(namesIn[i] || defaultNames(count)[i] || `Side ${i + 1}`));
+  const sidesNames = Array.from({ length: count }, (_, i) => String(namesIn[i] || defaultNames(count, isBox)[i] || `Side ${i + 1}`));
 
   const frontIsFullList =
     savedSides.length >= count &&

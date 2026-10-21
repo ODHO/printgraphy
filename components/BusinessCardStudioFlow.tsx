@@ -248,6 +248,7 @@ export default function BusinessCardStudioFlow({
 
   // View Mode: "3d" | "2d"
   const [viewMode, setViewMode] = useState<"3d" | "2d">("3d");
+  const [previewShape, setPreviewShape] = useState<"auto" | "box" | "card" | "rounded" | "circle" | "oval" | "square">("auto");
 
   // Templates fetched from admin API
   const [templates, setTemplates] = useState<ApiTemplate[]>([]);
@@ -1399,12 +1400,43 @@ export default function BusinessCardStudioFlow({
   const hasTemplateLogo = imageLayers.some((layer) => layer.label === "Logo") || (selectedTemplate?.front_design?.objects || []).some(isArtworkImage);
   const backHasArtwork = backImageLayers.length > 0;
 
+  const isBoxProduct = useMemo(() => {
+    const n = `${categoryParam || ""} ${selectedTemplate?.category || ""} ${selectedTemplate?.title || ""}`.toLowerCase();
+    return n.includes("box") || n.includes("mailer") || n.includes("carton") || n.includes("packag");
+  }, [categoryParam, selectedTemplate]);
+
+  const effectiveShape = useMemo(() => {
+    if (previewShape !== "auto") return previewShape;
+    if (isBoxProduct) return "box";
+    const c = (cardData.corners || "").toLowerCase();
+    if (c.includes("circle")) return "circle";
+    if (c.includes("oval")) return "oval";
+    if (c.includes("square")) return "square";
+    if (c.includes("rounded")) return "rounded";
+    return "card";
+  }, [previewShape, isBoxProduct, cardData.corners]);
+
+  const activeIsBox = effectiveShape === "box";
+  const activeIsCircle = effectiveShape === "circle";
+  const activeIsOval = effectiveShape === "oval";
+  const activeIsSquare = effectiveShape === "square";
+  const activeIsRounded = effectiveShape === "rounded";
+
   const resolvedSides = useMemo(
-    () => resolveTemplateSides(selectedTemplate, templateCategory || null),
-    [selectedTemplate, templateCategory]
+    () => resolveTemplateSides(selectedTemplate, templateCategory || (categoryParam ? { name: categoryParam } : null)),
+    [selectedTemplate, templateCategory, categoryParam]
   );
-  const sideLabels = resolvedSides.sidesNames;
-  const sidesCount = resolvedSides.sidesCount;
+  const sideLabels = useMemo(() => {
+    if (activeIsBox) {
+      if (resolvedSides.sidesNames.length >= 6) return resolvedSides.sidesNames;
+      return ["Top Lid", "Front Panel", "Bottom Panel", "Back Panel", "Left Flap", "Right Flap"];
+    }
+    return resolvedSides.sidesNames;
+  }, [activeIsBox, resolvedSides]);
+  const sidesCount = useMemo(() => {
+    if (activeIsBox) return Math.max(6, resolvedSides.sidesCount);
+    return resolvedSides.sidesCount;
+  }, [activeIsBox, resolvedSides]);
 
   const selectSide = (idx: number) => {
     const clamped = Math.max(0, Math.min(idx, Math.max(0, sidesCount - 1)));
@@ -2227,12 +2259,47 @@ export default function BusinessCardStudioFlow({
             {/* Left Interactive Card Canvas */}
             <div className="lg:col-span-7 flex flex-col items-center gap-4 lg:sticky lg:top-4 lg:self-start lg:z-20 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
 
-              {/* View Mode Selector Pills (3D Realistic vs 2D Layout Editor) */}
-              <div className="w-full flex items-center justify-between bg-white px-4 py-2 rounded-2xl border border-zinc-200 shadow-xs">
-                <span className="text-base font-bold text-zinc-700 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#2196D2]" />
-                  Preview Canvas
-                </span>
+              {/* View Mode Selector & Quick Shape Switcher Bar */}
+              <div className="w-full flex items-center justify-between bg-white px-4 py-2 rounded-2xl border border-zinc-200 shadow-xs flex-wrap gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm font-bold text-zinc-700 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[#2196D2]" />
+                    Preview
+                  </span>
+
+                  {/* Shape Switcher */}
+                  <div className="flex items-center bg-zinc-100 p-0.5 rounded-xl border border-zinc-200/80 gap-0.5">
+                    {[
+                      { id: "box", label: "Box", icon: "📦" },
+                      { id: "card", label: "Card", icon: "💳" },
+                      { id: "rounded", label: "Rounded", icon: "🔲" },
+                      { id: "circle", label: "Circle", icon: "⭕" },
+                      { id: "oval", label: "Oval", icon: "🥚" },
+                      { id: "square", label: "Square", icon: "⬛" },
+                    ].map((sh) => {
+                      const isActive = effectiveShape === sh.id;
+                      return (
+                        <button
+                          key={sh.id}
+                          type="button"
+                          onClick={() => {
+                            setPreviewShape(sh.id as any);
+                            setActiveSideIndex(0);
+                          }}
+                          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                            isActive
+                              ? "bg-[#2196D2] text-white shadow-xs font-bold"
+                              : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/60"
+                          }`}
+                          title={`Test print on ${sh.label}`}
+                        >
+                          <span className="text-xs leading-none">{sh.icon}</span>
+                          <span className="hidden sm:inline">{sh.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
                 <div className="inline-flex p-1 bg-zinc-100 rounded-xl">
                   <button
@@ -2329,9 +2396,12 @@ export default function BusinessCardStudioFlow({
                 ) : viewMode === "3d" ? (
                   <div className="w-full h-[440px] relative flex items-center justify-center">
                     <ThreeDCardPreview
+                      categoryName={activeIsBox ? "mailer-boxes" : activeIsCircle ? "circle-sticker" : activeIsOval ? "oval-sticker" : (categoryParam || selectedTemplate?.category || "")}
+                      name={activeIsBox ? "Mailer Box" : activeIsCircle ? "Circle Sticker" : activeIsOval ? "Oval Sticker" : (cardData.name || selectedTemplate?.title || categoryParam || "")}
                       canvasConfig={{
                         ...(activeCanvasConfig as any),
-                        side_mode: resolvedSides.sideMode,
+                        name: activeIsBox ? "Mailer Box" : (categoryParam || selectedTemplate?.category || ""),
+                        side_mode: activeIsBox ? "multi" : resolvedSides.sideMode,
                         sides_count: sidesCount,
                         sides_names: sideLabels,
                         supports_back_side: sidesCount > 1,
@@ -2353,9 +2423,8 @@ export default function BusinessCardStudioFlow({
                       textLayers={[]}
                       side={activeSideIndex === 1 ? "back" : "front"}
                       sideIndex={activeSideIndex}
-                      thickness={cardData.thickness}
-                      corners={cardData.corners}
-                      name={cardData.name}
+                      thickness={activeIsBox ? "Extra Thick" : cardData.thickness}
+                      corners={activeIsRounded ? "Rounded Corners" : activeIsCircle ? "Circle" : activeIsOval ? "Oval" : cardData.corners}
                       email={cardData.email}
                       website={cardData.website}
                       onSideChange={(s) => selectSide(s === "back" ? 1 : 0)}
@@ -2375,10 +2444,11 @@ export default function BusinessCardStudioFlow({
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
-                    className="relative rounded-xl shadow-2xl p-6 flex flex-col justify-between overflow-hidden border border-zinc-800 transition-all select-none"
+                    className="relative shadow-2xl p-6 flex flex-col justify-between overflow-hidden border border-zinc-800 transition-all select-none"
                     style={{
                       width: `${fitDims.renderWidth}px`,
                       height: `${fitDims.renderHeight}px`,
+                      borderRadius: activeIsCircle ? "50%" : activeIsOval ? "50% / 50%" : activeIsRounded ? "28px" : activeIsBox ? "10px" : "12px",
                       backgroundColor:
                         editingExtra
                           ? activeBaseDesign?.bgColor || "#141414"
@@ -2403,6 +2473,21 @@ export default function BusinessCardStudioFlow({
                       backgroundPosition: "center",
                     }}
                   >
+                    {/* Packaging Box Visual Elements */}
+                    {activeIsBox && (
+                      <>
+                        <div className="absolute top-2.5 left-2.5 z-25 pointer-events-none flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-500/15 border border-amber-500/30 text-[11px] font-semibold text-amber-300 backdrop-blur-xs">
+                          <span>📦</span>
+                          <span>{sideLabels[activeSideIndex] || `Face ${activeSideIndex + 1}`}</span>
+                          <span className="text-zinc-400 font-mono text-[9px] font-normal">• Packaging Box</span>
+                        </div>
+                        <div className="absolute inset-x-0 top-3 border-t border-dashed border-amber-500/20 pointer-events-none z-15" />
+                        <div className="absolute inset-x-0 bottom-3 border-b border-dashed border-amber-500/20 pointer-events-none z-15" />
+                        <div className="absolute inset-y-0 left-3 border-l border-dashed border-amber-500/20 pointer-events-none z-15" />
+                        <div className="absolute inset-y-0 right-3 border-r border-dashed border-amber-500/20 pointer-events-none z-15" />
+                      </>
+                    )}
+
                     {editingExtra && activeBaseDesign?.bgImage && (
                       <img
                         src={mediaSrc(activeBaseDesign.bgImage)}
@@ -3400,8 +3485,11 @@ export default function BusinessCardStudioFlow({
             <div className="bg-[#111318] px-4 py-4">
               <div className="relative h-[460px] overflow-hidden rounded-2xl">
                 <ThreeDCardPreview
+                  categoryName={previewTemplate?.category || categoryParam || ""}
+                  name={previewTemplate?.title || ""}
                   canvasConfig={{
                     ...(previewTemplate.canvas_config || previewTemplate.canvasConfig || {}),
+                    name: previewTemplate?.category || categoryParam || "",
                     side_mode: previewResolved.sideMode,
                     sides_count: previewResolved.sidesCount,
                     sides_names: previewResolved.sidesNames,
