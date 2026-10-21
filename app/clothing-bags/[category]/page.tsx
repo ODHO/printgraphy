@@ -94,17 +94,6 @@ export default async function ClothingBagsCategoryPage({
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/15" />
 
         <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex flex-col justify-end min-h-[42vh] sm:min-h-[48vh]">
-          <nav className="flex flex-wrap items-center gap-2 text-sm text-white/70 mb-3">
-            <Link href="/" className="hover:text-white">
-              Home
-            </Link>
-            <span>›</span>
-            <Link href="/clothing-bags" className="hover:text-white">
-              Clothing & Bags
-            </Link>
-            <span>›</span>
-            <span className="text-white font-medium">{cat.name}</span>
-          </nav>
           <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight drop-shadow-md">
             {cat.name}
           </h1>

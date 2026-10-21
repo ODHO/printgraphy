@@ -364,6 +364,7 @@ export default function BusinessCardsCustomizeFlow({
   const gapOwnerRef = useRef<"text" | "logo">("text");
   const textClipboardRef = useRef<TextLayer | null>(null);
   const history = useEditorHistory<EditorSnap>();
+  const [isArrangeMenuOpen, setIsArrangeMenuOpen] = useState(false);
 
   interface PrintCategory {
     _id: string;
@@ -408,6 +409,13 @@ export default function BusinessCardsCustomizeFlow({
   const [customUnit, setCustomUnit] = useState<CanvasUnit>("mm");
   const [customBleed, setCustomBleed] = useState<number>(3);
   const [customSafeArea, setCustomSafeArea] = useState<number>(3);
+  const [categorySearchQuery, setCategorySearchQuery] = useState("");
+
+  const filteredCategoriesList = useMemo(() => {
+    if (!categorySearchQuery.trim()) return categories;
+    const q = categorySearchQuery.toLowerCase();
+    return categories.filter((c) => c.name?.toLowerCase().includes(q) || c.description?.toLowerCase().includes(q));
+  }, [categories, categorySearchQuery]);
 
   const applyCategory = (cat: PrintCategory) => {
     setSelectedCategory(cat);
@@ -1356,9 +1364,16 @@ export default function BusinessCardsCustomizeFlow({
     gapOwnerRef.current = "text";
     setSelectionGap(selectionGapForAnchor(x, y, width, height, layer?.textAlign || "left", layoutW, layoutH));
 
-    const moveLayer = (prev: TextLayer[]) =>
-      prev.map((layer) => (layer.id === draggingTextId ? { ...layer, x, y } : layer));
-    patchActiveLayers(moveLayer);
+    const isImage = imageLayersForSide(activeSideIndex).some((img) => img.id === draggingTextId);
+    if (isImage) {
+      patchActiveImageLayers((prev) =>
+        prev.map((img) => (img.id === draggingTextId ? { ...img, x, y } : img))
+      );
+    } else {
+      const moveLayer = (prev: TextLayer[]) =>
+        prev.map((layer) => (layer.id === draggingTextId ? { ...layer, x, y } : layer));
+      patchActiveLayers(moveLayer);
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -1526,7 +1541,7 @@ export default function BusinessCardsCustomizeFlow({
   };
 
   const deleteTextLayer = (id: string) => {
-    if (requiredLayerIds.includes(id)) return;
+    setRequiredLayerIds((prev) => prev.filter((rId) => rId !== id));
     patchActiveLayers((prev) => prev.filter((layer) => layer.id !== id));
     if (activeTextId === id) setActiveTextId(null);
   };
@@ -1534,6 +1549,152 @@ export default function BusinessCardsCustomizeFlow({
   const deleteImageLayer = (id: string) => {
     patchActiveImageLayers((prev) => prev.filter((layer) => layer.id !== id));
     if (activeTextId === id) setActiveTextId(null);
+  };
+
+  const bringToFront = () => {
+    if (!activeTextId) return;
+    history.push(takeSnap());
+    if (activeImageLayer) {
+      patchActiveImageLayers((prev) => {
+        const idx = prev.findIndex((l) => l.id === activeTextId);
+        if (idx < 0 || idx === prev.length - 1) return prev;
+        const item = prev[idx];
+        const rest = prev.filter((_, i) => i !== idx);
+        return [...rest, item];
+      });
+    } else {
+      patchActiveLayers((prev) => {
+        const idx = prev.findIndex((l) => l.id === activeTextId);
+        if (idx < 0 || idx === prev.length - 1) return prev;
+        const item = prev[idx];
+        const rest = prev.filter((_, i) => i !== idx);
+        return [...rest, item];
+      });
+    }
+    setIsArrangeMenuOpen(false);
+  };
+
+  const sendToBack = () => {
+    if (!activeTextId) return;
+    history.push(takeSnap());
+    if (activeImageLayer) {
+      patchActiveImageLayers((prev) => {
+        const idx = prev.findIndex((l) => l.id === activeTextId);
+        if (idx <= 0) return prev;
+        const item = prev[idx];
+        const rest = prev.filter((_, i) => i !== idx);
+        return [item, ...rest];
+      });
+    } else {
+      patchActiveLayers((prev) => {
+        const idx = prev.findIndex((l) => l.id === activeTextId);
+        if (idx <= 0) return prev;
+        const item = prev[idx];
+        const rest = prev.filter((_, i) => i !== idx);
+        return [item, ...rest];
+      });
+    }
+    setIsArrangeMenuOpen(false);
+  };
+
+  const bringForward = () => {
+    if (!activeTextId) return;
+    history.push(takeSnap());
+    if (activeImageLayer) {
+      patchActiveImageLayers((prev) => {
+        const idx = prev.findIndex((l) => l.id === activeTextId);
+        if (idx < 0 || idx === prev.length - 1) return prev;
+        const next = [...prev];
+        const temp = next[idx];
+        next[idx] = next[idx + 1];
+        next[idx + 1] = temp;
+        return next;
+      });
+    } else {
+      patchActiveLayers((prev) => {
+        const idx = prev.findIndex((l) => l.id === activeTextId);
+        if (idx < 0 || idx === prev.length - 1) return prev;
+        const next = [...prev];
+        const temp = next[idx];
+        next[idx] = next[idx + 1];
+        next[idx + 1] = temp;
+        return next;
+      });
+    }
+    setIsArrangeMenuOpen(false);
+  };
+
+  const sendBackward = () => {
+    if (!activeTextId) return;
+    history.push(takeSnap());
+    if (activeImageLayer) {
+      patchActiveImageLayers((prev) => {
+        const idx = prev.findIndex((l) => l.id === activeTextId);
+        if (idx <= 0) return prev;
+        const next = [...prev];
+        const temp = next[idx];
+        next[idx] = next[idx - 1];
+        next[idx - 1] = temp;
+        return next;
+      });
+    } else {
+      patchActiveLayers((prev) => {
+        const idx = prev.findIndex((l) => l.id === activeTextId);
+        if (idx <= 0) return prev;
+        const next = [...prev];
+        const temp = next[idx];
+        next[idx] = next[idx - 1];
+        next[idx - 1] = temp;
+        return next;
+      });
+    }
+    setIsArrangeMenuOpen(false);
+  };
+
+  const moveLayerToOtherSide = () => {
+    if (!activeTextId) return;
+    history.push(takeSnap());
+    if (activeImageLayer) {
+      const layer = activeImageLayer;
+      deleteImageLayer(layer.id);
+      if (activeSideIndex === 0) {
+        setBackImageLayers((prev) => [...prev, layer]);
+        selectSide(1);
+      } else {
+        setImageLayers((prev) => [...prev, layer]);
+        selectSide(0);
+      }
+    } else {
+      const layer = activeLayer;
+      if (!layer) return;
+      deleteTextLayer(layer.id);
+      if (activeSideIndex === 0) {
+        setBackTextLayers((prev) => [...prev, layer]);
+        selectSide(1);
+      } else {
+        setTextLayers((prev) => [...prev, layer]);
+        selectSide(0);
+      }
+    }
+    setIsArrangeMenuOpen(false);
+  };
+
+  const removeUploadedArtwork = () => {
+    history.push(takeSnap());
+    if (activeSideIndex === 1) {
+      setCardData((prev) => ({
+        ...prev,
+        backUploadedImage: null,
+        backBgMode: "color",
+      }));
+    } else {
+      setCardData((prev) => ({
+        ...prev,
+        uploadedImage: null,
+        fileName: "",
+        bgMode: "color",
+      }));
+    }
   };
 
   const startImageLayerDrag = (layerId: string, event: React.PointerEvent) => {
@@ -1709,7 +1870,15 @@ export default function BusinessCardsCustomizeFlow({
   };
 
   const handleDelete = () => {
-    setCardData((prev) => ({ ...prev, uploadedImage: null, fileName: "", rotation: 0 }));
+    setCardData((prev) => ({
+      ...prev,
+      uploadedImage: null,
+      backUploadedImage: null,
+      fileName: "",
+      rotation: 0,
+      bgMode: "color",
+      backBgMode: "color",
+    }));
   };
 
   const handleTemplateDownload = (format: string) => {
@@ -1838,9 +2007,13 @@ export default function BusinessCardsCustomizeFlow({
       }
     },
     remove: () => {
-      if (gapOwnerRef.current === "logo" || !activeTextId || requiredLayerIds.includes(activeTextId)) return;
+      if (!activeTextId) return;
       history.push(takeSnap());
-      deleteTextLayer(activeTextId);
+      if (activeImageLayer) {
+        deleteImageLayer(activeTextId);
+      } else {
+        deleteTextLayer(activeTextId);
+      }
       setSelectionGap(null);
     },
   });
@@ -1959,15 +2132,39 @@ export default function BusinessCardsCustomizeFlow({
 
       {step === "category" && (
         <div className="container mx-auto px-4 sm:px-6 py-8 flex-1">
-          <div className="max-w-2xl mb-8">
-            <h1 className="text-2xl sm:text-3xl font-black text-zinc-900">Choose a Product Size &amp; Canvas</h1>
-            <p className="text-base text-zinc-500 mt-1.5">
-              Select standard print dimensions or custom format to initiate your interactive design canvas.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div className="max-w-2xl">
+              <h1 className="text-2xl sm:text-3xl font-black text-zinc-900">Choose a Product Size &amp; Canvas</h1>
+              <p className="text-base text-zinc-500 mt-1.5">
+                Select standard print dimensions or custom format to initiate your interactive design canvas.
+              </p>
+            </div>
+
+            <div className="relative w-full sm:w-72">
+              <svg className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search sizes or categories..."
+                value={categorySearchQuery}
+                onChange={(e) => setCategorySearchQuery(e.target.value)}
+                className="w-full bg-white border border-zinc-200/90 rounded-xl pl-10 pr-8 py-2.5 text-xs sm:text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#2196D2] shadow-2xs"
+              />
+              {categorySearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setCategorySearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 text-xs font-bold"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {categories.map((cat) => (
+            {filteredCategoriesList.map((cat) => (
               <button
                 key={cat._id}
                 type="button"
@@ -2226,18 +2423,31 @@ export default function BusinessCardsCustomizeFlow({
 
                   <div className="mt-4 flex items-center justify-between w-full max-w-md bg-zinc-50 px-4 py-2.5 rounded-xl border border-zinc-200">
                     <div className="flex items-center space-x-2 truncate pr-2">
-                      <svg className="w-4 h-4 text-[#2196D2] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 text-[#1d90cf] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       <span className="text-sm font-bold text-zinc-700 truncate">{cardData.fileName || "Uploaded Artwork"}</span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="text-sm font-bold text-[#2196D2] hover:underline cursor-pointer shrink-0"
-                    >
-                      Change
-                    </button>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="text-sm font-bold text-[#1d90cf] hover:underline cursor-pointer"
+                      >
+                        Change
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        className="text-sm font-bold text-red-600 hover:text-red-700 hover:underline cursor-pointer flex items-center gap-1"
+                        title="Remove uploaded image"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                        <span>Remove</span>
+                      </button>
+                    </div>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -2247,11 +2457,21 @@ export default function BusinessCardsCustomizeFlow({
                     />
                   </div>
 
-                  <div className="mt-4">
+                  <div className="mt-5 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleDelete();
+                        if (needsCategory) setStep("category");
+                      }}
+                      className="px-5 py-2.5 border border-zinc-300 hover:bg-zinc-100 text-zinc-700 font-bold text-sm rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+                    >
+                      <span>← Back</span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => setStep("review")}
-                      className="px-8 py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold text-sm rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
+                      className="px-8 py-2.5 bg-[#1d90cf] hover:bg-[#167bb3] text-white font-bold text-sm rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
                     >
                       <span>Proceed to Design Studio</span>
                       <span>→</span>
@@ -2390,19 +2610,41 @@ export default function BusinessCardsCustomizeFlow({
         <div className="w-full flex-1 flex flex-col bg-[#eef0f4] min-h-screen">
           {/* Top Navbar */}
           <header className="w-full bg-white border-b border-zinc-200 px-6 py-3 flex items-center justify-between select-none shrink-0 z-30">
-            {/* Left: printgraphi logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="relative w-8 h-8 flex items-center justify-center">
-                <svg viewBox="0 0 40 40" className="w-8 h-8" fill="none">
-                  <path d="M6 10 C6 8, 8 6, 10 6 L20 6 L12 24 L6 18 Z" fill="#1d90cf" />
-                  <path d="M12 24 L20 6 L30 16 L20 34 Z" fill="#0b6fb3" />
-                  <path d="M20 34 L30 16 L34 22 C35 24, 34 28, 30 32 Z" fill="#00a6f4" />
+            {/* Left: Back button & printgraphi logo */}
+            <div className="flex items-center gap-3.5">
+              <button
+                type="button"
+                onClick={() => {
+                  if (cardData.uploadedImage || cardData.fileName) {
+                    setStep("upload");
+                  } else if (needsCategory) {
+                    setStep("category");
+                  } else {
+                    router.back();
+                  }
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-semibold text-zinc-700 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors cursor-pointer"
+                title="Go back to previous step"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
-              </div>
-              <span className="text-2xl font-bold tracking-tight text-zinc-900 font-sans">
-                print<span className="text-zinc-800 font-medium">graphi</span>
-              </span>
-            </Link>
+                <span>Back</span>
+              </button>
+
+              <Link href="/" className="flex items-center gap-2 group">
+                <div className="relative w-8 h-8 flex items-center justify-center">
+                  <svg viewBox="0 0 40 40" className="w-8 h-8" fill="none">
+                    <path d="M6 10 C6 8, 8 6, 10 6 L20 6 L12 24 L6 18 Z" fill="#1d90cf" />
+                    <path d="M12 24 L20 6 L30 16 L20 34 Z" fill="#0b6fb3" />
+                    <path d="M20 34 L30 16 L34 22 C35 24, 34 28, 30 32 Z" fill="#00a6f4" />
+                  </svg>
+                </div>
+                <span className="text-2xl font-bold tracking-tight text-zinc-900 font-sans">
+                  print<span className="text-zinc-800 font-medium">graphi</span>
+                </span>
+              </Link>
+            </div>
 
             {/* Right: Preview button & Next button */}
             <div className="flex items-center gap-6">
@@ -2621,37 +2863,139 @@ export default function BusinessCardsCustomizeFlow({
               <span>Bleed line prevents white edges</span>
             </div>
 
-            {/* Right: Arrange & Duplicate */}
-            <div className="flex items-center gap-3 sm:gap-5 shrink-0 whitespace-nowrap">
+            {/* Right: Add Text, Delete, Arrange & Duplicate */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0 whitespace-nowrap relative">
+              {/* Add Text Quick Button */}
               <button
                 type="button"
-                onClick={() => {
-                  if (activeTextId) {
-                    patchActiveLayers((prev) => {
-                      const idx = prev.findIndex((l) => l.id === activeTextId);
-                      if (idx < 0) return prev;
-                      const item = prev[idx];
-                      const rest = prev.filter((_, i) => i !== idx);
-                      return [...rest, item];
-                    });
-                  }
-                }}
-                className="flex items-center gap-1.5 text-xs font-semibold text-zinc-700 hover:text-zinc-900 cursor-pointer"
+                onClick={() => addTextLayer()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-[#1d90cf] text-[#1d90cf] hover:text-white border border-sky-200 hover:border-[#1d90cf] text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                title="Add New Text Layer"
               >
-                <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
-                </svg>
-                <span className="hidden sm:inline">Arrange</span>
+                <span className="text-sm font-black leading-none">+</span>
+                <span>Add Text</span>
               </button>
 
+              {/* Delete Layer Button (visible when a text or image layer is selected) */}
+              {activeTextId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (activeImageLayer) deleteImageLayer(activeTextId);
+                    else deleteTextLayer(activeTextId);
+                  }}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold transition-colors cursor-pointer"
+                  title="Delete Selected Layer"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                  </svg>
+                  <span>Delete</span>
+                </button>
+              )}
+
+              {/* Remove Uploaded Artwork Button (if background artwork is active) */}
+              {activeBgImage && (
+                <button
+                  type="button"
+                  onClick={removeUploadedArtwork}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 text-xs font-bold transition-colors cursor-pointer"
+                  title="Remove uploaded background artwork"
+                >
+                  <span>✕ Remove Artwork</span>
+                </button>
+              )}
+
+              {/* Arrange Dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsArrangeMenuOpen((prev) => !prev)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer transition-colors ${
+                    isArrangeMenuOpen
+                      ? "bg-zinc-100 border-zinc-400 text-zinc-900"
+                      : "border-zinc-200 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-50"
+                  }`}
+                  title="Layer Arrangement"
+                >
+                  <svg className="w-3.5 h-3.5 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
+                  </svg>
+                  <span>Arrange</span>
+                  <svg className="w-3 h-3 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Arrange Menu Dropdown */}
+                {isArrangeMenuOpen && (
+                  <div
+                    className="absolute right-0 top-full mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-zinc-200 py-1 z-50 text-xs font-semibold text-zinc-700 animate-in fade-in slide-in-from-top-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="px-3 py-1.5 text-[10px] uppercase font-black tracking-wider text-zinc-400 border-b border-zinc-100">
+                      Layer Stacking Order
+                    </div>
+                    <button
+                      type="button"
+                      onClick={bringToFront}
+                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#1d90cf] flex items-center justify-between transition-colors cursor-pointer"
+                    >
+                      <span>Bring to Front</span>
+                      <span className="text-zinc-400 font-mono text-[10px]">Top</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={bringForward}
+                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#1d90cf] flex items-center justify-between transition-colors cursor-pointer"
+                    >
+                      <span>Bring Forward</span>
+                      <span className="text-zinc-400 font-mono text-[10px]">+1</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={sendBackward}
+                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#1d90cf] flex items-center justify-between transition-colors cursor-pointer"
+                    >
+                      <span>Send Backward</span>
+                      <span className="text-zinc-400 font-mono text-[10px]">-1</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={sendToBack}
+                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#1d90cf] flex items-center justify-between transition-colors cursor-pointer"
+                    >
+                      <span>Send to Back</span>
+                      <span className="text-zinc-400 font-mono text-[10px]">Bottom</span>
+                    </button>
+                    <div className="border-t border-zinc-100 my-1" />
+                    <button
+                      type="button"
+                      onClick={moveLayerToOtherSide}
+                      className="w-full px-3 py-2 text-left hover:bg-indigo-50 hover:text-indigo-600 flex items-center justify-between transition-colors cursor-pointer"
+                    >
+                      <span>Move to {activeSideIndex === 0 ? "Back" : "Front"} Side</span>
+                      <span className="text-zinc-400 text-[10px]">⇄</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Duplicate Button */}
               <button
                 type="button"
                 onClick={() => {
                   if (activeLayer) pasteText(activeLayer);
+                  else if (activeImageLayer) {
+                    const copy = { ...activeImageLayer, id: Date.now().toString(), x: activeImageLayer.x + 5, y: activeImageLayer.y + 5 };
+                    patchActiveImageLayers((prev) => [...prev, copy]);
+                    setActiveTextId(copy.id);
+                  }
                 }}
-                className="flex items-center gap-1.5 text-xs font-semibold text-zinc-700 hover:text-zinc-900 cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 text-xs font-semibold text-zinc-700 hover:text-zinc-900 hover:bg-zinc-50 cursor-pointer transition-colors"
+                title="Duplicate Layer"
               >
-                <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
                 </svg>
                 <span className="hidden sm:inline">Duplicate</span>
@@ -2756,17 +3100,30 @@ export default function BusinessCardsCustomizeFlow({
                   </div>
                   <div className="flex flex-col gap-3.5 max-h-[280px] overflow-y-auto pr-1">
                     {activeLayers.map((layer, index) => (
-                      <div key={layer.id} className="relative group/line">
+                      <div key={layer.id} className="relative group/line flex items-center gap-1.5">
                         <input
                           type="text"
                           value={layer.text}
                           onFocus={() => setActiveTextId(layer.id)}
                           onChange={(e) => updateTextLayer(layer.id, { text: e.target.value })}
                           placeholder={`Line ${index + 1}`}
-                          className={`w-full border-b pb-1 text-sm bg-transparent outline-none transition-colors ${
+                          className={`flex-1 min-w-0 border-b pb-1 text-sm bg-transparent outline-none transition-colors ${
                             activeTextId === layer.id ? "border-[#1d90cf] text-zinc-900 font-semibold" : "border-zinc-300 text-zinc-700"
                           }`}
                         />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteTextLayer(layer.id);
+                          }}
+                          className="opacity-0 group-hover/line:opacity-100 p-1 text-zinc-400 hover:text-red-500 rounded transition-opacity cursor-pointer shrink-0"
+                          title="Delete this text layer"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                          </svg>
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -2922,81 +3279,100 @@ export default function BusinessCardsCustomizeFlow({
                     </>
                   )}
 
-                  {/* Front Side Dynamic Text Layers */}
-                  {activeSideIndex === 0 && (
-                    <>
-                      {textLayers.map((layer) => {
-                        const isSelected = activeTextId === layer.id;
-                        const isCentered = layer.textAlign === "center" || (!selectedTemplate && (layer.id === "1" || layer.id === "2" || layer.id === "3"));
-                        const isRightAligned = layer.textAlign === "right";
-                        return (
-                          <div
-                            key={layer.id}
-                            data-snap-id={layer.id}
-                            onPointerDown={(e) => handlePointerDown(layer.id, e)}
-                            onClick={() => setActiveTextId(layer.id)}
-                            style={{
-                              position: "absolute",
-                              left: `${layer.x}%`,
-                              top: `${layer.y}%`,
-                              transform: isCentered ? "translateX(-50%)" : isRightAligned ? "translateX(-100%)" : "none",
-                              fontSize: `${layer.fontSize}px`,
-                              color: layer.color || "#ffffff",
-                              fontWeight: layer.fontWeight || "normal",
-                              fontStyle: layer.fontStyle || "normal",
-                              fontFamily: layer.fontFamily || "Inter",
-                              textDecoration: layer.underline ? "underline" : "none",
-                              cursor: "move",
-                              zIndex: isSelected ? 30 : 25,
+                  {/* Active Side Dynamic Image Layers */}
+                  {activeImageLayers.map((img, idx) => {
+                    const isSelected = activeTextId === img.id;
+                    const zIdx = isSelected ? 35 : (20 + idx);
+                    return (
+                      <div
+                        key={img.id}
+                        data-snap-id={img.id}
+                        onPointerDown={(e) => handlePointerDown(img.id, e)}
+                        onClick={() => setActiveTextId(img.id)}
+                        style={{
+                          position: "absolute",
+                          left: `${img.x}%`,
+                          top: `${img.y}%`,
+                          width: `${img.width || 22}%`,
+                          height: `${img.height || 22}%`,
+                          cursor: "move",
+                          zIndex: zIdx,
+                        }}
+                        className={`group/canvas-img select-none transition-shadow ${
+                          isSelected ? "ring-2 ring-[#00a6f4] ring-offset-1 rounded-sm" : "hover:ring-1 hover:ring-zinc-400/60"
+                        }`}
+                      >
+                        <img
+                          src={img.src}
+                          alt={img.label || "Layer"}
+                          className={`w-full h-full pointer-events-none drop-shadow-sm ${img.fit === "cover" ? "object-cover" : "object-contain"}`}
+                          style={{ opacity: img.opacity ?? 1 }}
+                          draggable={false}
+                        />
+                        {isSelected && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteImageLayer(img.id);
                             }}
-                            className={`px-2 py-0.5 whitespace-nowrap transition-shadow ${
-                              isSelected ? "border border-[#00a6f4] ring-1 ring-[#00a6f4]/40" : "border border-transparent"
-                            }`}
+                            className="absolute -top-2.5 -right-2.5 w-5 h-5 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md cursor-pointer transition-transform hover:scale-110 z-50"
+                            title="Delete this image"
                           >
-                            {layer.text}
-                          </div>
-                        );
-                      })}
-                    </>
-                  )}
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
 
-                  {/* Back Side Dynamic Text Layers */}
-                  {activeSideIndex === 1 && (
-                    <div className="absolute inset-0 p-6 z-15">
-                      {backTextLayers.map((layer) => {
-                        const isSelected = activeTextId === layer.id;
-                        const isCentered = layer.textAlign === "center";
-                        const isRightAligned = layer.textAlign === "right";
-                        return (
-                          <div
-                            key={layer.id}
-                            data-snap-id={layer.id}
-                            onPointerDown={(e) => handlePointerDown(layer.id, e)}
-                            onClick={() => setActiveTextId(layer.id)}
-                            style={{
-                              position: "absolute",
-                              left: `${layer.x}%`,
-                              top: `${layer.y}%`,
-                              transform: isCentered ? "translateX(-50%)" : isRightAligned ? "translateX(-100%)" : "none",
-                              fontSize: `${layer.fontSize}px`,
-                              color: layer.color || "#ffffff",
-                              fontWeight: layer.fontWeight || "normal",
-                              fontStyle: layer.fontStyle || "normal",
-                              fontFamily: layer.fontFamily || "Inter",
-                              textDecoration: layer.underline ? "underline" : "none",
-                              cursor: "move",
-                              zIndex: isSelected ? 30 : 25,
+                  {/* Active Side Dynamic Text Layers */}
+                  {activeLayers.map((layer, idx) => {
+                    const isSelected = activeTextId === layer.id;
+                    const isCentered = layer.textAlign === "center" || (!selectedTemplate && activeSideIndex === 0 && (layer.id === "1" || layer.id === "2" || layer.id === "3"));
+                    const isRightAligned = layer.textAlign === "right";
+                    const zIdx = isSelected ? 35 : (25 + idx);
+                    return (
+                      <div
+                        key={layer.id}
+                        data-snap-id={layer.id}
+                        onPointerDown={(e) => handlePointerDown(layer.id, e)}
+                        onClick={() => setActiveTextId(layer.id)}
+                        style={{
+                          position: "absolute",
+                          left: `${layer.x}%`,
+                          top: `${layer.y}%`,
+                          transform: isCentered ? "translateX(-50%)" : isRightAligned ? "translateX(-100%)" : "none",
+                          fontSize: `${layer.fontSize}px`,
+                          color: layer.color || "#ffffff",
+                          fontWeight: layer.fontWeight || "normal",
+                          fontStyle: layer.fontStyle || "normal",
+                          fontFamily: layer.fontFamily || "Inter",
+                          textDecoration: layer.underline ? "underline" : "none",
+                          cursor: "move",
+                          zIndex: zIdx,
+                        }}
+                        className={`group/canvas-text px-2 py-0.5 whitespace-nowrap transition-shadow ${
+                          isSelected ? "border border-[#00a6f4] ring-1 ring-[#00a6f4]/40" : "border border-transparent"
+                        }`}
+                      >
+                        {layer.text}
+                        {isSelected && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteTextLayer(layer.id);
                             }}
-                            className={`px-2 py-0.5 whitespace-nowrap ${
-                              isSelected ? "border border-[#00a6f4] ring-1 ring-[#00a6f4]/40" : "border border-transparent"
-                            }`}
+                            className="absolute -top-2.5 -right-2.5 w-4 h-4 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm cursor-pointer transition-transform hover:scale-110 z-50 opacity-0 group-hover/canvas-text:opacity-100"
+                            title="Delete text layer"
                           >
-                            {layer.text}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
 
                   {/* Alignment guide lines when dragging */}
                   {alignmentLines.map((line, i) => (

@@ -151,20 +151,7 @@ function WishlistContent() {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      {/* 1. Breadcrumb Bar */}
-      <div className="w-full bg-[#2196D2] py-2.5">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-2 text-base text-white/80">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <span className="text-white/40">›</span>
-            <span className="text-white font-medium">Wishlist & Draft Designs</span>
-          </nav>
-        </div>
-      </div>
-
-      {/* 2. Header Title */}
+      {/* Header Title */}
       <div className="bg-gradient-to-b from-[#f7f9fc] to-white border-b border-zinc-200/80 py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

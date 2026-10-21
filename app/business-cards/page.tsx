@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -76,14 +76,36 @@ interface CategorySidebarProps {
 
 function CategorySidebar({ categories, selectedCategory, onSelectCategory }: CategorySidebarProps) {
   const [hoveredCatId, setHoveredCatId] = useState<string | null>(null);
+  const [categorySearch, setCategorySearch] = useState("");
+
+  const isSpecificCategory = Boolean(selectedCategory && selectedCategory.toLowerCase() !== "all");
+  const selectedFamily = isSpecificCategory
+    ? selectedCategory.trim().toLowerCase().replace(/s$/, "")
+    : "";
 
   // Sort categories alphabetically A to Z by name
   const sortedCategories = [...categories].sort((a, b) =>
     a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
   );
 
-  // Collect all unique variations across all categories for bottom options section
-  const allCategoryFinishes = sortedCategories.flatMap((cat) =>
+  // When a specific category (e.g. Postcards) is active, ONLY show matching categories in that family (e.g. Postcards, Postcards (A6))
+  const familyCategories = useMemo(() => {
+    if (!isSpecificCategory) return sortedCategories;
+    const matches = sortedCategories.filter((cat) => {
+      const lower = cat.name.toLowerCase();
+      return lower.includes(selectedFamily) || selectedCategory.toLowerCase().includes(lower);
+    });
+    return matches.length > 0
+      ? matches
+      : sortedCategories.filter((c) => c.name.toLowerCase() === selectedCategory.toLowerCase());
+  }, [sortedCategories, isSpecificCategory, selectedFamily, selectedCategory]);
+
+  const filteredCategories = familyCategories.filter((cat) =>
+    cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+  );
+
+  // Collect finishes only for the displayed category family
+  const categoryFinishes = familyCategories.flatMap((cat) =>
     (cat.variations || []).flatMap((vGroup) =>
       vGroup.values.map((val) => ({
         categoryName: cat.name,
@@ -95,41 +117,78 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
   );
 
   return (
-    <aside className="w-full bg-white rounded-2xl shadow-xl shadow-zinc-300/40 border border-zinc-200/60 p-5 sticky top-24">
-      <div className="flex items-center justify-between pb-3 border-b-2 border-zinc-800">
-        <h2 className="text-xl font-black text-zinc-900 tracking-tight flex items-center gap-2">
-          <span>Categories & Canvas</span>
-        </h2>
-        {selectedCategory !== "all" && (
+    <aside className="w-full bg-white rounded-3xl shadow-xs border border-zinc-200/80 p-5 sticky top-24">
+      <div className="flex items-center justify-between pb-3 border-b border-zinc-200">
+        <div>
+          <h2 className="text-lg font-black text-zinc-900 tracking-tight flex items-center gap-2">
+            <span>{isSpecificCategory ? selectedCategory : "Categories & Canvas"}</span>
+          </h2>
+          {isSpecificCategory && (
+            <p className="text-[11px] font-semibold text-zinc-400 mt-0.5">
+              {familyCategories.length > 1
+                ? `${familyCategories.length} sizes & formats available`
+                : "Active product format"}
+            </p>
+          )}
+        </div>
+        {isSpecificCategory && (
           <button
             onClick={() => onSelectCategory("all")}
-            className="text-base font-bold text-[#2196D2] hover:underline cursor-pointer"
+            className="text-xs font-bold text-[#1d90cf] hover:underline cursor-pointer flex items-center gap-1"
+            title="Browse all product categories"
           >
-            Show All
+            <span>← All Categories</span>
           </button>
         )}
       </div>
 
+      {/* Category Search Filter - only shown when more than 5 items */}
+      {familyCategories.length > 5 && (
+        <div className="relative mt-3">
+          <svg className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Filter sizes & formats..."
+            value={categorySearch}
+            onChange={(e) => setCategorySearch(e.target.value)}
+            className="w-full bg-zinc-50 border border-zinc-200/80 rounded-xl pl-8 pr-7 py-1.5 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#1d90cf] transition-all"
+          />
+          {categorySearch && (
+            <button
+              type="button"
+              onClick={() => setCategorySearch("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 text-[10px] font-bold cursor-pointer"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Dynamic Product Categories & Variations list */}
       <div className="flex flex-col gap-1.5 mt-4">
-        <button
-          onClick={() => onSelectCategory("all")}
-          className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-base font-bold transition-all text-left cursor-pointer ${
-            selectedCategory === "all"
-              ? "bg-[#2196D2] text-white shadow-md shadow-[#2196D2]/25"
-              : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900"
-          }`}
-        >
-          <span className="flex items-center gap-2">
-            <span>✨</span>
-            <span>All Categories</span>
-          </span>
-          <span className={`text-base px-1.5 py-0.5 rounded-full ${selectedCategory === "all" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-500"}`}>
-            {sortedCategories.length}
-          </span>
-        </button>
+        {!isSpecificCategory && (
+          <button
+            onClick={() => onSelectCategory("all")}
+            className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-left cursor-pointer ${
+              selectedCategory === "all"
+                ? "bg-[#1d90cf] text-white shadow-md shadow-[#1d90cf]/25"
+                : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span>✨</span>
+              <span>All Categories</span>
+            </span>
+            <span className={`text-xs px-2 py-0.5 rounded-full ${selectedCategory === "all" ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-500"}`}>
+              {sortedCategories.length}
+            </span>
+          </button>
+        )}
 
-        {sortedCategories.map((cat) => {
+        {filteredCategories.map((cat) => {
           const isSelected = selectedCategory.toLowerCase() === cat.name.toLowerCase();
           const isHovered = hoveredCatId === cat._id;
           const isExpanded = isSelected || isHovered;
@@ -144,9 +203,9 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
             >
               <button
                 onClick={() => onSelectCategory(cat.name)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-base transition-all text-left cursor-pointer ${
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all text-left cursor-pointer ${
                   isSelected
-                    ? "bg-[#2196D2] text-white font-bold shadow-md shadow-[#2196D2]/25"
+                    ? "bg-[#1d90cf] text-white font-bold shadow-md shadow-[#1d90cf]/25"
                     : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 font-medium"
                 }`}
               >
@@ -155,20 +214,20 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                     <img
                       src={mediaSrc(cat.image)}
                       alt=""
-                      className="w-7 h-7 rounded-lg object-cover shrink-0 border border-white/20 bg-white"
+                      className="w-6 h-6 rounded-lg object-cover shrink-0 border border-white/20 bg-white"
                     />
                   ) : (
-                    <span className={`w-2 h-2 rounded-full shrink-0 transition-colors ${isSelected ? "bg-white" : "bg-zinc-300 group-hover:bg-[#2196D2]"}`} />
+                    <span className={`w-2 h-2 rounded-full shrink-0 transition-colors ${isSelected ? "bg-white" : "bg-zinc-300 group-hover:bg-[#1d90cf]"}`} />
                   )}
-                  <span className="truncate text-base font-semibold">{cat.name}</span>
+                  <span className="truncate text-xs font-semibold">{cat.name}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
                   {hasVariations && (
                     <svg
-                      className={`w-4 h-4 transition-transform duration-300 ${
+                      className={`w-3.5 h-3.5 transition-transform duration-300 ${
                         isExpanded
-                          ? "rotate-90 " + (isSelected ? "text-white" : "text-[#2196D2]")
+                          ? "rotate-90 " + (isSelected ? "text-white" : "text-[#1d90cf]")
                           : "rotate-0 " + (isSelected ? "text-white/60" : "text-zinc-400")
                       }`}
                       fill="none"
@@ -180,7 +239,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                     </svg>
                   )}
                   {isSelected && !hasVariations && (
-                    <span className="w-2 h-2 rounded-full bg-sky-300 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-200 shrink-0" />
                   )}
                 </div>
               </button>
@@ -195,10 +254,10 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="ml-3.5 pl-3 border-l-2 border-[#2196D2]/40 space-y-2 py-1.5 bg-slate-50/70 rounded-r-xl pr-2">
+                    <div className="ml-3 pl-2.5 border-l-2 border-[#1d90cf]/40 space-y-2 py-1 bg-slate-50/80 rounded-r-xl pr-2">
                       {cat.variations!.map((vGroup) => (
                         <div key={vGroup.name} className="space-y-1">
-                          <span className="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 block">
+                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
                             {vGroup.name}
                           </span>
                           <div className="flex flex-wrap gap-1">
@@ -208,16 +267,16 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                                 <Link
                                   key={val.name}
                                   href={`/browsedesigns?category=${encodeURIComponent(cat.name)}&specs=${encodeURIComponent(specsObj)}`}
-                                  className="text-zinc-700 hover:text-white px-2 py-1 rounded-lg text-xs font-bold border transition-all inline-flex items-center gap-1.5 bg-white hover:bg-[#2196D2] border-zinc-200/90 hover:border-[#2196D2] shadow-2xs group/val cursor-pointer"
+                                  className="text-zinc-700 hover:text-white px-2 py-0.5 rounded-lg text-[11px] font-bold border transition-all inline-flex items-center gap-1 bg-white hover:bg-[#1d90cf] border-zinc-200 hover:border-[#1d90cf] shadow-2xs group/val cursor-pointer"
                                   title={`Design ${cat.name} with ${vGroup.name}: ${val.name}`}
                                 >
                                   <span>{val.name}</span>
                                   {val.price > 0 ? (
-                                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 group-hover/val:bg-white/20 group-hover/val:text-white px-1 py-0.2 rounded border border-amber-200/60 group-hover/val:border-white/30 transition-colors">
+                                    <span className="text-[9px] font-bold text-amber-700 bg-amber-50 group-hover/val:bg-white/20 group-hover/val:text-white px-1 rounded transition-colors">
                                       +${val.price.toFixed(2)}
                                     </span>
                                   ) : (
-                                    <span className="text-[10px] font-bold text-emerald-600 group-hover/val:text-emerald-200 transition-colors">
+                                    <span className="text-[9px] font-bold text-emerald-600 group-hover/val:text-emerald-200 transition-colors">
                                       Free
                                     </span>
                                   )}
@@ -236,37 +295,37 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
         })}
       </div>
 
-      <hr className="my-5 border-zinc-200" />
+      <hr className="my-4 border-zinc-100" />
 
       {/* Dynamic Finishes & Variations Shortcuts */}
-      <div className="space-y-3">
-        <h3 className="text-base font-black uppercase tracking-wider text-zinc-400">
-          Card Options & Finishes
+      <div className="space-y-2.5">
+        <h3 className="text-xs font-black uppercase tracking-wider text-zinc-400">
+          {isSpecificCategory ? `${selectedCategory} Options` : "Options & Finishes"}
         </h3>
-        {allCategoryFinishes.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5 text-base text-zinc-600">
-            {allCategoryFinishes.map((item, idx) => {
+        {categoryFinishes.length > 0 ? (
+          <div className="flex flex-wrap gap-1 text-xs text-zinc-600">
+            {categoryFinishes.map((item, idx) => {
               const specsObj = JSON.stringify({ [item.groupName]: item.optionName });
               return (
                 <Link
                   key={`${item.categoryName}-${item.optionName}-${idx}`}
                   href={`/browsedesigns?category=${encodeURIComponent(item.categoryName)}&specs=${encodeURIComponent(specsObj)}`}
-                  className="px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-[#2196D2] hover:text-white text-zinc-700 font-bold text-base transition-all flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-[#1d90cf] hover:text-white text-zinc-700 font-semibold text-xs transition-all flex items-center gap-1 cursor-pointer"
                 >
                   <span className="text-zinc-400">•</span>
                   <span>{item.optionName}</span>
-                  {item.price > 0 && <span className="text-base opacity-75">(+${item.price.toFixed(2)})</span>}
+                  {item.price > 0 && <span className="text-[10px] opacity-75">(+${item.price.toFixed(2)})</span>}
                 </Link>
               );
             })}
           </div>
         ) : (
-          <div className="flex flex-col gap-1 text-base text-zinc-600">
+          <div className="flex flex-col gap-1 text-xs text-zinc-600">
             {["Matte Finish", "Glossy Finish", "Soft Touch Premium", "Foil Accent", "Rounded Corners"].map((finish) => (
               <Link
                 key={finish}
                 href="/browsedesigns"
-                className="hover:text-theme-blue transition-colors flex items-center gap-1.5 py-1"
+                className="hover:text-[#1d90cf] transition-colors flex items-center gap-1.5 py-0.5 font-medium"
               >
                 <span className="text-zinc-300">•</span>
                 <span>{finish}</span>
@@ -292,10 +351,10 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
     <button
       type="button"
       onClick={() => onOpen(t)}
-      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#2196D2] transition-all duration-300 flex flex-col justify-between text-left cursor-pointer"
+      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#1d90cf] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between text-left cursor-pointer"
     >
       {/* Mini Studio Presentation Frame */}
-      <div className="relative w-full aspect-[4/3] bg-gradient-to-b from-[#181b26] to-[#0f1118] p-3.5 flex items-center justify-center overflow-hidden">
+      <div className="relative w-full aspect-[4/3] bg-gradient-to-b from-[#141622] to-[#0c0d14] p-3.5 flex items-center justify-center overflow-hidden">
         {/* Subtle grid mesh background pattern */}
         <div
           className="absolute inset-0 opacity-15 pointer-events-none"
@@ -307,7 +366,7 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
 
         {/* Floating Mini Card Container */}
         <div
-          className="relative rounded-lg overflow-hidden shadow-[0_12px_28px_-6px_rgba(0,0,0,0.65)] border border-white/15 transition-all duration-300 group-hover:scale-[1.05] group-hover:-translate-y-1"
+          className="relative rounded-lg overflow-hidden shadow-[0_14px_30px_-6px_rgba(0,0,0,0.7)] border border-white/15 transition-all duration-300 group-hover:scale-[1.05] group-hover:-translate-y-1"
           style={{
             aspectRatio: `${width} / ${height}`,
             width: isPortrait ? "48%" : "82%",
@@ -326,19 +385,19 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
             {t.category}
           </span>
           {t.isPaid ? (
-            <span className="px-2 py-0.5 rounded-full text-base font-extrabold bg-amber-500 text-white shadow-md">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-500 text-white shadow-md">
               ${t.price}
             </span>
           ) : (
-            <span className="px-2 py-0.5 rounded-full text-base font-extrabold bg-emerald-500 text-white shadow-md">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500 text-white shadow-md">
               FREE
             </span>
           )}
         </div>
 
         {/* Hover Action Layer */}
-        <div className="absolute inset-0 bg-[#2196D2]/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
-          <span className="bg-white text-[#2196D2] text-base font-black px-3.5 py-1.5 rounded-full shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1">
+        <div className="absolute inset-0 bg-[#1d90cf]/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
+          <span className="bg-white text-[#1d90cf] text-xs font-black px-4 py-2 rounded-full shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5">
             <span>Customize Design</span>
             <span>→</span>
           </span>
@@ -346,17 +405,17 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
       </div>
 
       {/* Card Info Footer */}
-      <div className="p-3 bg-white flex items-center justify-between gap-2 border-t border-zinc-100">
+      <div className="p-3.5 bg-white flex items-center justify-between gap-2 border-t border-zinc-100">
         <div className="min-w-0">
-          <h4 className="font-extrabold text-base text-zinc-900 truncate group-hover:text-[#2196D2] transition-colors">
+          <h4 className="font-extrabold text-sm text-zinc-900 truncate group-hover:text-[#1d90cf] transition-colors">
             {t.title}
           </h4>
-          <p className="text-base text-zinc-400 font-medium mt-0.5 flex items-center gap-1">
+          <p className="text-xs text-zinc-400 font-medium mt-0.5 flex items-center gap-1">
             <span>{width}×{height}{cfg.unit || "mm"}</span>
             {cfg.orientation && <span className="capitalize">• {cfg.orientation}</span>}
           </p>
         </div>
-        <span className="w-6 h-6 rounded-full bg-zinc-100 group-hover:bg-[#2196D2] group-hover:text-white flex items-center justify-center text-base font-bold text-zinc-600 transition-all shrink-0">
+        <span className="w-7 h-7 rounded-full bg-zinc-100 group-hover:bg-[#1d90cf] group-hover:text-white flex items-center justify-center text-xs font-bold text-zinc-600 transition-all shrink-0">
           →
         </span>
       </div>
@@ -367,52 +426,117 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
 /* ── Hero Banner Component ───────────────────── */
 function HeroBanner() {
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8 w-full py-4">
-      {/* Left Text */}
-      <div className="flex-1 space-y-4 max-w-xl">
-        <h1 className="text-2xl sm:text-3xl md:text-[26px] font-extrabold text-zinc-900 leading-tight">
-          Empowering your brand with high-quality printing solutions.
-        </h1>
-        <div className="space-y-2 text-base sm:text-base text-zinc-700 leading-relaxed font-normal">
-          <p>Time-saving, budget-thanking, easy-to-customize business cards? Must be Printgraphy</p>
-          <p>Try 50 standard business cards for just $10.</p>
+    <div className="relative overflow-hidden rounded-3xl border border-zinc-200/90 bg-gradient-to-br from-white via-sky-50/40 to-slate-100/70 p-6 sm:p-8 lg:p-10 shadow-xs">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-8 w-full">
+        {/* Left Content */}
+        <div className="flex-1 space-y-4 max-w-xl">
+          <h1 className="text-2xl sm:text-3xl md:text-[30px] font-black text-zinc-900 leading-[1.2] tracking-tight">
+            Empowering your brand with high-impact, tactile printing solutions.
+          </h1>
+
+          <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal">
+            Time-saving, budget-friendly, and fully customizable in real-time 3D studio. Try 50 standard business cards starting at just $10.
+          </p>
+
+          {/* Value Badges */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs font-semibold text-zinc-600 pt-1">
+            <span className="flex items-center gap-1.5 text-zinc-700">
+              <span className="text-emerald-500 font-bold">✓</span> 16pt & 18pt Premium Stocks
+            </span>
+            <span className="flex items-center gap-1.5 text-zinc-700">
+              <span className="text-[#1d90cf] font-bold">✓</span> Real-Time 3D Studio Preview
+            </span>
+            <span className="flex items-center gap-1.5 text-zinc-700">
+              <span className="text-amber-500 font-bold">✓</span> 24h Express Turnaround
+            </span>
+          </div>
+
+          {/* Action CTAs */}
+          <div className="flex flex-wrap items-center gap-3 pt-3">
+            <Link
+              href="/customize"
+              className="px-6 py-3 bg-[#1d90cf] hover:bg-[#167bb3] text-white text-sm sm:text-base font-bold rounded-xl shadow-md shadow-[#1d90cf]/25 transition-all duration-200 cursor-pointer flex items-center gap-2"
+            >
+              <span>Design in 3D Studio</span>
+              <span>→</span>
+            </Link>
+            <Link
+              href="/browsedesigns"
+              className="px-5 py-3 border border-zinc-300 hover:border-zinc-900 text-zinc-800 hover:text-zinc-950 text-sm sm:text-base font-bold rounded-xl bg-white hover:bg-zinc-50 transition-all duration-200 cursor-pointer shadow-2xs"
+            >
+              Browse Templates
+            </Link>
+            <Link
+              href="/dashboard"
+              className="text-sm font-bold text-zinc-600 hover:text-[#1d90cf] transition-colors duration-200 ml-1"
+            >
+              Reorders
+            </Link>
+          </div>
         </div>
 
-        {/* Buttons */}
-        <div className="flex flex-wrap items-center gap-3 pt-2">
-          <Link
-            href="/customize"
-            className="px-5 py-2.5 bg-[#2196D2] hover:bg-theme-darkblue text-white text-base sm:text-base font-semibold rounded-lg shadow-sm transition-all duration-200 cursor-pointer"
-          >
-            Upload Your Design
-          </Link>
-          <Link
-            href="/browsedesigns"
-            className="px-5 py-2.5 border border-zinc-700 hover:border-zinc-900 text-zinc-900 text-base sm:text-base font-semibold rounded-lg bg-transparent transition-all duration-200 cursor-pointer"
-          >
-            Browse Templates
-          </Link>
-          <Link
-            href="/dashboard"
-            className="text-base sm:text-base font-semibold text-zinc-800 hover:text-theme-blue transition-colors duration-200 ml-2"
-          >
-            Reorders
-          </Link>
+        {/* Right Image Container */}
+        <div className="w-full lg:w-[44%] flex-shrink-0">
+          <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden shadow-xl border border-white/70 bg-white">
+            <Image
+              src="/banners/buisiness-card-banner.png"
+              alt="Business Cards Showcase"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              className="object-cover"
+            />
+            {/* Floating Glass Spec Pill */}
+            <div className="absolute bottom-3 left-3 right-3 sm:right-auto bg-black/60 backdrop-blur-md text-white px-3.5 py-2 rounded-xl border border-white/15 flex items-center gap-2.5 shadow-lg">
+              <div className="flex text-amber-400 text-xs">★★★★★</div>
+              <div className="text-xs font-bold leading-tight">
+                <div>50,000+ Happy Brands</div>
+                <div className="text-[10px] text-white/70 font-normal">Rated 4.9/5 by verified customers</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Stylized Fallback Artwork for Category Cards ── */
+function CategoryCardArtwork({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="relative w-full h-full bg-gradient-to-br from-[#121624] via-[#0d101a] to-[#181c2e] p-4 flex flex-col justify-between overflow-hidden">
+      {/* Background subtle grid pattern */}
+      <div
+        className="absolute inset-0 opacity-20 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.4) 1px, transparent 0)",
+          backgroundSize: "12px 12px",
+        }}
+      />
+      {/* Top Tag */}
+      <div className="relative z-10 flex items-center justify-between">
+        <span className="text-[10px] font-extrabold tracking-wider uppercase px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/15">
+          PRINT READY
+        </span>
+        <span className="w-2 h-2 rounded-full bg-[#1d90cf] shadow-sm shadow-[#1d90cf]" />
+      </div>
+
+      {/* Floating Center Card Representation */}
+      <div className="relative z-10 my-auto flex items-center justify-center py-2">
+        <div className="w-[72%] aspect-[1.7/1] rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 border border-white/20 shadow-2xl p-2.5 flex flex-col justify-between transform -rotate-3 group-hover:rotate-0 group-hover:scale-105 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-black tracking-widest text-[#1d90cf]">PRINTGRAPHY</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          </div>
+          <div className="text-[11px] font-extrabold text-white truncate">{title}</div>
+          <div className="h-0.5 w-1/2 bg-gradient-to-r from-[#1d90cf] to-transparent rounded-full" />
         </div>
       </div>
 
-      {/* Right Image */}
-      <div className="w-full lg:w-[45%] flex-shrink-0">
-        <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden shadow-sm">
-          <Image
-            src="/banners/buisiness-card-banner.png"
-            alt="Business Cards Showcase"
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 45vw"
-            className="object-cover"
-          />
-        </div>
+      {/* Bottom Subtitle / Format indicator */}
+      <div className="relative z-10 flex items-center justify-between text-[11px] text-zinc-400 font-medium">
+        <span className="truncate max-w-[120px]">{subtitle || "Custom Dimensions"}</span>
+        <span className="text-[#1d90cf] font-bold">Studio Ready →</span>
       </div>
     </div>
   );
@@ -432,48 +556,113 @@ interface CategoryCardProps {
 function CategoryCard({ id, slug, title, subtitle, price, unitPrice, image }: CategoryCardProps) {
   const targetId = slug || id || title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const targetHref = `/product/${targetId}`;
-  const [imgSrc, setImgSrc] = useState(image ? mediaSrc(image) : "/placeholder.jpg");
-
-  useEffect(() => {
-    if (image) {
-      setImgSrc(mediaSrc(image));
-    }
-  }, [image]);
+  const [imageError, setImageError] = useState(false);
+  const hasImage = Boolean(image && !imageError && image !== "/placeholder.jpg");
 
   return (
-    <div className="bg-[#EEEEEE] rounded-md p-4 flex flex-col justify-between group hover:shadow-md transition-all duration-200 border border-transparent hover:border-zinc-200">
+    <div className="bg-white rounded-3xl border border-zinc-200/80 p-5 flex flex-col justify-between group hover:shadow-xl hover:border-[#1d90cf]/50 hover:-translate-y-1 transition-all duration-300">
       <div>
-        {/* Product Image */}
-        <Link href={targetHref} className="block relative w-full aspect-[16/10] rounded-md overflow-hidden mb-4 bg-zinc-200">
-          <img
-            src={imgSrc}
-            alt={title}
-            onError={() => setImgSrc("/placeholder.jpg")}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+        {/* Product Image or Stylized Artwork */}
+        <Link href={targetHref} className="block relative w-full aspect-[16/10] rounded-2xl overflow-hidden mb-4 bg-slate-100 border border-zinc-100 shadow-2xs">
+          {hasImage ? (
+            <img
+              src={mediaSrc(image!)}
+              alt={title}
+              onError={() => setImageError(true)}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <CategoryCardArtwork title={title} subtitle={subtitle} />
+          )}
         </Link>
 
         {/* Title */}
-        <h3 className="text-base font-bold text-zinc-900 leading-snug line-clamp-1">
-          <Link href={targetHref} className="hover:text-[#2196D2] transition-colors">
+        <h3 className="text-base font-extrabold text-zinc-900 leading-snug line-clamp-1">
+          <Link href={targetHref} className="hover:text-[#1d90cf] transition-colors">
             {title}
           </Link>
         </h3>
 
         {/* Description */}
-        <p className="text-base text-zinc-600 mt-2 leading-relaxed line-clamp-2">
+        <p className="text-xs text-zinc-500 mt-1.5 leading-relaxed line-clamp-2">
           {subtitle}
         </p>
       </div>
 
       {/* Price & Action */}
-      <div className="mt-5 pt-2">
-        <div className="text-base font-bold text-zinc-900">{price}</div>
-        <div className="text-base text-zinc-500 font-medium mb-3">{unitPrice}</div>
+      <div className="mt-5 pt-3 border-t border-zinc-100 flex items-center justify-between">
+        <div>
+          <div className="text-base font-black text-zinc-900">{price}</div>
+          <div className="text-[11px] text-zinc-400 font-medium">{unitPrice}</div>
+        </div>
 
-        <Link href={targetHref} className="inline-block px-4 py-2 border border-zinc-800 text-zinc-900 hover:bg-zinc-900 hover:text-white text-base font-semibold rounded-lg bg-white transition-all duration-200 cursor-pointer">
-          Shop Standard
+        <Link
+          href={targetHref}
+          className="px-4 py-2 bg-zinc-900 hover:bg-[#1d90cf] text-white text-xs font-bold rounded-xl transition-all duration-200 flex items-center gap-1.5 shadow-2xs group/btn cursor-pointer"
+        >
+          <span>Shop Standard</span>
+          <span className="transform group-hover/btn:translate-x-0.5 transition-transform">→</span>
         </Link>
+      </div>
+    </div>
+  );
+}
+
+/* ── Die-Cut Shape Artwork for Shape Cards ───── */
+function ShapeCardArtwork({ title }: { title: string }) {
+  const isRounded = /rounded/i.test(title);
+  const isSquare = /square/i.test(title);
+  const isCircle = /circle/i.test(title);
+  const isOval = /oval/i.test(title);
+
+  return (
+    <div className="relative w-full h-full bg-gradient-to-br from-[#121522] to-[#0a0d16] p-4 flex flex-col items-center justify-center overflow-hidden">
+      {/* Subtle radial sheen */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(29,144,207,0.15),transparent_65%)]" />
+
+      {/* Physical Die-cut Shape representation */}
+      {isCircle ? (
+        <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-zinc-800 via-zinc-900 to-black border-2 border-amber-400/50 shadow-2xl flex flex-col items-center justify-center text-center p-2 transform group-hover:scale-105 transition-all duration-300">
+          <span className="text-[9px] font-black tracking-widest text-amber-400">CIRCLE</span>
+          <span className="text-[10px] font-extrabold text-white mt-0.5">65 mm</span>
+        </div>
+      ) : isOval ? (
+        <div className="relative w-26 h-16 rounded-[50%] bg-gradient-to-br from-zinc-800 via-zinc-900 to-black border-2 border-amber-400/50 shadow-2xl flex flex-col items-center justify-center text-center p-2 transform group-hover:scale-105 transition-all duration-300">
+          <span className="text-[9px] font-black tracking-widest text-amber-400">OVAL</span>
+          <span className="text-[10px] font-extrabold text-white mt-0.5">85 × 55 mm</span>
+        </div>
+      ) : isSquare ? (
+        <div className="relative w-20 h-20 rounded-xl bg-gradient-to-br from-zinc-800 via-zinc-900 to-black border-2 border-[#1d90cf]/50 shadow-2xl flex flex-col items-center justify-between p-2 transform group-hover:scale-105 transition-all duration-300">
+          <div className="flex items-center justify-between w-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#1d90cf]" />
+            <span className="text-[8px] font-extrabold tracking-wider text-zinc-400">1:1</span>
+          </div>
+          <span className="text-[10px] font-extrabold text-white">65 × 65 mm</span>
+          <div className="h-0.5 w-full bg-[#1d90cf]/40 rounded-full" />
+        </div>
+      ) : isRounded ? (
+        <div className="relative w-26 h-16 rounded-2xl bg-gradient-to-br from-zinc-800 via-zinc-900 to-black border-2 border-sky-400/50 shadow-2xl flex flex-col items-center justify-between p-2 transform group-hover:scale-105 transition-all duration-300">
+          <div className="flex items-center justify-between w-full">
+            <span className="text-[8px] font-extrabold tracking-wider text-sky-400">ROUNDED</span>
+            <span className="text-[8px] text-zinc-400 font-bold">r: 6mm</span>
+          </div>
+          <span className="text-[10px] font-extrabold text-white">85 × 55 mm</span>
+          <div className="h-0.5 w-1/2 bg-sky-400/40 rounded-full" />
+        </div>
+      ) : (
+        <div className="relative w-26 h-16 rounded-lg bg-gradient-to-br from-zinc-800 via-zinc-900 to-black border border-white/20 shadow-2xl flex flex-col items-center justify-between p-2 transform group-hover:scale-105 transition-all duration-300">
+          <div className="flex items-center justify-between w-full">
+            <span className="text-[8px] font-extrabold tracking-wider text-emerald-400">STANDARD</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          </div>
+          <span className="text-[10px] font-extrabold text-white">85 × 55 mm</span>
+          <div className="h-0.5 w-full bg-white/20 rounded-full" />
+        </div>
+      )}
+
+      {/* Format Label */}
+      <div className="absolute bottom-2 text-[9px] font-extrabold tracking-wider text-white/50 uppercase">
+        Die-Cut Shape
       </div>
     </div>
   );
@@ -494,40 +683,49 @@ interface ShapeCardProps {
 function ShapeCard({ id, slug, title, price, unitPrice, rating, count, image }: ShapeCardProps) {
   const targetId = slug || id || title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const targetHref = `/product/${targetId}`;
-  const [imgSrc, setImgSrc] = useState(image ? mediaSrc(image) : "/placeholder.jpg");
-
-  useEffect(() => {
-    if (image) {
-      setImgSrc(mediaSrc(image));
-    }
-  }, [image]);
+  const [imageError, setImageError] = useState(false);
+  const hasImage = Boolean(image && !imageError && image !== "/placeholder.jpg");
 
   return (
-    <Link href={targetHref} className="flex flex-col group cursor-pointer">
-      {/* Image */}
-      <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-3 bg-zinc-200 border border-transparent group-hover:border-zinc-300 transition-all duration-200">
-        <img
-          src={imgSrc}
-          alt={title}
-          onError={() => setImgSrc("/placeholder.jpg")}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+    <Link
+      href={targetHref}
+      className="bg-white rounded-3xl border border-zinc-200/80 p-4 shadow-xs hover:shadow-xl hover:border-[#1d90cf]/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+    >
+      <div>
+        {/* Shape Graphic */}
+        <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden mb-3.5 bg-slate-100 border border-zinc-100 shadow-2xs">
+          {hasImage ? (
+            <img
+              src={mediaSrc(image!)}
+              alt={title}
+              onError={() => setImageError(true)}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <ShapeCardArtwork title={title} />
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="space-y-1">
+          <h3 className="text-sm font-extrabold text-zinc-900 leading-snug line-clamp-1 group-hover:text-[#1d90cf] transition-colors">
+            {title}
+          </h3>
+
+          {/* Stars */}
+          <Stars rating={rating} count={count} />
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="space-y-1">
-        <h3 className="text-base sm:text-base font-bold text-zinc-900 leading-tight line-clamp-1 group-hover:text-[#2196D2] transition-colors">
-          {title}
-        </h3>
-
-        {/* Stars */}
-        <Stars rating={rating} count={count} />
-
-        {/* Price */}
-        <div className="pt-1">
-          <div className="text-base sm:text-base font-bold text-zinc-900">{price}</div>
-          <div className="text-base text-zinc-500 font-medium">{unitPrice}</div>
+      {/* Price & Action */}
+      <div className="pt-3 mt-3 border-t border-zinc-100 flex items-center justify-between">
+        <div>
+          <div className="text-sm font-black text-zinc-900">{price}</div>
+          <div className="text-[11px] text-zinc-400 font-medium">{unitPrice}</div>
         </div>
+        <span className="w-7 h-7 rounded-full bg-zinc-100 group-hover:bg-[#1d90cf] group-hover:text-white flex items-center justify-center text-zinc-600 font-bold text-xs transition-all shadow-2xs">
+          →
+        </span>
       </div>
     </Link>
   );
@@ -614,6 +812,25 @@ function BusinessCardsContent() {
   const [previewSide, setPreviewSide] = useState<"front" | "back">("front");
   const [purchaseTemplate, setPurchaseTemplate] = useState<any>(null);
 
+  const isSpecificCategory = Boolean(selectedCategory && selectedCategory.toLowerCase() !== "all");
+  const selectedFamily = isSpecificCategory
+    ? selectedCategory.trim().toLowerCase().replace(/s$/, "")
+    : "";
+
+  const displayedGridCategories = useMemo(() => {
+    if (!isSpecificCategory) return categories;
+    const matches = categories.filter((cat) => {
+      const lower = cat.name.toLowerCase();
+      return lower.includes(selectedFamily) || selectedCategory.toLowerCase().includes(lower);
+    });
+    return matches.length > 0
+      ? matches
+      : categories.filter((c) => c.name.toLowerCase() === selectedCategory.toLowerCase());
+  }, [categories, isSpecificCategory, selectedFamily, selectedCategory]);
+
+  const isBusinessCardCategory =
+    !isSpecificCategory || selectedCategory.toLowerCase().includes("business card");
+
   useEffect(() => {
     if (categoryParam) {
       setSelectedCategory(categoryParam);
@@ -684,30 +901,17 @@ function BusinessCardsContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white font-sans relative z-10">
+    <div className="min-h-screen bg-slate-50/50 font-sans relative z-10">
 
-      {/* 1. Full-Width Top Bar / Breadcrumb */}
-      <div className="w-full bg-[#2196D2] py-2.5">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-2 text-base text-white/80">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <span className="text-white/40">›</span>
-            <span className="text-white font-medium">Business Cards & Categories</span>
-          </nav>
-        </div>
-      </div>
-
-      {/* 2. Main Page Layout with Dynamic Hero Background */}
+      {/* Main Page Layout */}
       <div className="relative w-full overflow-hidden">
 
         {/* Grid Container holding Sidebar on the left and Main Content on the right */}
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
             {/* Left Column: Sidebar (Dynamic categories with real-time template filter) */}
-            <div className="lg:col-span-3 z-10 mt-4">
+            <div className="lg:col-span-3 z-10">
               <CategorySidebar
                 categories={categories}
                 selectedCategory={selectedCategory}
@@ -719,24 +923,21 @@ function BusinessCardsContent() {
             <div className="lg:col-span-9 space-y-10">
 
               {/* Hero Banner */}
-              <div className="relative pt-2 pb-6">
-                <div className="absolute inset-y-0 -left-[100vw] -right-[100vw] bg-[#D4E3F0] -z-10" />
-                <HeroBanner />
-              </div>
+              <HeroBanner />
 
               {/* Dynamic Category Templates Filter Showcase Section */}
-              <section id="category-templates-section" className="pt-2 bg-gradient-to-b from-[#f7f9fc] to-white rounded-3xl p-6 border border-zinc-200/80 shadow-xs">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-3 border-b border-zinc-200">
+              <section id="category-templates-section" className="bg-gradient-to-b from-[#f8fafc] to-white rounded-3xl p-6 sm:p-7 border border-zinc-200/80 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-zinc-200/80">
                   <div>
                     <div className="flex items-center gap-2">
                       <h2 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
                         {selectedCategory === "all" ? "All Product Templates" : `${selectedCategory} Templates`}
                       </h2>
-                      <span className="px-2.5 py-0.5 rounded-full text-base font-bold bg-[#2196D2]/10 text-[#2196D2]">
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#1d90cf]/10 text-[#1d90cf] border border-[#1d90cf]/20">
                         {templatesLoading ? "Loading..." : `${templates.length} Designs`}
                       </span>
                     </div>
-                    <p className="text-base text-zinc-500 mt-1">
+                    <p className="text-xs sm:text-sm text-zinc-500 mt-1">
                       {selectedCategory === "all"
                         ? "Showing templates across all categories. Pick any design to customize in 2D/3D studio."
                         : `Showing designs specifically configured for ${selectedCategory}. Click any template to customize in 3D realistic studio.`}
@@ -745,7 +946,7 @@ function BusinessCardsContent() {
 
                   <Link
                     href={selectedCategory === "all" ? "/browsedesigns" : `/browsedesigns?category=${encodeURIComponent(selectedCategory)}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl shadow-sm transition-all shrink-0"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1d90cf] hover:bg-[#167bb3] text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-all shrink-0 cursor-pointer"
                   >
                     <span>Open in Studio</span>
                     <span>→</span>
@@ -755,22 +956,22 @@ function BusinessCardsContent() {
                 {templatesLoading ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map((n) => (
-                      <div key={n} className="rounded-2xl bg-zinc-200/60 animate-pulse aspect-[1.5/1]" />
+                      <div key={n} className="rounded-3xl bg-zinc-200/60 animate-pulse aspect-[1.5/1]" />
                     ))}
                   </div>
                 ) : templates.length === 0 ? (
                   <div className="bg-white rounded-2xl border border-sky-100 p-8 text-center">
-                    <p className="text-base font-bold text-zinc-800">No templates found for {selectedCategory} yet.</p>
-                    <p className="text-base text-zinc-500 mt-1 mb-4">You can start with a blank canvas configured for this category in our 2D/3D Studio.</p>
+                    <p className="text-sm font-bold text-zinc-800">No templates found for {selectedCategory} yet.</p>
+                    <p className="text-xs text-zinc-500 mt-1 mb-4">You can start with a blank canvas configured for this category in our 2D/3D Studio.</p>
                     <Link
                       href={`/browsedesigns?category=${encodeURIComponent(selectedCategory)}`}
-                      className="inline-block px-5 py-2 bg-[#2196D2] text-white text-base font-bold rounded-xl shadow hover:bg-[#1B85BD] transition-all"
+                      className="inline-block px-5 py-2.5 bg-[#1d90cf] text-white text-xs font-bold rounded-xl shadow-xs hover:bg-[#167bb3] transition-all cursor-pointer"
                     >
                       Design {selectedCategory} from Scratch
                     </Link>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     {templates.map((t) => (
                       <TemplateCardShowcase
                         key={t._id}
@@ -785,36 +986,40 @@ function BusinessCardsContent() {
                 )}
               </section>
 
-              {/* Section 1: Explore our all Product Categories */}
+              {/* Section 1: Explore Product Categories or Sizes */}
               <section className="pt-2">
-                <h2 className="text-xl sm:text-2xl font-extrabold text-zinc-900 mb-6">
-                  Explore our all Product Categories
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                  {categories.length > 0
-                    ? categories.map((cat) => (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+                      {isSpecificCategory ? `${selectedCategory} Formats & Sizes` : "Explore all Product Categories"}
+                    </h2>
+                    <p className="text-sm sm:text-base text-zinc-500 mt-1 font-normal">
+                      {isSpecificCategory
+                        ? `Available configurations and canvas specifications for ${selectedCategory}.`
+                        : "Browse our extensive collection of print products, from classic cardstocks to specialty formats."}
+                    </p>
+                  </div>
+                  {isSpecificCategory && (
+                    <button
+                      onClick={() => handleSelectCategory("all")}
+                      className="text-xs sm:text-sm font-bold text-[#1d90cf] hover:underline cursor-pointer self-start sm:self-auto"
+                    >
+                      Browse All Categories →
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {displayedGridCategories.length > 0
+                    ? displayedGridCategories.map((cat) => (
                       <CategoryCard
                         key={cat._id}
                         id={cat._id}
                         slug={cat._id}
                         title={cat.name}
-                        subtitle={cat.description || `${cat.canvas_width} × ${cat.canvas_height} ${cat.unit}`}
+                        subtitle={cat.description || `${cat.canvas_width || 105} × ${cat.canvas_height || 60} ${cat.unit || "mm"}`}
                         price={cat.price ? `$${cat.price.toFixed(2)}` : "$14.99"}
                         unitPrice={cat.unitPrice || "$0.15 Each / 100 Units"}
                         image={cat.image}
-                      />
-                    ))
-                    : products.length > 0
-                    ? products.slice(0, 3).map((prod) => (
-                      <CategoryCard
-                        key={prod._id}
-                        id={prod._id}
-                        slug={prod.slug}
-                        title={prod.name}
-                        subtitle={prod.description || "High quality customizable card product."}
-                        price={`$${prod.price.toFixed(2)}`}
-                        unitPrice={prod.unitPrice || "$0.15 Each / 100 Units"}
-                        image={prod.image}
                       />
                     ))
                     : defaultCategoryList.map((item, idx) => (
@@ -823,40 +1028,35 @@ function BusinessCardsContent() {
                 </div>
               </section>
 
-              {/* Section 2: Shop Custom Business Cards By Shape & Created Products */}
-              <section className="pt-4">
-                <h2 className="text-xl sm:text-2xl font-extrabold text-zinc-900 mb-1">
-                  Shop Custom Business Cards
-                </h2>
-                <p className="text-base sm:text-base text-zinc-500 mb-6 font-normal">
-                  Go for standard cards or try an interesting, unexpected shape created in store.
-                </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
-                  {products.length > 0
-                    ? products.map((prod) => (
-                      <ShapeCard
-                        key={prod._id}
-                        id={prod._id}
-                        slug={prod.slug}
-                        title={prod.name}
-                        price={`$${prod.price.toFixed(2)}`}
-                        unitPrice={prod.unitPrice || "$0.20 Each / 100 Units"}
-                        rating={prod.rating || 4.7}
-                        count={prod.reviewCount || 120}
-                        image={prod.image}
-                      />
-                    ))
-                    : defaultShapeList.map((item, idx) => (
-                      <ShapeCard key={idx} {...item} />
-                    ))}
-                </div>
-              </section>
+              {/* Sections 2, 3, 4: Only shown for business cards or general overview */}
+              {isBusinessCardCategory && (
+                <>
+                  {/* Section 2: Shop Custom Business Cards By Shape */}
+                  <section className="pt-2">
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h2 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+                          Shop Custom Business Cards by Shape
+                        </h2>
+                        <p className="text-sm sm:text-base text-zinc-500 mt-1 font-normal">
+                          Go for classic standard cards or try an unexpected, tactile die-cut silhouette.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+                      {defaultShapeList.map((item, idx) => (
+                        <ShapeCard key={idx} {...item} />
+                      ))}
+                    </div>
+                  </section>
 
-              {/* Section 3: Interactive Square Cards Showcase */}
-              <SquareCardsShowcase />
+                  {/* Section 3: Interactive Square Cards Showcase */}
+                  <SquareCardsShowcase />
 
-              {/* Section 4: Shop Custom Cards By Business Use */}
-              <ShopByBusinessUse />
+                  {/* Section 4: Shop Custom Cards By Business Use */}
+                  <ShopByBusinessUse />
+                </>
+              )}
 
             </div>
           </div>
@@ -864,16 +1064,16 @@ function BusinessCardsContent() {
       </div>
 
       {previewTemplate && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4" onClick={() => setPreviewTemplate(null)}>
-          <div className="w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl" onClick={(event) => event.stopPropagation()}>
-            <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4" onClick={() => setPreviewTemplate(null)}>
+          <div className="w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl border border-zinc-200" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-6 py-4">
               <div className="min-w-0">
                 <h3 className="truncate text-base font-black text-zinc-900">{previewTemplate.title}</h3>
-                <p className="text-base text-zinc-500">{previewTemplate.category}</p>
+                <p className="text-xs text-zinc-500">{previewTemplate.category}</p>
               </div>
-              <div className="inline-flex rounded-xl bg-zinc-100 p-1 text-base font-bold">
-                <button type="button" onClick={() => setPreviewSide("front")} className={`cursor-pointer rounded-lg px-3 py-1.5 ${previewSide === "front" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500"}`}>Front</button>
-                <button type="button" onClick={() => setPreviewSide("back")} className={`cursor-pointer rounded-lg px-3 py-1.5 ${previewSide === "back" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500"}`}>Back</button>
+              <div className="inline-flex rounded-xl bg-zinc-100 p-1 text-xs font-bold">
+                <button type="button" onClick={() => setPreviewSide("front")} className={`cursor-pointer rounded-lg px-3 py-1.5 transition-all ${previewSide === "front" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-900"}`}>Front</button>
+                <button type="button" onClick={() => setPreviewSide("back")} className={`cursor-pointer rounded-lg px-3 py-1.5 transition-all ${previewSide === "back" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-900"}`}>Back</button>
               </div>
             </div>
             <div className="bg-[#111318] px-4 py-4">
@@ -893,8 +1093,8 @@ function BusinessCardsContent() {
                 />
               </div>
             </div>
-            <div className="flex items-center justify-end gap-3 px-5 py-4">
-              <button type="button" onClick={() => setPreviewTemplate(null)} className="cursor-pointer rounded-xl border border-zinc-200 px-4 py-2.5 text-base font-bold text-zinc-700 hover:bg-zinc-50">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-zinc-100">
+              <button type="button" onClick={() => setPreviewTemplate(null)} className="cursor-pointer rounded-xl border border-zinc-200 px-4 py-2.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition-colors">
                 Cancel
               </button>
               {previewTemplate.isPaid && (previewTemplate.price || 0) > 0 && !purchasedTemplateIds.includes(String(previewTemplate._id)) ? (
@@ -909,7 +1109,7 @@ function BusinessCardsContent() {
                     setPreviewTemplate(null);
                     setPurchaseTemplate(template);
                   }}
-                  className="cursor-pointer rounded-xl bg-amber-500 px-4 py-2.5 text-base font-bold text-white hover:bg-amber-600"
+                  className="cursor-pointer rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-bold text-white hover:bg-amber-600 transition-colors shadow-xs"
                 >
                   Pay ${previewTemplate.price}
                 </button>
@@ -917,7 +1117,7 @@ function BusinessCardsContent() {
                 <button
                   type="button"
                   onClick={() => router.push(`/customize?templateId=${previewTemplate._id}`)}
-                  className="cursor-pointer rounded-xl bg-[#2196D2] px-4 py-2.5 text-base font-bold text-white hover:bg-[#1B85BD]"
+                  className="cursor-pointer rounded-xl bg-[#1d90cf] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#167bb3] transition-colors shadow-xs"
                 >
                   Use Now
                 </button>
@@ -945,7 +1145,7 @@ export default function BusinessCardsPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#2196D2] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#1d90cf] rounded-full animate-spin" />
       </div>
     }>
       <BusinessCardsContent />

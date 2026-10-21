@@ -1,4 +1,3 @@
-import Link from "next/link";
 import ProductDetailSection from "@/components/ProductDetailSection";
 import ProductPageCollection from "@/components/ProductPageCollection";
 import ProductCardFeatures from "@/components/ProductCardFeatures";
@@ -9,22 +8,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      {/* Top Breadcrumb Bar */}
-      <div className="w-full bg-[#2196D2] py-2.5">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-2 text-base text-white/80">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <span className="text-white/40">›</span>
-            <Link href="/business-cards" className="hover:text-white transition-colors">
-              Business Cards
-            </Link>
-            <span className="text-white/40">›</span>
-            <span className="text-white font-medium">Product Details</span>
-          </nav>
-        </div>
-      </div>
 
       {/* Main Content Area */}
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">

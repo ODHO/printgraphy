@@ -35,13 +35,6 @@ export default async function ClothingBagsHubPage() {
     <div className="min-h-screen bg-[#f8fbfd] font-sans">
       <div className="bg-white border-b border-zinc-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-          <nav className="flex items-center gap-2 text-sm text-zinc-500 mb-3">
-            <Link href="/" className="hover:text-[#2196D2]">
-              Home
-            </Link>
-            <span>›</span>
-            <span className="text-zinc-900 font-medium">Clothing & Bags</span>
-          </nav>
           <h1 className="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
             Clothing & Bags
           </h1>
