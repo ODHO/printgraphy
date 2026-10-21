@@ -109,12 +109,16 @@ export function buildMenuDropdown(
 
 export const DEFAULT_HEADER_MENU_ITEMS: Omit<IHeaderMenuItem, "_id">[] = [
   { title: "Home", url: "/", order: 0, isActive: true, openInNewTab: false, loginOnly: false },
-  { title: "Business Cards", url: "/business-cards", order: 1, isActive: true, openInNewTab: false, loginOnly: false },
-  { title: "Browse Templates", url: "/browsedesigns", order: 2, isActive: true, openInNewTab: false, loginOnly: false },
-  { title: "Design Studio", url: "/customize", order: 3, isActive: true, openInNewTab: false, loginOnly: false },
-  { title: "Marketing", url: "/marketing", order: 4, isActive: true, openInNewTab: false, loginOnly: false },
-  { title: "Dashboard", url: "/dashboard", order: 5, isActive: true, openInNewTab: false, loginOnly: true },
-  { title: "Shopping Cart", url: "/cart", order: 6, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Deals", url: "/browsedesigns", order: 1, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Business Cards", url: "/business-cards", order: 2, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Post Cards", url: "/browsedesigns?category=Postcards", order: 3, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Signs & Banners", url: "/browsedesigns?category=Banners", order: 4, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Clothing & Bags", url: "/clothing-bags", order: 5, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Promotional Printing", url: "/browsedesigns", order: 6, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Booklets", url: "/browsedesigns?category=Booklets", order: 7, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Books", url: "/browsedesigns?category=Books", order: 8, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Calendars", url: "/browsedesigns?category=Calendars", order: 9, isActive: true, openInNewTab: false, loginOnly: false },
+  { title: "Shopping Bags", url: "/browsedesigns?category=Bags", order: 10, isActive: true, openInNewTab: false, loginOnly: false },
 ];
 
 const HeaderMenuSchema = new Schema<IHeaderMenuItemDocument>(

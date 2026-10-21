@@ -19,21 +19,51 @@ async function getSession(req: NextRequest) {
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const session = await getSession(req);
+  const session = (await getSession(req)) as any;
   const isLoggedIn = !!session && !String(session.userId ?? "").startsWith("reset:");
+  const isAdmin = Boolean(session?.isAdmin || session?.role === "admin");
+  const isVendor = Boolean(session?.isVendor || session?.role === "vendor");
 
-  // ── Logged-in users visiting /auth/* → redirect to home ──────────────────
+  // 1. Logged-in users visiting /auth/* → redirect to their respective portal
   if (isLoggedIn && pathname.startsWith("/auth")) {
-    return NextResponse.redirect(new URL("/", req.url));
+    if (isAdmin) {
+      return NextResponse.redirect(new URL("/admin", req.url));
+    }
+    if (isVendor) {
+      return NextResponse.redirect(new URL("/vendor/dashboard", req.url));
+    }
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // ── Unauthenticated users visiting /profile → redirect to /auth ───────────
-  if (!isLoggedIn && pathname.startsWith("/profile")) {
-    return NextResponse.redirect(new URL("/auth?tab=signin", req.url));
-  }
-
-  // ── Admin routes → require session (full isAdmin check happens in layout) ─
+  // 2. Admin routes → strictly require admin privileges
   if (pathname.startsWith("/admin")) {
+    if (!isLoggedIn) {
+      const loginUrl = new URL("/auth/signin", req.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    if (!isAdmin) {
+      // Non-admin (customer or vendor) is blocked from /admin
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+  }
+
+  // 3. Vendor portal routes
+  if (pathname.startsWith("/vendor/login")) {
+    return NextResponse.redirect(new URL("/auth/signin?redirect=/vendor/dashboard", req.url));
+  }
+
+  if (pathname.startsWith("/vendor/dashboard") || pathname.startsWith("/vendor/orders")) {
+    if (!isLoggedIn) {
+      const loginUrl = new URL("/auth/signin", req.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    // If logged in, layout.tsx performs the real-time MongoDB check safely.
+  }
+
+  // 4. Customer dashboard & profile routes → require login
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/profile")) {
     if (!isLoggedIn) {
       const loginUrl = new URL("/auth/signin", req.url);
       loginUrl.searchParams.set("redirect", pathname);
@@ -45,5 +75,11 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/auth/:path*", "/profile/:path*", "/admin/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/vendor/:path*",
+    "/dashboard/:path*",
+    "/profile/:path*",
+    "/auth/:path*",
+  ],
 };

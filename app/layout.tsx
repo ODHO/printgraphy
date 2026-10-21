@@ -39,6 +39,17 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${caveat.variable} h-full antialiased`}
     >
+      <head>
+        <link
+          rel="preconnect"
+          href="https://fonts.cdnfonts.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.cdnfonts.com/css/pp-neue-montreal"
+          rel="stylesheet"
+        />
+      </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-zinc-50/50">
         {/* <GlobalApiLoader /> */}
         <ScrollMemory />

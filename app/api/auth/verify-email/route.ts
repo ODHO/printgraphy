@@ -72,11 +72,17 @@ export async function POST(req: NextRequest) {
     user.emailVerifyOtpExpires = undefined;
     await user.save();
 
-    // 7. Auto sign-in — issue session cookie
+    // 7. Auto sign-in — issue session cookie with role claims
+    const isAdmin = Boolean(user.isAdmin || user.role === "admin");
+    const role = isAdmin ? "admin" : "customer";
+
     const token = await signToken({
       userId: String(user._id),
       email: user.email,
       isVerified: true,
+      isAdmin,
+      isVendor: false,
+      role,
     });
     await setSessionCookie(token);
     await claimGuestWork(String(user._id), req.cookies.get("cart_session")?.value);
@@ -88,7 +94,11 @@ export async function POST(req: NextRequest) {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        isAdmin,
+        isVendor: false,
+        role,
       },
+      redirectTo: isAdmin ? "/admin" : "/",
     });
   } catch (err) {
     console.error("[Verify Email Error]", err);

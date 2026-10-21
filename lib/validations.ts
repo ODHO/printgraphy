@@ -16,13 +16,13 @@ export const SignupSchema = z
     email: z.email("Please enter a valid email address").trim().toLowerCase(),
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-    confirmPassword: z.string(),
+      .min(8, "8 characters minimum")
+      .regex(/[A-Z]/, "1 uppercase letter required")
+      .regex(/[a-z]/, "1 lowercase letter required")
+      .regex(/[0-9]/, "1 number required"),
+    confirmPassword: z.string().optional(),
   })
-  .refine((d) => d.password === d.confirmPassword, {
+  .refine((d) => !d.confirmPassword || d.password === d.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
@@ -39,7 +39,7 @@ export type SigninInput = z.infer<typeof SigninSchema>;
 
 // ─── Forgot Password ──────────────────────────────────────────────────────────
 export const ForgotPasswordSchema = z.object({
-  email: z.email("Please enter a valid email address").trim().toLowerCase(),
+  email: z.string().min(1, "Please enter your email or phone").trim(),
 });
 
 export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
@@ -49,8 +49,9 @@ export const VerifyOtpSchema = z.object({
   email: z.email("Invalid email").trim().toLowerCase(),
   otp: z
     .string()
-    .length(6, "OTP must be exactly 6 digits")
-    .regex(/^\d{6}$/, "OTP must be numeric"),
+    .min(4, "OTP must be 4 digits")
+    .max(6)
+    .regex(/^\d+$/, "OTP must be numeric"),
 });
 
 export type VerifyOtpInput = z.infer<typeof VerifyOtpSchema>;
@@ -60,8 +61,9 @@ export const VerifyResetOtpSchema = z.object({
   email: z.email("Invalid email").trim().toLowerCase(),
   otp: z
     .string()
-    .length(6, "OTP must be exactly 6 digits")
-    .regex(/^\d{6}$/, "OTP must be numeric"),
+    .min(4, "OTP must be 4 digits")
+    .max(6)
+    .regex(/^\d+$/, "OTP must be numeric"),
 });
 
 export type VerifyResetOtpInput = z.infer<typeof VerifyResetOtpSchema>;
@@ -72,10 +74,10 @@ export const ResetPasswordSchema = z
     resetToken: z.string().min(1, "Reset token is required"),
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
+      .min(8, "8 characters minimum")
+      .regex(/[A-Z]/, "1 uppercase letter required")
+      .regex(/[a-z]/, "1 lowercase letter required")
+      .regex(/[0-9]/, "1 number required"),
     confirmPassword: z.string(),
   })
   .refine((d) => d.password === d.confirmPassword, {

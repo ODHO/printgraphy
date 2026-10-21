@@ -1,9 +1,9 @@
-/** Generate a cryptographically-random 6-digit OTP string */
+/** Generate a cryptographically-random 4-digit OTP string */
 export function generateOtp(): string {
   // crypto.getRandomValues gives better entropy than Math.random
   const array = new Uint32Array(1);
   crypto.getRandomValues(array);
-  return String(array[0] % 1_000_000).padStart(6, "0");
+  return String(array[0] % 10_000).padStart(4, "0");
 }
 
 /** OTP expiry timestamp — 10 minutes from now */

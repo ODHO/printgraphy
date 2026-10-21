@@ -134,7 +134,7 @@ export default function SquareCardsShowcase() {
           <div className="flex flex-wrap items-center gap-3 pt-3">
             <a
               href="/customize"
-              className="px-6 py-2.5 bg-[#064FE0] hover:bg-theme-darkblue text-white text-base sm:text-base font-semibold rounded-lg shadow-sm transition-all duration-200 cursor-pointer"
+              className="px-6 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-base sm:text-base font-semibold rounded-lg shadow-sm transition-all duration-200 cursor-pointer"
             >
               Upload Your Design
             </a>

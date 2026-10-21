@@ -11,6 +11,9 @@ export interface SessionPayload {
   userId: string;
   email: string;
   isVerified: boolean;
+  isAdmin?: boolean;
+  isVendor?: boolean;
+  role?: "customer" | "admin" | "vendor" | string;
 }
 
 // ─── Sign a new JWT ──────────────────────────────────────────────────────────

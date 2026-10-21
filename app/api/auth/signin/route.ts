@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
+import Vendor from "@/models/Vendor";
 import { SigninSchema } from "@/lib/validations";
 import { signToken, setSessionCookie } from "@/lib/session";
 import { claimGuestWork } from "@/lib/claimGuest";
@@ -53,11 +54,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. Issue JWT session cookie
+    // 5. Determine role & permissions
+    const isAdmin = Boolean(user.isAdmin || user.role === "admin");
+    const vendor = await Vendor.exists({
+      email: { $regex: new RegExp(`^${user.email.trim()}$`, "i") },
+    });
+    const isVendor = Boolean(vendor);
+    const role = isAdmin ? "admin" : isVendor ? "vendor" : "customer";
+
+    // 6. Issue JWT session cookie with role claims
     const token = await signToken({
       userId: String(user._id),
       email: user.email,
       isVerified: user.isVerified,
+      isAdmin,
+      isVendor,
+      role,
     });
 
     await setSessionCookie(token);
@@ -70,7 +82,11 @@ export async function POST(req: NextRequest) {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        isAdmin,
+        isVendor,
+        role,
       },
+      redirectTo: isAdmin ? "/admin" : isVendor ? "/vendor/dashboard" : "/",
     });
   } catch (err) {
     console.error("[Signin Error]", err);

@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
 
   // 3. Dispatch automated welcome email to Vendor
   const origin = req.nextUrl.origin;
-  const portalUrl = `${origin}/vendor/login`;
+  const portalUrl = `${origin}/auth/signin?redirect=/vendor/dashboard`;
   await sendVendorWelcomeEmail(email, name, tempPass, portalUrl);
 
   return NextResponse.json(

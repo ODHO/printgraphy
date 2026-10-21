@@ -25,6 +25,10 @@ export interface IUser extends Document {
 
   purchasedTemplates?: mongoose.Types.ObjectId[];
 
+  phone?: string;
+  city?: string;
+  avatar?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,7 +60,10 @@ const UserSchema = new Schema<IUser>(
     passwordResetOtp: { type: String, select: false },
     passwordResetOtpExpires: { type: Date, select: false },
     passwordResetToken: { type: String, select: false },
-    passwordResetTokenExpires: { type: Date, select: false },
+    // Profile details
+    phone: { type: String, trim: true, default: "" },
+    city: { type: String, trim: true, default: "" },
+    avatar: { type: String, default: "" },
 
     purchasedTemplates: [{ type: Schema.Types.ObjectId, ref: "Template", default: [] }],
   },
