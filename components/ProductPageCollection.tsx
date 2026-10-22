@@ -1,12 +1,13 @@
 import Image from "next/image";
+import { catalogImageFor } from "@/lib/catalogImages";
 
 const collectionItems = [
-  { label: "Top products, starting at $10", img: "/slide.png" },
-  { label: "Gifts for clients & employees", img: "/slide.png" },
-  { label: "Prepare for professional events", img: "/slide.png" },
-  { label: "Prepare for local & community events", img: "/slide.png" },
-  { label: "2-day delivery", img: "/slide.png" },
-  { label: "Launch my business", img: "/slide.png" },
+  { label: "Top products, starting at $10", img: catalogImageFor("business cards") },
+  { label: "Gifts for clients & employees", img: catalogImageFor("promo products") },
+  { label: "Prepare for professional events", img: catalogImageFor("brochures") },
+  { label: "Prepare for local & community events", img: catalogImageFor("signs posters") },
+  { label: "2-day delivery", img: catalogImageFor("packaging") },
+  { label: "Launch my business", img: catalogImageFor("stickers labels") },
 ];
 
 export default function ProductPageCollection() {

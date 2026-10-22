@@ -592,7 +592,7 @@ export default function AdminNavigationMenuPage() {
             onClick={() => setActiveTab("header")}
             className={`px-5 py-2 text-base font-bold rounded-xl transition-all cursor-pointer ${
               activeTab === "header"
-                ? "bg-[#064FE0] text-white shadow-md shadow-[#064FE0]/20"
+                ? "bg-[#e74b2d] text-white shadow-md shadow-[#e74b2d]/20"
                 : "text-zinc-600 hover:text-zinc-900 hover:bg-white/60"
             }`}
           >
@@ -602,7 +602,7 @@ export default function AdminNavigationMenuPage() {
             onClick={() => setActiveTab("footer")}
             className={`px-5 py-2 text-base font-bold rounded-xl transition-all cursor-pointer ${
               activeTab === "footer"
-                ? "bg-[#064FE0] text-white shadow-md shadow-[#064FE0]/20"
+                ? "bg-[#e74b2d] text-white shadow-md shadow-[#e74b2d]/20"
                 : "text-zinc-600 hover:text-zinc-900 hover:bg-white/60"
             }`}
           >
@@ -646,7 +646,7 @@ export default function AdminNavigationMenuPage() {
                   setErrorMsg("");
                   setShowHeaderModal(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20 cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 cursor-pointer"
               >
                 <span className="text-base font-black">+</span> Add Header Link
               </button>
@@ -710,7 +710,7 @@ export default function AdminNavigationMenuPage() {
 
           {/* Main Drag & Drop Container for Header */}
           <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
-            <div className="p-4 bg-[#f8fbfd] border-b border-zinc-100 flex items-center justify-between">
+            <div className="p-4 bg-[#fbfaf7] border-b border-zinc-100 flex items-center justify-between">
               <span className="text-base font-bold text-zinc-700 uppercase tracking-wider">
                 Header Navigation Links ({headerItems.length})
               </span>
@@ -720,7 +720,7 @@ export default function AdminNavigationMenuPage() {
                 disabled={headerSaving || !headerHasUnsaved}
                 className={`px-4 py-1.5 text-base font-bold rounded-xl transition-all cursor-pointer ${
                   headerHasUnsaved
-                    ? "bg-[#064FE0] hover:bg-[#0439A8] text-white shadow-md shadow-[#064FE0]/20"
+                    ? "bg-[#e74b2d] hover:bg-[#c93e23] text-white shadow-md shadow-[#e74b2d]/20"
                     : "bg-zinc-100 text-zinc-400 cursor-not-allowed"
                 }`}
               >
@@ -730,7 +730,7 @@ export default function AdminNavigationMenuPage() {
 
             {headerLoading ? (
               <div className="py-20 text-center space-y-2">
-                <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+                <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
                 <p className="text-base text-zinc-400">Loading header menu...</p>
               </div>
             ) : headerItems.length === 0 ? (
@@ -738,7 +738,7 @@ export default function AdminNavigationMenuPage() {
                 <p className="text-zinc-500 text-base font-semibold">No header menu links found.</p>
                 <button
                   onClick={handleResetHeaderDefaults}
-                  className="px-4 py-2 bg-[#064FE0] text-white text-base font-bold rounded-xl hover:bg-[#0439A8] transition-all cursor-pointer"
+                  className="px-4 py-2 bg-[#e74b2d] text-white text-base font-bold rounded-xl hover:bg-[#c93e23] transition-all cursor-pointer"
                 >
                   Seed Default Menu Links
                 </button>
@@ -758,9 +758,9 @@ export default function AdminNavigationMenuPage() {
                       onDrop={(e) => handleHeaderDrop(e, index)}
                       className={`p-4 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-grab active:cursor-grabbing select-none ${
                         isDragging
-                          ? "opacity-40 bg-sky-50 border-2 border-dashed border-[#064FE0]"
+                          ? "opacity-40 bg-sky-50 border-2 border-dashed border-[#e74b2d]"
                           : isDragOver
-                          ? "bg-sky-100/60 border-t-2 border-[#064FE0]"
+                          ? "bg-sky-100/60 border-t-2 border-[#e74b2d]"
                           : "hover:bg-sky-50/30 bg-white"
                       }`}
                     >
@@ -774,7 +774,7 @@ export default function AdminNavigationMenuPage() {
                           </svg>
                         </div>
 
-                        <span className="w-6 h-6 rounded-full bg-sky-100 text-[#064FE0] font-bold text-base flex items-center justify-center shrink-0">
+                        <span className="w-6 h-6 rounded-full bg-sky-100 text-[#e74b2d] font-bold text-base flex items-center justify-center shrink-0">
                           {index + 1}
                         </span>
 
@@ -787,7 +787,7 @@ export default function AdminNavigationMenuPage() {
                               </span>
                             )}
                             {(item.categoryId || (item.columns && item.columns.length > 0)) && (
-                              <span className="px-1.5 py-0.5 rounded text-base font-bold bg-sky-50 text-[#064FE0] border border-sky-200">
+                              <span className="px-1.5 py-0.5 rounded text-base font-bold bg-sky-50 text-[#e74b2d] border border-sky-200">
                                 Dropdown
                               </span>
                             )}
@@ -820,7 +820,7 @@ export default function AdminNavigationMenuPage() {
                           onClick={() => handleToggleLoginOnly(item._id, Boolean(item.loginOnly))}
                           className={`px-3 py-1.5 rounded-xl text-base font-bold transition-all cursor-pointer border ${
                             item.loginOnly
-                              ? "bg-sky-50 text-[#064FE0] border-sky-200 hover:bg-sky-100"
+                              ? "bg-sky-50 text-[#e74b2d] border-sky-200 hover:bg-sky-100"
                               : "bg-zinc-100 text-zinc-500 border-zinc-200 hover:bg-zinc-200"
                           }`}
                         >
@@ -911,7 +911,7 @@ export default function AdminNavigationMenuPage() {
                   setErrorMsg("");
                   setShowColModal(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20 cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 cursor-pointer"
               >
                 <span className="text-base font-black">+</span> Add Footer Column
               </button>
@@ -989,7 +989,7 @@ export default function AdminNavigationMenuPage() {
           {/* Columns Editor List */}
           {footerLoading ? (
             <div className="bg-white rounded-3xl p-12 border border-zinc-200/80 text-center space-y-2">
-              <div className="w-8 h-8 border-2 border-purple-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+              <div className="w-8 h-8 border-2 border-purple-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
               <p className="text-base text-zinc-400">Loading footer columns...</p>
             </div>
           ) : footerColumns.length === 0 ? (
@@ -997,7 +997,7 @@ export default function AdminNavigationMenuPage() {
               <p className="text-zinc-500 text-base font-semibold">No footer columns found.</p>
               <button
                 onClick={handleResetFooterDefaults}
-                className="px-4 py-2 bg-[#064FE0] text-white text-base font-bold rounded-xl hover:bg-[#0439A8] transition-all cursor-pointer"
+                className="px-4 py-2 bg-[#e74b2d] text-white text-base font-bold rounded-xl hover:bg-[#c93e23] transition-all cursor-pointer"
               >
                 Seed Default Footer Columns
               </button>
@@ -1012,7 +1012,7 @@ export default function AdminNavigationMenuPage() {
                   }`}
                 >
                   {/* Column Header Bar */}
-                  <div className="p-4 bg-[#f8fbfd] border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="p-4 bg-[#fbfaf7] border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-800 font-bold text-base flex items-center justify-center shrink-0">
                         {colIdx + 1}
@@ -1058,7 +1058,7 @@ export default function AdminNavigationMenuPage() {
                           setErrorMsg("");
                           setShowLinkModal(true);
                         }}
-                        className="px-3 py-1.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer"
+                        className="px-3 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer"
                       >
                         + Add Link
                       </button>
@@ -1235,7 +1235,7 @@ export default function AdminNavigationMenuPage() {
                   type="text"
                   value={headerForm.title}
                   onChange={(e) => setHeaderForm((prev) => ({ ...prev, title: e.target.value }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   placeholder="e.g. Special Offers"
                 />
               </div>
@@ -1247,12 +1247,12 @@ export default function AdminNavigationMenuPage() {
                   type="text"
                   value={headerForm.url}
                   onChange={(e) => setHeaderForm((prev) => ({ ...prev, url: e.target.value }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   placeholder="e.g. /browsedesigns or https://example.com"
                 />
               </div>
 
-              <div className="rounded-2xl border border-zinc-200 bg-[#f8fbfd] p-4 space-y-3">
+              <div className="rounded-2xl border border-zinc-200 bg-[#fbfaf7] p-4 space-y-3">
                 <div>
                   <label className="text-base font-bold text-zinc-700 block mb-1">Category for the hover menu</label>
                   <select
@@ -1273,7 +1273,7 @@ export default function AdminNavigationMenuPage() {
                         },
                       }));
                     }}
-                    className="w-full bg-white border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                    className="w-full bg-white border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   >
                     <option value="">No category — plain link</option>
                     {categories.map((category) => (
@@ -1461,7 +1461,7 @@ export default function AdminNavigationMenuPage() {
                             ),
                           }))
                         }
-                        className="text-base font-bold text-[#064FE0]"
+                        className="text-base font-bold text-[#e74b2d]"
                       >
                         + Add link
                       </button>
@@ -1470,7 +1470,7 @@ export default function AdminNavigationMenuPage() {
                   <button
                     type="button"
                     onClick={() => setHeaderForm((prev) => ({ ...prev, columns: [...prev.columns, { title: "", links: [{ title: "", url: "" }] }] }))}
-                    className="text-base font-bold text-[#064FE0]"
+                    className="text-base font-bold text-[#e74b2d]"
                   >
                     + Add extra column
                   </button>
@@ -1483,7 +1483,7 @@ export default function AdminNavigationMenuPage() {
                     type="checkbox"
                     checked={headerForm.openInNewTab}
                     onChange={(e) => setHeaderForm((prev) => ({ ...prev, openInNewTab: e.target.checked }))}
-                    className="rounded accent-[#064FE0]"
+                    className="rounded accent-[#e74b2d]"
                   />
                   <span className="text-base font-semibold text-zinc-700">Open link in a new tab (_blank)</span>
                 </label>
@@ -1493,7 +1493,7 @@ export default function AdminNavigationMenuPage() {
                     type="checkbox"
                     checked={headerForm.loginOnly}
                     onChange={(e) => setHeaderForm((prev) => ({ ...prev, loginOnly: e.target.checked }))}
-                    className="rounded accent-[#064FE0]"
+                    className="rounded accent-[#e74b2d]"
                   />
                   <span className="text-base font-semibold text-zinc-700">Show only when the customer is logged in</span>
                 </label>
@@ -1503,7 +1503,7 @@ export default function AdminNavigationMenuPage() {
                     type="checkbox"
                     checked={headerForm.isActive}
                     onChange={(e) => setHeaderForm((prev) => ({ ...prev, isActive: e.target.checked }))}
-                    className="rounded accent-[#064FE0]"
+                    className="rounded accent-[#e74b2d]"
                   />
                   <span className="text-base font-semibold text-zinc-700">Visible on website header</span>
                 </label>
@@ -1520,7 +1520,7 @@ export default function AdminNavigationMenuPage() {
                 <button
                   type="submit"
                   disabled={headerModalSaving}
-                  className="flex-1 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
                 >
                   {headerModalSaving ? "Saving..." : editingHeaderItem ? "Update Link" : "Create Link"}
                 </button>
@@ -1563,7 +1563,7 @@ export default function AdminNavigationMenuPage() {
                   type="text"
                   value={colForm.title}
                   onChange={(e) => setColForm((prev) => ({ ...prev, title: e.target.value }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   placeholder="e.g. Quick Links, Help & Support"
                 />
               </div>
@@ -1574,7 +1574,7 @@ export default function AdminNavigationMenuPage() {
                     type="checkbox"
                     checked={colForm.isActive}
                     onChange={(e) => setColForm((prev) => ({ ...prev, isActive: e.target.checked }))}
-                    className="rounded accent-[#064FE0]"
+                    className="rounded accent-[#e74b2d]"
                   />
                   <span className="text-base font-semibold text-zinc-700">Column Visible on Website Footer</span>
                 </label>
@@ -1591,7 +1591,7 @@ export default function AdminNavigationMenuPage() {
                 <button
                   type="submit"
                   disabled={colModalSaving}
-                  className="flex-1 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
                 >
                   {colModalSaving ? "Saving..." : editingCol ? "Update Column" : "Create Column"}
                 </button>
@@ -1634,7 +1634,7 @@ export default function AdminNavigationMenuPage() {
                   type="text"
                   value={linkForm.title}
                   onChange={(e) => setLinkForm((prev) => ({ ...prev, title: e.target.value }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   placeholder="e.g. Terms of Service, Contact Us"
                 />
               </div>
@@ -1646,7 +1646,7 @@ export default function AdminNavigationMenuPage() {
                   type="text"
                   value={linkForm.url}
                   onChange={(e) => setLinkForm((prev) => ({ ...prev, url: e.target.value }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   placeholder="e.g. /contact or https://..."
                 />
               </div>
@@ -1657,7 +1657,7 @@ export default function AdminNavigationMenuPage() {
                     type="checkbox"
                     checked={linkForm.openInNewTab}
                     onChange={(e) => setLinkForm((prev) => ({ ...prev, openInNewTab: e.target.checked }))}
-                    className="rounded accent-[#064FE0]"
+                    className="rounded accent-[#e74b2d]"
                   />
                   <span className="text-base font-semibold text-zinc-700">Open link in a new tab (_blank)</span>
                 </label>
@@ -1667,7 +1667,7 @@ export default function AdminNavigationMenuPage() {
                     type="checkbox"
                     checked={linkForm.isActive}
                     onChange={(e) => setLinkForm((prev) => ({ ...prev, isActive: e.target.checked }))}
-                    className="rounded accent-[#064FE0]"
+                    className="rounded accent-[#e74b2d]"
                   />
                   <span className="text-base font-semibold text-zinc-700">Link Visible</span>
                 </label>
@@ -1683,7 +1683,7 @@ export default function AdminNavigationMenuPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer"
+                  className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer"
                 >
                   {editingLinkIndex !== null ? "Update Link" : "Add Link"}
                 </button>

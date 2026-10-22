@@ -4,7 +4,7 @@ import ShopByCollection from "../components/ShopByCollection";
 import TopSellers from "../components/TopSellers";
 import GrowthSections from "../components/GrowthSections";
 import ComplimentaryLogoBanner from "../components/ComplimentaryLogoBanner";
-import MadeWithXPrintz from "../components/MadeWithXPrintz";
+import MadeWithPrintgraphi from "../components/MadeWithPrintgraphi";
 import dbConnect from "@/lib/mongodb";
 import Homepage from "@/models/Homepage";
 import { mergeHomepage } from "@/lib/homepageContent";
@@ -15,14 +15,14 @@ export default async function Home() {
   const content = mergeHomepage(doc?.content);
 
   return (
-    <div className="flex-1 bg-white">
+    <div className="flex-1 bg-[#fbfaf7]">
       <Hero hero={content.hero} />
       <CategoryCarousel />
       <ShopByCollection collections={content.collections} />
       <TopSellers topSellers={content.topSellers} />
       <GrowthSections tools={content.tools} newIn={content.newIn} />
       <ComplimentaryLogoBanner banner={content.logoBanner} />
-      <MadeWithXPrintz madeWith={content.madeWith} />
+      <MadeWithPrintgraphi madeWith={content.madeWith} />
     </div>
   );
 }

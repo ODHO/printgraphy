@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { mediaSrc } from "@/lib/mediaUrl";
+import { catalogImageFor } from "@/lib/catalogImages";
 
 interface CategoryItem {
   _id?: string;
@@ -57,6 +58,7 @@ function getCategoryFallbackImage(name: string, slug?: string): string {
 }
 
 function resolveImageSrc(img?: string, name: string = "", slug?: string): string {
+  if (name || slug) return catalogImageFor(name, slug);
   if (!img || typeof img !== "string") {
     return getCategoryFallbackImage(name, slug);
   }
@@ -237,4 +239,3 @@ export default function CategoryCarousel() {
     </section>
   );
 }
-

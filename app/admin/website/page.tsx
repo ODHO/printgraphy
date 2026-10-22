@@ -45,7 +45,7 @@ export default function WebsiteAdminPage() {
           <Link
             key={item.href}
             href={item.href}
-            className="rounded-2xl border border-zinc-200 bg-white p-5 hover:border-[#064FE0] hover:shadow-sm transition-all"
+            className="rounded-2xl border border-zinc-200 bg-white p-5 hover:border-[#e74b2d] hover:shadow-sm transition-all"
           >
             <h2 className="text-base font-bold text-zinc-900">{item.title}</h2>
             <p className="mt-1 text-base text-zinc-500 leading-relaxed">{item.body}</p>

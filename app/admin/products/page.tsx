@@ -78,7 +78,7 @@ export default function AdminProductsPage() {
         </div>
         <Link
           href="/admin/products/new"
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -97,7 +97,7 @@ export default function AdminProductsPage() {
           placeholder="Search catalog products..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#064FE0] shadow-xs"
+          className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-xs"
         />
       </div>
 
@@ -105,18 +105,18 @@ export default function AdminProductsPage() {
       <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
           </div>
         ) : products.length === 0 ? (
           <div className="py-16 text-center space-y-2">
             <p className="text-zinc-400 text-base">No products found.</p>
-            <Link href="/admin/products/new" className="text-[#064FE0] text-base font-bold hover:underline inline-block">Add your first product →</Link>
+            <Link href="/admin/products/new" className="text-[#e74b2d] text-base font-bold hover:underline inline-block">Add your first product →</Link>
           </div>
         ) : (
           <>
             <table className="w-full text-base">
               <thead>
-                <tr className="border-b border-zinc-100 bg-[#edf4f9]/50 text-zinc-500">
+                <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
                   <th className="text-left px-5 py-3.5 font-bold">Product Name</th>
                   <th className="text-left px-5 py-3.5 font-bold hidden md:table-cell">Category</th>
                   <th className="text-left px-5 py-3.5 font-bold">Base Price</th>
@@ -153,10 +153,10 @@ export default function AdminProductsPage() {
                         disabled={toggling === p._id}
                         className="flex items-center gap-2 text-base font-bold cursor-pointer"
                       >
-                        <div className={`w-8 h-4.5 rounded-full transition-colors relative ${p.isActive ? "bg-[#064FE0]" : "bg-zinc-300"}`}>
+                        <div className={`w-8 h-4.5 rounded-full transition-colors relative ${p.isActive ? "bg-[#e74b2d]" : "bg-zinc-300"}`}>
                           <span className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow transition-all ${p.isActive ? "left-4" : "left-0.5"}`} />
                         </div>
-                        <span className={p.isActive ? "text-[#064FE0]" : "text-zinc-400"}>{p.isActive ? "Active" : "Off"}</span>
+                        <span className={p.isActive ? "text-[#e74b2d]" : "text-zinc-400"}>{p.isActive ? "Active" : "Off"}</span>
                       </button>
                     </td>
                     <td className="px-5 py-3.5 text-right">
@@ -182,7 +182,7 @@ export default function AdminProductsPage() {
             </table>
 
             {pagination && pagination.pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#edf4f9]/30">
+              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#fff7f3]/30">
                 <p className="text-base text-zinc-500 font-medium">Showing {(page - 1) * pagination.limit + 1}–{Math.min(page * pagination.limit, pagination.total)} of {pagination.total}</p>
                 <div className="flex items-center gap-2">
                   <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer">

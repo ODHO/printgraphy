@@ -164,9 +164,9 @@ const PRODUCT_CANVAS_PRESETS: Record<
     sides_count: 4,
     sides_names: ["Front Panel", "Right Side", "Back Panel", "Left Side"],
     guide_lines: [
-      { id: "box_1", name: "Left Fold", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#064FE0" },
-      { id: "box_2", name: "Center Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#064FE0" },
-      { id: "box_3", name: "Right Fold", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#064FE0" },
+      { id: "box_1", name: "Left Fold", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "box_2", name: "Center Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "box_3", name: "Right Fold", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#e74b2d" },
     ],
   },
   "product-boxes": {
@@ -182,9 +182,9 @@ const PRODUCT_CANVAS_PRESETS: Record<
     sides_count: 4,
     sides_names: ["Front Panel", "Right Panel", "Back Panel", "Left Panel"],
     guide_lines: [
-      { id: "pbox_1", name: "Panel Divider 1", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#064FE0" },
-      { id: "pbox_2", name: "Panel Divider 2", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#064FE0" },
-      { id: "pbox_3", name: "Panel Divider 3", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#064FE0" },
+      { id: "pbox_1", name: "Panel Divider 1", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "pbox_2", name: "Panel Divider 2", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "pbox_3", name: "Panel Divider 3", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#e74b2d" },
     ],
   },
   "t-shirts": {
@@ -275,7 +275,7 @@ const PRODUCT_CANVAS_PRESETS: Record<
 
 const DEFAULT_LAYERS: TextLayer[] = [
   { id: "1", text: "Stephen", x: 10, y: 30, fontSize: 22, color: "#ffffff", fontWeight: "bold" },
-  { id: "2", text: "Manager", x: 10, y: 48, fontSize: 13, color: "#38bdf8", fontWeight: "normal" },
+  { id: "2", text: "Manager", x: 10, y: 48, fontSize: 13, color: "#f88768", fontWeight: "normal" },
   { id: "3", text: "+1 (555) 123-4567", x: 10, y: 76, fontSize: 10, color: "#e4e4e7", fontWeight: "normal" },
   { id: "4", text: "stephen@zyora.com", x: 42, y: 76, fontSize: 10, color: "#e4e4e7", fontWeight: "normal" },
   { id: "5", text: "Poissy 15 rue de la Boëtie", x: 68, y: 76, fontSize: 10, color: "#e4e4e7", fontWeight: "normal" },
@@ -638,7 +638,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
           <button
             type="submit"
             disabled={saving}
-            className="px-5 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20 disabled:opacity-60 cursor-pointer"
+            className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 disabled:opacity-60 cursor-pointer"
           >
             {saving ? "Saving..." : mode === "create" ? "Create Template" : "Save Changes"}
           </button>
@@ -668,7 +668,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                 value={form.title}
                 onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Custom Packaging Box Pro"
-                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               />
             </div>
 
@@ -679,7 +679,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                 onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
                 placeholder="Short description of this product template..."
                 rows={2}
-                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0] resize-none"
+                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] resize-none"
               />
             </div>
 
@@ -720,7 +720,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                     }));
                   }
                 }}
-                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
               >
                 {(dbCategories.length > 0 ? dbCategories.map((c) => c.name) : TEMPLATE_CATEGORIES).map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -735,7 +735,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                 value={form.tags}
                 onChange={(e) => setForm((prev) => ({ ...prev, tags: e.target.value }))}
                 placeholder="packaging, box, apparel, custom"
-                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               />
             </div>
           </div>
@@ -746,16 +746,16 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
               <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">
                 Category Canvas & Dieline Specs
               </h2>
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-50 text-[#064FE0] uppercase font-mono">
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-50 text-[#e74b2d] uppercase font-mono">
                 {form.canvas_config.side_mode || "DOUBLE"} MODE
               </span>
             </div>
 
             {/* Category Canvas Summary Badge */}
-            <div className="p-3 bg-[#f8fbfd] border border-sky-100 rounded-2xl text-xs space-y-1">
+            <div className="p-3 bg-[#fbfaf7] border border-sky-100 rounded-2xl text-xs space-y-1">
               <div className="flex justify-between font-bold text-zinc-800">
                 <span>Canvas Size:</span>
-                <span className="font-mono text-[#064FE0]">{form.canvas_config.width} × {form.canvas_config.height} {form.canvas_config.unit}</span>
+                <span className="font-mono text-[#e74b2d]">{form.canvas_config.width} × {form.canvas_config.height} {form.canvas_config.unit}</span>
               </div>
               <div className="flex justify-between text-zinc-500 font-medium">
                 <span>Bleed / Safe Area:</span>
@@ -802,7 +802,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                     }}
                     className={`px-2.5 py-1.5 text-xs font-bold rounded-xl border transition-all text-left cursor-pointer ${
                       form.canvas_config.width === preset.width && form.canvas_config.height === preset.height
-                        ? "bg-[#064FE0] text-white border-[#064FE0] shadow-xs"
+                        ? "bg-[#e74b2d] text-white border-[#e74b2d] shadow-xs"
                         : "bg-zinc-50 border-zinc-200 text-zinc-700 hover:border-zinc-400"
                     }`}
                   >
@@ -830,7 +830,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                       canvas_config: { ...prev.canvas_config, width: Number(e.target.value) || 1 },
                     }))
                   }
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
               <div>
@@ -846,7 +846,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                       canvas_config: { ...prev.canvas_config, height: Number(e.target.value) || 1 },
                     }))
                   }
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
             </div>
@@ -867,7 +867,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                       },
                     }))
                   }
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-1.5 text-xs font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-1.5 text-xs font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
                 >
                   <option value="mm">mm</option>
                   <option value="cm">cm</option>
@@ -888,7 +888,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                       },
                     }))
                   }
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-1.5 text-xs font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-1.5 text-xs font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
                 >
                   <option value="landscape">Landscape</option>
                   <option value="portrait">Portrait</option>
@@ -907,7 +907,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
             return (
               <div className="bg-white border border-zinc-200/80 rounded-3xl p-5 space-y-4 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-base font-bold text-[#064FE0] uppercase tracking-wider">
+                  <h2 className="text-base font-bold text-[#e74b2d] uppercase tracking-wider">
                     Template Variations & Defaults
                   </h2>
                   <span className="text-base text-zinc-400 font-medium">Pre-select specs</span>
@@ -926,7 +926,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                           [v.name]: e.target.value,
                         }))
                       }
-                      className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer font-medium"
+                      className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer font-medium"
                     >
                       {v.values.map((val) => (
                         <option key={val.name} value={val.name}>
@@ -954,7 +954,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                   step="0.01"
                   value={form.price}
                   onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl pl-8 pr-4 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl pl-8 pr-4 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
               <p className="text-base text-zinc-500 mt-1.5 font-medium">
@@ -974,7 +974,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
               <button
                 type="button"
                 onClick={() => setForm((prev) => ({ ...prev, isActive: !prev.isActive }))}
-                className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer ${form.isActive ? "bg-[#064FE0]" : "bg-zinc-300"}`}
+                className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer ${form.isActive ? "bg-[#e74b2d]" : "bg-zinc-300"}`}
               >
                 <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${form.isActive ? "left-5.5" : "left-0.5"}`} />
               </button>
@@ -994,8 +994,8 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                 const file = e.dataTransfer.files?.[0];
                 if (file) processThumbnailFile(file);
               }}
-              className={`relative w-full aspect-[3/2] rounded-2xl border-2 border-dashed flex items-center justify-center cursor-pointer transition-all overflow-hidden bg-[#f8fbfd] ${
-                thumbnailDragOver ? "border-[#064FE0] bg-sky-50" : "border-zinc-200 hover:border-[#064FE0]"
+              className={`relative w-full aspect-[3/2] rounded-2xl border-2 border-dashed flex items-center justify-center cursor-pointer transition-all overflow-hidden bg-[#fbfaf7] ${
+                thumbnailDragOver ? "border-[#e74b2d] bg-sky-50" : "border-zinc-200 hover:border-[#e74b2d]"
               }`}
             >
               {form.thumbnail ? (
@@ -1035,7 +1035,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                     type="button"
                     onClick={() => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, bgColor: c.value } }))}
                     title={c.label}
-                    className={`w-7 h-7 rounded-lg border-2 transition-all cursor-pointer ${form.templateData.bgColor === c.value ? "border-[#064FE0] scale-110 shadow-sm" : "border-transparent hover:scale-105"}`}
+                    className={`w-7 h-7 rounded-lg border-2 transition-all cursor-pointer ${form.templateData.bgColor === c.value ? "border-[#e74b2d] scale-110 shadow-sm" : "border-transparent hover:scale-105"}`}
                     style={{ backgroundColor: c.value }}
                   />
                 ))}
@@ -1060,7 +1060,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                   maxLength={3}
                   value={form.templateData.logoText}
                   onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, logoText: e.target.value } }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
               <div>
@@ -1068,7 +1068,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                 <select
                   value={form.templateData.logoPosition}
                   onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, logoPosition: e.target.value as "top-right" | "top-left" | "center" | "bottom-right" } }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-semibold text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
                 >
                   <option value="top-right">Top Right</option>
                   <option value="top-left">Top Left</option>
@@ -1082,7 +1082,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-base font-bold text-zinc-700 block">Logo Size / Width</label>
-                <span className="text-base font-mono font-bold text-[#064FE0]">{form.templateData.logoSize || 28}px</span>
+                <span className="text-base font-mono font-bold text-[#e74b2d]">{form.templateData.logoSize || 28}px</span>
               </div>
               <input
                 type="range"
@@ -1090,7 +1090,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                 max={120}
                 value={form.templateData.logoSize || 28}
                 onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, logoSize: Number(e.target.value) } }))}
-                className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#064FE0]"
+                className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
               />
             </div>
           </div>
@@ -1113,7 +1113,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                 type="text"
                 value={activeLayer.text}
                 onChange={(e) => updateLayer(activeLayer.id, { text: e.target.value })}
-                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 placeholder="Layer text"
               />
 
@@ -1126,7 +1126,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                     max={60}
                     value={activeLayer.fontSize}
                     onChange={(e) => updateLayer(activeLayer.id, { fontSize: Number(e.target.value) })}
-                    className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-lg px-2 py-1.5 text-base text-zinc-900 focus:outline-none"
+                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-2 py-1.5 text-base text-zinc-900 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -1135,14 +1135,14 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                     type="color"
                     value={activeLayer.color}
                     onChange={(e) => updateLayer(activeLayer.id, { color: e.target.value })}
-                    className="w-full h-[30px] rounded-lg cursor-pointer bg-[#f8fbfd] border border-zinc-200"
+                    className="w-full h-[30px] rounded-lg cursor-pointer bg-[#fbfaf7] border border-zinc-200"
                   />
                 </div>
               </div>
 
               <TextStyleControls
                 layer={activeLayer}
-                accent="#064FE0"
+                accent="#e74b2d"
                 onChange={(patch) => updateLayer(activeLayer.id, patch)}
               />
             </div>
@@ -1151,9 +1151,9 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
           <button
             type="button"
             onClick={addLayer}
-            className="w-full py-2.5 rounded-2xl border border-dashed border-zinc-300 text-base font-bold text-zinc-600 hover:bg-white hover:border-[#064FE0] transition-all cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-2xl border border-dashed border-zinc-300 text-base font-bold text-zinc-600 hover:bg-white hover:border-[#e74b2d] transition-all cursor-pointer flex items-center justify-center gap-2"
           >
-            <svg className="w-3.5 h-3.5 text-[#064FE0]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-[#e74b2d]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
             Add Text Layer
@@ -1168,7 +1168,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
               <div>
                 <h2 className="text-base font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-2">
                   <span>Category Template Canvas & 3D Preview</span>
-                  <span className="font-mono text-xs text-[#064FE0] bg-sky-50 px-2 py-0.5 rounded-md font-bold">
+                  <span className="font-mono text-xs text-[#e74b2d] bg-sky-50 px-2 py-0.5 rounded-md font-bold">
                     {canvasWidthNum} × {canvasHeightNum} {form.canvas_config.unit}
                   </span>
                 </h2>
@@ -1192,7 +1192,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                   type="button"
                   onClick={() => setViewMode("2d")}
                   className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                    viewMode === "2d" ? "bg-[#064FE0] text-white shadow-xs" : "text-zinc-600 hover:text-zinc-900"
+                    viewMode === "2d" ? "bg-[#e74b2d] text-white shadow-xs" : "text-zinc-600 hover:text-zinc-900"
                   }`}
                 >
                   ✏️ 2D Drag & Edit
@@ -1202,7 +1202,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
 
             {/* Sides / Panels Switcher Tabs */}
             {sidesList.length > 1 && (
-              <div className="flex items-center gap-2 p-1.5 bg-[#f8fbfd] border border-zinc-200/80 rounded-2xl overflow-x-auto">
+              <div className="flex items-center gap-2 p-1.5 bg-[#fbfaf7] border border-zinc-200/80 rounded-2xl overflow-x-auto">
                 <span className="text-xs font-bold text-zinc-400 px-2 uppercase tracking-wider">Panels:</span>
                 {sidesList.map((sideName, idx) => (
                   <button
@@ -1215,7 +1215,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                     }}
                     className={`px-3 py-1 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
                       activeSideIndex === idx
-                        ? "bg-[#064FE0] text-white shadow-xs"
+                        ? "bg-[#e74b2d] text-white shadow-xs"
                         : "bg-white text-zinc-600 border border-zinc-200 hover:border-zinc-300"
                     }`}
                   >
@@ -1313,12 +1313,12 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                             className="absolute top-0 bottom-0 pointer-events-none z-15 flex flex-col items-center"
                             style={{
                               left: `${pos}%`,
-                              borderLeft: `2px ${lineStyle} ${line.color || "#38bdf8"}`,
+                              borderLeft: `2px ${lineStyle} ${line.color || "#f88768"}`,
                             }}
                           >
                             <span
                               className="text-[9px] font-bold text-white px-1.5 py-0.5 rounded shadow z-20 mt-1.5 whitespace-nowrap opacity-90"
-                              style={{ backgroundColor: line.color || "#38bdf8" }}
+                              style={{ backgroundColor: line.color || "#f88768" }}
                             >
                               {line.name} ({pos.toFixed(1)}%)
                             </span>
@@ -1331,7 +1331,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                             className="absolute left-0 right-0 pointer-events-none z-15 flex items-center"
                             style={{
                               top: `${pos}%`,
-                              borderTop: `2px ${lineStyle} ${line.color || "#38bdf8"}`,
+                              borderTop: `2px ${lineStyle} ${line.color || "#f88768"}`,
                             }}
                           >
                             <span
@@ -1351,8 +1351,8 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                         key={idx}
                         className={`absolute pointer-events-none z-30 transition-all ${
                           line.type === "v"
-                            ? "top-0 bottom-0 w-[1.5px] bg-[#38bdf8] shadow-[0_0_8px_#38bdf8]"
-                            : "left-0 right-0 h-[1.5px] bg-[#38bdf8] shadow-[0_0_8px_#38bdf8]"
+                            ? "top-0 bottom-0 w-[1.5px] bg-[#f88768] shadow-[0_0_8px_#f88768]"
+                            : "left-0 right-0 h-[1.5px] bg-[#f88768] shadow-[0_0_8px_#f88768]"
                         }`}
                         style={
                           line.type === "v"
@@ -1375,7 +1375,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                           width: form.templateData.logoSize,
                           height: form.templateData.logoSize,
                           fontSize: form.templateData.logoSize * 0.4,
-                          backgroundColor: "#064FE0",
+                          backgroundColor: "#e74b2d",
                         }}
                       >
                         {form.templateData.logoText}
@@ -1388,7 +1388,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                         key={layer.id}
                         onPointerDown={(e) => handlePointerDown(layer.id, e)}
                         className={`absolute cursor-move z-20 touch-none px-1 rounded ${
-                          activeLayerId === layer.id ? "outline outline-2 outline-[#064FE0] outline-offset-1" : ""
+                          activeLayerId === layer.id ? "outline outline-2 outline-[#e74b2d] outline-offset-1" : ""
                         }`}
                         style={{
                           ...textLayerDomStyle(layer, ADMIN_LAYOUT),
@@ -1413,7 +1413,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                   type="button"
                   onClick={() => setActiveLayerId(layer.id)}
                   className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-left transition-all cursor-pointer ${
-                    activeLayerId === layer.id ? "border-[#064FE0] bg-sky-50" : "border-zinc-200 hover:bg-zinc-50"
+                    activeLayerId === layer.id ? "border-[#e74b2d] bg-sky-50" : "border-zinc-200 hover:bg-zinc-50"
                   }`}
                 >
                   <span

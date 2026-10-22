@@ -92,7 +92,7 @@ export default function AdminCouponsPage() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20 cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 cursor-pointer"
         >
           + Create New Coupon
         </button>
@@ -101,7 +101,7 @@ export default function AdminCouponsPage() {
       <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
           </div>
         ) : coupons.length === 0 ? (
           <div className="py-16 text-center text-zinc-400 text-base">
@@ -110,7 +110,7 @@ export default function AdminCouponsPage() {
         ) : (
           <table className="w-full text-base">
             <thead>
-              <tr className="border-b border-zinc-100 bg-[#edf4f9]/50 text-zinc-500">
+              <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
                 <th className="text-left px-5 py-3.5 font-bold">Coupon Code</th>
                 <th className="text-left px-5 py-3.5 font-bold">Discount Value</th>
                 <th className="text-left px-5 py-3.5 font-bold">Min Subtotal</th>
@@ -123,7 +123,7 @@ export default function AdminCouponsPage() {
               {coupons.map((c) => (
                 <tr key={c._id} className="hover:bg-sky-50/40 transition-colors">
                   <td className="px-5 py-3.5 font-mono font-black text-zinc-900 text-base">{c.code}</td>
-                  <td className="px-5 py-3.5 font-bold text-[#064FE0]">
+                  <td className="px-5 py-3.5 font-bold text-[#e74b2d]">
                     {c.type === "percentage" ? `${c.value}% OFF` : `$${c.value.toFixed(2)} OFF`}
                   </td>
                   <td className="px-5 py-3.5 font-mono text-zinc-600">
@@ -171,37 +171,37 @@ export default function AdminCouponsPage() {
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                 <label className="text-base font-bold text-zinc-700 block mb-1">Coupon Code *</label>
-                <input required type="text" value={form.code} onChange={(e) => setForm((prev) => ({ ...prev, code: e.target.value.toUpperCase() }))} placeholder="e.g. WELCOME15" className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono font-bold text-zinc-900 uppercase focus:outline-none focus:border-[#064FE0]" />
+                <input required type="text" value={form.code} onChange={(e) => setForm((prev) => ({ ...prev, code: e.target.value.toUpperCase() }))} placeholder="e.g. WELCOME15" className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono font-bold text-zinc-900 uppercase focus:outline-none focus:border-[#e74b2d]" />
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
                   <label className="text-base font-bold text-zinc-700 block mb-1">Type *</label>
-                  <select value={form.type} onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value as any }))} className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-900 focus:outline-none">
+                  <select value={form.type} onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value as any }))} className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-900 focus:outline-none">
                     <option value="percentage">Percentage (%)</option>
                     <option value="flat">Flat ($)</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-base font-bold text-zinc-700 block mb-1">Value *</label>
-                  <input required type="number" step="0.01" value={form.value} onChange={(e) => setForm((prev) => ({ ...prev, value: e.target.value }))} className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none" />
+                  <input required type="number" step="0.01" value={form.value} onChange={(e) => setForm((prev) => ({ ...prev, value: e.target.value }))} className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
                   <label className="text-base font-bold text-zinc-700 block mb-1">Min Subtotal ($)</label>
-                  <input type="number" value={form.minOrderValue} onChange={(e) => setForm((prev) => ({ ...prev, minOrderValue: e.target.value }))} className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none" />
+                  <input type="number" value={form.minOrderValue} onChange={(e) => setForm((prev) => ({ ...prev, minOrderValue: e.target.value }))} className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none" />
                 </div>
                 <div>
                   <label className="text-base font-bold text-zinc-700 block mb-1">Usage Limit</label>
-                  <input type="number" value={form.usageLimit} onChange={(e) => setForm((prev) => ({ ...prev, usageLimit: e.target.value }))} placeholder="100" className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none" />
+                  <input type="number" value={form.usageLimit} onChange={(e) => setForm((prev) => ({ ...prev, usageLimit: e.target.value }))} placeholder="100" className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none" />
                 </div>
               </div>
 
               <div className="flex gap-3 pt-3">
                 <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2.5 text-base text-zinc-600 font-bold border border-zinc-200 rounded-xl hover:bg-zinc-50 cursor-pointer">Cancel</button>
-                <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60">{saving ? "Creating..." : "Save Coupon"}</button>
+                <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60">{saving ? "Creating..." : "Save Coupon"}</button>
               </div>
             </form>
           </div>

@@ -204,7 +204,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value as any)}
               aria-label="Sort reviews"
-              className="appearance-none bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2 pr-8 text-base font-bold text-zinc-900 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2196D2]/30"
+              className="appearance-none bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2 pr-8 text-base font-bold text-zinc-900 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#e74b2d]/30"
             >
               <option value="newest">Sort by newest review</option>
               <option value="highest">Sort by highest rating</option>
@@ -220,7 +220,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
           {/* Write a Review Button */}
           <button
             onClick={handleOpenWriteModal}
-            className="px-6 py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl shadow-sm transition-all duration-200 cursor-pointer shrink-0"
+            className="px-6 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl shadow-sm transition-all duration-200 cursor-pointer shrink-0"
           >
             ★ Write a Review
           </button>
@@ -238,7 +238,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
           </div>
           <Link
             href="/auth?tab=signin"
-            className="px-3.5 py-1.5 rounded-xl text-base font-extrabold bg-[#2196D2] text-white hover:bg-[#1B85BD] transition-all shadow-xs shrink-0 self-start sm:self-auto"
+            className="px-3.5 py-1.5 rounded-xl text-base font-extrabold bg-[#e74b2d] text-white hover:bg-[#c93e23] transition-all shadow-xs shrink-0 self-start sm:self-auto"
           >
             Sign In to Review →
           </Link>
@@ -319,7 +319,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
             <p className="text-base text-zinc-500 mt-1 mb-4">Be the first to share your experience with this product!</p>
             <button
               onClick={handleOpenWriteModal}
-              className="px-5 py-2 bg-[#2196D2] text-white text-base font-bold rounded-xl shadow"
+              className="px-5 py-2 bg-[#e74b2d] text-white text-base font-bold rounded-xl shadow"
             >
               Write First Review
             </button>
@@ -330,7 +330,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {/* User Avatar */}
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#2196D2] to-[#2196D2] text-white font-extrabold text-base flex items-center justify-center shadow-xs">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#e74b2d] to-[#e74b2d] text-white font-extrabold text-base flex items-center justify-center shadow-xs">
                     {getInitials(r.userName)}
                   </div>
                   <div>
@@ -363,7 +363,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
               <p className="text-base text-zinc-600 leading-relaxed font-normal">{r.comment}</p>
               {r.adminReply && (
                 <div className="rounded-xl bg-sky-50 border border-sky-100 px-3 py-2">
-                  <p className="text-base font-bold uppercase tracking-wide text-[#2196D2]">Printgraphy reply</p>
+                  <p className="text-base font-bold uppercase tracking-wide text-[#e74b2d]">Printgraphy reply</p>
                   <p className="mt-1 text-base text-zinc-700 leading-relaxed">{r.adminReply}</p>
                 </div>
               )}
@@ -392,7 +392,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
 
             {!currentUser ? (
               <div className="py-6 px-4 text-center space-y-4 bg-zinc-50/70 rounded-2xl border border-zinc-200/80">
-                <div className="w-12 h-12 rounded-full bg-sky-100 text-[#2196D2] flex items-center justify-center text-xl mx-auto border border-sky-200">
+                <div className="w-12 h-12 rounded-full bg-sky-100 text-[#e74b2d] flex items-center justify-center text-xl mx-auto border border-sky-200">
                   🔒
                 </div>
                 <div className="space-y-1">
@@ -403,7 +403,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
                 </div>
                 <Link
                   href="/auth?tab=signin"
-                  className="inline-block px-6 py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl shadow transition-all"
+                  className="inline-block px-6 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl shadow transition-all"
                 >
                   Sign In to Write a Review →
                 </Link>
@@ -464,7 +464,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
                       placeholder="e.g. Sarah M."
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-medium text-zinc-900 focus:outline-none focus:border-[#2196D2]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-medium text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     />
                   </div>
                   <div>
@@ -474,7 +474,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
                       placeholder="e.g. Graphic Designer"
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-medium text-zinc-900 focus:outline-none focus:border-[#2196D2]"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-medium text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     />
                   </div>
                 </div>
@@ -487,7 +487,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
                     placeholder="e.g. Crisp print and great quality!"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-medium text-zinc-900 focus:outline-none focus:border-[#2196D2]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-medium text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   />
                 </div>
 
@@ -500,7 +500,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
                     placeholder="Tell us what you liked about paper weight, finish, design studio, or delivery..."
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-medium text-zinc-900 focus:outline-none focus:border-[#2196D2]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-medium text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   />
                 </div>
 
@@ -516,7 +516,7 @@ export default function ProductReviewsSection({ productId, productName }: Produc
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl shadow transition-all disabled:opacity-50"
+                    className="px-6 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl shadow transition-all disabled:opacity-50"
                   >
                     {submitting ? "Submitting..." : "Post Review"}
                   </button>

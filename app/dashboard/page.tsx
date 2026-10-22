@@ -105,7 +105,7 @@ export default function CustomerDashboardPage() {
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-160px)] bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#2196D2] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin" />
       </div>
     );
   }
@@ -135,7 +135,7 @@ export default function CustomerDashboardPage() {
               </div>
               <Link
                 href="/browsedesigns"
-                className="px-6 py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-sm sm:text-base font-semibold rounded-full shadow-sm transition-all self-start sm:self-center whitespace-nowrap cursor-pointer"
+                className="px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm sm:text-base font-semibold rounded-full shadow-sm transition-all self-start sm:self-center whitespace-nowrap cursor-pointer"
               >
                 + New Order
               </Link>
@@ -145,10 +145,10 @@ export default function CustomerDashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link
                 href="/dashboard/orders"
-                className="bg-[#F0F7FC] hover:bg-[#EAF5FB] border border-sky-100/70 rounded-2xl p-5 transition-all group"
+                className="bg-[#fff1eb] hover:bg-[#fff1eb] border border-sky-100/70 rounded-2xl p-5 transition-all group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs uppercase font-bold tracking-wider text-[#2196D2]">
+                  <span className="text-xs uppercase font-bold tracking-wider text-[#e74b2d]">
                     Orders
                   </span>
                   <span className="text-xl">📦</span>
@@ -156,17 +156,17 @@ export default function CustomerDashboardPage() {
                 <p className="text-2xl font-extrabold text-zinc-900">
                   {recentOrders.length}
                 </p>
-                <p className="text-xs sm:text-sm text-zinc-500 mt-1 font-medium group-hover:text-[#2196D2] transition-colors">
+                <p className="text-xs sm:text-sm text-zinc-500 mt-1 font-medium group-hover:text-[#e74b2d] transition-colors">
                   View order history →
                 </p>
               </Link>
 
               <a
                 href="#projects"
-                className="bg-[#F0F7FC] hover:bg-[#EAF5FB] border border-sky-100/70 rounded-2xl p-5 transition-all group"
+                className="bg-[#fff1eb] hover:bg-[#fff1eb] border border-sky-100/70 rounded-2xl p-5 transition-all group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs uppercase font-bold tracking-wider text-[#2196D2]">
+                  <span className="text-xs uppercase font-bold tracking-wider text-[#e74b2d]">
                     Projects
                   </span>
                   <span className="text-xl">🎨</span>
@@ -174,33 +174,33 @@ export default function CustomerDashboardPage() {
                 <p className="text-2xl font-extrabold text-zinc-900">
                   {savedDesigns.length}
                 </p>
-                <p className="text-xs sm:text-sm text-zinc-500 mt-1 font-medium group-hover:text-[#2196D2] transition-colors">
+                <p className="text-xs sm:text-sm text-zinc-500 mt-1 font-medium group-hover:text-[#e74b2d] transition-colors">
                   View saved drafts →
                 </p>
               </a>
 
               <Link
                 href="/dashboard/notifications"
-                className="bg-[#F0F7FC] hover:bg-[#EAF5FB] border border-sky-100/70 rounded-2xl p-5 transition-all group"
+                className="bg-[#fff1eb] hover:bg-[#fff1eb] border border-sky-100/70 rounded-2xl p-5 transition-all group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs uppercase font-bold tracking-wider text-[#2196D2]">
+                  <span className="text-xs uppercase font-bold tracking-wider text-[#e74b2d]">
                     Updates
                   </span>
                   <span className="text-xl">🔔</span>
                 </div>
                 <p className="text-2xl font-extrabold text-zinc-900">5</p>
-                <p className="text-xs sm:text-sm text-zinc-500 mt-1 font-medium group-hover:text-[#2196D2] transition-colors">
+                <p className="text-xs sm:text-sm text-zinc-500 mt-1 font-medium group-hover:text-[#e74b2d] transition-colors">
                   View notifications →
                 </p>
               </Link>
 
               <Link
                 href="/profile"
-                className="bg-[#F0F7FC] hover:bg-[#EAF5FB] border border-sky-100/70 rounded-2xl p-5 transition-all group"
+                className="bg-[#fff1eb] hover:bg-[#fff1eb] border border-sky-100/70 rounded-2xl p-5 transition-all group"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs uppercase font-bold tracking-wider text-[#2196D2]">
+                  <span className="text-xs uppercase font-bold tracking-wider text-[#e74b2d]">
                     Settings
                   </span>
                   <span className="text-xl">⚙️</span>
@@ -208,7 +208,7 @@ export default function CustomerDashboardPage() {
                 <p className="text-base font-bold text-zinc-900 truncate">
                   {user?.firstName || "Account"}
                 </p>
-                <p className="text-xs sm:text-sm text-zinc-500 mt-1 font-medium group-hover:text-[#2196D2] transition-colors">
+                <p className="text-xs sm:text-sm text-zinc-500 mt-1 font-medium group-hover:text-[#e74b2d] transition-colors">
                   Manage profile & address →
                 </p>
               </Link>
@@ -222,20 +222,20 @@ export default function CustomerDashboardPage() {
                 </h2>
                 <Link
                   href="/dashboard/orders"
-                  className="text-sm font-semibold text-[#2196D2] hover:underline"
+                  className="text-sm font-semibold text-[#e74b2d] hover:underline"
                 >
                   View All Orders →
                 </Link>
               </div>
 
               {recentOrders.length === 0 ? (
-                <div className="bg-[#F0F7FC] rounded-2xl border border-sky-100 p-8 text-center space-y-3">
+                <div className="bg-[#fff1eb] rounded-2xl border border-sky-100 p-8 text-center space-y-3">
                   <p className="text-base text-zinc-600 font-medium">
                     You haven&apos;t placed any print orders yet.
                   </p>
                   <Link
                     href="/browsedesigns"
-                    className="inline-block px-6 py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-sm font-semibold rounded-full shadow-sm transition-all"
+                    className="inline-block px-6 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm font-semibold rounded-full shadow-sm transition-all"
                   >
                     Create Your First Card
                   </Link>
@@ -257,7 +257,7 @@ export default function CustomerDashboardPage() {
                               order.fulfillmentStatus === "delivered"
                                 ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                                 : order.fulfillmentStatus === "shipped"
-                                ? "bg-sky-50 text-[#2196D2] border border-sky-200"
+                                ? "bg-sky-50 text-[#e74b2d] border border-sky-200"
                                 : order.fulfillmentStatus === "in_production"
                                 ? "bg-amber-50 text-amber-700 border border-amber-200"
                                 : "bg-zinc-100 text-zinc-600 border border-zinc-200"
@@ -278,7 +278,7 @@ export default function CustomerDashboardPage() {
                         </span>
                         <Link
                           href={`/dashboard/orders/${order._id}`}
-                          className="px-6 py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-sm font-semibold rounded-full shadow-sm transition-all"
+                          className="px-6 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm font-semibold rounded-full shadow-sm transition-all"
                         >
                           View Details
                         </Link>
@@ -297,14 +297,14 @@ export default function CustomerDashboardPage() {
                 </h2>
                 <Link
                   href="/browsedesigns"
-                  className="text-sm font-semibold text-[#2196D2] hover:underline"
+                  className="text-sm font-semibold text-[#e74b2d] hover:underline"
                 >
                   Browse Templates →
                 </Link>
               </div>
 
               {savedDesigns.length === 0 ? (
-                <div className="bg-[#F0F7FC] rounded-2xl border border-sky-100 p-8 text-center space-y-3">
+                <div className="bg-[#fff1eb] rounded-2xl border border-sky-100 p-8 text-center space-y-3">
                   <p className="text-base text-zinc-600 font-medium">
                     No saved projects or custom drafts found yet.
                   </p>
@@ -313,7 +313,7 @@ export default function CustomerDashboardPage() {
                   </p>
                   <Link
                     href="/browsedesigns"
-                    className="inline-block px-6 py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-sm font-semibold rounded-full shadow-sm transition-all mt-2"
+                    className="inline-block px-6 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm font-semibold rounded-full shadow-sm transition-all mt-2"
                   >
                     Start a New Project
                   </Link>
@@ -329,7 +329,7 @@ export default function CustomerDashboardPage() {
                     return (
                       <div
                         key={d._id}
-                        className="bg-white rounded-2xl border border-zinc-300/80 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:border-[#2196D2] transition-all flex flex-col justify-between group"
+                        className="bg-white rounded-2xl border border-zinc-300/80 overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:border-[#e74b2d] transition-all flex flex-col justify-between group"
                       >
                         <div>
                           {/* Design Preview Frame */}
@@ -351,7 +351,7 @@ export default function CustomerDashboardPage() {
 
                           {/* Details */}
                           <div className="p-5 space-y-1.5">
-                            <h3 className="font-bold text-zinc-900 text-base group-hover:text-[#2196D2] transition-colors truncate">
+                            <h3 className="font-bold text-zinc-900 text-base group-hover:text-[#e74b2d] transition-colors truncate">
                               <Link href={studioHref}>{d.name}</Link>
                             </h3>
                             <p className="text-xs text-zinc-500">
@@ -364,7 +364,7 @@ export default function CustomerDashboardPage() {
                         <div className="p-5 pt-0 flex items-center gap-2">
                           <Link
                             href={studioHref}
-                            className="flex-1 py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-sm font-semibold rounded-full text-center shadow-sm transition-all"
+                            className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm font-semibold rounded-full text-center shadow-sm transition-all"
                           >
                             Open Studio →
                           </Link>

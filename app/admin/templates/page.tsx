@@ -147,7 +147,7 @@ export default function AdminTemplatesPage() {
         </div>
         <Link
           href="/admin/templates/new"
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20 w-fit"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 w-fit"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -168,7 +168,7 @@ export default function AdminTemplatesPage() {
             placeholder="Search templates..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#064FE0] shadow-xs"
+            className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-xs"
           />
         </div>
 
@@ -176,7 +176,7 @@ export default function AdminTemplatesPage() {
         <select
           value={filterCategory}
           onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#064FE0] cursor-pointer shadow-xs"
+          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
         >
           <option value="">All Categories</option>
           {categories.map((c) => (
@@ -188,7 +188,7 @@ export default function AdminTemplatesPage() {
         <select
           value={filterStatus}
           onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#064FE0] cursor-pointer shadow-xs"
+          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
         >
           <option value="">All Statuses</option>
           <option value="PUBLISHED">Published Only</option>
@@ -200,7 +200,7 @@ export default function AdminTemplatesPage() {
         <select
           value={filterPaid}
           onChange={(e) => { setFilterPaid(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#064FE0] cursor-pointer shadow-xs"
+          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
         >
           <option value="">All Prices</option>
           <option value="false">Free Templates</option>
@@ -212,12 +212,12 @@ export default function AdminTemplatesPage() {
       <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
           </div>
         ) : templates.length === 0 ? (
           <div className="py-16 text-center space-y-2">
             <p className="text-zinc-400 text-base">No templates found matching your criteria.</p>
-            <Link href="/admin/templates/new" className="text-[#064FE0] text-base font-bold hover:underline inline-block">
+            <Link href="/admin/templates/new" className="text-[#e74b2d] text-base font-bold hover:underline inline-block">
               Create your first template →
             </Link>
           </div>
@@ -225,7 +225,7 @@ export default function AdminTemplatesPage() {
           <>
             <table className="w-full text-base">
               <thead>
-                <tr className="border-b border-zinc-100 bg-[#edf4f9]/50 text-zinc-500">
+                <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
                   <th className="text-left px-5 py-3.5 font-bold">Template Title</th>
                   <th className="text-left px-5 py-3.5 font-bold hidden md:table-cell">Category</th>
                   <th className="text-left px-5 py-3.5 font-bold">Pricing</th>
@@ -318,7 +318,7 @@ export default function AdminTemplatesPage() {
 
                         <Link
                           href={`/admin/templates/${t._id}/edit`}
-                          className="px-3 py-1.5 rounded-xl bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold transition-all text-base"
+                          className="px-3 py-1.5 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold transition-all text-base"
                         >
                           Edit
                         </Link>
@@ -340,7 +340,7 @@ export default function AdminTemplatesPage() {
 
             {/* Pagination */}
             {pagination && pagination.pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#edf4f9]/30">
+              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#fff7f3]/30">
                 <p className="text-base text-zinc-500 font-medium">
                   Showing {(page - 1) * pagination.limit + 1}–{Math.min(page * pagination.limit, pagination.total)} of {pagination.total}
                 </p>
@@ -452,7 +452,7 @@ export default function AdminTemplatesPage() {
                           <div
                             className="w-full h-full"
                             style={{
-                              backgroundColor: obj.fill || "#3b82f6",
+                              backgroundColor: obj.fill || "#e74b2d",
                               border: obj.stroke && obj.strokeWidth ? `${obj.strokeWidth}px solid ${obj.stroke}` : "none",
                               borderRadius:
                                 obj.shapeType === "circle"
@@ -504,7 +504,7 @@ export default function AdminTemplatesPage() {
 
               <Link
                 href={`/admin/templates/${previewTemplate._id}/edit`}
-                className="px-4 py-1.5 rounded-xl bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold transition-all"
+                className="px-4 py-1.5 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold transition-all"
               >
                 Open in Canvas Editor →
               </Link>

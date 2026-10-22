@@ -107,10 +107,10 @@ export default function NotificationsPage() {
               {notifications.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-[#F0F7FC] rounded-2xl sm:rounded-3xl p-5 sm:p-6 flex items-start gap-4 sm:gap-5 transition-all hover:bg-[#EBF5FB]"
+                  className="bg-[#fff1eb] rounded-2xl sm:rounded-3xl p-5 sm:p-6 flex items-start gap-4 sm:gap-5 transition-all hover:bg-[#fff7f3]"
                 >
                   {/* Sky blue icon container */}
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#2196D2] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#e74b2d] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
                     <svg
                       className="w-6 h-6 sm:w-7 sm:h-7 text-white"
                       viewBox="0 0 24 24"

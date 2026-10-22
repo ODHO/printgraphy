@@ -77,14 +77,14 @@ export default function AdminUsersPage() {
           placeholder="Search by name or email..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#064FE0] shadow-xs"
+          className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-xs"
         />
       </div>
 
       <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
           </div>
         ) : users.length === 0 ? (
           <div className="py-16 text-center text-zinc-400 text-base">
@@ -94,7 +94,7 @@ export default function AdminUsersPage() {
           <>
             <table className="w-full text-base">
               <thead>
-                <tr className="border-b border-zinc-100 bg-[#edf4f9]/50 text-zinc-500">
+                <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
                   <th className="text-left px-5 py-3.5 font-bold">User</th>
                   <th className="text-left px-5 py-3.5 font-bold hidden md:table-cell">Email</th>
                   <th className="text-left px-5 py-3.5 font-bold">Verified</th>
@@ -108,7 +108,7 @@ export default function AdminUsersPage() {
                   <tr key={user._id} className="hover:bg-sky-50/40 transition-colors">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[#064FE0] text-white flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
+                        <div className="w-8 h-8 rounded-full bg-[#e74b2d] text-white flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
                           {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                         </div>
                         <div>
@@ -162,7 +162,7 @@ export default function AdminUsersPage() {
             </table>
 
             {pagination && pagination.pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#edf4f9]/30">
+              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#fff7f3]/30">
                 <p className="text-base text-zinc-500 font-medium">Showing {(page - 1) * pagination.limit + 1}–{Math.min(page * pagination.limit, pagination.total)} of {pagination.total}</p>
                 <div className="flex items-center gap-2">
                   <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer">

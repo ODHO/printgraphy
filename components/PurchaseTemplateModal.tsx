@@ -278,7 +278,7 @@ export default function PurchaseTemplateModal({
       >
         {/* Decorative background glow */}
         <div className="absolute -top-24 -right-24 w-60 h-60 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-[#2196D2]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-[#e74b2d]/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Close button */}
         <button
@@ -363,7 +363,7 @@ export default function PurchaseTemplateModal({
             </p>
             <button
               onClick={handleGoToLogin}
-              className="w-full py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold text-base rounded-xl transition-all shadow-md cursor-pointer"
+              className="w-full py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-base rounded-xl transition-all shadow-md cursor-pointer"
             >
               Sign In to Your Account →
             </button>

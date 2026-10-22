@@ -106,7 +106,7 @@ export default function CustomerOrdersPage() {
                 : "Shipped",
             quantity: firstItem.quantity || 100,
             side: "front",
-            cardColor: idx % 2 === 0 ? "#F5D4D4" : "#E2ECF6",
+            cardColor: idx % 2 === 0 ? "#F5D4D4" : "#ffebe3",
             detailsUrl: `/dashboard/orders/${ord._id}`,
           };
         });
@@ -208,7 +208,7 @@ export default function CustomerOrdersPage() {
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-[#EAEAEA] text-zinc-900 placeholder:text-zinc-500 rounded-full px-5 py-2 sm:py-2.5 text-sm w-48 sm:w-56 focus:outline-none focus:ring-2 focus:ring-[#2196D2]/30 transition-all border-none"
+                  className="bg-[#EAEAEA] text-zinc-900 placeholder:text-zinc-500 rounded-full px-5 py-2 sm:py-2.5 text-sm w-48 sm:w-56 focus:outline-none focus:ring-2 focus:ring-[#e74b2d]/30 transition-all border-none"
                 />
               </div>
             </div>
@@ -229,7 +229,7 @@ export default function CustomerOrdersPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-zinc-900 w-24">Order Status :</span>
-                        <span className="text-[#2196D2] font-semibold">{ord.status}</span>
+                        <span className="text-[#e74b2d] font-semibold">{ord.status}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-zinc-900 w-24">Order ID :</span>
@@ -239,7 +239,7 @@ export default function CustomerOrdersPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-zinc-900 w-24">Amount Paid :</span>
-                        <span className="text-[#2196D2] font-bold">{ord.amountPaid}</span>
+                        <span className="text-[#e74b2d] font-bold">{ord.amountPaid}</span>
                       </div>
                     </div>
 
@@ -247,7 +247,7 @@ export default function CustomerOrdersPage() {
                     <div className="pt-3">
                       <Link
                         href={ord.detailsUrl || `/dashboard/orders/${ord.id}`}
-                        className="px-6 sm:px-7 py-2 sm:py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-semibold text-xs rounded-full shadow-sm transition-all inline-block text-center"
+                        className="px-6 sm:px-7 py-2 sm:py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-xs rounded-full shadow-sm transition-all inline-block text-center"
                       >
                         Order Details
                       </Link>
@@ -334,7 +334,7 @@ export default function CustomerOrdersPage() {
                               setReviewSuccess(false);
                               setReviewText("");
                             }}
-                            className="text-[11px] sm:text-xs text-zinc-500 hover:text-[#2196D2] underline mt-0.5 cursor-pointer block text-left"
+                            className="text-[11px] sm:text-xs text-zinc-500 hover:text-[#e74b2d] underline mt-0.5 cursor-pointer block text-left"
                           >
                             Give Us A Review
                           </button>
@@ -353,7 +353,7 @@ export default function CustomerOrdersPage() {
                     <div className="pt-3">
                       <Link
                         href="/browsedesigns"
-                        className="px-8 sm:px-10 py-2 sm:py-2.5 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-semibold text-xs sm:text-sm rounded-full shadow-sm transition-all inline-block text-center cursor-pointer"
+                        className="px-8 sm:px-10 py-2 sm:py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-xs sm:text-sm rounded-full shadow-sm transition-all inline-block text-center cursor-pointer"
                       >
                         Reorder
                       </Link>
@@ -388,7 +388,7 @@ export default function CustomerOrdersPage() {
                       <button
                         type="button"
                         onClick={() => setReviewModalOrder(null)}
-                        className="mt-4 px-6 py-2 bg-[#2196D2] text-white rounded-full text-xs font-semibold"
+                        className="mt-4 px-6 py-2 bg-[#e74b2d] text-white rounded-full text-xs font-semibold"
                       >
                         Close
                       </button>
@@ -428,7 +428,7 @@ export default function CustomerOrdersPage() {
                           placeholder="How was the printing quality, paper thickness and finish?"
                           value={reviewText}
                           onChange={(e) => setReviewText(e.target.value)}
-                          className="w-full border border-zinc-300 rounded-2xl p-3 text-sm focus:outline-none focus:border-[#2196D2]"
+                          className="w-full border border-zinc-300 rounded-2xl p-3 text-sm focus:outline-none focus:border-[#e74b2d]"
                         />
                       </div>
 
@@ -442,7 +442,7 @@ export default function CustomerOrdersPage() {
                         </button>
                         <button
                           type="submit"
-                          className="px-6 py-2 rounded-full bg-[#2196D2] hover:bg-[#1B85BD] text-white text-xs font-semibold shadow-sm"
+                          className="px-6 py-2 rounded-full bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold shadow-sm"
                         >
                           Submit Review
                         </button>

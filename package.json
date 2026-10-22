@@ -1,5 +1,5 @@
 {
-  "name": "xprints",
+  "name": "printgraphi",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "seed:templates": "node --env-file=.env scripts/seed-printgraphi-template-catalog.mjs",
     "upload-s3": "node scripts/upload-to-s3.js"
   },
   "dependencies": {

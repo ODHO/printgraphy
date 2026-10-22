@@ -14,7 +14,7 @@ const EVENTS: { id: EmailEvent; label: string; hint: string }[] = [
   { id: "review", label: "Reviews", hint: "{{userName}} {{rating}} {{title}} {{comment}} {{productId}}" },
 ];
 
-const fieldClass = "w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]";
+const fieldClass = "w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]";
 
 export default function AdminEmailPage() {
   const [settings, setSettings] = useState<PublicSettings>({
@@ -75,10 +75,10 @@ export default function AdminEmailPage() {
         </div>
         <div className="flex gap-2">
           <button type="button" onClick={sendTest} className="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-base font-bold text-zinc-700 cursor-pointer">Send test</button>
-          <button type="button" onClick={save} disabled={saving} className="rounded-xl bg-[#064FE0] px-4 py-2.5 text-base font-bold text-white cursor-pointer disabled:opacity-60">{saving ? "Saving..." : "Save"}</button>
+          <button type="button" onClick={save} disabled={saving} className="rounded-xl bg-[#e74b2d] px-4 py-2.5 text-base font-bold text-white cursor-pointer disabled:opacity-60">{saving ? "Saving..." : "Save"}</button>
         </div>
       </div>
-      {message && <p className="text-base font-bold text-[#064FE0]">{message}</p>}
+      {message && <p className="text-base font-bold text-[#e74b2d]">{message}</p>}
 
       <section className="rounded-2xl border border-zinc-200 bg-white p-5 space-y-3">
         <h2 className="text-base font-bold text-zinc-900">SMTP</h2>
@@ -99,7 +99,7 @@ export default function AdminEmailPage() {
             <input className={`${fieldClass} mt-1 font-normal`} value={settings.smtp.fromName} onChange={(e) => setSettings((prev) => ({ ...prev, smtp: { ...prev.smtp, fromName: e.target.value } }))} />
           </label>
           <label className="text-base font-bold text-zinc-700">Admin inbox
-            <input type="email" className={`${fieldClass} mt-1 font-normal`} value={settings.adminEmail} onChange={(e) => setSettings((prev) => ({ ...prev, adminEmail: e.target.value }))} placeholder="admin@xprintz.com" />
+            <input type="email" className={`${fieldClass} mt-1 font-normal`} value={settings.adminEmail} onChange={(e) => setSettings((prev) => ({ ...prev, adminEmail: e.target.value }))} placeholder="admin@printgraphi.com" />
           </label>
         </div>
       </section>

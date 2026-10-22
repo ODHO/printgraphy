@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbfaf7;
+  --foreground: #191816;
 }
 
 @theme inline {
@@ -11,26 +11,26 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-caveat: var(--font-caveat);
-  --color-theme-blue: #329AD4;
-  --color-theme-darkblue: #2884b8;
-  --color-theme-gradient-start: #329AD4;
-  --color-theme-gradient-end: #2884b8;
-  --color-sky-50: #f0f8fd;
-  --color-sky-100: #dbeefb;
-  --color-sky-200: #b8e0f6;
-  --color-sky-300: #88c9ef;
-  --color-sky-400: #55b2e7;
-  --color-sky-500: #329AD4;
-  --color-sky-600: #2884b8;
-  --color-sky-700: #2172a0;
-  --color-sky-800: #1b5b80;
-  --color-sky-900: #164967;
-  --color-blue-50: #f0f8fd;
-  --color-blue-100: #dbeefb;
-  --color-blue-200: #b8e0f6;
-  --color-blue-500: #329AD4;
-  --color-blue-600: #329AD4;
-  --color-blue-700: #2884b8;
+  --color-theme-blue: #e74b2d;
+  --color-theme-darkblue: #c93e23;
+  --color-theme-gradient-start: #e74b2d;
+  --color-theme-gradient-end: #c93e23;
+  --color-sky-50: #fff7f3;
+  --color-sky-100: #ffebe3;
+  --color-sky-200: #ffd6c9;
+  --color-sky-300: #ffb59e;
+  --color-sky-400: #f88768;
+  --color-sky-500: #e74b2d;
+  --color-sky-600: #c93e23;
+  --color-sky-700: #a8321c;
+  --color-sky-800: #7d2618;
+  --color-sky-900: #582017;
+  --color-blue-50: #fff7f3;
+  --color-blue-100: #ffebe3;
+  --color-blue-200: #ffd6c9;
+  --color-blue-500: #e74b2d;
+  --color-blue-600: #e74b2d;
+  --color-blue-700: #c93e23;
 }
 
 
@@ -38,6 +38,101 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'PP Neue Montreal', var(--font-geist-sans), Arial, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: #ffd6c9;
+  color: #191816;
+}
+
+/* The announcement strip is intentionally quiet: movement signals that its message can be explored,
+   without competing with the page content below. */
+.printgraphi-announcement::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.78;
+  background:
+    radial-gradient(circle at 18% 50%, rgb(255 83 60 / 0.25), transparent 18rem),
+    radial-gradient(circle at 84% 50%, rgb(255 137 113 / 0.16), transparent 20rem),
+    linear-gradient(105deg, transparent 25%, rgb(255 255 255 / 0.07) 45%, transparent 63%);
+  background-size: auto, auto, 220% 100%;
+  animation: printgraphi-announcement-shimmer 7s linear infinite;
+}
+
+.printgraphi-announcement-pulse {
+  box-shadow: 0 0 0 0 rgb(255 98 77 / 0.5);
+  animation: printgraphi-announcement-pulse 2.4s ease-out infinite;
+}
+
+.printgraphi-announcement-copy {
+  animation: printgraphi-announcement-copy-in 360ms ease-out both;
+}
+
+@keyframes printgraphi-announcement-shimmer {
+  to { background-position: 0 0, 0 0, -220% 0; }
+}
+
+@keyframes printgraphi-announcement-pulse {
+  65%, 100% { box-shadow: 0 0 0 6px rgb(255 98 77 / 0); }
+}
+
+@keyframes printgraphi-announcement-copy-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .printgraphi-announcement::before,
+  .printgraphi-announcement-pulse,
+  .printgraphi-announcement-copy {
+    animation: none;
+  }
+}
+
+/* Shared public storefront finish: warm paper, sharp ink, and a single coral action color. */
+main > div:not(.admin-shell) {
+  background-color: #fbfaf7;
+}
+
+a, button, input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Apply the storefront palette to utility-heavy customer, admin, and vendor screens. */
+[class*="bg-sky-50"],
+[class*="bg-blue-50"] {
+  background-color: #fff7f3;
+}
+
+[class*="bg-sky-100"],
+[class*="bg-blue-100"] {
+  background-color: #ffebe3;
+}
+
+[class*="border-sky"],
+[class*="border-blue"] {
+  border-color: #ffd6c9;
+}
+
+[class*="text-sky-"],
+[class*="text-blue-"] {
+  color: #c93e23;
+}
+
+[class*="ring-sky-"],
+[class*="ring-blue-"] {
+  --tw-ring-color: rgb(231 75 45 / 0.24);
+}
+
+/* Controls retain one predictable focus state across all dashboards. */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #e74b2d !important;
+  --tw-ring-color: rgb(231 75 45 / 0.2) !important;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -51,7 +146,7 @@ body {
 }
 
 .bg-gradient-businesscards {
-  background: linear-gradient(#D4E2FC -7% 12%, #d5dded 21% 30%, #fff 14%) 0 0 /
+  background: linear-gradient(#ffebe3 -7% 12%, #f3e8dc 21% 30%, #fff 14%) 0 0 /
     50%;
 }
 

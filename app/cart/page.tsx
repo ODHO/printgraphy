@@ -72,14 +72,14 @@ function ApparelCartDetails({ item }: { item: CartItem }) {
 
   return (
     <div className="flex gap-4">
-      <div className="w-24 h-24 rounded-2xl bg-[#f8fbfd] overflow-hidden shrink-0 border border-zinc-200 relative">
+      <div className="w-24 h-24 rounded-2xl bg-[#fbfaf7] overflow-hidden shrink-0 border border-zinc-200 relative">
         {thumb ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={thumb} alt={item.name} className="w-full h-full object-contain p-1.5" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-zinc-300 text-xs">No img</div>
         )}
-        <span className="absolute top-1 left-1 text-[9px] font-bold uppercase tracking-wide bg-[#2196D2] text-white px-1.5 py-0.5 rounded">
+        <span className="absolute top-1 left-1 text-[9px] font-bold uppercase tracking-wide bg-[#e74b2d] text-white px-1.5 py-0.5 rounded">
           Apparel
         </span>
       </div>
@@ -216,12 +216,12 @@ export default function CartPage() {
   const total = subtotalAfterDiscount + shippingCost;
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] font-sans">
+    <div className="min-h-screen bg-[#fbfaf7] font-sans">
       {/* Header */}
       <div className="bg-white border-b border-zinc-200 sticky top-0 z-10">
         <div className="container mx-auto px-4 sm:px-6 h-14 flex items-center gap-4">
           <Link href="/" className="inline-block">
-            <img src="/logo/logo.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
+            <img src="/logo/printgraphy-brand-v2.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
           </Link>
           <span className="text-zinc-300">/</span>
           <h1 className="text-base font-semibold text-zinc-600">Your Cart</h1>
@@ -382,12 +382,12 @@ export default function CartPage() {
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
                         placeholder="ENTER CODE"
-                        className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-base font-mono font-bold uppercase text-zinc-900 focus:outline-none focus:border-[#2196D2]"
+                        className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-base font-mono font-bold uppercase text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                       />
                       <button
                         type="submit"
                         disabled={validatingCoupon}
-                        className="px-4 py-2 bg-[#2196D2] hover:bg-[#1B85BD] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+                        className="px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
                       >
                         {validatingCoupon ? "..." : "Apply"}
                       </button>

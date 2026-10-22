@@ -30,7 +30,7 @@ function MyAccountDropdown({
   return (
     <div
       className="absolute right-0 top-12 w-52 rounded-2xl p-2.5 text-white shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150"
-      style={{ background: "#329AD4" }}
+      style={{ background: "#1e1d1b" }}
     >
       <div className="flex flex-col gap-1">
         {/* If Admin */}
@@ -215,10 +215,18 @@ const MENU_ITEMS = [
   { name: "Shopping Bags", href: "/browsedesigns?category=Bags" },
 ];
 
+const ANNOUNCEMENTS = [
+  "Premium print for brands that want to be remembered.",
+  "Thoughtful materials. Sharp detail. Beautifully delivered.",
+  "Bring your next big idea to life, one print at a time.",
+];
+
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
   const [searchQuery, setSearchQuery] = useState("");
+  const [announcementIndex, setAnnouncementIndex] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -245,6 +253,14 @@ export default function Header() {
       .then((data) => setUser(data?.user ?? null))
       .catch(() => setUser(null));
   }, [pathname]);
+
+  useEffect(() => {
+    if (isAdmin) return;
+    const timer = window.setInterval(() => {
+      setAnnouncementIndex((current) => (current + 1) % ANNOUNCEMENTS.length);
+    }, 4600);
+    return () => window.clearInterval(timer);
+  }, [isAdmin]);
 
   // Messages count
   useEffect(() => {
@@ -312,16 +328,29 @@ export default function Header() {
     return <AuthHeader />;
   }
 
-  const isAdmin = pathname?.startsWith("/admin");
-
   return (
-    <header className="w-full bg-white font-sans border-b border-zinc-200/80 sticky top-0 z-40">
-      {/* ── Top gradient bar ── */}
+    <header className="w-full bg-[#fbfaf7]/95 backdrop-blur-md font-sans border-b border-black/10 sticky top-0 z-40">
+      {/* ── Editorial announcement bar ── */}
       {!isAdmin && (
-        <div className="text-white text-center py-2 px-4" style={{ background: "linear-gradient(to right, #1D90CF 0%, #2D51A4 100%)" }}>
-          <p className="mx-auto max-w-[1440px] text-xs sm:text-[13px] font-medium tracking-wide">
-            One-Of-A-Kind Fast Eco Luxury Printing + Elevate Your Brand With Endless Possibilities + Free Fast Delivery*
-          </p>
+        <div className="printgraphi-announcement relative isolate overflow-hidden bg-[#1e1d1b] px-4 py-2 text-[#fffaf2] sm:py-2.5">
+          <div className="relative mx-auto flex max-w-[1440px] items-center justify-center gap-2.5 text-center sm:gap-3">
+            <span className="printgraphi-announcement-pulse hidden h-2 w-2 shrink-0 rounded-full bg-[#ff624d] sm:block" aria-hidden="true" />
+            <span className="hidden text-[10px] font-bold tracking-[0.16em] text-[#ff8b7b] sm:inline">
+              PRINTGRAPHY STUDIO
+            </span>
+            <span className="hidden h-3.5 w-px bg-white/20 sm:block" aria-hidden="true" />
+            <Link
+              href="/browsedesigns"
+              className="group inline-flex min-w-0 items-center justify-center gap-1.5 text-xs font-medium tracking-[0.01em] text-white transition-colors hover:text-[#ffb3a7] sm:text-[13px]"
+            >
+              <span key={announcementIndex} className="printgraphi-announcement-copy">
+                {ANNOUNCEMENTS[announcementIndex]}
+              </span>
+              <svg className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h9M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+          </div>
         </div>
       )}
 
@@ -333,7 +362,7 @@ export default function Header() {
           <button
             onClick={() => setMobileMenuOpen((o) => !o)}
             aria-label="Toggle mobile menu"
-            className="md:hidden p-1 text-zinc-700 hover:text-[#329AD4] transition"
+            className="md:hidden p-1 text-zinc-700 hover:text-[#e74b2d] transition"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -341,12 +370,12 @@ export default function Header() {
           </button>
           <Link href="/" className="flex-shrink-0">
             <Image
-              src="/Untitled-1 3.png"
-              alt="Printgraphi"
-              width={160}
-              height={40}
+              src="/logo/printgraphy-brand-v2.png"
+              alt="Printgraphy"
+              width={220}
+              height={60}
               priority
-              className="h-8 sm:h-9 w-auto object-contain"
+              className="h-9 sm:h-10 w-auto object-contain"
             />
           </Link>
         </div>
@@ -369,7 +398,7 @@ export default function Header() {
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-full bg-[#F2F4F7] py-2 pl-10 pr-4 text-sm text-zinc-800 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#329AD4]/25 focus:border-[#329AD4] border border-transparent transition-all"
+              className="w-full rounded-full bg-white py-2.5 pl-10 pr-4 text-sm text-zinc-800 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#e74b2d]/20 focus:border-[#e74b2d] border border-black/10 transition-all"
             />
           </div>
         </form>
@@ -380,7 +409,7 @@ export default function Header() {
           <Link
             href="/dashboard/notifications"
             aria-label="Notifications"
-            className="relative p-2 text-zinc-800 hover:text-[#329AD4] transition-colors"
+            className="relative p-2 text-zinc-800 hover:text-[#e74b2d] transition-colors"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path
@@ -390,7 +419,7 @@ export default function Header() {
               />
             </svg>
             {unread > 0 && (
-              <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-[#329AD4]" />
+              <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-[#e74b2d]" />
             )}
           </Link>
 
@@ -399,7 +428,7 @@ export default function Header() {
             <Link
               href="/cart"
               aria-label="Shopping Cart"
-              className="p-2 text-zinc-800 hover:text-[#329AD4] transition-colors"
+              className="p-2 text-zinc-800 hover:text-[#e74b2d] transition-colors"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path
@@ -418,9 +447,9 @@ export default function Header() {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen((open) => !open)}
-              className="flex items-center gap-2 text-sm font-medium text-[#329AD4] hover:opacity-90 transition cursor-pointer py-1"
+              className="flex items-center gap-2 text-sm font-medium text-[#e74b2d] hover:opacity-90 transition cursor-pointer py-1"
             >
-              <div className="w-7 h-7 rounded-full border-[1.8px] border-[#329AD4] flex items-center justify-center text-[#329AD4] flex-shrink-0">
+              <div className="w-7 h-7 rounded-full border-[1.8px] border-[#e74b2d] flex items-center justify-center text-[#e74b2d] flex-shrink-0">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -444,7 +473,7 @@ export default function Header() {
 
       {/* ── Sub Navigation Menu (Hidden on Admin) ── */}
       {!isAdmin && (
-        <nav className="relative border-t border-zinc-100 bg-white">
+        <nav className="relative border-t border-black/5 bg-[#fbfaf7]">
           <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
             <ul className="flex items-center gap-x-4 sm:gap-x-6 lg:gap-x-8 overflow-x-auto py-2.5 text-xs sm:text-[13px] font-medium whitespace-nowrap text-zinc-700 scrollbar-none justify-between">
               {MENU_ITEMS.map((item) => {
@@ -453,8 +482,8 @@ export default function Header() {
                   <li key={item.name} className="flex-shrink-0">
                     <Link
                       href={item.href}
-                      className={`transition-colors hover:text-[#329AD4] ${
-                        isActive ? "text-[#329AD4] font-semibold" : ""
+                      className={`transition-colors hover:text-[#e74b2d] ${
+                        isActive ? "text-[#e74b2d] font-semibold" : ""
                       }`}
                     >
                       {item.name}
@@ -469,13 +498,13 @@ export default function Header() {
 
       {/* ── Mobile Drawer (Slide down on small screens) ── */}
       {mobileMenuOpen && !isAdmin && (
-        <div className="md:hidden border-t border-zinc-200 bg-white px-4 py-4 space-y-2 shadow-lg animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="md:hidden border-t border-black/10 bg-[#fbfaf7] px-4 py-4 space-y-2 shadow-lg animate-in fade-in slide-in-from-top-2 duration-150">
           {MENU_ITEMS.map((item) => (
             <Link
               key={`m-${item.name}`}
               href={item.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-zinc-800 hover:text-[#329AD4] border-b border-zinc-50"
+              className="block py-2 text-sm font-medium text-zinc-800 hover:text-[#e74b2d] border-b border-black/5"
             >
               {item.name}
             </Link>

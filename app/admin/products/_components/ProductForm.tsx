@@ -300,7 +300,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
           <button
             type="submit"
             disabled={saving}
-            className="px-5 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20 disabled:opacity-60 cursor-pointer"
+            className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 disabled:opacity-60 cursor-pointer"
           >
             {saving ? "Saving..." : mode === "create" ? "Create Product" : "Save Changes"}
           </button>
@@ -327,7 +327,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
               const n = e.target.value;
               setForm((prev) => ({ ...prev, name: n, slug: generateSlug(n) }));
             }}
-            className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
             placeholder="e.g., Standard Business Cards"
           />
         </div>
@@ -339,7 +339,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
             type="text"
             value={form.slug}
             onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
-            className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 font-mono focus:outline-none focus:border-[#064FE0]"
+            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d]"
             placeholder="standard-business-cards"
           />
         </div>
@@ -350,7 +350,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
             value={form.description}
             onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
             rows={3}
-            className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0] resize-none"
+            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] resize-none"
             placeholder="Brief product description..."
           />
         </div>
@@ -361,7 +361,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
             <select
               value={form.categoryId}
               onChange={(e) => setForm((prev) => ({ ...prev, categoryId: e.target.value }))}
-              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer"
+              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
             >
               <option value="">No category</option>
               {categories.map((c) => (
@@ -380,7 +380,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                 Apparel colors, sizes, placements, and decoration methods are configured on the{" "}
                 <a
                   href={`/admin/categories/${form.categoryId}/edit`}
-                  className="font-bold text-[#064FE0] hover:underline"
+                  className="font-bold text-[#e74b2d] hover:underline"
                 >
                   category
                 </a>
@@ -392,7 +392,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="text-base font-bold text-zinc-700">Product Image (S3 Upload or URL)</label>
-              <label className="text-base font-bold text-[#064FE0] hover:underline cursor-pointer">
+              <label className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer">
                 {uploadingImage ? "Uploading..." : "↑ Upload Image"}
                 <input
                   type="file"
@@ -409,7 +409,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                 value={form.image}
                 onChange={(e) => setForm((prev) => ({ ...prev, image: e.target.value }))}
                 placeholder="https://... or /custom-business.png"
-                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               />
               {form.image && (
                 <img
@@ -428,7 +428,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
             type="text"
             value={form.tags}
             onChange={(e) => setForm((prev) => ({ ...prev, tags: e.target.value }))}
-            className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
             placeholder="matte, standard, business"
           />
         </div>
@@ -449,7 +449,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                 step="0.01"
                 value={form.price}
                 onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl pl-8 pr-4 py-2 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl pl-8 pr-4 py-2 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               />
             </div>
           </div>
@@ -459,7 +459,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
               type="text"
               value={form.unitPrice}
               onChange={(e) => setForm((prev) => ({ ...prev, unitPrice: e.target.value }))}
-              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               placeholder="e.g. $0.15 Each / 100 Units"
             />
           </div>
@@ -492,12 +492,12 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
         </div>
 
         {variations.length === 0 ? (
-          <div className="text-center py-8 bg-[#f8fbfd] border-2 border-dashed border-zinc-200 rounded-2xl">
+          <div className="text-center py-8 bg-[#fbfaf7] border-2 border-dashed border-zinc-200 rounded-2xl">
             <p className="text-base font-medium text-zinc-500 mb-2">No product variations created yet.</p>
             <button
               type="button"
               onClick={addVariation}
-              className="text-base font-bold text-[#064FE0] hover:underline cursor-pointer"
+              className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer"
             >
               + Click here to add your first variation (e.g. Paper Stock)
             </button>
@@ -521,7 +521,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                       value={v.name}
                       onChange={(e) => updateVariationField(varIdx, "name", e.target.value)}
                       placeholder="e.g. Paper Stock, Corners, Finish"
-                      className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-lg px-3 py-1.5 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                      className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-3 py-1.5 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     />
                   </div>
 
@@ -531,7 +531,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                         type="checkbox"
                         checked={v.required}
                         onChange={(e) => updateVariationField(varIdx, "required", e.target.checked)}
-                        className="rounded border-zinc-300 text-[#064FE0] focus:ring-[#064FE0] w-4 h-4 cursor-pointer"
+                        className="rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] w-4 h-4 cursor-pointer"
                       />
                       Required Selection
                     </label>
@@ -563,7 +563,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                     <button
                       type="button"
                       onClick={() => addVariationValue(varIdx)}
-                      className="text-base font-bold text-[#064FE0] hover:underline cursor-pointer"
+                      className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer"
                     >
                       + Add Option Value
                     </button>
@@ -591,7 +591,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                               value={val.name}
                               onChange={(e) => updateVariationValue(varIdx, valIdx, "name", e.target.value)}
                               placeholder="e.g. Standard Matte (14 pt)"
-                              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-lg px-3 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-3 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                             />
                           </div>
 
@@ -620,7 +620,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                                   updateVariationValue(varIdx, valIdx, "price", e.target.value)
                                 }
                                 placeholder="0 (Free)"
-                                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-lg pl-6 pr-3 py-1.5 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg pl-6 pr-3 py-1.5 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                               />
                             </div>
                           </div>
@@ -629,7 +629,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                           <div className="sm:col-span-3">
                             <div className="flex items-center justify-between mb-1">
                               <label className="text-base font-bold text-zinc-500">Image</label>
-                              <label className="text-base font-bold text-[#064FE0] hover:underline cursor-pointer">
+                              <label className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer">
                                 {isUploadingThis ? "Uploading..." : "↑ Upload"}
                                 <input
                                   type="file"
@@ -648,7 +648,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                                   updateVariationValue(varIdx, valIdx, "image", e.target.value)
                                 }
                                 placeholder="Image URL / S3"
-                                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-lg px-2.5 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-2.5 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                               />
                               {val.image && (
                                 <img
@@ -684,7 +684,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                               updateVariationValue(varIdx, valIdx, "description", e.target.value)
                             }
                             placeholder="Optional description (e.g., Smooth coated paper with subtle sheen)"
-                            className="w-full bg-[#f8fbfd] border border-zinc-100 rounded-lg px-3 py-1 text-base text-zinc-600 focus:outline-none focus:border-[#064FE0]"
+                            className="w-full bg-[#fbfaf7] border border-zinc-100 rounded-lg px-3 py-1 text-base text-zinc-600 focus:outline-none focus:border-[#e74b2d]"
                           />
                         </div>
                       </div>
@@ -710,7 +710,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
               step="0.1"
               value={form.rating}
               onChange={(e) => setForm((prev) => ({ ...prev, rating: e.target.value }))}
-              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
             />
           </div>
           <div>
@@ -720,7 +720,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
               min="0"
               value={form.reviewCount}
               onChange={(e) => setForm((prev) => ({ ...prev, reviewCount: e.target.value }))}
-              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
             />
           </div>
         </div>
@@ -733,7 +733,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
             type="button"
             onClick={() => setForm((prev) => ({ ...prev, isActive: !prev.isActive }))}
             className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer ${
-              form.isActive ? "bg-[#064FE0]" : "bg-zinc-300"
+              form.isActive ? "bg-[#e74b2d]" : "bg-zinc-300"
             }`}
           >
             <span

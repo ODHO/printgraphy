@@ -152,7 +152,7 @@ export default function MockupCanvasStage({
       />
 
       <div
-        className="absolute z-10 border-2 border-dashed border-[#2196D2]/90 bg-white/10 cursor-crosshair"
+        className="absolute z-10 border-2 border-dashed border-[#e74b2d]/90 bg-white/10 cursor-crosshair"
         style={{
           left: `${area.x}%`,
           top: `${area.y}%`,
@@ -168,7 +168,7 @@ export default function MockupCanvasStage({
           onAddLayerAt(local.x, local.y);
         }}
       >
-        <span className="absolute -top-5 left-0 text-[9px] font-bold uppercase tracking-wider text-white bg-[#2196D2] px-1.5 py-0.5 rounded pointer-events-none">
+        <span className="absolute -top-5 left-0 text-[9px] font-bold uppercase tracking-wider text-white bg-[#e74b2d] px-1.5 py-0.5 rounded pointer-events-none">
           {area.label || "Print Area"}
         </span>
 
@@ -189,7 +189,7 @@ export default function MockupCanvasStage({
                   startDrag(e, layer.id, e.currentTarget.parentElement);
                 }}
                 className={`absolute z-20 cursor-grab active:cursor-grabbing touch-none ${
-                  isActive ? "ring-2 ring-[#2196D2] ring-offset-1" : "hover:ring-1 hover:ring-[#2196D2]/50"
+                  isActive ? "ring-2 ring-[#e74b2d] ring-offset-1" : "hover:ring-1 hover:ring-[#e74b2d]/50"
                 }`}
                 style={{
                   left: `${layer.x}%`,
@@ -208,7 +208,7 @@ export default function MockupCanvasStage({
                 />
                 {isActive && onResizeLayer && (
                   <div
-                    className="absolute -right-1.5 -bottom-1.5 w-4 h-4 rounded-full bg-[#2196D2] border-2 border-white shadow cursor-nwse-resize touch-none"
+                    className="absolute -right-1.5 -bottom-1.5 w-4 h-4 rounded-full bg-[#e74b2d] border-2 border-white shadow cursor-nwse-resize touch-none"
                     onPointerDown={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
@@ -254,7 +254,7 @@ export default function MockupCanvasStage({
                 startDrag(e, layer.id, e.currentTarget.parentElement);
               }}
               className={`absolute z-20 px-1 py-0.5 cursor-grab active:cursor-grabbing touch-none whitespace-nowrap ${
-                isActive ? "ring-2 ring-[#2196D2] bg-white/60 rounded" : ""
+                isActive ? "ring-2 ring-[#e74b2d] bg-white/60 rounded" : ""
               }`}
               style={{
                 left: `${layer.x}%`,

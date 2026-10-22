@@ -46,7 +46,7 @@ export default function AdminPricingPage() {
 
       {loading ? (
         <div className="py-16 text-center">
-          <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+          <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -58,9 +58,9 @@ export default function AdminPricingPage() {
 
             <div className="space-y-2">
               {products.map((p) => (
-                <div key={p._id} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#edf4f9]/40 border border-sky-100/60">
+                <div key={p._id} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#fff7f3]/40 border border-sky-100/60">
                   <span className="text-zinc-900 text-base font-bold">{p.name}</span>
-                  <span className="text-[#064FE0] font-mono font-black text-base">${p.price.toFixed(2)}</span>
+                  <span className="text-[#e74b2d] font-mono font-black text-base">${p.price.toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -79,7 +79,7 @@ export default function AdminPricingPage() {
             ) : (
               <div className="space-y-2">
                 {vendorProducts.map((vp) => (
-                  <div key={vp._id} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#edf4f9]/40 border border-sky-100/60">
+                  <div key={vp._id} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#fff7f3]/40 border border-sky-100/60">
                     <div>
                       <p className="text-zinc-900 text-base font-bold">{vp.vendorId?.name || "Vendor"}</p>
                       <p className="text-zinc-400 text-base">{vp.productId?.name || "Product"}</p>

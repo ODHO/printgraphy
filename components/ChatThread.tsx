@@ -88,7 +88,7 @@ export default function ChatThread({
           <p className="text-base text-zinc-400 text-center py-10">No messages yet.</p>
         ) : messages.map((message) => (
           <div key={message._id} className={`flex ${message.mine ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-base ${message.mine ? "bg-[#2196D2] text-white" : "bg-zinc-100 text-zinc-800"}`}>
+            <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-base ${message.mine ? "bg-[#e74b2d] text-white" : "bg-zinc-100 text-zinc-800"}`}>
               {message.body && <p className="whitespace-pre-wrap">{message.body}</p>}
               {message.attachmentUrl && isImage(message.attachmentName || "", message.attachmentUrl) && (
                 <a href={mediaSrc(message.attachmentUrl)} target="_blank" rel="noreferrer" className="block mt-2">
@@ -96,7 +96,7 @@ export default function ChatThread({
                 </a>
               )}
               {message.attachmentUrl && !isImage(message.attachmentName || "", message.attachmentUrl) && (
-                <a href={mediaSrc(message.attachmentUrl)} target="_blank" rel="noreferrer" className={`mt-2 block font-bold underline ${message.mine ? "text-white" : "text-[#2196D2]"}`}>
+                <a href={mediaSrc(message.attachmentUrl)} target="_blank" rel="noreferrer" className={`mt-2 block font-bold underline ${message.mine ? "text-white" : "text-[#e74b2d]"}`}>
                   {message.attachmentName || "Download file"}
                 </a>
               )}
@@ -142,9 +142,9 @@ export default function ChatThread({
               }
             }}
             placeholder={placeholder}
-            className="flex-1 bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#2196D2] disabled:opacity-60"
+            className="flex-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] disabled:opacity-60"
           />
-          <button type="button" disabled={disabled || sending} onClick={send} className="px-4 py-2 bg-[#2196D2] text-white text-base font-bold rounded-xl cursor-pointer disabled:opacity-50">
+          <button type="button" disabled={disabled || sending} onClick={send} className="px-4 py-2 bg-[#e74b2d] text-white text-base font-bold rounded-xl cursor-pointer disabled:opacity-50">
             {sending ? "Sending..." : "Send"}
           </button>
         </div>

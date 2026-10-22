@@ -167,8 +167,8 @@ const PRESET_OPTIONS: Record<
     sides_count: 3,
     sides_names: ["Outside Front/Back", "Inside Spread", "Flap Panel"],
     guide_lines: [
-      { id: "fold-1", name: "Left Panel Fold", orientation: "vertical", position: 33.33, unit: "percent", lineType: "fold", color: "#064FE0" },
-      { id: "fold-2", name: "Right Panel Fold", orientation: "vertical", position: 66.66, unit: "percent", lineType: "fold", color: "#064FE0" },
+      { id: "fold-1", name: "Left Panel Fold", orientation: "vertical", position: 33.33, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "fold-2", name: "Right Panel Fold", orientation: "vertical", position: 66.66, unit: "percent", lineType: "fold", color: "#e74b2d" },
     ],
     bg: "#ffffff",
   },
@@ -185,9 +185,9 @@ const PRESET_OPTIONS: Record<
     sides_count: 4,
     sides_names: ["Front Panel", "Right Side", "Back Panel", "Left Side"],
     guide_lines: [
-      { id: "box-1", name: "Left Side Fold", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#064FE0" },
-      { id: "box-2", name: "Center Spine Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#064FE0" },
-      { id: "box-3", name: "Right Side Fold", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#064FE0" },
+      { id: "box-1", name: "Left Side Fold", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "box-2", name: "Center Spine Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "box-3", name: "Right Side Fold", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#e74b2d" },
       { id: "box-top", name: "Top Lid Fold", orientation: "horizontal", position: 25, unit: "percent", lineType: "score", color: "#d97706" },
       { id: "box-bottom", name: "Bottom Tuck Fold", orientation: "horizontal", position: 75, unit: "percent", lineType: "score", color: "#d97706" },
     ],
@@ -402,7 +402,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
     }
     return [
       { id: "1", text: "Product Title / Header", x: 15, y: 30, fontSize: 22, color: "#ffffff", fontWeight: "bold", placementId: "front" },
-      { id: "2", text: "Subtitle / Custom Text", x: 15, y: 50, fontSize: 13, color: "#38bdf8", fontWeight: "normal", placementId: "front" },
+      { id: "2", text: "Subtitle / Custom Text", x: 15, y: 50, fontSize: 13, color: "#f88768", fontWeight: "normal", placementId: "front" },
       { id: "3", text: "www.yourbrand.com", x: 15, y: 75, fontSize: 10, color: "#e4e4e7", fontWeight: "normal", placementId: "front" },
     ];
   });
@@ -679,7 +679,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
         position: orientation === "vertical" ? 33.33 : 50,
         unit: "percent",
         lineType: "fold",
-        color: "#064FE0",
+        color: "#e74b2d",
       },
     ]);
   };
@@ -785,7 +785,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
     setSidesCount(2);
     setSidesNames(["Front Cover", "Back Cover"]);
     setGuideLines([
-      { id: "half_1", name: "Center Spine Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#064FE0" },
+      { id: "half_1", name: "Center Spine Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#e74b2d" },
     ]);
   };
 
@@ -1114,7 +1114,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             <button
               type="button"
               onClick={() => setShowPreviewModal(true)}
-              className="px-4 py-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-[#064FE0] text-base font-bold rounded-xl transition-all shadow-xs flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-[#e74b2d] text-base font-bold rounded-xl transition-all shadow-xs flex items-center gap-2 cursor-pointer"
             >
               See Canvas Preview
             </button>
@@ -1128,7 +1128,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20 disabled:opacity-60 cursor-pointer"
+              className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 disabled:opacity-60 cursor-pointer"
             >
               {saving ? "Saving..." : mode === "create" ? "Create Category" : "Save Changes"}
             </button>
@@ -1174,9 +1174,9 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 key={opt.id}
                 type="button"
                 onClick={() => pickFamily(opt.id)}
-                className="text-left p-6 rounded-3xl border-2 border-zinc-200 hover:border-[#064FE0] hover:bg-sky-50/50 transition-all cursor-pointer group"
+                className="text-left p-6 rounded-3xl border-2 border-zinc-200 hover:border-[#e74b2d] hover:bg-sky-50/50 transition-all cursor-pointer group"
               >
-                <span className="text-lg font-bold text-zinc-900 group-hover:text-[#064FE0] block">
+                <span className="text-lg font-bold text-zinc-900 group-hover:text-[#e74b2d] block">
                   {opt.title}
                 </span>
                 <span className="text-sm text-zinc-500 mt-2 block leading-relaxed">{opt.desc}</span>
@@ -1188,14 +1188,14 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
         <>
       {/* Family badge */}
       <div className="flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-50 border border-sky-100 text-[#064FE0] text-sm font-bold">
+        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-50 border border-sky-100 text-[#e74b2d] text-sm font-bold">
           Family: {familyLabel}
         </span>
         {mode === "create" && (
           <button
             type="button"
             onClick={() => setFamilyPicked(false)}
-            className="text-sm font-bold text-zinc-500 hover:text-[#064FE0] cursor-pointer"
+            className="text-sm font-bold text-zinc-500 hover:text-[#e74b2d] cursor-pointer"
           >
             Change family
           </button>
@@ -1208,7 +1208,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 setFamilyPicked(false);
               }
             }}
-            className="text-sm font-bold text-zinc-500 hover:text-[#064FE0] cursor-pointer"
+            className="text-sm font-bold text-zinc-500 hover:text-[#e74b2d] cursor-pointer"
           >
             Change family
           </button>
@@ -1219,14 +1219,14 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
       {canvasType !== "mockup" && (
       <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-3 shadow-sm">
         <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Quick Preset Setup</h2>
-        <div className="p-4 bg-[#f8fbfd] border border-sky-100 rounded-2xl space-y-2">
+        <div className="p-4 bg-[#fbfaf7] border border-sky-100 rounded-2xl space-y-2">
           <label className="text-base font-bold text-zinc-700 block">
             Select Standard Dimensions & Dieline Preset (Optional)
           </label>
           <select
             onChange={(e) => applyPreset(e.target.value)}
             defaultValue=""
-            className="w-full bg-white border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-800 font-semibold focus:outline-none focus:border-[#064FE0] cursor-pointer"
+            className="w-full bg-white border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-800 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer"
           >
             <option value="" disabled>
               -- Select standard preset to prefill canvas dimensions & sides --
@@ -1260,7 +1260,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   slug: prev.slug ? prev.slug : generateSlug(name),
                 }));
               }}
-              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               placeholder="e.g., Packaging Boxes, Business Cards, Flyers"
             />
           </div>
@@ -1272,7 +1272,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               type="text"
               value={form.slug}
               onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
-              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               placeholder="packaging-boxes"
             />
           </div>
@@ -1284,7 +1284,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             rows={3}
             value={form.description}
             onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-            className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0] resize-none"
+            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] resize-none"
             placeholder="Brief category description for storefront browsing..."
           />
         </div>
@@ -1299,7 +1299,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               required
               value={form.price || ""}
               onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               placeholder="0.15"
             />
             <p className="text-base text-zinc-400 mt-1">Base price per unit. Will multiply by quantity and add paid variations.</p>
@@ -1312,7 +1312,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               required
               value={form.unitPrice || ""}
               onChange={(e) => setForm((prev) => ({ ...prev, unitPrice: e.target.value }))}
-              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               placeholder="e.g., $0.15 each"
             />
             <p className="text-base text-zinc-400 mt-1">Label shown below price (e.g. &quot;$0.15 each&quot;)</p>
@@ -1331,9 +1331,9 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 value={form.image}
                 onChange={(e) => setForm((prev) => ({ ...prev, image: e.target.value }))}
                 placeholder="https://... or /custom-category.png"
-                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               />
-              <label className="px-3.5 py-2 rounded-xl bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold cursor-pointer shrink-0 shadow-sm">
+              <label className="px-3.5 py-2 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold cursor-pointer shrink-0 shadow-sm">
                 {uploadingImage ? "Uploading..." : "↑ Upload"}
                 <input
                   type="file"
@@ -1372,7 +1372,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   value={bannerImage}
                   onChange={(e) => setBannerImage(e.target.value)}
                   placeholder="https://... banner image"
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
                 <button
                   type="button"
@@ -1387,7 +1387,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 >
                   Library
                 </button>
-                <label className="px-3.5 py-2 rounded-xl bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold cursor-pointer shrink-0 shadow-sm">
+                <label className="px-3.5 py-2 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold cursor-pointer shrink-0 shadow-sm">
                   {uploadingBanner ? "…" : "↑ Upload"}
                   <input
                     type="file"
@@ -1420,7 +1420,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
         <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
           <div>
             <h2 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-              <svg className="w-5 h-5 text-[#064FE0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-[#e74b2d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 4v16M15 4v16" />
               </svg>
@@ -1430,7 +1430,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               Choose flat print, packaging dieline, or product mockup (t-shirt / handbag) — existing flows stay unchanged.
             </p>
           </div>
-          <span className="text-base font-mono font-bold text-[#064FE0] bg-sky-50 border border-sky-100 px-3 py-1 rounded-xl">
+          <span className="text-base font-mono font-bold text-[#e74b2d] bg-sky-50 border border-sky-100 px-3 py-1 rounded-xl">
             Aspect Ratio: {formAspect.toFixed(2)} : 1
           </span>
         </div>
@@ -1459,13 +1459,13 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   }}
                   className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border-2 font-bold text-sm cursor-pointer transition-all ${
                     enableFront
-                      ? "border-[#064FE0] bg-sky-50 text-[#064FE0]"
+                      ? "border-[#e74b2d] bg-sky-50 text-[#e74b2d]"
                       : "border-zinc-200 bg-white text-zinc-500"
                   }`}
                 >
                   <span
                     className={`w-10 h-6 rounded-full relative transition-colors ${
-                      enableFront ? "bg-[#064FE0]" : "bg-zinc-300"
+                      enableFront ? "bg-[#e74b2d]" : "bg-zinc-300"
                     }`}
                   >
                     <span
@@ -1489,13 +1489,13 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   }}
                   className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border-2 font-bold text-sm cursor-pointer transition-all ${
                     enableBack
-                      ? "border-[#064FE0] bg-sky-50 text-[#064FE0]"
+                      ? "border-[#e74b2d] bg-sky-50 text-[#e74b2d]"
                       : "border-zinc-200 bg-white text-zinc-500"
                   }`}
                 >
                   <span
                     className={`w-10 h-6 rounded-full relative transition-colors ${
-                      enableBack ? "bg-[#064FE0]" : "bg-zinc-300"
+                      enableBack ? "bg-[#e74b2d]" : "bg-zinc-300"
                     }`}
                   >
                     <span
@@ -1507,14 +1507,14 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 </button>
               </div>
               {enableBack && (
-                <p className="mt-2 text-sm text-[#064FE0] font-medium">
+                <p className="mt-2 text-sm text-[#e74b2d] font-medium">
                   Back is on — switch to the Back tab below to set mockup, print area, and layers for the back.
                 </p>
               )}
             </div>
 
             {/* Side editor tabs */}
-            <div className="flex flex-wrap gap-1 p-1 bg-[#f8fbfd] rounded-full border border-zinc-200 w-fit">
+            <div className="flex flex-wrap gap-1 p-1 bg-[#fbfaf7] rounded-full border border-zinc-200 w-fit">
               {enableFront && (
                 <button
                   type="button"
@@ -1523,7 +1523,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     setActiveLayerId(null);
                   }}
                   className={`px-4 py-1.5 text-sm font-bold rounded-full cursor-pointer ${
-                    editSide === "front" ? "bg-[#064FE0] text-white" : "text-zinc-600"
+                    editSide === "front" ? "bg-[#e74b2d] text-white" : "text-zinc-600"
                   }`}
                 >
                   Edit Front
@@ -1537,7 +1537,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     setActiveLayerId(null);
                   }}
                   className={`px-4 py-1.5 text-sm font-bold rounded-full cursor-pointer ${
-                    editSide === "back" ? "bg-[#064FE0] text-white" : "text-zinc-600"
+                    editSide === "back" ? "bg-[#e74b2d] text-white" : "text-zinc-600"
                   }`}
                 >
                   Edit Back
@@ -1582,7 +1582,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   }
                 }}
                 placeholder={`https://... or pick ${editSide} photo from library`}
-                className="flex-1 bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                className="flex-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               />
               <button
                 type="button"
@@ -1594,7 +1594,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     side: editSide,
                   })
                 }
-                className="px-4 py-2 rounded-xl bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold cursor-pointer shrink-0 shadow-sm"
+                className="px-4 py-2 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold cursor-pointer shrink-0 shadow-sm"
               >
                 ↑ Upload {editSide === "front" ? "Front" : "Back"}
               </button>
@@ -1658,7 +1658,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       side: editSide,
                     })
                   }
-                  className="flex-1 px-3 py-1.5 bg-[#064FE0] hover:bg-[#0439A8] disabled:opacity-60 text-white text-sm font-bold rounded-xl cursor-pointer"
+                  className="flex-1 px-3 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] disabled:opacity-60 text-white text-sm font-bold rounded-xl cursor-pointer"
                 >
                   {uploadingLayerImage ? "…" : "+ Logo"}
                 </button>
@@ -1756,7 +1756,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       {
                         id: `color_${Date.now()}`,
                         name: "New Color",
-                        hex: "#064FE0",
+                        hex: "#e74b2d",
                       },
                     ])
                   }
@@ -1767,7 +1767,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               </div>
               <div className="space-y-2">
                 {apparelColors.map((color, idx) => (
-                  <div key={color.id} className="flex flex-wrap items-center gap-2 bg-[#f8fbfd] border border-zinc-200 rounded-2xl p-2.5">
+                  <div key={color.id} className="flex flex-wrap items-center gap-2 bg-[#fbfaf7] border border-zinc-200 rounded-2xl p-2.5">
                     <input
                       type="color"
                       value={color.hex}
@@ -1819,7 +1819,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                             currentUrl: color.mockupImage || "",
                           })
                         }
-                        className="shrink-0 px-2.5 py-1.5 text-xs font-bold rounded-xl bg-[#064FE0] text-white hover:bg-[#0439A8] cursor-pointer"
+                        className="shrink-0 px-2.5 py-1.5 text-xs font-bold rounded-xl bg-[#e74b2d] text-white hover:bg-[#c93e23] cursor-pointer"
                       >
                         {uploadingColorIdx === idx ? "…" : "↑ Library"}
                       </button>
@@ -1855,7 +1855,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               </div>
               <div className="flex flex-wrap gap-2">
                 {apparelSizes.map((size, idx) => (
-                  <div key={size.id} className="flex items-center gap-1 bg-[#f8fbfd] border border-zinc-200 rounded-xl px-2 py-1">
+                  <div key={size.id} className="flex items-center gap-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-2 py-1">
                     <input
                       type="text"
                       value={size.name}
@@ -1900,7 +1900,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               </div>
               <div className="space-y-2">
                 {decorationMethods.map((method, idx) => (
-                  <div key={method.id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-[#f8fbfd] border border-zinc-200 rounded-2xl p-2.5">
+                  <div key={method.id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-[#fbfaf7] border border-zinc-200 rounded-2xl p-2.5">
                     <input
                       type="text"
                       value={method.name}
@@ -1978,7 +1978,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       };
                     });
                   }}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
 
@@ -2002,7 +2002,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       };
                     });
                   }}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
 
@@ -2011,7 +2011,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 <select
                   value={form.unit}
                   onChange={(e) => setForm((prev) => ({ ...prev, unit: asCanvasUnit(e.target.value) }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
                 >
                   <option value="mm">mm</option>
                   <option value="cm">cm</option>
@@ -2027,7 +2027,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 <select
                   value={form.orientation}
                   onChange={(e) => setForm((prev) => ({ ...prev, orientation: e.target.value as any }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
                 >
                   <option value="landscape">Landscape</option>
                   <option value="portrait">Portrait</option>
@@ -2043,12 +2043,12 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     step="any"
                     value={form.bleed}
                     onChange={(e) => setForm((prev) => ({ ...prev, bleed: e.target.value }))}
-                    className="min-w-0 flex-1 bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                    className="min-w-0 flex-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   />
                   <select
                     value={form.bleedUnit}
                     onChange={(e) => setForm((prev) => ({ ...prev, bleedUnit: asCanvasUnit(e.target.value, prev.unit) }))}
-                    className="w-[4.5rem] bg-[#f8fbfd] border border-zinc-200 rounded-xl px-2 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                    className="w-[4.5rem] bg-[#fbfaf7] border border-zinc-200 rounded-xl px-2 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   >
                     <option value="in">in</option>
                     <option value="mm">mm</option>
@@ -2067,12 +2067,12 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     step="any"
                     value={form.safe_area}
                     onChange={(e) => setForm((prev) => ({ ...prev, safe_area: e.target.value }))}
-                    className="min-w-0 flex-1 bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                    className="min-w-0 flex-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   />
                   <select
                     value={form.safeAreaUnit}
                     onChange={(e) => setForm((prev) => ({ ...prev, safeAreaUnit: asCanvasUnit(e.target.value, prev.unit) }))}
-                    className="w-[4.5rem] bg-[#f8fbfd] border border-zinc-200 rounded-xl px-2 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                    className="w-[4.5rem] bg-[#fbfaf7] border border-zinc-200 rounded-xl px-2 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                   >
                     <option value="in">in</option>
                     <option value="mm">mm</option>
@@ -2103,7 +2103,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   type="button"
                   onClick={() => setPreviewMode("2d")}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    previewMode === "2d" ? "bg-[#064FE0] text-white shadow" : "text-zinc-400 hover:text-white"
+                    previewMode === "2d" ? "bg-[#e74b2d] text-white shadow" : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   2D Dieline View
@@ -2112,13 +2112,13 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   type="button"
                   onClick={() => setPreviewMode("3d")}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    previewMode === "3d" ? "bg-[#064FE0] text-white shadow" : "text-zinc-400 hover:text-white"
+                    previewMode === "3d" ? "bg-[#e74b2d] text-white shadow" : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   3D Box Model
                 </button>
               </div>
-              <span className="text-[#38bdf8] font-mono">{form.canvas_width} × {form.canvas_height} {form.unit}</span>
+              <span className="text-[#f88768] font-mono">{form.canvas_width} × {form.canvas_height} {form.unit}</span>
             </div>
 
             {previewMode === "3d" ? (
@@ -2167,7 +2167,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                               x: 50,
                               y: 46,
                               fontSize: 16,
-                              color: "#38bdf8",
+                              color: "#f88768",
                               fontWeight: "bold",
                               textAlign: "center",
                             },
@@ -2309,7 +2309,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               onClick={() => handleSideModeChange("single")}
               className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
                 sideMode === "single"
-                  ? "border-[#064FE0] bg-sky-50/60 ring-2 ring-[#064FE0]/20"
+                  ? "border-[#e74b2d] bg-sky-50/60 ring-2 ring-[#e74b2d]/20"
                   : "border-zinc-200 hover:border-zinc-300 bg-white"
               }`}
             >
@@ -2320,7 +2320,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   name="sideMode"
                   checked={sideMode === "single"}
                   onChange={() => handleSideModeChange("single")}
-                  className="text-[#064FE0] focus:ring-[#064FE0] cursor-pointer"
+                  className="text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
                 />
               </div>
               <p className="text-sm text-zinc-500">
@@ -2332,7 +2332,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               onClick={() => handleSideModeChange("double")}
               className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
                 sideMode === "double"
-                  ? "border-[#064FE0] bg-sky-50/60 ring-2 ring-[#064FE0]/20"
+                  ? "border-[#e74b2d] bg-sky-50/60 ring-2 ring-[#e74b2d]/20"
                   : "border-zinc-200 hover:border-zinc-300 bg-white"
               }`}
             >
@@ -2343,7 +2343,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   name="sideMode"
                   checked={sideMode === "double"}
                   onChange={() => handleSideModeChange("double")}
-                  className="text-[#064FE0] focus:ring-[#064FE0] cursor-pointer"
+                  className="text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
                 />
               </div>
               <p className="text-sm text-zinc-500">
@@ -2355,7 +2355,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               onClick={() => handleSideModeChange("multi")}
               className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
                 sideMode === "multi"
-                  ? "border-[#064FE0] bg-sky-50/60 ring-2 ring-[#064FE0]/20"
+                  ? "border-[#e74b2d] bg-sky-50/60 ring-2 ring-[#e74b2d]/20"
                   : "border-zinc-200 hover:border-zinc-300 bg-white"
               }`}
             >
@@ -2366,7 +2366,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   name="sideMode"
                   checked={sideMode === "multi"}
                   onChange={() => handleSideModeChange("multi")}
-                  className="text-[#064FE0] focus:ring-[#064FE0] cursor-pointer"
+                  className="text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
                 />
               </div>
               <p className="text-sm text-zinc-500">
@@ -2377,7 +2377,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
 
           {/* Panel Names Inputs if Double or Multi */}
           {sideMode !== "single" && (
-            <div className="p-4 bg-[#f8fbfd] border border-zinc-200 rounded-2xl space-y-3">
+            <div className="p-4 bg-[#fbfaf7] border border-zinc-200 rounded-2xl space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <label className="text-base font-bold text-zinc-800">
                   Total Sides Count:
@@ -2427,7 +2427,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         });
                       }}
                       placeholder={`e.g., Side ${sideIdx + 1}`}
-                      className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-base font-semibold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                      className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-base font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     />
                   </div>
                 ))}
@@ -2451,7 +2451,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               <button
                 type="button"
                 onClick={applyTriFoldPreset}
-                className="px-2.5 py-1 text-xs font-bold rounded-lg border border-sky-200 bg-sky-50 text-[#064FE0] hover:bg-sky-100 cursor-pointer"
+                className="px-2.5 py-1 text-xs font-bold rounded-lg border border-sky-200 bg-sky-50 text-[#e74b2d] hover:bg-sky-100 cursor-pointer"
               >
                 + Tri-Fold Lines
               </button>
@@ -2487,7 +2487,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
           </div>
 
           {guideLines.length === 0 ? (
-            <div className="py-6 text-center border-2 border-dashed border-zinc-200 rounded-2xl bg-[#f8fbfd]">
+            <div className="py-6 text-center border-2 border-dashed border-zinc-200 rounded-2xl bg-[#fbfaf7]">
               <p className="text-base text-zinc-400 font-medium">No canvas fold lines or dieline guides added.</p>
               <p className="text-xs text-zinc-400 mt-1">
                 Click &quot;+ Add Vertical Line&quot; or select one of the fold presets above.
@@ -2498,7 +2498,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               {guideLines.map((line) => (
                 <div
                   key={line.id}
-                  className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-[#f8fbfd] border border-zinc-200 rounded-2xl p-3"
+                  className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-[#fbfaf7] border border-zinc-200 rounded-2xl p-3"
                 >
                   <div className="sm:col-span-3">
                     <label className="text-xs font-bold text-zinc-400 block mb-0.5">Line Name</label>
@@ -2507,7 +2507,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       value={line.name}
                       onChange={(e) => updateGuideLine(line.id, "name", e.target.value)}
                       placeholder="e.g. Spine Fold"
-                      className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                      className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     />
                   </div>
 
@@ -2531,7 +2531,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         step="any"
                         value={line.position}
                         onChange={(e) => updateGuideLine(line.id, "position", Number(e.target.value))}
-                        className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                        className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                       />
                     </div>
                     <div className="w-20">
@@ -2568,7 +2568,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     <div className="flex items-center gap-1.5">
                       <input
                         type="color"
-                        value={line.color || "#064FE0"}
+                        value={line.color || "#e74b2d"}
                         onChange={(e) => updateGuideLine(line.id, "color", e.target.value)}
                         className="w-7 h-7 rounded-lg border border-zinc-200 cursor-pointer bg-transparent"
                         title="Pick Line Color"
@@ -2597,7 +2597,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#064FE0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-[#e74b2d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
                 Category Canvas Default Layers & Logo Editor
@@ -2609,14 +2609,14 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             <button
               type="button"
               onClick={addTextLayer}
-              className="px-4 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold text-sm rounded-xl transition-all shadow-sm cursor-pointer shrink-0"
+              className="px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-sm rounded-xl transition-all shadow-sm cursor-pointer shrink-0"
             >
               + Add Text Layer
             </button>
           </div>
 
           {/* Logo Setup Card */}
-          <div className="p-4 bg-[#f8fbfd] border border-zinc-200 rounded-2xl space-y-3">
+          <div className="p-4 bg-[#fbfaf7] border border-zinc-200 rounded-2xl space-y-3">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block">Default Logo Placeholder Settings</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
@@ -2626,7 +2626,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   value={logoText}
                   onChange={(e) => setLogoText(e.target.value)}
                   placeholder="e.g. LOGO or BRAND"
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
 
@@ -2638,7 +2638,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   max={100}
                   value={logoSize}
                   onChange={(e) => setLogoSize(Number(e.target.value))}
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
 
@@ -2647,7 +2647,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 <select
                   value={logoPosition}
                   onChange={(e) => setLogoPosition(e.target.value as any)}
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 cursor-pointer focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 cursor-pointer focus:outline-none focus:border-[#e74b2d]"
                 >
                   <option value="top-right">Top Right</option>
                   <option value="top-left">Top Left</option>
@@ -2665,7 +2665,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             </div>
 
             {textLayers.length === 0 ? (
-              <div className="py-6 text-center border-2 border-dashed border-zinc-200 rounded-2xl bg-[#f8fbfd]">
+              <div className="py-6 text-center border-2 border-dashed border-zinc-200 rounded-2xl bg-[#fbfaf7]">
                 <p className="text-sm text-zinc-400 font-medium">No default text layers added for this category.</p>
                 <p className="text-xs text-zinc-400 mt-1">Click &quot;+ Add Text Layer&quot; to add customized layers for this category.</p>
               </div>
@@ -2677,13 +2677,13 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     onClick={() => setActiveLayerId(layer.id)}
                     className={`p-4 rounded-2xl border transition-all ${
                       activeLayerId === layer.id
-                        ? "border-[#064FE0] bg-sky-50/50 ring-2 ring-[#064FE0]/20"
-                        : "border-zinc-200 bg-[#f8fbfd] hover:bg-white"
+                        ? "border-[#e74b2d] bg-sky-50/50 ring-2 ring-[#e74b2d]/20"
+                        : "border-zinc-200 bg-[#fbfaf7] hover:bg-white"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3 mb-3">
                       <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-[#064FE0] text-white text-xs font-bold flex items-center justify-center">
+                        <span className="w-6 h-6 rounded-full bg-[#e74b2d] text-white text-xs font-bold flex items-center justify-center">
                           {idx + 1}
                         </span>
                         <span className="text-sm font-bold text-zinc-900">Layer {idx + 1}</span>
@@ -2709,7 +2709,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           value={layer.text}
                           onChange={(e) => updateTextLayer(layer.id, "text", e.target.value)}
                           placeholder="Text layer content..."
-                          className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-semibold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                          className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                         />
                       </div>
 
@@ -2721,7 +2721,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           max={72}
                           value={layer.fontSize}
                           onChange={(e) => updateTextLayer(layer.id, "fontSize", Number(e.target.value))}
-                          className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm font-semibold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                          className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                         />
                       </div>
 
@@ -2730,7 +2730,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         <select
                           value={layer.fontWeight || "normal"}
                           onChange={(e) => updateTextLayer(layer.id, "fontWeight", e.target.value)}
-                          className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1.5 text-sm font-semibold text-zinc-900 cursor-pointer focus:outline-none focus:border-[#064FE0]"
+                          className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1.5 text-sm font-semibold text-zinc-900 cursor-pointer focus:outline-none focus:border-[#e74b2d]"
                         >
                           <option value="normal">Normal</option>
                           <option value="bold">Bold</option>
@@ -2759,7 +2759,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                             max={95}
                             value={layer.x}
                             onChange={(e) => updateTextLayer(layer.id, "x", Number(e.target.value))}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1.5 text-sm font-mono font-semibold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                            className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1.5 text-sm font-mono font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                           />
                         </div>
                         <div className="flex-1">
@@ -2770,7 +2770,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                             max={95}
                             value={layer.y}
                             onChange={(e) => updateTextLayer(layer.id, "y", Number(e.target.value))}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1.5 text-sm font-mono font-semibold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                            className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1.5 text-sm font-mono font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                           />
                         </div>
                       </div>
@@ -2821,7 +2821,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
           ) : (
             <div className="space-y-3">
               {printSizes.map((size, index) => (
-                <div key={`${size.name}-${index}`} className="rounded-2xl border border-zinc-200 bg-[#f8fbfd] p-3 space-y-2">
+                <div key={`${size.name}-${index}`} className="rounded-2xl border border-zinc-200 bg-[#fbfaf7] p-3 space-y-2">
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
                     <input
                       value={size.name}
@@ -2829,7 +2829,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, name: e.target.value } : row)))
                       }
                       placeholder="Size name"
-                      className="sm:col-span-4 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                      className="sm:col-span-4 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     />
                     <input
                       type="number"
@@ -2839,7 +2839,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       onChange={(e) =>
                         setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, width: Number(e.target.value) } : row)))
                       }
-                      className="sm:col-span-2 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                      className="sm:col-span-2 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     />
                     <input
                       type="number"
@@ -2849,7 +2849,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       onChange={(e) =>
                         setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, height: Number(e.target.value) } : row)))
                       }
-                      className="sm:col-span-2 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                      className="sm:col-span-2 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     />
                     <select
                       value={size.unit}
@@ -2935,7 +2935,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, note: e.target.value } : row)))
                     }
                     placeholder="Optional note"
-                    className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-700 focus:outline-none focus:border-[#064FE0]"
+                    className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-700 focus:outline-none focus:border-[#e74b2d]"
                   />
                 </div>
               ))}
@@ -2967,14 +2967,14 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
         </div>
 
         {variations.length === 0 ? (
-          <div className="text-center py-8 bg-[#f8fbfd] border-2 border-dashed border-zinc-200 rounded-2xl">
+          <div className="text-center py-8 bg-[#fbfaf7] border-2 border-dashed border-zinc-200 rounded-2xl">
             <p className="text-base font-medium text-zinc-500 mb-2">
               No category variations configured yet.
             </p>
             <button
               type="button"
               onClick={addVariation}
-              className="text-base font-bold text-[#064FE0] hover:underline cursor-pointer"
+              className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer"
             >
               + Click here to add default variation (e.g. Paper Stock, Corners)
             </button>
@@ -2998,7 +2998,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       value={v.name}
                       onChange={(e) => updateVariationField(varIdx, "name", e.target.value)}
                       placeholder="e.g. Paper Stock, Corner Style"
-                      className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-lg px-3 py-1.5 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                      className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-3 py-1.5 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     />
                   </div>
 
@@ -3008,7 +3008,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         type="checkbox"
                         checked={v.required}
                         onChange={(e) => updateVariationField(varIdx, "required", e.target.checked)}
-                        className="rounded border-zinc-300 text-[#064FE0] focus:ring-[#064FE0] w-4 h-4 cursor-pointer"
+                        className="rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] w-4 h-4 cursor-pointer"
                       />
                       Required Selection
                     </label>
@@ -3040,7 +3040,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     <button
                       type="button"
                       onClick={() => addVariationValue(varIdx)}
-                      className="text-base font-bold text-[#064FE0] hover:underline cursor-pointer"
+                      className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer"
                     >
                       + Add Option Value
                     </button>
@@ -3068,7 +3068,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                               value={val.name}
                               onChange={(e) => updateVariationValue(varIdx, valIdx, "name", e.target.value)}
                               placeholder="e.g. Standard Matte (14 pt)"
-                              className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-lg px-3 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-3 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                             />
                           </div>
 
@@ -3097,7 +3097,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                                   updateVariationValue(varIdx, valIdx, "price", e.target.value)
                                 }
                                 placeholder="0 (Free)"
-                                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-lg pl-6 pr-3 py-1.5 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg pl-6 pr-3 py-1.5 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                               />
                             </div>
                           </div>
@@ -3106,7 +3106,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           <div className="sm:col-span-3">
                             <div className="flex items-center justify-between mb-1">
                               <label className="text-base font-bold text-zinc-500">Image</label>
-                              <label className="text-base font-bold text-[#064FE0] hover:underline cursor-pointer">
+                              <label className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer">
                                 {isUploadingThis ? "Uploading..." : "↑ Upload"}
                                 <input
                                   type="file"
@@ -3129,7 +3129,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                                   updateVariationValue(varIdx, valIdx, "image", e.target.value)
                                 }
                                 placeholder="Image URL / S3"
-                                className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-lg px-2.5 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-2.5 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                               />
                               {val.image && (
                                 <img
@@ -3165,7 +3165,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                               updateVariationValue(varIdx, valIdx, "description", e.target.value)
                             }
                             placeholder="Optional description (e.g., Smooth coated paper with subtle sheen)"
-                            className="w-full bg-[#f8fbfd] border border-zinc-100 rounded-lg px-3 py-1 text-base text-zinc-600 focus:outline-none focus:border-[#064FE0]"
+                            className="w-full bg-[#fbfaf7] border border-zinc-100 rounded-lg px-3 py-1 text-base text-zinc-600 focus:outline-none focus:border-[#e74b2d]"
                           />
                         </div>
                       </div>
@@ -3188,7 +3188,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-zinc-800/80 flex items-center justify-between bg-[#181c28]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#064FE0]/20 border border-[#064FE0]/40 flex items-center justify-center text-[#38bdf8]">
+                <div className="w-10 h-10 rounded-xl bg-[#e74b2d]/20 border border-[#e74b2d]/40 flex items-center justify-center text-[#f88768]">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -3214,7 +3214,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     type="button"
                     onClick={() => setModalTab("3d")}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      modalTab === "3d" ? "bg-[#064FE0] text-white shadow" : "text-zinc-400 hover:text-white"
+                      modalTab === "3d" ? "bg-[#e74b2d] text-white shadow" : "text-zinc-400 hover:text-white"
                     }`}
                   >
                     3D Box View
@@ -3223,7 +3223,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     type="button"
                     onClick={() => setModalTab("2d")}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      modalTab === "2d" ? "bg-[#064FE0] text-white shadow" : "text-zinc-400 hover:text-white"
+                      modalTab === "2d" ? "bg-[#e74b2d] text-white shadow" : "text-zinc-400 hover:text-white"
                     }`}
                   >
                     2D Canvas Dieline
@@ -3289,7 +3289,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                                 x: 50,
                                 y: 46,
                                 fontSize: 16,
-                                color: "#38bdf8",
+                                color: "#f88768",
                                 fontWeight: "bold",
                                 textAlign: "center",
                               },

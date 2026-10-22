@@ -19,7 +19,7 @@ function stream(blocks) {
 
 const pages = [
   stream([
-    { font: "F1", size: 22, x: 54, y: 742, color: "0.12 0.45 0.68", text: "XPrintz User Guide" },
+    { font: "F1", size: 22, x: 54, y: 742, color: "0.12 0.45 0.68", text: "Printgraphi User Guide" },
     { font: "F2", size: 11, x: 54, y: 718, color: "0.25 0.25 0.28", text: "How to upload artwork, choose a size, and keep your print safe." },
     { font: "F1", size: 14, x: 54, y: 682, text: "1. Choose a size" },
     { font: "F2", size: 11, x: 54, y: 660, text: "If this product comes in more than one size, the choices sit under the artwork card." },
@@ -38,7 +38,7 @@ const pages = [
     { font: "F1", size: 14, x: 54, y: 380, text: "4. Finish the order" },
     { font: "F2", size: 11, x: 54, y: 358, text: "Next opens the design review. Check the front and back, then approve the design." },
     { font: "F2", size: 11, x: 54, y: 342, text: "Finish continues to your options and cart." },
-    { font: "F2", size: 10, x: 54, y: 64, color: "0.45 0.45 0.48", text: "XPrintz  |  Print guidelines  |  Page 1 of 2" },
+    { font: "F2", size: 10, x: 54, y: 64, color: "0.45 0.45 0.48", text: "Printgraphi  |  Print guidelines  |  Page 1 of 2" },
   ]),
   stream([
     { font: "F1", size: 18, x: 54, y: 742, color: "0.12 0.45 0.68", text: "Files we accept" },
@@ -56,7 +56,7 @@ const pages = [
     { font: "F1", size: 14, x: 54, y: 448, text: "Need help" },
     { font: "F2", size: 11, x: 54, y: 424, text: "Use Save Draft if you want to come back later. Your file stays with your account." },
     { font: "F2", size: 11, x: 54, y: 408, text: "If the preview does not match the print you want, change the size and upload again." },
-    { font: "F2", size: 10, x: 54, y: 64, color: "0.45 0.45 0.48", text: "XPrintz  |  Print guidelines  |  Page 2 of 2" },
+    { font: "F2", size: 10, x: 54, y: 64, color: "0.45 0.45 0.48", text: "Printgraphi  |  Print guidelines  |  Page 2 of 2" },
   ]),
 ];
 
@@ -103,7 +103,7 @@ for (let index = 1; index <= objects.length; index += 1) {
 const trailer = `${xref}trailer\n<< /Size ${objects.length + 1} /Root ${catalogId} 0 R >>\nstartxref\n${cursor}\n%%EOF\n`;
 const output = Buffer.concat([...chunks.map((part) => Buffer.from(part)), Buffer.from(trailer)]);
 
-const dest = path.join(process.cwd(), "public", "guides", "xprintz-user-guide.pdf");
+const dest = path.join(process.cwd(), "public", "guides", "printgraphi-user-guide.pdf");
 fs.mkdirSync(path.dirname(dest), { recursive: true });
 fs.writeFileSync(dest, output);
 console.log(`Wrote ${dest} (${output.length} bytes)`);

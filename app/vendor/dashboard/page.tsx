@@ -406,7 +406,7 @@ export default function VendorDashboardPage() {
   if (loadingProfile) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-3 border-sky-100 border-t-[#329AD4] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-3 border-sky-100 border-t-[#e74b2d] rounded-full animate-spin" />
       </div>
     );
   }
@@ -447,7 +447,7 @@ export default function VendorDashboardPage() {
                   {profile.categoriesFulfilled.map((cat) => (
                     <span
                       key={cat}
-                      className="rounded-full bg-[#EAF5FB] border border-sky-100 px-3 py-1 text-xs font-semibold text-[#329AD4]"
+                      className="rounded-full bg-[#fff1eb] border border-sky-100 px-3 py-1 text-xs font-semibold text-[#e74b2d]"
                     >
                       {cat}
                     </span>
@@ -458,7 +458,7 @@ export default function VendorDashboardPage() {
 
             {/* Notification alert banner */}
             {notice && (
-              <div className="p-3.5 bg-sky-50 border border-sky-200 text-[#329AD4] text-xs sm:text-sm rounded-xl font-semibold flex items-center justify-between">
+              <div className="p-3.5 bg-sky-50 border border-sky-200 text-[#e74b2d] text-xs sm:text-sm rounded-xl font-semibold flex items-center justify-between">
                 <span>{notice}</span>
                 <button
                   type="button"
@@ -475,7 +475,7 @@ export default function VendorDashboardPage() {
             ───────────────────────────────────────────────────────────── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {/* 1. Available Balance */}
-              <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
                 <p className="text-sm font-semibold text-zinc-800">Available Balance</p>
                 <p className="text-3xl lg:text-4xl font-normal text-zinc-900 text-center my-3">
                   {money(profile?.earnedBalance || 0)}
@@ -484,7 +484,7 @@ export default function VendorDashboardPage() {
               </div>
 
               {/* 2. Pending Payouts */}
-              <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
                 <p className="text-sm font-semibold text-zinc-800">Pending Payouts</p>
                 <p className="text-3xl lg:text-4xl font-normal text-zinc-900 text-center my-3">
                   {money(pendingBalance)}
@@ -493,7 +493,7 @@ export default function VendorDashboardPage() {
               </div>
 
               {/* 3. Incoming Orders */}
-              <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
                 <p className="text-sm font-semibold text-zinc-800">Incoming Orders</p>
                 <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
                   {formatCount(orders.length, 0)}
@@ -502,7 +502,7 @@ export default function VendorDashboardPage() {
               </div>
 
               {/* 4. Active Jobs */}
-              <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
                 <p className="text-sm font-semibold text-zinc-800">Active Jobs</p>
                 <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
                   {formatCount(jobs.length, 0)}
@@ -511,7 +511,7 @@ export default function VendorDashboardPage() {
               </div>
 
               {/* 5. Acceptance Rate */}
-              <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
                 <p className="text-sm font-semibold text-zinc-800">Acceptance Rate</p>
                 <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
                   {profile?.metrics?.acceptanceRate ?? 100}%
@@ -520,7 +520,7 @@ export default function VendorDashboardPage() {
               </div>
 
               {/* 6. Reprint Rate */}
-              <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
                 <p className="text-sm font-semibold text-zinc-800">Reprint Rate</p>
                 <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
                   {profile?.metrics?.reprintRate ?? 0}%
@@ -548,7 +548,7 @@ export default function VendorDashboardPage() {
                     <button
                       type="button"
                       onClick={() => setTab("incoming")}
-                      className="text-xs font-semibold text-[#329AD4] hover:underline cursor-pointer"
+                      className="text-xs font-semibold text-[#e74b2d] hover:underline cursor-pointer"
                     >
                       View All
                     </button>
@@ -556,7 +556,7 @@ export default function VendorDashboardPage() {
 
                   {loadingOrders ? (
                     <div className="py-8 text-center">
-                      <div className="w-6 h-6 border-2 border-sky-100 border-t-[#329AD4] rounded-full animate-spin mx-auto" />
+                      <div className="w-6 h-6 border-2 border-sky-100 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
                     </div>
                   ) : orders.length === 0 ? (
                     <div className="py-8 text-center text-xs sm:text-sm text-zinc-500 bg-[#F9FAFB] rounded-xl border border-zinc-100">
@@ -586,7 +586,7 @@ export default function VendorDashboardPage() {
                                 type="button"
                                 onClick={() => claim(order._id)}
                                 disabled={busyId === order._id}
-                                className="px-5 py-2 bg-[#329AD4] hover:bg-[#2884b8] text-white font-semibold text-xs rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
+                                className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-xs rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
                               >
                                 {busyId === order._id ? "Claiming..." : "Accept Order"}
                               </button>
@@ -610,7 +610,7 @@ export default function VendorDashboardPage() {
                     <button
                       type="button"
                       onClick={() => setTab("jobs")}
-                      className="text-xs font-semibold text-[#329AD4] hover:underline cursor-pointer"
+                      className="text-xs font-semibold text-[#e74b2d] hover:underline cursor-pointer"
                     >
                       View All
                     </button>
@@ -642,7 +642,7 @@ export default function VendorDashboardPage() {
                   <button
                     type="button"
                     onClick={() => loadOrders()}
-                    className="px-4 py-2 bg-[#EAF5FB] hover:bg-sky-100 text-[#329AD4] text-xs font-semibold rounded-full transition cursor-pointer"
+                    className="px-4 py-2 bg-[#fff1eb] hover:bg-sky-100 text-[#e74b2d] text-xs font-semibold rounded-full transition cursor-pointer"
                   >
                     Refresh Queue
                   </button>
@@ -650,7 +650,7 @@ export default function VendorDashboardPage() {
 
                 {loadingOrders ? (
                   <div className="py-12 text-center">
-                    <div className="w-8 h-8 border-2 border-sky-100 border-t-[#329AD4] rounded-full animate-spin mx-auto" />
+                    <div className="w-8 h-8 border-2 border-sky-100 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
                   </div>
                 ) : orders.length === 0 ? (
                   <div className="py-12 text-center text-sm text-zinc-500 bg-[#F9FAFB] rounded-2xl border border-zinc-100 p-8">
@@ -680,7 +680,7 @@ export default function VendorDashboardPage() {
                               type="button"
                               onClick={() => claim(order._id)}
                               disabled={busyId === order._id}
-                              className="px-6 py-2 bg-[#329AD4] hover:bg-[#2884b8] text-white font-semibold text-xs rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
+                              className="px-6 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-xs rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
                             >
                               {busyId === order._id ? "Claiming..." : "Accept Order"}
                             </button>
@@ -706,7 +706,7 @@ export default function VendorDashboardPage() {
                   <button
                     type="button"
                     onClick={() => loadOrders()}
-                    className="px-4 py-2 bg-[#EAF5FB] hover:bg-sky-100 text-[#329AD4] text-xs font-semibold rounded-full transition cursor-pointer"
+                    className="px-4 py-2 bg-[#fff1eb] hover:bg-sky-100 text-[#e74b2d] text-xs font-semibold rounded-full transition cursor-pointer"
                   >
                     Refresh Jobs
                   </button>
@@ -737,7 +737,7 @@ export default function VendorDashboardPage() {
                   </div>
 
                   {costNotice && (
-                    <div className="p-3 bg-[#EAF5FB] border border-sky-100 text-[#329AD4] text-xs rounded-xl font-semibold">
+                    <div className="p-3 bg-[#fff1eb] border border-sky-100 text-[#e74b2d] text-xs rounded-xl font-semibold">
                       {costNotice}
                     </div>
                   )}
@@ -748,7 +748,7 @@ export default function VendorDashboardPage() {
                       <select
                         value={selectedProductId}
                         onChange={(e) => setSelectedProductId(e.target.value)}
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
+                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
                       >
                         <option value="">Select category...</option>
                         {products.map((p) => (
@@ -760,7 +760,7 @@ export default function VendorDashboardPage() {
                     </div>
 
                     {selectedProduct && (
-                      <div className="bg-[#EAF5FB] rounded-xl p-3 border border-sky-100 text-xs text-zinc-700 space-y-1">
+                      <div className="bg-[#fff1eb] rounded-xl p-3 border border-sky-100 text-xs text-zinc-700 space-y-1">
                         <div className="flex justify-between">
                           <span className="font-semibold">Recommended range:</span>
                           <span>{money(benchmarkMin)} – {money(benchmarkMax)}</span>
@@ -781,14 +781,14 @@ export default function VendorDashboardPage() {
                         value={vendorCostInput}
                         onChange={(e) => setVendorCostInput(e.target.value)}
                         placeholder="e.g. 15.50"
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 font-mono"
+                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 font-mono"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={savingCost || !selectedProductId}
-                      className="w-full py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
+                      className="w-full py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
                     >
                       {savingCost ? "Saving Cost..." : "Save Cost Benchmark"}
                     </button>
@@ -853,7 +853,7 @@ export default function VendorDashboardPage() {
                     <p className="text-xs text-zinc-500 mt-0.5">Withdraw available printing proceeds to bank.</p>
                   </div>
 
-                  <div className="bg-[#EAF5FB] rounded-2xl p-5 border border-sky-100">
+                  <div className="bg-[#fff1eb] rounded-2xl p-5 border border-sky-100">
                     <p className="text-xs font-semibold text-zinc-700">Available Balance</p>
                     <p className="text-3xl font-bold text-emerald-600 my-1 font-mono">
                       {money(profile.earnedBalance)}
@@ -874,7 +874,7 @@ export default function VendorDashboardPage() {
                         step="0.01"
                         min="1"
                         placeholder="Enter amount"
-                        className="flex-1 bg-white border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
+                        className="flex-1 bg-white border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
                       />
                       <button
                         type="submit"
@@ -901,7 +901,7 @@ export default function VendorDashboardPage() {
                         value={accountHolder}
                         onChange={(e) => setAccountHolder(e.target.value)}
                         placeholder="Facility or Legal Name"
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 focus:outline-none focus:border-[#329AD4]"
+                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                       />
                     </div>
 
@@ -912,7 +912,7 @@ export default function VendorDashboardPage() {
                         onChange={(e) => setStripeEmail(e.target.value)}
                         type="email"
                         placeholder="payouts@facility.com"
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 focus:outline-none focus:border-[#329AD4]"
+                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                       />
                     </div>
 
@@ -922,7 +922,7 @@ export default function VendorDashboardPage() {
                         value={stripePublishable}
                         onChange={(e) => setStripePublishable(e.target.value)}
                         placeholder="pk_test_... or pk_live_..."
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#329AD4]"
+                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d]"
                       />
                     </div>
 
@@ -933,14 +933,14 @@ export default function VendorDashboardPage() {
                         onChange={(e) => setStripeSecret(e.target.value)}
                         type="password"
                         placeholder={profile.stripeSecretSaved ? "Secret key saved (enter new to update)" : "sk_test_... or sk_live_..."}
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#329AD4]"
+                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d]"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={savingStripe}
-                      className="w-full py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
+                      className="w-full py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
                     >
                       {savingStripe ? "Saving..." : "Save Payout Credentials"}
                     </button>
@@ -957,7 +957,7 @@ export default function VendorDashboardPage() {
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs text-zinc-600">
-                        <thead className="bg-[#EAF5FB] text-zinc-800 font-semibold rounded-xl">
+                        <thead className="bg-[#fff1eb] text-zinc-800 font-semibold rounded-xl">
                           <tr>
                             <th className="p-3 rounded-l-xl">Date</th>
                             <th className="p-3">Description</th>
@@ -978,7 +978,7 @@ export default function VendorDashboardPage() {
                                     entry.type === "credit"
                                       ? "bg-emerald-50 text-emerald-700"
                                       : entry.type === "withdrawal"
-                                      ? "bg-sky-50 text-[#329AD4]"
+                                      ? "bg-sky-50 text-[#e74b2d]"
                                       : "bg-red-50 text-red-600"
                                   }`}
                                 >
@@ -1031,7 +1031,7 @@ export default function VendorDashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono font-bold text-sm text-[#329AD4] underline">
+              <span className="font-mono font-bold text-sm text-[#e74b2d] underline">
                 #{order.orderNumber}
               </span>
               <span
@@ -1087,7 +1087,7 @@ export default function VendorDashboardPage() {
                 type="button"
                 onClick={() => updateStatus(order._id, "in_production")}
                 disabled={isWorking}
-                className="px-5 py-2 bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer"
+                className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer"
               >
                 {isWorking ? "Updating..." : "Start Production"}
               </button>
@@ -1105,7 +1105,7 @@ export default function VendorDashboardPage() {
                   }))
                 }
                 placeholder="Carrier"
-                className="w-24 bg-white border border-zinc-300 rounded-xl px-3 py-1.5 text-xs text-zinc-900 focus:outline-none focus:border-[#329AD4]"
+                className="w-24 bg-white border border-zinc-300 rounded-xl px-3 py-1.5 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
               />
               <input
                 value={tracking[order._id]?.number || ""}
@@ -1116,13 +1116,13 @@ export default function VendorDashboardPage() {
                   }))
                 }
                 placeholder="Tracking #"
-                className="w-36 bg-white border border-zinc-300 rounded-xl px-3 py-1.5 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#329AD4]"
+                className="w-36 bg-white border border-zinc-300 rounded-xl px-3 py-1.5 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d]"
               />
               <button
                 type="button"
                 onClick={() => updateStatus(order._id, "shipped")}
                 disabled={isWorking}
-                className="px-5 py-2 bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer"
+                className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer"
               >
                 {isWorking ? "Updating..." : "Dispatch & Ship"}
               </button>
@@ -1177,7 +1177,7 @@ function OrderCard({
           <button
             type="button"
             onClick={onToggle}
-            className="font-mono font-bold text-sm text-[#329AD4] hover:underline cursor-pointer flex items-center gap-1.5"
+            className="font-mono font-bold text-sm text-[#e74b2d] hover:underline cursor-pointer flex items-center gap-1.5"
           >
             <span>Order #{order.orderNumber}</span>
             <span className="text-[11px] text-zinc-400 font-sans">({open ? "Hide details" : "Show details"})</span>

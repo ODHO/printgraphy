@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
-import { mediaSrc } from "@/lib/mediaUrl";
+import { catalogImageFor } from "@/lib/catalogImages";
 import {
   cleanApparelColors,
   cleanApparelSizes,
@@ -14,25 +14,23 @@ import {
 export const dynamic = "force-dynamic";
 
 function coverSrc(cat: {
+  name?: string;
+  slug?: string;
   image?: string;
   mockup_image?: string;
   galleryImages?: string[];
 }) {
-  const raw =
-    cat.image ||
-    (Array.isArray(cat.galleryImages) && cat.galleryImages[0]) ||
-    cat.mockup_image ||
-    "/new-in-clothing.png";
-  return mediaSrc(raw) || raw;
+  return catalogImageFor(cat.name, cat.slug, "apparel");
 }
 
 function bannerSrc(cat: {
+  name?: string;
+  slug?: string;
   banner_image?: string;
   image?: string;
   mockup_image?: string;
 }) {
-  const raw = cat.banner_image || cat.image || cat.mockup_image || "/new-in-clothing.png";
-  return mediaSrc(raw) || raw;
+  return catalogImageFor(cat.name, cat.slug, "apparel");
 }
 
 export async function generateMetadata({
@@ -103,7 +101,7 @@ export default async function ClothingBagsCategoryPage({
           <div className="mt-6">
             <Link
               href={designHref}
-              className="inline-flex px-6 py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold rounded-xl shadow-lg transition-colors"
+              className="inline-flex px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-xl shadow-lg transition-colors"
             >
               Start designing
             </Link>
@@ -113,7 +111,7 @@ export default async function ClothingBagsCategoryPage({
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Cover image product card (not the page banner) */}
-        <div className="rounded-3xl border border-zinc-200 overflow-hidden mb-10 grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-[#e8f4fc] via-white to-white shadow-sm">
+        <div className="rounded-3xl border border-zinc-200 overflow-hidden mb-10 grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-[#fff1eb] via-white to-white shadow-sm">
           <div className="relative min-h-[280px] lg:min-h-[400px] bg-white">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -124,7 +122,7 @@ export default async function ClothingBagsCategoryPage({
           </div>
           <div className="p-6 sm:p-10 flex flex-col justify-center space-y-5">
             <div>
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#2196D2] mb-2">
+              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#e74b2d] mb-2">
                 Customize
               </p>
               <h2 className="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
@@ -164,7 +162,7 @@ export default async function ClothingBagsCategoryPage({
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 href={designHref}
-                className="inline-flex px-6 py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold rounded-xl transition-colors shadow-md shadow-[#2196D2]/25"
+                className="inline-flex px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-xl transition-colors shadow-md shadow-[#e74b2d]/25"
               >
                 Start designing
               </Link>
@@ -183,14 +181,14 @@ export default async function ClothingBagsCategoryPage({
             <h3 className="text-xl font-black text-zinc-900 mb-5">More in this category</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {products.map((p: any) => {
-                const pImg = mediaSrc(p.image || cover) || p.image || cover;
+                const pImg = catalogImageFor(p.name, cat.name, "apparel");
                 return (
                   <Link
                     key={String(p._id)}
                     href={`/clothing-bags/design?category=${encodeURIComponent(cat.slug || String(cat._id))}&productId=${p._id}`}
                     className="group rounded-3xl overflow-hidden border border-zinc-200 hover:shadow-lg transition-all bg-white"
                   >
-                    <div className="aspect-[4/3] relative overflow-hidden bg-[#f8fbfd]">
+                    <div className="aspect-[4/3] relative overflow-hidden bg-[#fbfaf7]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={pImg}

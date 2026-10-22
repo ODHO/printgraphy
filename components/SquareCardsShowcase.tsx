@@ -59,7 +59,7 @@ export default function SquareCardsShowcase() {
               <button
                 key={`${thumb}-${idx}`}
                 onClick={() => handleThumbnailClick(idx)}
-                className="relative w-full aspect-square rounded-2xl overflow-hidden bg-zinc-100 border-2 border-transparent hover:border-[#1d90cf] transition-all duration-200 cursor-pointer shadow-xs group"
+                className="relative w-full aspect-square rounded-2xl overflow-hidden bg-zinc-100 border-2 border-transparent hover:border-[#e74b2d] transition-all duration-200 cursor-pointer shadow-xs group"
                 aria-label={`Select image ${idx + 1}`}
               >
                 <Image
@@ -89,7 +89,7 @@ export default function SquareCardsShowcase() {
         {/* Right Info Column (LG: 5 cols) */}
         <div className="lg:col-span-5 flex flex-col justify-center space-y-4 pl-0 lg:pl-2">
           
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1d90cf]/10 text-[#1d90cf] text-xs font-bold w-fit">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e74b2d]/10 text-[#e74b2d] text-xs font-bold w-fit">
             <span>✨ Featured Format</span>
             <span>•</span>
             <span>65 × 65 mm</span>
@@ -140,7 +140,7 @@ export default function SquareCardsShowcase() {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <a
               href="/customize"
-              className="px-6 py-3 bg-[#1d90cf] hover:bg-[#167bb3] text-white text-sm sm:text-base font-bold rounded-xl shadow-md shadow-[#1d90cf]/25 transition-all duration-200 cursor-pointer flex items-center gap-2"
+              className="px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm sm:text-base font-bold rounded-xl shadow-md shadow-[#e74b2d]/25 transition-all duration-200 cursor-pointer flex items-center gap-2"
             >
               <span>Design in 3D Studio</span>
               <span>→</span>

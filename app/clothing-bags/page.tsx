@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import dbConnect from "@/lib/mongodb";
 import Category from "@/models/Category";
-import { mediaSrc } from "@/lib/mediaUrl";
+import { catalogImageFor } from "@/lib/catalogImages";
 
 export const metadata: Metadata = {
   title: "Clothing & Bags — Printgraphy",
@@ -13,16 +13,13 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 function coverSrc(cat: {
+  name?: string;
+  slug?: string;
   image?: string;
   mockup_image?: string;
   galleryImages?: string[];
 }) {
-  const raw =
-    cat.image ||
-    (Array.isArray(cat.galleryImages) && cat.galleryImages[0]) ||
-    cat.mockup_image ||
-    "/new-in-clothing.png";
-  return mediaSrc(raw) || raw;
+  return catalogImageFor(cat.name, cat.slug, "apparel");
 }
 
 export default async function ClothingBagsHubPage() {
@@ -32,7 +29,7 @@ export default async function ClothingBagsHubPage() {
     .lean();
 
   return (
-    <div className="min-h-screen bg-[#f8fbfd] font-sans">
+    <div className="min-h-screen bg-[#fbfaf7] font-sans">
       <div className="bg-white border-b border-zinc-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
           <h1 className="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
@@ -76,7 +73,7 @@ export default async function ClothingBagsHubPage() {
                     <p className="text-sm text-white/80 mt-1 line-clamp-2">
                       {cat.description || "Customize with your logo or message"}
                     </p>
-                    <span className="inline-flex mt-4 text-sm font-bold text-white bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-2 group-hover:bg-[#2196D2] group-hover:border-[#2196D2] transition-colors">
+                    <span className="inline-flex mt-4 text-sm font-bold text-white bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-2 group-hover:bg-[#e74b2d] group-hover:border-[#e74b2d] transition-colors">
                       Shop {cat.name} →
                     </span>
                   </div>

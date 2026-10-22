@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MarketingHero from "@/components/Marketing/MarketingHero";
-import WhyXPrintzBuilds from "@/components/Marketing/WhyXPrintzBuilds";
+import WhyPrintgraphiBuilds from "@/components/Marketing/WhyPrintgraphiBuilds";
 import CustomWebsiteSection from "@/components/Marketing/CustomWebsiteSection";
 import LogoBrandingSection from "@/components/Marketing/LogoBrandingSection";
 import SocialMediaSection from "@/components/Marketing/SocialMediaSection";
@@ -18,13 +18,13 @@ export const metadata: Metadata = {
 
 export default function MarketingPage() {
   return (
-    <div className="min-h-screen bg-[#f8fbfd] font-sans flex flex-col justify-between text-zinc-900">
+    <div className="min-h-screen bg-[#fbfaf7] font-sans flex flex-col justify-between text-zinc-900">
       <div>
         {/* Hero Section */}
         <MarketingHero />
 
         {/* Why Printgraphy Builds This Too Section */}
-        <WhyXPrintzBuilds />
+        <WhyPrintgraphiBuilds />
 
         {/* Custom Website Section */}
         <CustomWebsiteSection />

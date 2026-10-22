@@ -68,7 +68,7 @@ export const DEFAULT_HOMEPAGE: HomepageContent = {
     primaryHref: "/browsedesigns",
     secondaryLabel: "Shop all eligible products",
     secondaryHref: "/browsedesigns",
-    image: "/banners/hero-invitations.png",
+    image: "/banners/hero-invitations-v2.png",
     imageAlt: "Wedding invitations and envelopes styled with eucalyptus",
   },
   collections: {
@@ -100,7 +100,7 @@ export const DEFAULT_HOMEPAGE: HomepageContent = {
     items: [
       { label: "Logo design", image: "/logo-design.png", href: "/quote" },
       { label: "Social Media", image: "/social-media.png", href: "/quote" },
-      { label: "Printgraphy Corporate Services", image: "/xprintz-corporate.png", href: "/quote" },
+      { label: "Printgraphi Corporate Services", image: "/printgraphi-corporate.png", href: "/quote" },
       { label: "Custom Business Websites", image: "/custom-business.png", href: "/quote" },
     ],
   },

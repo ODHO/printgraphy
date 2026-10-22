@@ -254,7 +254,7 @@ export default function AdminVendorsPage() {
             setError("");
             setShowModal(true);
           }}
-          className="text-xs font-semibold px-3 py-1.5 bg-[#329AD4] text-white rounded-lg hover:bg-[#2884b8] transition cursor-pointer"
+          className="text-xs font-semibold px-3 py-1.5 bg-[#e74b2d] text-white rounded-lg hover:bg-[#c93e23] transition cursor-pointer"
         >
           + Add Vendor
         </button>
@@ -271,42 +271,42 @@ export default function AdminVendorsPage() {
       ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {/* 1. Total Services */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Total Services</p>
           <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">58</p>
           <div />
         </div>
 
         {/* 2. Average Price (per unit) */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Average Price (per unit)</p>
           <p className="text-3xl lg:text-4xl font-normal text-zinc-900 text-center my-3">$ 2.45</p>
           <div />
         </div>
 
         {/* 3. Total Active Service */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Total Active Service</p>
           <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">05</p>
           <div />
         </div>
 
         {/* 4. Total Non Active Service */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Total Non Active Service</p>
           <p className="text-3xl lg:text-4xl font-normal text-zinc-900 text-center my-3">$ 1670.00</p>
           <div />
         </div>
 
         {/* 5. Total Vendor(s) */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Total Vendor(s)</p>
           <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">{vendors.length > 0 ? 566 : 566}</p>
           <div />
         </div>
 
         {/* 6. Total Price */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Total Price</p>
           <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">98</p>
           <div />
@@ -324,7 +324,7 @@ export default function AdminVendorsPage() {
             <button
               type="button"
               onClick={() => handleAction("details")}
-              className="px-3.5 py-1.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs font-semibold rounded-lg transition shadow-xs cursor-pointer"
+              className="px-3.5 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-lg transition shadow-xs cursor-pointer"
             >
               View Details
             </button>
@@ -363,7 +363,7 @@ export default function AdminVendorsPage() {
                     type="checkbox"
                     checked={selectedIds.length === vendors.length && vendors.length > 0}
                     onChange={toggleSelectAll}
-                    className="rounded border-zinc-300 text-[#329AD4] focus:ring-[#329AD4] cursor-pointer"
+                    className="rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
                   />
                 </th>
                 <th className="py-3 px-3 font-semibold whitespace-nowrap">Vendor ID</th>
@@ -388,7 +388,7 @@ export default function AdminVendorsPage() {
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleSelect(v._id)}
-                        className="rounded border-zinc-300 text-[#329AD4] focus:ring-[#329AD4] cursor-pointer"
+                        className="rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
                       />
                     </td>
 
@@ -478,7 +478,7 @@ export default function AdminVendorsPage() {
                   required
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#329AD4]"
+                  className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
                 />
               </div>
 
@@ -489,7 +489,7 @@ export default function AdminVendorsPage() {
                   required
                   value={form.contactName}
                   onChange={(e) => setForm({ ...form, contactName: e.target.value })}
-                  className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#329AD4]"
+                  className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
                 />
               </div>
 
@@ -501,7 +501,7 @@ export default function AdminVendorsPage() {
                     required
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#329AD4]"
+                    className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
                   />
                 </div>
                 <div>
@@ -511,7 +511,7 @@ export default function AdminVendorsPage() {
                     required
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#329AD4]"
+                    className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
                   />
                 </div>
               </div>
@@ -523,7 +523,7 @@ export default function AdminVendorsPage() {
                   value={form.categoriesFulfilled}
                   onChange={(e) => setForm({ ...form, categoriesFulfilled: e.target.value })}
                   placeholder="Business Cards, Postcards, Banners"
-                  className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#329AD4]"
+                  className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
                 />
               </div>
 
@@ -538,7 +538,7 @@ export default function AdminVendorsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 bg-[#329AD4] hover:bg-[#2884b8] text-white rounded-xl font-semibold shadow-xs transition cursor-pointer"
+                  className="px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white rounded-xl font-semibold shadow-xs transition cursor-pointer"
                 >
                   {saving ? "Saving..." : "Save Vendor"}
                 </button>

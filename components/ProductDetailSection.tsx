@@ -175,7 +175,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
         <div className="lg:col-span-6 flex flex-col gap-4 sticky top-20">
           
           {/* Main Showcase Image */}
-          <div className="relative w-full aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden bg-[#f8f9fa] border border-zinc-200/80 shadow-xs group">
+          <div className="relative w-full aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden bg-[#fbfaf7] border border-zinc-200/80 shadow-xs group">
             <img
               src={currentMainImage}
               alt={product?.name || "Product Showcase Image"}
@@ -245,7 +245,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                 onClick={() => setActiveImageIndex(idx)}
                 className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer bg-white ${
                   activeImageIndex === idx
-                    ? "border-[#2196D2] ring-2 ring-[#2196D2]/30 scale-95"
+                    ? "border-[#e74b2d] ring-2 ring-[#e74b2d]/30 scale-95"
                     : "border-zinc-200 hover:border-zinc-300 opacity-80 hover:opacity-100"
                 }`}
               >
@@ -289,7 +289,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                 ) : null}
                 <span
                   onClick={() => document.getElementById("product-reviews-section")?.scrollIntoView({ behavior: "smooth" })}
-                  className="font-bold text-zinc-900 underline cursor-pointer hover:text-[#2196D2]"
+                  className="font-bold text-zinc-900 underline cursor-pointer hover:text-[#e74b2d]"
                 >
                   {product?.reviewCount && product.reviewCount > 0
                     ? `${product.rating} (${product.reviewCount.toLocaleString()} ${product.reviewCount === 1 ? "review" : "reviews"})`
@@ -319,7 +319,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
           {/* Fast Shipping Callout */}
           {/* <div className="text-base text-zinc-700 bg-zinc-50 border border-zinc-200/80 rounded-xl p-3">
             Need your business cards right away? Explore next-day and 2-day delivery options with{" "}
-            <Link href="/browsedesigns" className="text-[#2196D2] font-bold hover:underline">
+            <Link href="/browsedesigns" className="text-[#e74b2d] font-bold hover:underline">
               fast-shipping business cards
             </Link>
             . <span className="underline cursor-pointer">See details</span>
@@ -341,7 +341,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
               <span className="flex items-center gap-1.5">
                 <span>📍 Delivery to 02451</span>
               </span>
-              <button className="text-base font-bold text-[#2196D2] hover:underline cursor-pointer">
+              <button className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer">
                 More options
               </button>
             </div>
@@ -373,7 +373,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                         {vGroup.name}*
                       </label>
                       {selectedVal && (
-                        <span className="text-base font-bold text-[#2196D2]">
+                        <span className="text-base font-bold text-[#e74b2d]">
                           {selectedVal.name}
                         </span>
                       )}
@@ -398,7 +398,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                             onClick={() => handleSelectOption(vGroup.name, val)}
                             className={`relative flex flex-col items-center justify-between p-3 min-h-[100px] rounded-xl border-2 transition-all cursor-pointer text-center bg-white group ${
                               isSelected
-                                ? "border-[#2196D2] bg-[#e0f2fe]/40 shadow-xs ring-1 ring-[#2196D2]"
+                                ? "border-[#e74b2d] bg-[#e0f2fe]/40 shadow-xs ring-1 ring-[#e74b2d]"
                                 : "border-zinc-200 hover:border-zinc-300"
                             }`}
                           >
@@ -411,7 +411,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
                               <div
                                 className={`w-12 h-8 border-2 rounded-md mb-2 bg-white flex items-center justify-center shadow-2xs ${
                                   val.name.toLowerCase().includes("rounded")
-                                    ? "rounded-lg border-[#2196D2]"
+                                    ? "rounded-lg border-[#e74b2d]"
                                     : "border-zinc-400 rounded-none"
                                 }`}
                               />
@@ -455,7 +455,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
           <div className="space-y-3 pt-4 border-t border-zinc-100">
             <Link
               href={getFlowUrl("/browsedesigns")}
-              className="w-full py-3.5 bg-[#42b8e3] hover:bg-[#34a3cc] text-white text-base font-extrabold rounded-xl shadow-md transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 bg-[#f88768] hover:bg-[#f88768] text-white text-base font-extrabold rounded-xl shadow-md transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>Browse our templates</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -477,7 +477,7 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
             <div className="pt-2 text-center">
               <Link
                 href={getFlowUrl("/quote")}
-                className="inline-flex items-center gap-2 text-base font-bold text-zinc-800 hover:text-[#2196D2] transition-colors"
+                className="inline-flex items-center gap-2 text-base font-bold text-zinc-800 hover:text-[#e74b2d] transition-colors"
               >
                 <div className="flex -space-x-1.5">
                   <span className="w-5 h-5 rounded-full bg-amber-400 text-base font-bold text-white flex items-center justify-center border border-white">

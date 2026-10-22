@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 40px; color: #111827; background: #fff; max-width: 800px; margin: 0 auto; }
     .header { display: flex; justify-content: space-between; align-items: center; border-b: 2px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 30px; }
     .logo { font-size: 24px; font-weight: 900; color: #111827; letter-spacing: -0.5px; }
-    .title { font-size: 20px; font-weight: 800; color: #2196D2; text-align: right; }
+    .title { font-size: 20px; font-weight: 800; color: #e74b2d; text-align: right; }
     .meta { display: flex; justify-content: space-between; margin-bottom: 30px; }
     .box { width: 48%; }
     .box h4 { margin: 0 0 8px 0; font-size: 11px; text-transform: uppercase; color: #6b7280; letter-spacing: 0.5px; }
@@ -54,14 +54,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 </head>
 <body>
   <div className="no-print" style="margin-bottom: 20px; text-align: right;">
-    <button onclick="window.print()" style="background: #2196D2; color: #fff; border: none; padding: 10px 18px; font-weight: bold; border-radius: 8px; cursor: pointer;">
+    <button onclick="window.print()" style="background: #e74b2d; color: #fff; border: none; padding: 10px 18px; font-weight: bold; border-radius: 8px; cursor: pointer;">
       🖨️ Print / Save PDF Invoice
     </button>
   </div>
 
   <div class="header">
     <Link href="/" className="inline-block">
-            <img src="/logo/logo.png" alt="Printgraphy Logo" style="width: 20%; height: auto;" className="h-10 w-auto mx-auto object-contain" />
+            <img src="/logo/printgraphy-brand-v2.png" alt="Printgraphy Logo" style="width: 20%; height: auto;" className="h-10 w-auto mx-auto object-contain" />
           </Link>
     <div class="title">
       INVOICE
@@ -137,7 +137,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   <div class="footer">
     <p>Thank you for choosing Printgraphy — One-of-a-kind fast eco luxury printing!</p>
-    <p>Questions? Contact support@xprints.com</p>
+    <p>Questions? Contact support@printgraphi.com</p>
   </div>
 </body>
 </html>`;

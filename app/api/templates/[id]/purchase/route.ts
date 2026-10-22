@@ -158,7 +158,7 @@ export async function POST(
               x: 10,
               y: 46,
               fontSize: 13,
-              color: "#38bdf8",
+              color: "#f88768",
               fontWeight: "normal",
             },
           ];

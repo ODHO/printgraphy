@@ -69,7 +69,7 @@ const FEATURE_CARDS = [
 
 export default function AboutPage() {
   return (
-    <div className="w-full bg-[#FAF8F5]/60">
+    <div className="w-full bg-[#fbfaf7]">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 space-y-16 md:space-y-24">
         {/* ── Section 1: ABOUT PRINTGRAPHI ── */}
         <section className="space-y-12 md:space-y-16">
@@ -192,7 +192,7 @@ export default function AboutPage() {
             <div className="mt-6">
               <Link
                 href="/browsedesigns"
-                className="inline-block px-7 py-2.5 bg-[#329AD4] hover:bg-[#2883b6] text-white text-sm font-bold rounded-xl shadow-xs transition-colors duration-200"
+                className="inline-block px-7 py-3 bg-[#1e1d1b] hover:bg-[#e74b2d] text-white text-sm font-bold rounded-full shadow-xs transition-colors duration-200"
               >
                 Learn More
               </Link>

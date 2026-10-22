@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Product from "@/models/Product";
+import { catalogImageFor } from "@/lib/catalogImages";
 
 // GET /api/products — public endpoint
 export async function GET(req: NextRequest) {
@@ -29,9 +30,14 @@ export async function GET(req: NextRequest) {
     Product.countDocuments(filter),
   ]);
 
+  const themedProducts = products.map((product) => ({
+    ...product,
+    image: catalogImageFor(product.name, product.slug),
+  }));
+
   return NextResponse.json({
     success: true,
-    products,
+    products: themedProducts,
     pagination: { page, limit, total, pages: Math.ceil(total / limit) },
   });
 }

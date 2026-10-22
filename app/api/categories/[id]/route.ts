@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import dbConnect from "@/lib/mongodb";
 import Category from "@/models/Category";
+import { catalogImageFor } from "@/lib/catalogImages";
 
 /** GET /api/categories/[id] — public category by slug or ObjectId (apparel / cards) */
 export async function GET(
@@ -28,5 +29,9 @@ export async function GET(
     return NextResponse.json({ success: false, message: "Category not found." }, { status: 404 });
   }
 
-  return NextResponse.json({ success: true, category });
+  const themedImage = catalogImageFor(category.name, category.slug);
+  return NextResponse.json({
+    success: true,
+    category: { ...category, image: themedImage, galleryImages: [themedImage] },
+  });
 }

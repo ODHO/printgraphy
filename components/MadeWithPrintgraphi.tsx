@@ -20,7 +20,7 @@ const BASE_PHOTOS: PhotoItem[] = [
 ];
 
 // Triple-clone for seamless infinite loop: [copy1] [copy2=real] [copy3]
-export default function MadeWithXPrintz({ madeWith }: { madeWith: HomepageContent["madeWith"] }) {
+export default function MadeWithPrintgraphi({ madeWith }: { madeWith: HomepageContent["madeWith"] }) {
   const base: PhotoItem[] = madeWith.photos.length
     ? madeWith.photos.map((photo) => ({ src: mediaSrc(photo.image) || photo.image, handle: photo.handle, href: photo.href }))
     : BASE_PHOTOS;
@@ -117,15 +117,16 @@ export default function MadeWithXPrintz({ madeWith }: { madeWith: HomepageConten
 
   return (
     <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-16">
+      <div className="overflow-hidden rounded-[2rem] bg-[#1e1d1b] px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
 
       {/* Header Row */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5 mb-8">
-        <div className="max-w-sm">
-          <h2 className="text-xl md:text-[22px] font-extrabold text-zinc-900 leading-snug">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5 mb-8 sm:mb-10">
+        <div className="max-w-md">
+          <h2 className="text-2xl md:text-3xl font-black tracking-[-0.04em] text-white leading-[1.05]">
             {madeWith.titleBefore}{" "}
-            <span className="text-theme-blue">{madeWith.titleAccent}</span>
+            <span className="text-[#f88768]">{madeWith.titleAccent}</span>
           </h2>
-          <p className="mt-2 text-base text-zinc-500 leading-relaxed">
+          <p className="mt-3 text-base text-white/70 leading-relaxed">
             {madeWith.body}
           </p>
         </div>
@@ -135,7 +136,7 @@ export default function MadeWithXPrintz({ madeWith }: { madeWith: HomepageConten
           <button
             onClick={goPrev}
             aria-label="Previous photos"
-            className="w-9 h-9 border border-zinc-300 hover:border-theme-blue text-zinc-600 hover:text-theme-blue rounded-lg flex items-center justify-center bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-all duration-200 hover:scale-105 hover:border-[#e74b2d] hover:bg-[#e74b2d] active:scale-95 cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -144,7 +145,7 @@ export default function MadeWithXPrintz({ madeWith }: { madeWith: HomepageConten
           <button
             onClick={goNext}
             aria-label="Next photos"
-            className="w-9 h-9 border border-zinc-300 hover:border-theme-blue text-zinc-600 hover:text-theme-blue rounded-lg flex items-center justify-center bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-all duration-200 hover:scale-105 hover:border-[#e74b2d] hover:bg-[#e74b2d] active:scale-95 cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -156,7 +157,7 @@ export default function MadeWithXPrintz({ madeWith }: { madeWith: HomepageConten
       {/* Carousel Viewport */}
       <div
         ref={containerRef}
-        className="overflow-hidden w-full rounded-2xl select-none"
+        className="overflow-hidden w-full select-none"
         style={{ cursor: isDragging ? "grabbing" : "grab" }}
         /* Mouse drag */
         onMouseDown={(e) => onDragStart(e.clientX)}
@@ -186,15 +187,15 @@ export default function MadeWithXPrintz({ madeWith }: { madeWith: HomepageConten
               className="relative flex-shrink-0 px-2"
               style={{ width: `${100 / photos.length}%` }}
             >
-              <Link href={photo.href || "/business-cards"} className="relative w-full aspect-square rounded-2xl overflow-hidden group block">
+              <Link href={photo.href || "/business-cards"} className="relative block w-full aspect-square overflow-hidden rounded-[1.35rem] border border-white/10 bg-white/10 group">
                 {photo.src.startsWith("/") && !photo.src.startsWith("/api/") ? (
-                  <Image src={photo.src} alt={photo.handle} fill draggable={false} sizes="(max-width: 640px) 50vw, 25vw" className="object-cover pointer-events-none" />
+                  <Image src={photo.src} alt={photo.handle} fill draggable={false} sizes="(max-width: 640px) 50vw, 25vw" className="object-cover pointer-events-none transition-transform duration-500 group-hover:scale-105" />
                 ) : (
-                  <img src={photo.src} alt={photo.handle} draggable={false} className="absolute inset-0 h-full w-full object-cover pointer-events-none" />
+                  <img src={photo.src} alt={photo.handle} draggable={false} className="absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-500 group-hover:scale-105" />
                 )}
                 {/* Handle badge */}
-                <div className="absolute bottom-0 left-0 right-0 px-3 py-3 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-                  <span className="text-white text-base font-semibold tracking-wide drop-shadow">
+                <div className="absolute bottom-0 left-0 right-0 px-3 py-5 bg-gradient-to-t from-black/85 via-black/35 to-transparent">
+                  <span className="text-white text-sm font-bold tracking-wide drop-shadow">
                     {photo.handle}
                   </span>
                 </div>
@@ -202,6 +203,7 @@ export default function MadeWithXPrintz({ madeWith }: { madeWith: HomepageConten
             </div>
           ))}
         </div>
+      </div>
       </div>
     </section>
   );

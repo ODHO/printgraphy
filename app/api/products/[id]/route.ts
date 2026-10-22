@@ -4,6 +4,7 @@ import Product from "@/models/Product";
 import Category from "@/models/Category";
 import Review from "@/models/Review";
 import mongoose from "mongoose";
+import { catalogImageFor } from "@/lib/catalogImages";
 
 async function getReviewStats(targetId: string | mongoose.Types.ObjectId) {
   try {
@@ -40,16 +41,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     if (product && product.isActive) {
       // If product variations is empty, inherit from category variations
       const categoryObj: any = product.categoryId;
+      const themedImage = catalogImageFor(product.name, product.slug, categoryObj?.name);
       const variations =
         product.variations && product.variations.length > 0
           ? product.variations
           : categoryObj?.variations || [];
 
-      const galleryImages = [
-        ...(product.image ? [product.image] : []),
-        ...(categoryObj?.image ? [categoryObj.image] : []),
-        ...(categoryObj?.galleryImages || []),
-      ].filter((img, idx, arr) => img && arr.indexOf(img) === idx);
+      const galleryImages = [themedImage];
 
       const reviewStats = await getReviewStats(product._id);
 
@@ -57,6 +55,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         success: true,
         product: {
           ...product,
+          image: themedImage,
           rating: reviewStats.reviewCount > 0 ? reviewStats.rating : (product.rating || 0),
           reviewCount: reviewStats.reviewCount > 0 ? reviewStats.reviewCount : (product.reviewCount || 0),
           variations,
@@ -84,10 +83,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     if (category && category.isActive !== false) {
-      const galleryImages = [
-        ...(category.image ? [category.image] : []),
-        ...(category.galleryImages || []),
-      ].filter((img, idx, arr) => img && arr.indexOf(img) === idx);
+      const themedImage = catalogImageFor(category.name, category.slug);
+      const galleryImages = [themedImage];
 
       const reviewStats = await getReviewStats(category._id);
       const slugReviewStats = category.slug ? await getReviewStats(category.slug) : { rating: 0, reviewCount: 0 };
@@ -103,8 +100,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           description: category.description || "Empowering your brand with high-quality printing solutions. Easily create cards you can't wait to hand out.",
           price: typeof category.price === "number" ? category.price : 0.15,
           unitPrice: category.unitPrice || `$${(category.price || 0.15).toFixed(2)} each`,
-          image: category.image || "/placeholder.jpg",
-          galleryImages: galleryImages.length > 0 ? galleryImages : ["/placeholder.jpg"],
+          image: themedImage,
+          galleryImages,
           rating: finalRating,
           reviewCount: finalCount,
           isActive: true,
@@ -132,8 +129,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         description: "Empowering your brand with high-quality printing solutions. Easily create cards you can't wait to hand out.",
         price: 0.15,
         unitPrice: "$0.15 Each / 100 Units",
-        image: "/placeholder.jpg",
-        galleryImages: ["/placeholder.jpg"],
+        image: catalogImageFor(formattedTitle, id),
+        galleryImages: [catalogImageFor(formattedTitle, id)],
         rating: reviewStats.rating,
         reviewCount: reviewStats.reviewCount,
         isActive: true,

@@ -86,7 +86,7 @@ export default function AdminWalletPage() {
             {orders.map((order) => (
               <tr key={order._id} className="border-t border-zinc-100">
                 <td className="px-4 py-3">
-                  <Link href={`/admin/orders/${order._id}`} className="font-bold text-[#064FE0]">{order.orderNumber}</Link>
+                  <Link href={`/admin/orders/${order._id}`} className="font-bold text-[#e74b2d]">{order.orderNumber}</Link>
                   <p className="text-zinc-400">{order.vendor || "Unassigned"}{order.released ? " · released" : ""}</p>
                 </td>
                 <td className="px-4 py-3">{money(order.customerPaid)}</td>
@@ -115,7 +115,7 @@ export default function AdminWalletPage() {
               {rows.map((row) => (
                 <tr key={row._id} className="border-t border-zinc-100">
                   <td className="px-4 py-3">
-                    <Link href={`/admin/vendors/${row._id}`} className="font-bold text-[#064FE0]">{row.name}</Link>
+                    <Link href={`/admin/vendors/${row._id}`} className="font-bold text-[#e74b2d]">{row.name}</Link>
                     <p className="text-zinc-400">{row.email}</p>
                   </td>
                   <td className="px-4 py-3 text-zinc-600">{row.stripePublishableKey ? "Keys saved" : "Not added"}{row.accountHolderName ? ` · ${row.accountHolderName}` : ""}</td>

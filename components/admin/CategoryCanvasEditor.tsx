@@ -180,7 +180,7 @@ interface CategoryCanvasEditorProps {
 const COLOR_PALETTE = [
   "#18181b", "#141414", "#09090b", "#ffffff", "#f4f4f5",
   "#ef4444", "#f97316", "#f59e0b", "#10b981", "#06b6d4",
-  "#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#78716c",
+  "#e74b2d", "#6366f1", "#8b5cf6", "#ec4899", "#78716c",
 ];
 
 const FONT_FAMILIES = [
@@ -294,7 +294,7 @@ export default function CategoryCanvasEditor({
           width: 50,
           height: 10,
           fontSize: 13,
-          color: "#38bdf8",
+          color: "#f88768",
           fontWeight: "normal",
           textAlign: "left",
         },
@@ -578,7 +578,7 @@ export default function CategoryCanvasEditor({
       y: 35,
       width: 20,
       height: 20,
-      fill: "#3b82f6",
+      fill: "#e74b2d",
       stroke: "#ffffff",
       strokeWidth: 0,
       borderRadius: shapeType === "rounded-rect" ? 12 : 0,
@@ -1124,7 +1124,7 @@ export default function CategoryCanvasEditor({
           } else {
             ctx.rect(x, y, w, h);
           }
-          ctx.fillStyle = obj.fill || "#3b82f6";
+          ctx.fillStyle = obj.fill || "#e74b2d";
           ctx.fill();
         } else if (obj.type === "text") {
           ctx.fillStyle = obj.color || "#ffffff";
@@ -1237,7 +1237,7 @@ export default function CategoryCanvasEditor({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-transparent border-b border-transparent hover:border-zinc-700 focus:border-[#064FE0] text-xs font-bold text-white px-1 py-0.5 focus:outline-none truncate max-w-[200px]"
+              className="bg-transparent border-b border-transparent hover:border-zinc-700 focus:border-[#e74b2d] text-xs font-bold text-white px-1 py-0.5 focus:outline-none truncate max-w-[200px]"
               placeholder="Template Title..."
             />
             <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
@@ -1341,7 +1341,7 @@ export default function CategoryCanvasEditor({
                     setSelectedObjectId(null);
                   }}
                   className={`px-2.5 py-1 rounded-md transition-all cursor-pointer whitespace-nowrap ${
-                    activeSideIndex === idx ? "bg-[#064FE0] text-white shadow-xs" : "text-zinc-400 hover:text-white"
+                    activeSideIndex === idx ? "bg-[#e74b2d] text-white shadow-xs" : "text-zinc-400 hover:text-white"
                   }`}
                   title={name}
                 >
@@ -1444,7 +1444,7 @@ export default function CategoryCanvasEditor({
           <button
             onClick={() => handleSave("PUBLISHED")}
             disabled={isSaving}
-            className="px-3.5 py-1.5 rounded-lg bg-[#064FE0] hover:bg-[#0439A8] text-white text-xs font-semibold transition-all shadow-md shadow-[#064FE0]/20 cursor-pointer disabled:opacity-50 whitespace-nowrap"
+            className="px-3.5 py-1.5 rounded-lg bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold transition-all shadow-md shadow-[#e74b2d]/20 cursor-pointer disabled:opacity-50 whitespace-nowrap"
           >
             {isSaving ? "Saving..." : "Publish Template"}
           </button>
@@ -1470,7 +1470,7 @@ export default function CategoryCanvasEditor({
                 onClick={() => setActiveTab(tab)}
                 className={`flex-1 py-2.5 px-2 text-center text-xs font-semibold capitalize transition-colors cursor-pointer border-b-2 whitespace-nowrap ${
                   activeTab === tab
-                    ? "border-[#064FE0] text-white bg-zinc-800/40"
+                    ? "border-[#e74b2d] text-white bg-zinc-800/40"
                     : "border-transparent text-zinc-400 hover:text-zinc-200"
                 }`}
               >
@@ -1522,7 +1522,7 @@ export default function CategoryCanvasEditor({
                     onClick={() => handleAddShape("rectangle")}
                     className="p-4 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/60 flex flex-col items-center gap-2 cursor-pointer transition-all"
                   >
-                    <div className="w-8 h-6 bg-[#064FE0] rounded-sm" />
+                    <div className="w-8 h-6 bg-[#e74b2d] rounded-sm" />
                     <span className="text-base font-bold">Rectangle</span>
                   </button>
 
@@ -1557,12 +1557,12 @@ export default function CategoryCanvasEditor({
             {activeTab === "images" && (
               <div className="space-y-4">
                 <p className="text-base font-bold text-zinc-400 uppercase tracking-wider">Graphics and logos</p>
-                <label className="border-2 border-dashed border-zinc-700 hover:border-[#064FE0] bg-zinc-900/60 rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all block">
+                <label className="border-2 border-dashed border-zinc-700 hover:border-[#e74b2d] bg-zinc-900/60 rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all block">
                   <span className="text-base font-bold text-white">Add image on the card</span>
                   <span className="text-base text-zinc-400 mt-0.5">Logo, photo, icon, or QR. Drag it into place after.</span>
                   <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, false)} className="hidden" />
                 </label>
-                <label className="border border-zinc-700 hover:border-[#064FE0] bg-zinc-900/40 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all block">
+                <label className="border border-zinc-700 hover:border-[#e74b2d] bg-zinc-900/40 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all block">
                   <span className="text-base font-bold text-white">Use image as full background</span>
                   <span className="text-base text-zinc-400 mt-0.5">Covers this side. Customers still edit the text on top.</span>
                   <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, true)} className="hidden" />
@@ -1601,20 +1601,20 @@ export default function CategoryCanvasEditor({
                             next.bgGradient = undefined;
                             next.bgImage = undefined;
                           } else if (mode === "gradient") {
-                            next.bgGradient = next.bgGradient || "#3b82f6";
+                            next.bgGradient = next.bgGradient || "#e74b2d";
                             next.bgGradientAngle = next.bgGradientAngle ?? 135;
                             next.bgImage = undefined;
                           } else if (mode === "image") {
                             next.bgGradient = undefined;
                           } else {
-                            next.bgGradient = next.bgGradient || "#3b82f6";
+                            next.bgGradient = next.bgGradient || "#e74b2d";
                             next.bgGradientAngle = next.bgGradientAngle ?? 135;
                           }
                           commitSide(next);
                         }}
                         className={`py-1.5 rounded-lg border text-base font-bold cursor-pointer ${
                           current === mode
-                            ? "bg-[#064FE0] border-[#064FE0] text-white"
+                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
                             : "border-zinc-700 text-zinc-300"
                         }`}
                       >
@@ -1637,7 +1637,7 @@ export default function CategoryCanvasEditor({
                         );
                       }}
                       className={`w-8 h-8 rounded-xl border-2 transition-all cursor-pointer ${
-                        currentSideDesign.bgColor === c ? "border-[#064FE0] scale-110 shadow-lg" : "border-zinc-700"
+                        currentSideDesign.bgColor === c ? "border-[#e74b2d] scale-110 shadow-lg" : "border-zinc-700"
                       }`}
                       style={{ backgroundColor: c }}
                     />
@@ -1663,7 +1663,7 @@ export default function CategoryCanvasEditor({
                         const next = { ...currentSideDesign, bgColor: e.target.value };
                         setCurrentSideDesign(next);
                       }}
-                      className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-base font-mono text-white focus:outline-none focus:border-[#064FE0]"
+                      className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-base font-mono text-white focus:outline-none focus:border-[#e74b2d]"
                     />
                   </div>
                 </div>
@@ -1685,7 +1685,7 @@ export default function CategoryCanvasEditor({
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
-                      value={currentSideDesign.bgGradient || "#3b82f6"}
+                      value={currentSideDesign.bgGradient || "#e74b2d"}
                       onChange={(e) => commitSide({ ...currentSideDesign, bgGradient: e.target.value, bgGradientAngle: currentSideDesign.bgGradientAngle ?? 135 })}
                       className="w-10 h-9 rounded-xl bg-transparent border border-zinc-700 cursor-pointer"
                     />
@@ -1703,12 +1703,12 @@ export default function CategoryCanvasEditor({
                         type="button"
                         onClick={() => commitSide({
                           ...currentSideDesign,
-                          bgGradient: currentSideDesign.bgGradient || "#3b82f6",
+                          bgGradient: currentSideDesign.bgGradient || "#e74b2d",
                           bgGradientAngle: item.angle,
                         })}
                         className={`py-1.5 rounded-lg border text-base cursor-pointer ${
                           (currentSideDesign.bgGradientAngle ?? 135) === item.angle && currentSideDesign.bgGradient
-                            ? "bg-[#064FE0] border-[#064FE0] text-white"
+                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
                             : "border-zinc-700 text-zinc-300"
                         }`}
                       >
@@ -1738,7 +1738,7 @@ export default function CategoryCanvasEditor({
                   ) : (
                     <p className="text-base text-zinc-500">No photo. Use Images, or upload one here.</p>
                   )}
-                  <label className="block text-center py-2 rounded-xl border border-dashed border-zinc-600 text-base font-bold text-zinc-200 cursor-pointer hover:border-[#064FE0]">
+                  <label className="block text-center py-2 rounded-xl border border-dashed border-zinc-600 text-base font-bold text-zinc-200 cursor-pointer hover:border-[#e74b2d]">
                     Upload background
                     <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, true)} />
                   </label>
@@ -1750,7 +1750,7 @@ export default function CategoryCanvasEditor({
                         onClick={() => commitSide({ ...currentSideDesign, bgFit: fit })}
                         className={`py-1.5 rounded-lg border text-base font-bold capitalize cursor-pointer ${
                           (currentSideDesign.bgFit || "cover") === fit
-                            ? "bg-[#064FE0] border-[#064FE0] text-white"
+                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
                             : "border-zinc-700 text-zinc-300"
                         }`}
                       >
@@ -1767,7 +1767,7 @@ export default function CategoryCanvasEditor({
                     max={100}
                     value={Math.round((currentSideDesign.bgOpacity ?? 1) * 100)}
                     onChange={(e) => setCurrentSideDesign({ ...currentSideDesign, bgOpacity: Number(e.target.value) / 100 })}
-                    className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#064FE0]"
+                    className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
                   />
                 </div>
                 )}
@@ -1817,13 +1817,13 @@ export default function CategoryCanvasEditor({
                               }
                               className={`w-full text-left px-3 py-2 rounded-xl text-base font-semibold flex items-center justify-between border transition-all cursor-pointer ${
                                 isSelected
-                                  ? "bg-[#064FE0]/20 border-[#064FE0] text-white shadow-xs"
+                                  ? "bg-[#e74b2d]/20 border-[#e74b2d] text-white shadow-xs"
                                   : "bg-zinc-800/40 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
                               }`}
                             >
                               <span className="flex items-center gap-2">
                                 <span className={`w-3 h-3 rounded-full border flex items-center justify-center ${
-                                  isSelected ? "border-[#064FE0] bg-[#064FE0]" : "border-zinc-600"
+                                  isSelected ? "border-[#e74b2d] bg-[#e74b2d]" : "border-zinc-600"
                                 }`}>
                                   {isSelected && <span className="w-1 h-1 rounded-full bg-white" />}
                                 </span>
@@ -1859,7 +1859,7 @@ export default function CategoryCanvasEditor({
                         onClick={() => setSelectedObjectId(obj.id)}
                         className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer transition-all ${
                           selectedObjectId === obj.id
-                            ? "bg-[#064FE0]/20 border-[#064FE0] text-white shadow-xs"
+                            ? "bg-[#e74b2d]/20 border-[#e74b2d] text-white shadow-xs"
                             : "bg-zinc-800/40 border-zinc-800 text-zinc-300 hover:bg-zinc-800"
                         }`}
                       >
@@ -1949,7 +1949,7 @@ export default function CategoryCanvasEditor({
                   type="checkbox"
                   checked={showGuides}
                   onChange={(e) => setShowGuides(e.target.checked)}
-                  className="rounded accent-[#064FE0]"
+                  className="rounded accent-[#e74b2d]"
                 />
                 <span className="text-xs font-semibold text-zinc-300">Print Guides (Bleed & Safe)</span>
               </label>
@@ -2111,8 +2111,8 @@ export default function CategoryCanvasEditor({
                     key={idx}
                     className={`absolute pointer-events-none z-30 ${
                       line.type === "v"
-                        ? "top-0 bottom-0 w-[1.5px] bg-[#38bdf8] shadow-[0_0_8px_#38bdf8]"
-                        : "left-0 right-0 h-[1.5px] bg-[#38bdf8] shadow-[0_0_8px_#38bdf8]"
+                        ? "top-0 bottom-0 w-[1.5px] bg-[#f88768] shadow-[0_0_8px_#f88768]"
+                        : "left-0 right-0 h-[1.5px] bg-[#f88768] shadow-[0_0_8px_#f88768]"
                     }`}
                     style={
                       line.type === "v"
@@ -2138,7 +2138,7 @@ export default function CategoryCanvasEditor({
                         obj.isLocked ? "cursor-default" : "cursor-move"
                       } ${
                         isSelected
-                          ? "ring-2 ring-[#064FE0] ring-offset-1 ring-offset-transparent"
+                          ? "ring-2 ring-[#e74b2d] ring-offset-1 ring-offset-transparent"
                           : "hover:ring-1 hover:ring-white/40"
                       }`}
                       style={{
@@ -2169,7 +2169,7 @@ export default function CategoryCanvasEditor({
                         <div
                           className="w-full h-full"
                           style={{
-                            backgroundColor: obj.fill || "#3b82f6",
+                            backgroundColor: obj.fill || "#e74b2d",
                             border: obj.stroke && obj.strokeWidth ? `${obj.strokeWidth}px solid ${obj.stroke}` : "none",
                             borderRadius:
                               obj.shapeType === "circle"
@@ -2218,7 +2218,7 @@ export default function CategoryCanvasEditor({
                           aria-label={`Resize ${obj.type}`}
                           title="Drag to resize"
                           onPointerDown={(event) => handleResizePointerDown(obj.id, event)}
-                          className="absolute -bottom-2 -right-2 size-4 rounded-full border-2 border-white bg-[#064FE0] shadow-md cursor-nwse-resize z-50"
+                          className="absolute -bottom-2 -right-2 size-4 rounded-full border-2 border-white bg-[#e74b2d] shadow-md cursor-nwse-resize z-50"
                         />
                       )}
                     </div>
@@ -2264,7 +2264,7 @@ export default function CategoryCanvasEditor({
                       rows={2}
                       value={selectedObject.text || ""}
                       onChange={(e) => updateSelectedObject({ text: e.target.value })}
-                      className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#064FE0] resize-none"
+                      className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d] resize-none"
                     />
                   </div>
 
@@ -2273,7 +2273,7 @@ export default function CategoryCanvasEditor({
                     <select
                       value={selectedObject.fontFamily || FONT_FAMILIES[0].value}
                       onChange={(e) => updateSelectedObject({ fontFamily: e.target.value })}
-                      className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                      className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d] cursor-pointer"
                     >
                       {FONT_FAMILIES.map((f) => (
                         <option key={f.value} value={f.value}>{f.label}</option>
@@ -2290,7 +2290,7 @@ export default function CategoryCanvasEditor({
                         max={90}
                         value={selectedObject.fontSize || 14}
                         onChange={(e) => updateSelectedObject({ fontSize: Number(e.target.value) })}
-                        className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#064FE0]"
+                        className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d]"
                       />
                     </div>
 
@@ -2307,7 +2307,7 @@ export default function CategoryCanvasEditor({
                           type="text"
                           value={selectedObject.color || "#ffffff"}
                           onChange={(e) => updateSelectedObject({ color: e.target.value })}
-                          className="flex-1 min-w-0 bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-[#064FE0]"
+                          className="flex-1 min-w-0 bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-[#e74b2d]"
                         />
                       </div>
                     </div>
@@ -2321,7 +2321,7 @@ export default function CategoryCanvasEditor({
                         onClick={() => updateSelectedObject({ fontWeight: fw })}
                         className={`flex-1 py-1 rounded-lg border text-xs font-bold transition-all capitalize ${
                           selectedObject.fontWeight === fw
-                            ? "bg-[#064FE0] border-[#064FE0] text-white"
+                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
                             : "border-zinc-700/80 text-zinc-400 hover:bg-zinc-800"
                         }`}
                       >
@@ -2332,7 +2332,7 @@ export default function CategoryCanvasEditor({
                       type="button"
                       onClick={() => updateSelectedObject({ fontStyle: selectedObject.fontStyle === "italic" ? "normal" : "italic" })}
                       className={`w-7 py-1 rounded-lg border text-xs italic cursor-pointer ${
-                        selectedObject.fontStyle === "italic" ? "bg-[#064FE0] border-[#064FE0] text-white" : "border-zinc-700/80 text-zinc-400"
+                        selectedObject.fontStyle === "italic" ? "bg-[#e74b2d] border-[#e74b2d] text-white" : "border-zinc-700/80 text-zinc-400"
                       }`}
                     >
                       I
@@ -2341,7 +2341,7 @@ export default function CategoryCanvasEditor({
                       type="button"
                       onClick={() => updateSelectedObject({ underline: !selectedObject.underline })}
                       className={`w-7 py-1 rounded-lg border text-xs underline cursor-pointer ${
-                        selectedObject.underline ? "bg-[#064FE0] border-[#064FE0] text-white" : "border-zinc-700/80 text-zinc-400"
+                        selectedObject.underline ? "bg-[#e74b2d] border-[#e74b2d] text-white" : "border-zinc-700/80 text-zinc-400"
                       }`}
                     >
                       U
@@ -2350,7 +2350,7 @@ export default function CategoryCanvasEditor({
                       type="button"
                       onClick={() => updateSelectedObject({ textTransform: selectedObject.textTransform === "uppercase" ? "none" : "uppercase" })}
                       className={`w-7 py-1 rounded-lg border text-xs font-bold cursor-pointer ${
-                        selectedObject.textTransform === "uppercase" ? "bg-[#064FE0] border-[#064FE0] text-white" : "border-zinc-700/80 text-zinc-400"
+                        selectedObject.textTransform === "uppercase" ? "bg-[#e74b2d] border-[#e74b2d] text-white" : "border-zinc-700/80 text-zinc-400"
                       }`}
                     >
                       AA
@@ -2361,7 +2361,7 @@ export default function CategoryCanvasEditor({
                         onClick={() => updateSelectedObject({ textAlign: align })}
                         className={`w-7 py-1 rounded-lg border text-xs font-bold transition-all capitalize ${
                           selectedObject.textAlign === align
-                            ? "bg-[#064FE0] border-[#064FE0] text-white"
+                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
                             : "border-zinc-700/80 text-zinc-400 hover:bg-zinc-800"
                         }`}
                       >
@@ -2380,15 +2380,15 @@ export default function CategoryCanvasEditor({
                     <div className="flex items-center gap-1.5">
                       <input
                         type="color"
-                        value={selectedObject.fill || "#3b82f6"}
+                        value={selectedObject.fill || "#e74b2d"}
                         onChange={(e) => updateSelectedObject({ fill: e.target.value })}
                         className="w-7 h-7 rounded-lg bg-transparent border border-zinc-700/80 cursor-pointer shrink-0"
                       />
                       <input
                         type="text"
-                        value={selectedObject.fill || "#3b82f6"}
+                        value={selectedObject.fill || "#e74b2d"}
                         onChange={(e) => updateSelectedObject({ fill: e.target.value })}
-                        className="flex-1 min-w-0 bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-[#064FE0]"
+                        className="flex-1 min-w-0 bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-[#e74b2d]"
                       />
                     </div>
                   </div>
@@ -2401,7 +2401,7 @@ export default function CategoryCanvasEditor({
                       max={40}
                       value={selectedObject.borderRadius || 0}
                       onChange={(e) => updateSelectedObject({ borderRadius: Number(e.target.value) })}
-                      className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#064FE0]"
+                      className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
                     />
                   </div>
                   <div>
@@ -2428,7 +2428,7 @@ export default function CategoryCanvasEditor({
 
               {(selectedObject.type === "image" || selectedObject.type === "logo") && (
                 <div className="space-y-3">
-                  <label className="block text-center py-2 rounded-xl border border-dashed border-zinc-600 text-xs font-bold text-zinc-200 cursor-pointer hover:border-[#064FE0]">
+                  <label className="block text-center py-2 rounded-xl border border-dashed border-zinc-600 text-xs font-bold text-zinc-200 cursor-pointer hover:border-[#e74b2d]">
                     Replace image
                     <input type="file" accept="image/*" className="hidden" onChange={handleReplaceImage} />
                   </label>
@@ -2450,7 +2450,7 @@ export default function CategoryCanvasEditor({
                       max={100}
                       value={backgroundTolerance}
                       onChange={(event) => setBackgroundTolerance(Number(event.target.value))}
-                      className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#064FE0]"
+                      className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
                     />
                     <p className="text-[11px] leading-relaxed text-zinc-400">
                       Best for white or single-color backgrounds connected to image edges.
@@ -2464,7 +2464,7 @@ export default function CategoryCanvasEditor({
                         onClick={() => updateSelectedObject({ fit })}
                         className={`py-1.5 rounded-lg border text-xs font-bold capitalize cursor-pointer ${
                           (selectedObject.fit || "contain") === fit
-                            ? "bg-[#064FE0] border-[#064FE0] text-white"
+                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
                             : "border-zinc-700 text-zinc-300"
                         }`}
                       >
@@ -2476,14 +2476,14 @@ export default function CategoryCanvasEditor({
                     <button
                       type="button"
                       onClick={() => resizeSelectedObject(0.9)}
-                      className="py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-300 cursor-pointer hover:border-[#064FE0]"
+                      className="py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-300 cursor-pointer hover:border-[#e74b2d]"
                     >
                       Smaller −
                     </button>
                     <button
                       type="button"
                       onClick={() => resizeSelectedObject(1.1)}
-                      className="py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-300 cursor-pointer hover:border-[#064FE0]"
+                      className="py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-300 cursor-pointer hover:border-[#e74b2d]"
                     >
                       Bigger +
                     </button>
@@ -2501,7 +2501,7 @@ export default function CategoryCanvasEditor({
                   max={100}
                   value={Math.round((selectedObject.opacity ?? 1) * 100)}
                   onChange={(e) => updateSelectedObject({ opacity: Number(e.target.value) / 100 })}
-                  className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#064FE0]"
+                  className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
                 />
               </div>
 
@@ -2529,7 +2529,7 @@ export default function CategoryCanvasEditor({
                           )}
                           className={`py-1 rounded-lg border text-xs font-bold cursor-pointer ${
                             textFrame(selectedObject) === mode
-                              ? "bg-[#064FE0] border-[#064FE0] text-white"
+                              ? "bg-[#e74b2d] border-[#e74b2d] text-white"
                               : "border-zinc-700/80 text-zinc-300"
                           }`}
                         >
@@ -2546,14 +2546,14 @@ export default function CategoryCanvasEditor({
                           max={100}
                           value={selectedObject.width || 40}
                           onChange={(e) => updateSelectedObject({ width: Number(e.target.value), widthMode: "custom" })}
-                          className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#064FE0]"
+                          className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
                         />
                       </div>
                     )}
                     <button
                       type="button"
                       onClick={() => placeInCenter(selectedObject)}
-                      className="w-full py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer hover:border-[#064FE0]"
+                      className="w-full py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer hover:border-[#e74b2d]"
                     >
                       Place in center
                     </button>
@@ -2582,7 +2582,7 @@ export default function CategoryCanvasEditor({
                               : selectedObject.height;
                             updateSelectedObject({ width, height: Math.min(100 - selectedObject.y, height) });
                           }}
-                          className="mt-1 w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#064FE0]"
+                          className="mt-1 w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
                         />
                       </label>
                       <label className="col-span-2 text-xs text-zinc-400">
@@ -2599,7 +2599,7 @@ export default function CategoryCanvasEditor({
                               : selectedObject.width;
                             updateSelectedObject({ height, width: Math.min(100 - selectedObject.x, width) });
                           }}
-                          className="mt-1 w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#064FE0]"
+                          className="mt-1 w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
                         />
                       </label>
                       <button
@@ -2607,7 +2607,7 @@ export default function CategoryCanvasEditor({
                         onClick={() => updateSelectedObject({ lockAspectRatio: selectedObject.lockAspectRatio === false })}
                         className={`col-span-2 py-1.5 rounded-lg border text-xs font-bold cursor-pointer ${
                           selectedObject.lockAspectRatio !== false
-                            ? "bg-[#064FE0]/20 border-[#064FE0] text-sky-200"
+                            ? "bg-[#e74b2d]/20 border-[#e74b2d] text-sky-200"
                             : "border-zinc-700 text-zinc-400"
                         }`}
                       >
@@ -2616,7 +2616,7 @@ export default function CategoryCanvasEditor({
                       <button
                         type="button"
                         onClick={() => placeInCenter(selectedObject)}
-                        className="col-span-2 py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer hover:border-[#064FE0]"
+                        className="col-span-2 py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer hover:border-[#e74b2d]"
                       >
                         Place in center
                       </button>
@@ -2730,7 +2730,7 @@ export default function CategoryCanvasEditor({
                           key={`${name}-${idx}`}
                           className={`px-1.5 py-0.5 rounded text-xs font-semibold border ${
                             activeSideIndex === idx
-                              ? "bg-[#064FE0]/20 border-[#064FE0] text-sky-200"
+                              ? "bg-[#e74b2d]/20 border-[#e74b2d] text-sky-200"
                               : "bg-zinc-900 border-zinc-700 text-zinc-400"
                           }`}
                         >
@@ -2752,7 +2752,7 @@ export default function CategoryCanvasEditor({
                     step={0.5}
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#064FE0]"
+                    className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d]"
                   />
                 </div>
               </div>
@@ -2780,7 +2780,7 @@ export default function CategoryCanvasEditor({
                             [v.name]: e.target.value,
                           }))
                         }
-                        className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                        className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d] cursor-pointer"
                       >
                         {v.values.map((val) => (
                           <option key={val.name} value={val.name}>
@@ -2800,7 +2800,7 @@ export default function CategoryCanvasEditor({
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
                   placeholder="modern, corporate, minimal"
-                  className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
 

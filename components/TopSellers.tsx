@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { mediaSrc } from "@/lib/mediaUrl";
+import { catalogImageFor } from "@/lib/catalogImages";
 import type { HomepageContent, HomepageLinkItem } from "@/lib/homepageContent";
 
 interface TopSellerItem {
@@ -22,7 +23,8 @@ const defaultTopSellers: TopSellerItem[] = [
   { label: "Packaging & Boxes", img: "/new-in-packaging.png", href: "/product/mailer-boxes" },
 ];
 
-function getSafeImageSrc(img?: any) {
+function getSafeImageSrc(img?: any, label?: string) {
+  if (label) return catalogImageFor(label);
   if (!img) return "/placeholder.jpg";
   if (typeof img === "object" && img.src) return img.src;
   if (typeof img === "string") {
@@ -34,15 +36,15 @@ function getSafeImageSrc(img?: any) {
 }
 
 function TopSellerCard({ item }: { item: TopSellerItem }) {
-  const [imgSrc, setImgSrc] = useState<string>(getSafeImageSrc(item.img));
+  const [imgSrc, setImgSrc] = useState<string>(getSafeImageSrc(item.img, item.label));
 
   useEffect(() => {
-    setImgSrc(getSafeImageSrc(item.img));
-  }, [item.img]);
+    setImgSrc(getSafeImageSrc(item.img, item.label));
+  }, [item.img, item.label]);
 
   return (
     <Link href={item.href || "/"} className="flex flex-col group cursor-pointer">
-      <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-100 group-hover:border-theme-blue/30 shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
+      <div className="relative w-full aspect-square rounded-[1.4rem] overflow-hidden bg-zinc-100 border border-black/5 group-hover:border-theme-blue/30 shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
         <Image
           src={imgSrc}
           alt={item.label || "Product Image"}
@@ -52,7 +54,7 @@ function TopSellerCard({ item }: { item: TopSellerItem }) {
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
-      <p className="mt-3 text-base font-semibold text-zinc-800 leading-snug group-hover:text-theme-blue transition-colors duration-200 line-clamp-2">
+      <p className="mt-3 text-base font-semibold text-[#1e1d1b] leading-snug group-hover:text-theme-blue transition-colors duration-200 line-clamp-2">
         {item.label}
       </p>
     </Link>

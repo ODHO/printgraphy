@@ -100,7 +100,7 @@ export default function AdminDashboardPage() {
       ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {/* 1. Total Orders */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Total Orders</p>
           <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
             {formatCount(totalOrders, 58)}
@@ -109,7 +109,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* 2. New Orders */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">New Orders</p>
           <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
             {formatCount(newOrders, 18)}
@@ -118,7 +118,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* 3. Cancelled Orders */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Cancelled Orders</p>
           <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
             {formatCount(cancelledOrders, 5)}
@@ -127,7 +127,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* 4. Earnings */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Earnings</p>
           <p className="text-3xl lg:text-4xl font-normal text-zinc-900 text-center my-3">
             $ {earnings.toFixed(2)}
@@ -136,7 +136,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* 5. Number of Users */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Number of Users</p>
           <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
             {totalUsers > 0 ? totalUsers : 566}
@@ -145,7 +145,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* 6. Number of Vendors */}
-        <div className="bg-[#EAF5FB] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
+        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
           <p className="text-sm font-semibold text-zinc-800">Number of Vendors</p>
           <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
             {totalVendors > 0 ? totalVendors : 98}
@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
           <h2 className="text-xs sm:text-sm font-semibold text-zinc-800">Recent Users</h2>
           <Link
             href="/admin/users"
-            className="text-xs font-semibold text-[#329AD4] hover:underline transition-colors"
+            className="text-xs font-semibold text-[#e74b2d] hover:underline transition-colors"
           >
             View All
           </Link>
@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
           <h2 className="text-xs sm:text-sm font-semibold text-zinc-800">Recent Vendors</h2>
           <Link
             href="/admin/vendors"
-            className="text-xs font-semibold text-[#329AD4] hover:underline transition-colors"
+            className="text-xs font-semibold text-[#e74b2d] hover:underline transition-colors"
           >
             View All
           </Link>

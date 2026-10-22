@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = req.nextUrl;
     const page = Math.max(1, Number(searchParams.get("page") ?? 1));
-    const limit = Math.min(50, Math.max(1, Number(searchParams.get("limit") ?? 20)));
+    const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit") ?? 20)));
     const category = searchParams.get("category")?.trim() ?? "";
     const categoryId = searchParams.get("categoryId")?.trim() ?? "";
     const isPaid = searchParams.get("isPaid");

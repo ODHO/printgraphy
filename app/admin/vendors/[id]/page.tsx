@@ -88,7 +88,7 @@ export default function AdminVendorDetailPage({ params }: { params: Promise<{ id
   };
 
   if (loading) {
-    return <div className="py-16 flex justify-center"><div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin" /></div>;
+    return <div className="py-16 flex justify-center"><div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin" /></div>;
   }
   if (!vendor) {
     return <p className="text-base text-zinc-500">Vendor not found.</p>;
@@ -97,7 +97,7 @@ export default function AdminVendorDetailPage({ params }: { params: Promise<{ id
   return (
     <div className="space-y-6 max-w-6xl">
       <div>
-        <Link href="/admin/vendors" className="text-base font-bold text-[#064FE0]">← Vendor directory</Link>
+        <Link href="/admin/vendors" className="text-base font-bold text-[#e74b2d]">← Vendor directory</Link>
         <h1 className="text-2xl font-bold text-zinc-900 mt-1">{vendor.name}</h1>
         <p className="text-base text-zinc-500 mt-1">{vendor.contactName} · {vendor.email} · {vendor.phone}</p>
       </div>
@@ -165,7 +165,7 @@ export default function AdminVendorDetailPage({ params }: { params: Promise<{ id
         <h2 className="text-base font-bold text-zinc-900">Assigned orders ({performance?.openJobs ?? 0} open, {performance?.deliveredJobs ?? 0} delivered in view)</h2>
         {orders.length === 0 ? <p className="text-base text-zinc-500">No orders assigned yet.</p> : orders.map((order) => (
           <Link key={order._id} href={`/admin/orders/${order._id}`} className="flex items-center justify-between gap-3 border-b border-zinc-100 py-2 text-base">
-            <span className="font-bold text-[#064FE0]">{order.orderNumber}</span>
+            <span className="font-bold text-[#e74b2d]">{order.orderNumber}</span>
             <span className="text-zinc-500">{order.shippingAddress?.city}, {order.shippingAddress?.state}</span>
             <span>{order.fulfillmentStatus.replaceAll("_", " ")}</span>
             {order.payoutReleasedAt ? <span className="text-emerald-700 font-bold">Paid</span> : order.fulfillmentStatus === "delivered" && order.customerConfirmedAt ? <span className="text-emerald-700 font-bold">Ready to release</span> : order.fulfillmentStatus === "delivered" ? <span className="text-amber-700 font-bold">Waiting on customer</span> : null}
@@ -177,7 +177,7 @@ export default function AdminVendorDetailPage({ params }: { params: Promise<{ id
       <section className="bg-white rounded-3xl border border-zinc-200/80 p-5 space-y-2">
         <h2 className="text-base font-bold text-zinc-900">Wallet</h2>
         <p className="text-base text-zinc-600">Release payment from a delivered order. That amount goes into this vendor’s wallet, and they withdraw it with the Stripe keys they add.</p>
-        <Link href="/admin/wallet" className="inline-block text-base font-bold text-[#064FE0]">Open wallets</Link>
+        <Link href="/admin/wallet" className="inline-block text-base font-bold text-[#e74b2d]">Open wallets</Link>
       </section>
     </div>
   );

@@ -16,7 +16,7 @@ const SECTIONS = [
 
 type SectionId = (typeof SECTIONS)[number]["id"];
 
-const fieldClass = "w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]";
+const fieldClass = "w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]";
 
 async function uploadImage(file: File) {
   const body = new FormData();
@@ -122,12 +122,12 @@ export default function HomeEditor() {
           type="button"
           onClick={save}
           disabled={saving || loading}
-          className="rounded-xl bg-[#064FE0] px-4 py-2.5 text-base font-bold text-white cursor-pointer disabled:opacity-60"
+          className="rounded-xl bg-[#e74b2d] px-4 py-2.5 text-base font-bold text-white cursor-pointer disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save home page"}
         </button>
       </div>
-      {message && <p className="text-base font-bold text-[#064FE0]">{message}</p>}
+      {message && <p className="text-base font-bold text-[#e74b2d]">{message}</p>}
 
       <div className="flex flex-wrap gap-2">
         {SECTIONS.map((item) => (
@@ -136,7 +136,7 @@ export default function HomeEditor() {
             type="button"
             onClick={() => setSection(item.id)}
             className={`rounded-full px-3 py-1.5 text-base font-bold cursor-pointer ${
-              section === item.id ? "bg-[#064FE0] text-white" : "bg-white border border-zinc-200 text-zinc-600"
+              section === item.id ? "bg-[#e74b2d] text-white" : "bg-white border border-zinc-200 text-zinc-600"
             }`}
           >
             {item.label}
@@ -242,7 +242,7 @@ function ItemList({ items, onChange }: { items: HomepageLinkItem[]; onChange: (i
           <ImageField label="Image" value={item.image} onChange={(image) => update(index, { image })} />
         </div>
       ))}
-      <button type="button" onClick={() => onChange([...items, { label: "", image: "", href: "/" }])} className="text-base font-bold text-[#064FE0] cursor-pointer">+ Add item</button>
+      <button type="button" onClick={() => onChange([...items, { label: "", image: "", href: "/" }])} className="text-base font-bold text-[#e74b2d] cursor-pointer">+ Add item</button>
     </div>
   );
 }
@@ -264,7 +264,7 @@ function PhotoList({ photos, onChange }: { photos: HomepagePhoto[]; onChange: (p
           <ImageField label="Photo" value={photo.image} onChange={(image) => update(index, { image })} />
         </div>
       ))}
-      <button type="button" onClick={() => onChange([...photos, { image: "", handle: "@", href: "/business-cards" }])} className="text-base font-bold text-[#064FE0] cursor-pointer">+ Add photo</button>
+      <button type="button" onClick={() => onChange([...photos, { image: "", handle: "@", href: "/business-cards" }])} className="text-base font-bold text-[#e74b2d] cursor-pointer">+ Add photo</button>
     </div>
   );
 }

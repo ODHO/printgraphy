@@ -107,12 +107,12 @@ export default function VendorSidebar({
   return (
     <>
       {/* Mobile Toggle Button */}
-      <div className="lg:hidden w-full mb-3 flex items-center justify-between bg-[#EAF5FB] p-3 rounded-xl border border-sky-100">
+      <div className="lg:hidden w-full mb-3 flex items-center justify-between bg-[#fff1eb] p-3 rounded-xl border border-sky-100">
         <span className="font-semibold text-sm text-zinc-800">Vendor Navigation</span>
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#329AD4] text-white text-xs font-semibold rounded-lg shadow-xs hover:bg-[#2884b8] transition cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#e74b2d] text-white text-xs font-semibold rounded-lg shadow-xs hover:bg-[#c93e23] transition cursor-pointer"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d={mobileOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
@@ -134,7 +134,7 @@ export default function VendorSidebar({
         className={`
           ${mobileOpen ? "fixed inset-y-0 left-0 z-50 flex w-72 p-4 shadow-2xl" : "hidden"}
           lg:flex lg:w-60 xl:w-64 shrink-0 flex-col justify-between
-          bg-[#EAF5FB] rounded-2xl p-3 sm:p-4 min-h-[580px] lg:min-h-[620px]
+          bg-[#fff1eb] rounded-2xl p-3 sm:p-4 min-h-[580px] lg:min-h-[620px]
           border border-sky-100/80 transition-all duration-200
         `}
       >
@@ -166,7 +166,7 @@ export default function VendorSidebar({
                   }}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium transition-all text-left cursor-pointer ${
                     isActive
-                      ? "bg-[#329AD4] text-white shadow-xs font-semibold"
+                      ? "bg-[#e74b2d] text-white shadow-xs font-semibold"
                       : "text-zinc-600 hover:text-zinc-900 hover:bg-white/50"
                   }`}
                 >
@@ -177,7 +177,7 @@ export default function VendorSidebar({
                   {item.badge !== undefined && (
                     <span
                       className={`ml-2 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        isActive ? "bg-white text-[#329AD4]" : "bg-[#329AD4] text-white"
+                        isActive ? "bg-white text-[#e74b2d]" : "bg-[#e74b2d] text-white"
                       }`}
                     >
                       {item.badge > 99 ? "99+" : item.badge}
@@ -213,7 +213,7 @@ export default function VendorSidebar({
 
           {/* Vendor Profile Info Box */}
           <div className="bg-white/80 p-2.5 rounded-xl border border-sky-100 flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-[#329AD4]/10 text-[#329AD4] font-bold text-xs flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 rounded-full bg-[#e74b2d]/10 text-[#e74b2d] font-bold text-xs flex items-center justify-center shrink-0">
               V
             </div>
             <div className="min-w-0 flex-1">

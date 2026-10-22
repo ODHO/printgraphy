@@ -116,7 +116,7 @@ export default function AdminMessagesPage() {
               <button key={row.id} type="button" onClick={() => openPerson(row.id)} className={`w-full text-left px-4 py-3 border-b border-zinc-100 cursor-pointer ${selected === row.id ? "bg-sky-50" : "hover:bg-zinc-50"}`}>
                 <span className="flex items-center justify-between gap-2">
                   <span className="text-base font-bold text-zinc-900 truncate">{row.name}</span>
-                  {row.unread > 0 && <span className="rounded-full bg-[#064FE0] text-white text-base font-bold px-1.5 py-0.5">{row.unread}</span>}
+                  {row.unread > 0 && <span className="rounded-full bg-[#e74b2d] text-white text-base font-bold px-1.5 py-0.5">{row.unread}</span>}
                 </span>
                 <span className="block text-base text-zinc-500 truncate mt-0.5">{row.lastBody}</span>
               </button>
@@ -124,7 +124,7 @@ export default function AdminMessagesPage() {
             {starters.length > 0 && (
               <div className="p-3">
                 <label className="text-base font-bold text-zinc-500 block mb-1">Start a conversation</label>
-                <select value="" onChange={(event) => openPerson(event.target.value)} className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base">
+                <select value="" onChange={(event) => openPerson(event.target.value)} className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base">
                   <option value="">Choose {party === "user" ? "a customer" : "a vendor"}</option>
                   {starters.map((person) => (
                     <option key={person.id} value={person.id}>{person.name}</option>
@@ -152,7 +152,7 @@ export default function AdminMessagesPage() {
 
 function ConnectionButton({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className={`rounded-3xl p-5 text-left cursor-pointer shadow-md ${active ? "bg-[#064FE0] text-white" : "bg-white border border-zinc-200 text-zinc-900"}`}>
+    <button type="button" onClick={onClick} className={`rounded-3xl p-5 text-left cursor-pointer shadow-md ${active ? "bg-[#e74b2d] text-white" : "bg-white border border-zinc-200 text-zinc-900"}`}>
       <p className="text-base font-bold opacity-90">{label}</p>
       <p className="text-2xl font-black mt-2">{count} unread</p>
     </button>

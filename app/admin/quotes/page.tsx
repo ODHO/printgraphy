@@ -105,7 +105,7 @@ export default function AdminQuotesPage() {
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="w-full bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#064FE0] cursor-pointer shadow-xs"
+          className="w-full bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
         >
           <option value="">All Statuses</option>
           {STATUSES.map((s) => (
@@ -118,7 +118,7 @@ export default function AdminQuotesPage() {
       <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
           </div>
         ) : quotes.length === 0 ? (
           <div className="py-16 text-center text-zinc-400 text-base">
@@ -127,7 +127,7 @@ export default function AdminQuotesPage() {
         ) : (
           <table className="w-full text-base">
             <thead>
-              <tr className="border-b border-zinc-100 bg-[#edf4f9]/50 text-zinc-500">
+              <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
                 <th className="text-left px-5 py-3.5 font-bold">Ref Number</th>
                 <th className="text-left px-5 py-3.5 font-bold">Contact</th>
                 <th className="text-left px-5 py-3.5 font-bold">Category</th>
@@ -163,7 +163,7 @@ export default function AdminQuotesPage() {
                   <td className="px-5 py-3.5 text-right">
                     <button
                       onClick={() => openQuoteModal(q)}
-                      className="px-3 py-1.5 bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold text-base rounded-xl shadow-xs transition-all cursor-pointer"
+                      className="px-3 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-base rounded-xl shadow-xs transition-all cursor-pointer"
                     >
                       Review / Quote
                     </button>
@@ -181,12 +181,12 @@ export default function AdminQuotesPage() {
           <div className="bg-white border border-zinc-200/80 rounded-3xl w-full max-w-lg p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
               <h2 className="text-base font-bold text-zinc-900">
-                Review Quote <span className="font-mono text-[#064FE0]">{activeQuote.referenceNumber}</span>
+                Review Quote <span className="font-mono text-[#e74b2d]">{activeQuote.referenceNumber}</span>
               </h2>
               <button onClick={() => setActiveQuote(null)} className="text-zinc-400 hover:text-zinc-800 cursor-pointer">✕</button>
             </div>
 
-            <div className="bg-[#f8fbfd] p-4 rounded-2xl border border-sky-100 space-y-2 text-base text-zinc-700">
+            <div className="bg-[#fbfaf7] p-4 rounded-2xl border border-sky-100 space-y-2 text-base text-zinc-700">
               <p><strong>Customer:</strong> {activeQuote.contactName} ({activeQuote.email})</p>
               <p><strong>Company:</strong> {activeQuote.companyName || "N/A"}</p>
               <p><strong>Category & Qty:</strong> {activeQuote.category} × {activeQuote.quantity.toLocaleString()}</p>
@@ -203,7 +203,7 @@ export default function AdminQuotesPage() {
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value)}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
                 >
                   {STATUSES.map((s) => (
                     <option key={s} value={s}>{s.replace("_", " ")}</option>
@@ -219,7 +219,7 @@ export default function AdminQuotesPage() {
                   value={editPrice}
                   onChange={(e) => setEditPrice(e.target.value)}
                   placeholder="Enter custom quoted total..."
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
 
@@ -234,7 +234,7 @@ export default function AdminQuotesPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
                 >
                   {saving ? "Saving..." : "Update Quote"}
                 </button>

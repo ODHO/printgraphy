@@ -42,7 +42,7 @@ export default function VendorSelect({
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="flex w-full items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-[#f8fbfd] px-3 py-2.5 text-left text-base cursor-pointer focus:outline-none focus:border-[#064FE0]"
+        className="flex w-full items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-[#fbfaf7] px-3 py-2.5 text-left text-base cursor-pointer focus:outline-none focus:border-[#e74b2d]"
       >
         <span className="font-semibold text-zinc-900 truncate">{selected?.name || "Unassigned"}</span>
         <span className="flex items-center gap-2 shrink-0">
@@ -59,7 +59,7 @@ export default function VendorSelect({
               <button
                 type="button"
                 onClick={() => { onChange(""); setOpen(false); }}
-                className={`flex w-full items-center justify-between px-3 py-2.5 text-base cursor-pointer ${value === "" ? "bg-sky-50 text-[#064FE0]" : "text-zinc-700 hover:bg-zinc-50"}`}
+                className={`flex w-full items-center justify-between px-3 py-2.5 text-base cursor-pointer ${value === "" ? "bg-sky-50 text-[#e74b2d]" : "text-zinc-700 hover:bg-zinc-50"}`}
               >
                 <span className="font-semibold">Unassigned</span>
               </button>

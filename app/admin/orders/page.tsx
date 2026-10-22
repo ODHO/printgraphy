@@ -167,14 +167,14 @@ export default function AdminOrdersPage() {
             placeholder="Search order number..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#064FE0] shadow-xs"
+            className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-xs"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#064FE0] cursor-pointer shadow-xs"
+          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
         >
           <option value="">All Fulfillment Statuses</option>
           {FULFILLMENT_STATUSES.map((s) => (
@@ -186,18 +186,18 @@ export default function AdminOrdersPage() {
           value={market}
           onChange={(e) => { setMarket(e.target.value); setPage(1); }}
           placeholder="Market / state"
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 focus:outline-none focus:border-[#064FE0] shadow-xs"
+          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 focus:outline-none focus:border-[#e74b2d] shadow-xs"
         />
         <input
           value={category}
           onChange={(e) => { setCategory(e.target.value); setPage(1); }}
           placeholder="Category / product"
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 focus:outline-none focus:border-[#064FE0] shadow-xs"
+          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 focus:outline-none focus:border-[#e74b2d] shadow-xs"
         />
         <select
           value={sla}
           onChange={(e) => { setSla(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#064FE0] cursor-pointer shadow-xs"
+          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
         >
           <option value="">All SLA</option>
           <option value="risk">SLA risk</option>
@@ -206,7 +206,7 @@ export default function AdminOrdersPage() {
         <select
           value={paymentFilter}
           onChange={(e) => { setPaymentFilter(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#064FE0] cursor-pointer shadow-xs"
+          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
         >
           <option value="">All Payment Statuses</option>
           <option value="paid">Paid</option>
@@ -219,7 +219,7 @@ export default function AdminOrdersPage() {
       <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
           </div>
         ) : orders.length === 0 ? (
           <div className="py-16 text-center text-zinc-400 text-base">
@@ -229,7 +229,7 @@ export default function AdminOrdersPage() {
           <>
             <table className="w-full text-base overflow-auto block">
               <thead>
-                <tr className="border-b border-zinc-100 bg-[#edf4f9]/50 text-zinc-500">
+                <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
                   <th className="text-left px-5 py-3.5 font-bold">Order Ref</th>
                   <th className="text-left px-5 py-3.5 font-bold">Customer</th>
                   <th className="text-left px-5 py-3.5 font-bold">Vendor</th>
@@ -245,7 +245,7 @@ export default function AdminOrdersPage() {
                 {orders.map((order) => (
                   <tr key={order._id} className="hover:bg-sky-50/40 transition-colors">
                     <td className="px-5 py-3.5 font-mono font-bold text-zinc-900">
-                      <Link href={`/admin/orders/${order._id}`} className="text-[#064FE0] hover:underline">
+                      <Link href={`/admin/orders/${order._id}`} className="text-[#e74b2d] hover:underline">
                         {order.orderNumber}
                       </Link>
                       <p className="text-base font-sans font-normal text-zinc-400">
@@ -307,7 +307,7 @@ export default function AdminOrdersPage() {
                         </Link>
                         <button
                           onClick={() => openEditModal(order)}
-                          className="px-3 py-1.5 bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold text-base rounded-xl shadow-xs transition-all cursor-pointer"
+                          className="px-3 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-base rounded-xl shadow-xs transition-all cursor-pointer"
                         >
                           Edit Status
                         </button>
@@ -319,7 +319,7 @@ export default function AdminOrdersPage() {
             </table>
 
             {pagination && pagination.pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#edf4f9]/30">
+              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#fff7f3]/30">
                 <p className="text-base text-zinc-500 font-medium">
                   Showing {(page - 1) * pagination.limit + 1}–{Math.min(page * pagination.limit, pagination.total)} of {pagination.total}
                 </p>
@@ -352,7 +352,7 @@ export default function AdminOrdersPage() {
           <div className="bg-white border border-zinc-200/80 rounded-3xl w-full max-w-md p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
               <h2 className="text-base font-bold text-zinc-900">
-                Update Order <span className="font-mono text-[#064FE0]">{editingOrder.orderNumber}</span>
+                Update Order <span className="font-mono text-[#e74b2d]">{editingOrder.orderNumber}</span>
               </h2>
               <button onClick={() => setEditingOrder(null)} className="text-zinc-400 hover:text-zinc-800 cursor-pointer">✕</button>
             </div>
@@ -363,7 +363,7 @@ export default function AdminOrdersPage() {
                 <select
                   value={editForm.fulfillmentStatus}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, fulfillmentStatus: e.target.value }))}
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0] cursor-pointer"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
                 >
                   {FULFILLMENT_STATUSES.map((s) => (
                     <option key={s} value={s}>{s.replace("_", " ")}</option>
@@ -389,7 +389,7 @@ export default function AdminOrdersPage() {
                   value={editForm.vendorPayment}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, vendorPayment: e.target.value }))}
                   placeholder="Amount the vendor receives"
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
 
@@ -400,7 +400,7 @@ export default function AdminOrdersPage() {
                   value={editForm.trackingCarrier}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, trackingCarrier: e.target.value }))}
                   placeholder="e.g. UPS, FedEx, DHL"
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
 
@@ -411,7 +411,7 @@ export default function AdminOrdersPage() {
                   value={editForm.trackingNumber}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, trackingNumber: e.target.value }))}
                   placeholder="e.g. 1Z9999999999999999"
-                  className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                 />
               </div>
 
@@ -426,7 +426,7 @@ export default function AdminOrdersPage() {
                 <button
                   type="submit"
                   disabled={updating}
-                  className="flex-1 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all disabled:opacity-60 cursor-pointer"
+                  className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all disabled:opacity-60 cursor-pointer"
                 >
                   {updating ? "Saving..." : "Save Changes"}
                 </button>

@@ -381,7 +381,7 @@ export default function MockupPrintAreaEditor({
   if (!mockupImage) {
     return (
       <div
-        className={`rounded-2xl border-2 border-dashed border-zinc-200 bg-[#f8fbfd] p-10 text-center ${className}`}
+        className={`rounded-2xl border-2 border-dashed border-zinc-200 bg-[#fbfaf7] p-10 text-center ${className}`}
       >
         <p className="text-base font-bold text-zinc-500">
           Upload a product mockup image to define the print area.
@@ -403,14 +403,14 @@ export default function MockupPrintAreaEditor({
       <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-zinc-500">
         <p>
           Drag layers to move.{" "}
-          <span className="font-bold text-[#064FE0]">Del</span> remove ·{" "}
-          <span className="font-bold text-[#064FE0]">Ctrl+D</span> duplicate ·{" "}
-          <span className="font-bold text-[#064FE0]">Ctrl+C / X / V</span> copy cut paste · arrows
+          <span className="font-bold text-[#e74b2d]">Del</span> remove ·{" "}
+          <span className="font-bold text-[#e74b2d]">Ctrl+D</span> duplicate ·{" "}
+          <span className="font-bold text-[#e74b2d]">Ctrl+C / X / V</span> copy cut paste · arrows
           nudge
         </p>
         <div className="flex flex-wrap gap-2 items-center">
           {shortcutFlash && (
-            <span className="text-xs font-bold text-[#064FE0] bg-sky-50 border border-sky-100 px-2 py-0.5 rounded-lg">
+            <span className="text-xs font-bold text-[#e74b2d] bg-sky-50 border border-sky-100 px-2 py-0.5 rounded-lg">
               {shortcutFlash}
             </span>
           )}
@@ -419,7 +419,7 @@ export default function MockupPrintAreaEditor({
               type="button"
               disabled={uploadingImage}
               onClick={onUploadImageClick}
-              className="px-3 py-1.5 text-sm font-bold rounded-xl bg-[#064FE0] text-white hover:bg-[#0439A8] disabled:opacity-60 cursor-pointer"
+              className="px-3 py-1.5 text-sm font-bold rounded-xl bg-[#e74b2d] text-white hover:bg-[#c93e23] disabled:opacity-60 cursor-pointer"
             >
               {uploadingImage ? "Uploading…" : "+ Upload logo / image"}
             </button>
@@ -494,7 +494,7 @@ export default function MockupPrintAreaEditor({
         <div className="absolute inset-0 pointer-events-none bg-black/25" />
 
         <div
-          className="absolute z-10 border-2 border-[#064FE0] bg-sky-400/10 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] cursor-move"
+          className="absolute z-10 border-2 border-[#e74b2d] bg-sky-400/10 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] cursor-move"
           style={{
             left: `${area.x}%`,
             top: `${area.y}%`,
@@ -507,7 +507,7 @@ export default function MockupPrintAreaEditor({
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <span className="absolute -top-6 left-0 text-[10px] font-bold uppercase tracking-wider text-white bg-[#064FE0] px-1.5 py-0.5 rounded shadow pointer-events-none">
+          <span className="absolute -top-6 left-0 text-[10px] font-bold uppercase tracking-wider text-white bg-[#e74b2d] px-1.5 py-0.5 rounded shadow pointer-events-none">
             {area.label || "Print Area"}
           </span>
 
@@ -527,8 +527,8 @@ export default function MockupPrintAreaEditor({
                   onPointerDown={(e) => startLayerDrag(e, layer.id)}
                   className={`absolute z-20 cursor-grab active:cursor-grabbing touch-none ${
                     isActive
-                      ? "ring-2 ring-[#064FE0] ring-offset-1"
-                      : "hover:ring-1 hover:ring-[#064FE0]/60"
+                      ? "ring-2 ring-[#e74b2d] ring-offset-1"
+                      : "hover:ring-1 hover:ring-[#e74b2d]/60"
                   }`}
                   style={{
                     left: `${layer.x}%`,
@@ -547,7 +547,7 @@ export default function MockupPrintAreaEditor({
                   />
                   {isActive && (
                     <div
-                      className="absolute -right-1.5 -bottom-1.5 w-4 h-4 rounded-full bg-[#064FE0] border-2 border-white shadow cursor-nwse-resize touch-none"
+                      className="absolute -right-1.5 -bottom-1.5 w-4 h-4 rounded-full bg-[#e74b2d] border-2 border-white shadow cursor-nwse-resize touch-none"
                       onPointerDown={(e) => startImageResize(e, layer)}
                     />
                   )}
@@ -567,7 +567,7 @@ export default function MockupPrintAreaEditor({
                 }}
                 onPointerDown={(e) => startLayerDrag(e, layer.id)}
                 className={`absolute z-20 px-1 py-0.5 cursor-grab active:cursor-grabbing touch-none whitespace-nowrap ${
-                  isActive ? "ring-2 ring-[#064FE0] bg-white/50 rounded" : ""
+                  isActive ? "ring-2 ring-[#e74b2d] bg-white/50 rounded" : ""
                 }`}
                 style={{
                   left: `${layer.x}%`,
@@ -586,7 +586,7 @@ export default function MockupPrintAreaEditor({
           <button
             type="button"
             aria-label="Resize print area"
-            className="absolute bottom-0 right-0 w-4 h-4 translate-x-1/2 translate-y-1/2 rounded-full bg-[#064FE0] border-2 border-white shadow cursor-se-resize z-30"
+            className="absolute bottom-0 right-0 w-4 h-4 translate-x-1/2 translate-y-1/2 rounded-full bg-[#e74b2d] border-2 border-white shadow cursor-se-resize z-30"
             onPointerDown={(e) => startAreaDrag("resize-br", e)}
             onClick={(e) => e.stopPropagation()}
           />
@@ -620,7 +620,7 @@ export default function MockupPrintAreaEditor({
                     className="w-8 h-8 object-contain rounded border border-zinc-200 bg-white"
                   />
                 ) : (
-                  <span className="w-8 h-8 rounded border border-zinc-200 bg-[#f8fbfd] flex items-center justify-center text-[10px] font-bold text-zinc-500">
+                  <span className="w-8 h-8 rounded border border-zinc-200 bg-[#fbfaf7] flex items-center justify-center text-[10px] font-bold text-zinc-500">
                     T
                   </span>
                 )}
@@ -684,7 +684,7 @@ export default function MockupPrintAreaEditor({
       </div>
 
       {active && onUpdateLayer && (
-        <div className="p-3 rounded-2xl border border-zinc-200 bg-[#f8fbfd] space-y-2">
+        <div className="p-3 rounded-2xl border border-zinc-200 bg-[#fbfaf7] space-y-2">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
               Selected {isImageLayer(active) ? "image" : "text"} layer
@@ -716,7 +716,7 @@ export default function MockupPrintAreaEditor({
                     const v = Number(e.target.value) || 36;
                     onUpdateLayer(active.id, { width: v, height: v });
                   }}
-                  className="w-32 accent-[#064FE0] cursor-pointer"
+                  className="w-32 accent-[#e74b2d] cursor-pointer"
                 />
               </label>
             </div>

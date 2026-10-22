@@ -8,7 +8,7 @@ export default function SignUpPage() {
     <Suspense
       fallback={
         <div className="min-h-[calc(100vh-140px)] flex items-center justify-center bg-white">
-          <div className="w-8 h-8 border-2 border-sky-200 border-t-[#2196D2] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin" />
         </div>
       }
     >

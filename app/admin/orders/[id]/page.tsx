@@ -178,7 +178,7 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
   if (loading) {
     return (
       <div className="py-20 flex justify-center">
-        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin" />
       </div>
     );
   }
@@ -187,7 +187,7 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
     return (
       <div className="bg-white rounded-3xl border border-zinc-200 p-8 max-w-lg">
         <p className="text-base font-semibold text-red-600">{error || "Order not found."}</p>
-        <Link href="/admin/orders" className="inline-block mt-4 text-base font-bold text-[#064FE0]">
+        <Link href="/admin/orders" className="inline-block mt-4 text-base font-bold text-[#e74b2d]">
           Back to orders
         </Link>
       </div>
@@ -203,7 +203,7 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
     <div className="space-y-6 max-w-6xl">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <Link href="/admin/orders" className="text-base font-bold text-[#064FE0]">
+          <Link href="/admin/orders" className="text-base font-bold text-[#e74b2d]">
             ← Order queue
           </Link>
           <h1 className="text-2xl font-bold text-zinc-900 mt-1">{order.orderNumber}</h1>
@@ -263,14 +263,14 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
       <section className="bg-white rounded-3xl border border-zinc-200/80 p-5 space-y-4">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-base font-bold text-zinc-900">Vendor assignment and production</h2>
-          {notice && <p className="text-base font-bold text-[#064FE0]">{notice}</p>}
+          {notice && <p className="text-base font-bold text-[#e74b2d]">{notice}</p>}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="text-base font-bold text-zinc-700">Assigned vendor
             <VendorSelect vendors={vendors} value={vendorId} onChange={setVendorId} />
           </div>
           <label className="text-base font-bold text-zinc-700">Vendor payment
-            <input value={vendorPayment} onChange={(event) => setVendorPayment(event.target.value)} type="number" step="0.01" min="0" placeholder="Amount the vendor receives" className="mt-1 w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-normal" />
+            <input value={vendorPayment} onChange={(event) => setVendorPayment(event.target.value)} type="number" step="0.01" min="0" placeholder="Amount the vendor receives" className="mt-1 w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-normal" />
           </label>
           <div className="text-base text-zinc-600 space-y-1">
             <p className="font-bold text-zinc-700">Current vendor</p>
@@ -297,11 +297,11 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
             </p>
           </div>
           <label className="text-base font-bold text-zinc-700 lg:col-span-2">Production notes
-            <textarea value={productionNotes} onChange={(event) => setProductionNotes(event.target.value)} rows={3} className="mt-1 w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base font-normal" />
+            <textarea value={productionNotes} onChange={(event) => setProductionNotes(event.target.value)} rows={3} className="mt-1 w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-normal" />
           </label>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={saveFulfillment} disabled={saving} className="rounded-xl bg-[#064FE0] px-4 py-2 text-base font-bold text-white cursor-pointer disabled:opacity-60">
+          <button type="button" onClick={saveFulfillment} disabled={saving} className="rounded-xl bg-[#e74b2d] px-4 py-2 text-base font-bold text-white cursor-pointer disabled:opacity-60">
             {saving ? "Saving..." : "Save assignment and notes"}
           </button>
           <button
@@ -336,7 +336,7 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
             </div>
           ))}
           <div className="flex gap-2">
-            <input value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Add an internal note" className="flex-1 bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base" />
+            <input value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Add an internal note" className="flex-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base" />
             <button type="button" onClick={sendMessage} disabled={saving} className="rounded-xl border border-zinc-200 px-3 py-2 text-base font-bold cursor-pointer">Add</button>
           </div>
         </div>
@@ -345,8 +345,8 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
           <p className="text-base font-bold text-zinc-700">Vendor-fault reprint</p>
           <p className="text-base text-zinc-500">The reprint cost is taken from this vendor’s payout balance, not the platform margin.</p>
           <div className="flex flex-wrap gap-2">
-            <input value={reprintAmount} onChange={(event) => setReprintAmount(event.target.value)} type="number" step="0.01" placeholder="Cost" className="w-28 bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base" />
-            <input value={reprintNote} onChange={(event) => setReprintNote(event.target.value)} placeholder="What went wrong" className="flex-1 min-w-[180px] bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2 text-base" />
+            <input value={reprintAmount} onChange={(event) => setReprintAmount(event.target.value)} type="number" step="0.01" placeholder="Cost" className="w-28 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base" />
+            <input value={reprintNote} onChange={(event) => setReprintNote(event.target.value)} placeholder="What went wrong" className="flex-1 min-w-[180px] bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base" />
             <button type="button" onClick={flagReprint} disabled={saving || order.reprint?.flagged} className="rounded-xl bg-red-600 px-3 py-2 text-base font-bold text-white cursor-pointer disabled:opacity-50">Flag reprint</button>
           </div>
         </div>

@@ -186,7 +186,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
         <div className="flex items-center gap-3 shrink-0">
           <Link
             href={`/admin/templates/new?categoryId=${category._id}`}
-            className="flex items-center gap-2 px-5 py-3 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-2xl transition-all shadow-lg shadow-[#064FE0]/25 cursor-pointer"
+            className="flex items-center gap-2 px-5 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-2xl transition-all shadow-lg shadow-[#e74b2d]/25 cursor-pointer"
           >
             <span className="text-base leading-none">+</span>
             <span>Create New Template</span>
@@ -220,7 +220,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
             placeholder="Search templates..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white border border-zinc-200/80 rounded-2xl pl-9 pr-4 py-2 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#064FE0] shadow-xs"
+            className="w-full bg-white border border-zinc-200/80 rounded-2xl pl-9 pr-4 py-2 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-xs"
           />
           <svg className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -231,7 +231,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
       {/* Templates Grid */}
       {loading ? (
         <div className="py-24 text-center bg-white rounded-3xl border border-zinc-200/80">
-          <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+          <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
           <p className="text-base text-zinc-400 mt-2">Loading {category.name} templates...</p>
         </div>
       ) : templates.length === 0 ? (
@@ -248,7 +248,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
           </div>
           <Link
             href={`/admin/templates/new?categoryId=${category._id}`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20"
           >
             + Create Template
           </Link>
@@ -305,7 +305,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
               <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-base font-bold text-zinc-900 group-hover:text-[#064FE0] transition-colors line-clamp-1">
+                    <h3 className="text-base font-bold text-zinc-900 group-hover:text-[#e74b2d] transition-colors line-clamp-1">
                       {t.title}
                     </h3>
                     <span className="text-base font-bold font-mono text-zinc-600 shrink-0">
@@ -323,7 +323,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
                   <div className="grid grid-cols-2 gap-2">
                     <Link
                       href={`/admin/templates/${t._id}/edit`}
-                      className="py-2 text-center rounded-xl bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold transition-all shadow-xs"
+                      className="py-2 text-center rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold transition-all shadow-xs"
                     >
                       Edit Canvas
                     </Link>
@@ -431,7 +431,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
                     <button
                       onClick={() => setPreviewSide("front")}
                       className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                        previewSide === "front" ? "bg-[#064FE0] text-white" : "text-zinc-400 hover:text-white"
+                        previewSide === "front" ? "bg-[#e74b2d] text-white" : "text-zinc-400 hover:text-white"
                       }`}
                     >
                       Front
@@ -439,7 +439,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
                     <button
                       onClick={() => setPreviewSide("back")}
                       className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                        previewSide === "back" ? "bg-[#064FE0] text-white" : "text-zinc-400 hover:text-white"
+                        previewSide === "back" ? "bg-[#e74b2d] text-white" : "text-zinc-400 hover:text-white"
                       }`}
                     >
                       Back
@@ -511,7 +511,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
                           <div
                             className="w-full h-full"
                             style={{
-                              backgroundColor: obj.fill || "#3b82f6",
+                              backgroundColor: obj.fill || "#e74b2d",
                               border: obj.stroke && obj.strokeWidth ? `${obj.strokeWidth}px solid ${obj.stroke}` : "none",
                               borderRadius:
                                 obj.shapeType === "circle"
@@ -556,7 +556,7 @@ export default function CategoryTemplatesClient({ category }: { category: Catego
               <div className="flex items-center gap-2">
                 <Link
                   href={`/admin/templates/${previewTemplate._id}/edit`}
-                  className="px-4 py-1.5 rounded-xl bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold transition-all"
+                  className="px-4 py-1.5 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold transition-all"
                 >
                   Open in Canvas Editor →
                 </Link>

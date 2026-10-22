@@ -41,7 +41,7 @@ export default function EmailBodyEditor({
 
   return (
     <div className="mt-1 overflow-hidden rounded-xl border border-zinc-200 bg-white">
-      <div className="flex flex-wrap items-center gap-1 border-b border-zinc-200 bg-[#f8fbfd] px-2 py-1.5">
+      <div className="flex flex-wrap items-center gap-1 border-b border-zinc-200 bg-[#fbfaf7] px-2 py-1.5">
         <ToolButton label="B" title="Bold" onClick={() => format("bold")} className="font-bold" />
         <ToolButton label="I" title="Italic" onClick={() => format("italic")} className="italic" />
         <ToolButton label="U" title="Underline" onClick={() => format("underline")} className="underline" />
@@ -54,7 +54,7 @@ export default function EmailBodyEditor({
             title={`Insert ${token}`}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => insertField(token)}
-            className="rounded-md bg-white px-2 py-1 text-base font-semibold text-[#064FE0] border border-zinc-200 cursor-pointer hover:bg-sky-50"
+            className="rounded-md bg-white px-2 py-1 text-base font-semibold text-[#e74b2d] border border-zinc-200 cursor-pointer hover:bg-sky-50"
           >
             {token.replace(/[{}]/g, "")}
           </button>

@@ -112,7 +112,7 @@ export default function AdminCategoriesPage() {
 
           <Link
             href="/admin/categories/new"
-            className="flex items-center gap-2 px-4 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20 cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 cursor-pointer"
           >
             <span className="text-base">+</span> New Category
           </Link>
@@ -123,7 +123,7 @@ export default function AdminCategoriesPage() {
       <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-20 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
             <p className="text-base text-zinc-400 mt-2">Loading categories...</p>
           </div>
         ) : categories.length === 0 ? (
@@ -134,7 +134,7 @@ export default function AdminCategoriesPage() {
             </p>
             <button
               onClick={handleSeedDefaults}
-              className="px-5 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-md"
+              className="px-5 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-md"
             >
               Seed Standard Categories Now
             </button>
@@ -178,7 +178,7 @@ export default function AdminCategoriesPage() {
                       <div className="flex items-center gap-2.5 flex-wrap">
                         <Link
                           href={`/admin/categories/${cat._id}/templates`}
-                          className="font-bold text-zinc-900 hover:text-[#064FE0] transition-colors text-base"
+                          className="font-bold text-zinc-900 hover:text-[#e74b2d] transition-colors text-base"
                         >
                           {cat.name}
                         </Link>
@@ -239,7 +239,7 @@ export default function AdminCategoriesPage() {
                     {/* New Template Shortcut */}
                     <Link
                       href={`/admin/templates/new?categoryId=${cat._id}`}
-                      className="px-3 py-1.5 rounded-xl bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold transition-all shadow-xs"
+                      className="px-3 py-1.5 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold transition-all shadow-xs"
                     >
                       + Create Template
                     </Link>

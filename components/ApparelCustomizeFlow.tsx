@@ -409,7 +409,7 @@ export default function ApparelCustomizeFlow() {
   if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#2196D2] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#e74b2d] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -418,7 +418,7 @@ export default function ApparelCustomizeFlow() {
     return (
       <div className="container mx-auto px-4 py-16 text-center space-y-4">
         <p className="text-lg font-bold text-zinc-800">{error}</p>
-        <Link href="/clothing-bags" className="text-[#2196D2] font-bold hover:underline">
+        <Link href="/clothing-bags" className="text-[#e74b2d] font-bold hover:underline">
           ← Back to Clothing & Bags
         </Link>
       </div>
@@ -427,16 +427,16 @@ export default function ApparelCustomizeFlow() {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      <div className="border-b border-zinc-100 bg-[#f8fbfd]">
+      <div className="border-b border-zinc-100 bg-[#fbfaf7]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
           <nav className="flex flex-wrap items-center gap-2 text-sm text-zinc-500">
-            <Link href="/clothing-bags" className="hover:text-[#2196D2]">
+            <Link href="/clothing-bags" className="hover:text-[#e74b2d]">
               Clothing & Bags
             </Link>
             <span>›</span>
             <Link
               href={`/clothing-bags/${category?.slug || category?._id}`}
-              className="hover:text-[#2196D2]"
+              className="hover:text-[#e74b2d]"
             >
               {category?.name}
             </Link>
@@ -455,7 +455,7 @@ export default function ApparelCustomizeFlow() {
                 }}
                 className={`px-4 py-1.5 text-sm font-bold rounded-full capitalize cursor-pointer transition-all ${
                   step === s
-                    ? "bg-[#2196D2] text-white"
+                    ? "bg-[#e74b2d] text-white"
                     : "text-zinc-600 hover:text-zinc-900"
                 }`}
               >
@@ -476,7 +476,7 @@ export default function ApparelCustomizeFlow() {
         {step === "configure" && (
           <div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="rounded-3xl border border-zinc-200 bg-gradient-to-br from-[#e8f4fc] to-[#f8fbfd] aspect-square relative overflow-hidden shadow-sm">
+              <div className="rounded-3xl border border-zinc-200 bg-gradient-to-br from-[#fff1eb] to-[#fbfaf7] aspect-square relative overflow-hidden shadow-sm">
                 {mockupSrc || category?.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -498,7 +498,7 @@ export default function ApparelCustomizeFlow() {
 
               <div className="space-y-6">
                 <div>
-                  <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#2196D2] mb-1">
+                  <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#e74b2d] mb-1">
                     Customize
                   </p>
                   <h1 className="text-2xl sm:text-3xl font-black text-zinc-900">{productName}</h1>
@@ -522,7 +522,7 @@ export default function ApparelCustomizeFlow() {
                           onClick={() => setSelectedColorId(c.id)}
                           className={`w-10 h-10 rounded-full border-2 transition-all cursor-pointer ${
                             selectedColorId === c.id
-                              ? "border-[#2196D2] ring-2 ring-[#2196D2]/30 scale-110"
+                              ? "border-[#e74b2d] ring-2 ring-[#e74b2d]/30 scale-110"
                               : "border-zinc-200 hover:border-zinc-400"
                           }`}
                           style={{ backgroundColor: c.hex }}
@@ -540,7 +540,7 @@ export default function ApparelCustomizeFlow() {
                     {sizes.map((s) => (
                       <label
                         key={s.id}
-                        className="flex items-center justify-between gap-2 bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3 py-2"
+                        className="flex items-center justify-between gap-2 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2"
                       >
                         <span className="font-bold text-zinc-800">{s.name}</span>
                         <input
@@ -574,7 +574,7 @@ export default function ApparelCustomizeFlow() {
                           onClick={() => setDecorationId(m.id)}
                           className={`w-full text-left p-3 rounded-2xl border-2 transition-all cursor-pointer ${
                             decorationId === m.id
-                              ? "border-[#2196D2] bg-sky-50/60"
+                              ? "border-[#e74b2d] bg-sky-50/60"
                               : "border-zinc-200 hover:border-zinc-300"
                           }`}
                         >
@@ -593,7 +593,7 @@ export default function ApparelCustomizeFlow() {
                   type="button"
                   disabled={!canContinueConfigure}
                   onClick={() => setStep("design")}
-                  className="w-full py-3 bg-[#2196D2] hover:bg-[#1B85BD] disabled:opacity-50 text-white font-bold rounded-xl cursor-pointer shadow-md shadow-[#2196D2]/20"
+                  className="w-full py-3 bg-[#e74b2d] hover:bg-[#c93e23] disabled:opacity-50 text-white font-bold rounded-xl cursor-pointer shadow-md shadow-[#e74b2d]/20"
                 >
                   Continue to design
                 </button>
@@ -625,7 +625,7 @@ export default function ApparelCustomizeFlow() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="rounded-2xl bg-[#f8fbfd] border border-zinc-100 p-4 space-y-3">
+                <div className="rounded-2xl bg-[#fbfaf7] border border-zinc-100 p-4 space-y-3">
                   <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Colors</p>
                   {colors.length === 0 ? (
                     <p className="text-sm text-zinc-400">None set</p>
@@ -648,7 +648,7 @@ export default function ApparelCustomizeFlow() {
                   )}
                 </div>
 
-                <div className="rounded-2xl bg-[#f8fbfd] border border-zinc-100 p-4 space-y-2">
+                <div className="rounded-2xl bg-[#fbfaf7] border border-zinc-100 p-4 space-y-2">
                   <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Sizes</p>
                   {sizes.length === 0 ? (
                     <p className="text-sm text-zinc-400">None set</p>
@@ -659,7 +659,7 @@ export default function ApparelCustomizeFlow() {
                   )}
                 </div>
 
-                <div className="rounded-2xl bg-[#f8fbfd] border border-zinc-100 p-4 space-y-2">
+                <div className="rounded-2xl bg-[#fbfaf7] border border-zinc-100 p-4 space-y-2">
                   <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                     Decoration
                   </p>
@@ -682,7 +682,7 @@ export default function ApparelCustomizeFlow() {
                   )}
                 </div>
 
-                <div className="rounded-2xl bg-[#f8fbfd] border border-zinc-100 p-4 space-y-2">
+                <div className="rounded-2xl bg-[#fbfaf7] border border-zinc-100 p-4 space-y-2">
                   <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                     Print sides
                   </p>
@@ -707,7 +707,7 @@ export default function ApparelCustomizeFlow() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-3">
               {placements.length > 1 && (
-                <div className="flex flex-wrap gap-1 p-1 bg-[#f8fbfd] rounded-full border border-zinc-200 w-fit">
+                <div className="flex flex-wrap gap-1 p-1 bg-[#fbfaf7] rounded-full border border-zinc-200 w-fit">
                   {placements.map((p) => (
                     <button
                       key={p.id}
@@ -718,7 +718,7 @@ export default function ApparelCustomizeFlow() {
                       }}
                       className={`px-4 py-1.5 text-sm font-bold rounded-full cursor-pointer ${
                         activePlacementId === p.id
-                          ? "bg-[#2196D2] text-white"
+                          ? "bg-[#e74b2d] text-white"
                           : "text-zinc-600"
                       }`}
                     >
@@ -753,7 +753,7 @@ export default function ApparelCustomizeFlow() {
             </div>
 
             <div className="space-y-4">
-              <div className="rounded-2xl border border-zinc-200 bg-[#f8fbfd] p-4 text-sm space-y-2">
+              <div className="rounded-2xl border border-zinc-200 bg-[#fbfaf7] p-4 text-sm space-y-2">
                 <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                   Your selections
                 </p>
@@ -783,7 +783,7 @@ export default function ApparelCustomizeFlow() {
                     type="button"
                     disabled={uploadingImage}
                     onClick={() => imageInputRef.current?.click()}
-                    className="px-3 py-2 text-sm font-bold bg-[#2196D2] text-white rounded-xl hover:bg-[#1B85BD] disabled:opacity-60 cursor-pointer"
+                    className="px-3 py-2 text-sm font-bold bg-[#e74b2d] text-white rounded-xl hover:bg-[#c93e23] disabled:opacity-60 cursor-pointer"
                   >
                     {uploadingImage ? "Uploading…" : "+ Image / logo"}
                   </button>
@@ -808,7 +808,7 @@ export default function ApparelCustomizeFlow() {
                       key={layer.id}
                       className={`p-3 rounded-2xl border ${
                         activeLayerId === layer.id
-                          ? "border-[#2196D2] bg-sky-50/50"
+                          ? "border-[#e74b2d] bg-sky-50/50"
                           : "border-zinc-200"
                       }`}
                     >
@@ -926,7 +926,7 @@ export default function ApparelCustomizeFlow() {
                                   )
                                 );
                               }}
-                              className="w-28 accent-[#2196D2] cursor-pointer"
+                              className="w-28 accent-[#e74b2d] cursor-pointer"
                             />
                           </label>
                         </div>
@@ -947,7 +947,7 @@ export default function ApparelCustomizeFlow() {
                 <button
                   type="button"
                   onClick={() => setStep("review")}
-                  className="flex-1 py-3 bg-[#2196D2] hover:bg-[#1B85BD] text-white font-bold rounded-xl cursor-pointer"
+                  className="flex-1 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-xl cursor-pointer"
                 >
                   Review order
                 </button>
@@ -959,7 +959,7 @@ export default function ApparelCustomizeFlow() {
         {step === "review" && (
           <div className="max-w-xl mx-auto space-y-6">
             <h2 className="text-2xl font-black text-zinc-900">Review your apparel order</h2>
-            <div className="rounded-3xl border border-zinc-200 p-5 space-y-3 bg-[#f8fbfd]">
+            <div className="rounded-3xl border border-zinc-200 p-5 space-y-3 bg-[#fbfaf7]">
               <div className="flex gap-4">
                 {mockupSrc && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -1003,7 +1003,7 @@ export default function ApparelCustomizeFlow() {
                 type="button"
                 disabled={addingToCart || !canContinueConfigure}
                 onClick={() => void addToCart()}
-                className="flex-1 py-3 bg-[#2196D2] hover:bg-[#1B85BD] disabled:opacity-50 text-white font-bold rounded-xl cursor-pointer shadow-md"
+                className="flex-1 py-3 bg-[#e74b2d] hover:bg-[#c93e23] disabled:opacity-50 text-white font-bold rounded-xl cursor-pointer shadow-md"
               >
                 {addingToCart ? "Adding…" : "Add to cart"}
               </button>

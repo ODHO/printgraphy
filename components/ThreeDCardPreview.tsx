@@ -766,7 +766,7 @@ export default function ThreeDCardPreview({
               }}
               className={`px-3 py-1 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
                 activeIdx === idx
-                  ? "bg-[#38bdf8] text-black font-extrabold shadow-md"
+                  ? "bg-[#f88768] text-black font-extrabold shadow-md"
                   : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
               }`}
             >
@@ -804,7 +804,7 @@ export default function ThreeDCardPreview({
           onClick={handleToggleFlip}
           className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-base font-bold transition-all flex items-center gap-1.5 cursor-pointer text-xs"
         >
-          <svg className="w-3.5 h-3.5 text-[#38bdf8]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5 text-[#f88768]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           <span>{totalSides > 2 ? "Next Side" : "Flip Card"}</span>

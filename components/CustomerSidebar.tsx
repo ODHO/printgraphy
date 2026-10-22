@@ -58,7 +58,7 @@ export default function CustomerSidebar({
 
   return (
     <aside className="w-full md:w-64 lg:w-72 flex-shrink-0">
-      <div className="bg-[#EAF4FB] rounded-3xl p-5 sm:p-6 md:p-7 space-y-1.5 sm:space-y-2">
+      <div className="bg-[#fff1eb] rounded-3xl p-5 sm:p-6 md:p-7 space-y-1.5 sm:space-y-2">
         {navItems.map((item) => {
           const isActive = resolvedActive === item.label;
           return (
@@ -67,8 +67,8 @@ export default function CustomerSidebar({
               href={item.href}
               className={`block px-4 py-3 rounded-2xl text-[15px] sm:text-base font-medium transition-all ${
                 isActive
-                  ? "bg-[#2196D2] text-white font-semibold shadow-sm"
-                  : "text-zinc-600 hover:text-[#2196D2] hover:bg-white/60"
+                  ? "bg-[#e74b2d] text-white font-semibold shadow-sm"
+                  : "text-zinc-600 hover:text-[#e74b2d] hover:bg-white/60"
               }`}
             >
               {item.label}

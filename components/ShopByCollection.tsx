@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 
 import { mediaSrc } from "@/lib/mediaUrl";
+import { catalogImageFor } from "@/lib/catalogImages";
 import type { HomepageContent } from "@/lib/homepageContent";
 
 export default function ShopByCollection({ collections }: { collections: HomepageContent["collections"] }) {
@@ -19,10 +20,10 @@ export default function ShopByCollection({ collections }: { collections: Homepag
   };
 
   return (
-    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-7">
-        <h2 className="text-xl md:text-2xl font-extrabold text-zinc-900">
+        <h2 className="text-2xl md:text-3xl font-black tracking-[-0.035em] text-[#1e1d1b]">
           {collections.title}
         </h2>
         <a
@@ -43,12 +44,12 @@ export default function ShopByCollection({ collections }: { collections: Homepag
       </div>
 
       {/* Outer wrapper: light bg card */}
-      <div className="relative bg-[#EFF5FA] rounded-3xl px-10 py-8">
+      <div className="relative rounded-[2rem] bg-[#f3e8dc] px-10 py-8">
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}
           aria-label="Scroll left"
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white border border-zinc-200 hover:border-theme-blue text-zinc-600 hover:text-theme-blue rounded-lg flex items-center justify-center shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+          className="absolute left-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-zinc-600 shadow-md transition-all duration-200 hover:scale-105 hover:border-theme-blue hover:text-theme-blue active:scale-95 cursor-pointer"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -61,7 +62,7 @@ export default function ShopByCollection({ collections }: { collections: Homepag
           className="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth"
         >
           {collections.items.map((item, idx) => {
-            const src = mediaSrc(item.image) || item.image || "/slide.png";
+            const src = catalogImageFor(item.label);
             const local = src.startsWith("/") && !src.startsWith("/api/");
             return (
             <a
@@ -69,7 +70,7 @@ export default function ShopByCollection({ collections }: { collections: Homepag
               href={item.href || "#"}
               className="flex-shrink-0 w-[130px] sm:w-[150px] md:w-[160px] flex flex-col group cursor-pointer"
             >
-              <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-white shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
+              <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-white shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
                 {local ? (
                   <Image src={src} alt={item.label} fill sizes="160px" className="object-cover" />
                 ) : (
@@ -77,7 +78,7 @@ export default function ShopByCollection({ collections }: { collections: Homepag
                 )}
               </div>
               {/* Label */}
-              <p className="mt-3 text-base font-semibold text-zinc-800 leading-snug group-hover:text-theme-blue transition-colors duration-200">
+              <p className="mt-3 text-base font-semibold text-[#1e1d1b] leading-snug group-hover:text-theme-blue transition-colors duration-200">
                 {item.label}
               </p>
             </a>
@@ -88,7 +89,7 @@ export default function ShopByCollection({ collections }: { collections: Homepag
         <button
           onClick={() => scroll("right")}
           aria-label="Scroll right"
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white border border-zinc-200 hover:border-theme-blue text-zinc-600 hover:text-theme-blue rounded-lg flex items-center justify-center shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+          className="absolute right-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-zinc-600 shadow-md transition-all duration-200 hover:scale-105 hover:border-theme-blue hover:text-theme-blue active:scale-95 cursor-pointer"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

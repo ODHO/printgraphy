@@ -208,7 +208,7 @@ export default function AdminPagesPage() {
   const insertTemplateBlock = (type: "faq" | "contact" | "hero") => {
     if (type === "hero") {
       const heroSnippet = `
-        <div style="background: linear-[#064FE0]; color: white; padding: 40px; border-radius: 16px; margin-bottom: 24px;">
+        <div style="background: linear-[#e74b2d]; color: white; padding: 40px; border-radius: 16px; margin-bottom: 24px;">
           <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 12px;">Headline Heading Here</h1>
           <p style="font-size: 16px; opacity: 0.9;">Describe your key message or product offering clearly in a few sentences.</p>
         </div>
@@ -231,11 +231,11 @@ export default function AdminPagesPage() {
       setForm((prev) => ({ ...prev, content: prev.content + "\n" + faqSnippet }));
     } else if (type === "contact") {
       const contactSnippet = `
-        <div style="background: #f8fbfd; border: 1px solid #e2e8f0; padding: 24px; border-radius: 16px; margin-top: 24px;">
+        <div style="background: #fbfaf7; border: 1px solid #e2e8f0; padding: 24px; border-radius: 16px; margin-top: 24px;">
           <h3>Get In Touch</h3>
           <p>Have questions? Reach out to our support team directly:</p>
           <ul>
-            <li><strong>Email:</strong> support@xprintz.com</li>
+            <li><strong>Email:</strong> support@printgraphi.com</li>
             <li><strong>Phone:</strong> +1 (800) 555-XPRINT</li>
           </ul>
         </div>
@@ -284,7 +284,7 @@ export default function AdminPagesPage() {
 
           <button
             onClick={openCreateDrawer}
-            className="flex items-center gap-2 px-4 py-2 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#064FE0]/20 cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 cursor-pointer"
           >
             <span className="text-base font-black">+</span> Create Custom Page
           </button>
@@ -295,7 +295,7 @@ export default function AdminPagesPage() {
       <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
           <div className="py-20 text-center space-y-2">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#064FE0] rounded-full animate-spin mx-auto" />
+            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
             <p className="text-base text-zinc-400">Loading custom pages...</p>
           </div>
         ) : pages.length === 0 ? (
@@ -303,7 +303,7 @@ export default function AdminPagesPage() {
             <p className="text-zinc-500 text-base font-semibold">No custom pages created yet.</p>
             <button
               onClick={openCreateDrawer}
-              className="px-4 py-2 bg-[#064FE0] text-white text-base font-bold rounded-xl hover:bg-[#0439A8] transition-all cursor-pointer"
+              className="px-4 py-2 bg-[#e74b2d] text-white text-base font-bold rounded-xl hover:bg-[#c93e23] transition-all cursor-pointer"
             >
               + Create First Page
             </button>
@@ -311,7 +311,7 @@ export default function AdminPagesPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-base text-zinc-600">
-              <thead className="bg-[#f8fbfd] border-b border-zinc-100 font-bold text-zinc-700 uppercase tracking-wider text-base">
+              <thead className="bg-[#fbfaf7] border-b border-zinc-100 font-bold text-zinc-700 uppercase tracking-wider text-base">
                 <tr>
                   <th className="px-6 py-4">Page Title</th>
                   <th className="px-6 py-4">URL Slug</th>
@@ -328,7 +328,7 @@ export default function AdminPagesPage() {
                         <Link
                           href={`/pages/${pageItem.slug}`}
                           target="_blank"
-                          className="font-bold text-zinc-900 hover:text-[#064FE0] transition-colors text-base"
+                          className="font-bold text-zinc-900 hover:text-[#e74b2d] transition-colors text-base"
                         >
                           {pageItem.title} ↗
                         </Link>
@@ -367,7 +367,7 @@ export default function AdminPagesPage() {
                         <button
                           onClick={() => handleAddToHeaderMenu(pageItem.title, pageItem.slug, pageItem._id)}
                           disabled={addingToMenu === pageItem._id}
-                          className="px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#064FE0] text-base font-bold transition-all border border-sky-200 cursor-pointer disabled:opacity-50"
+                          className="px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#e74b2d] text-base font-bold transition-all border border-sky-200 cursor-pointer disabled:opacity-50"
                           title="Add shortcut to Header Navigation Bar"
                         >
                           {addingToMenu === pageItem._id ? "Adding..." : "+ Header Menu"}
@@ -376,7 +376,7 @@ export default function AdminPagesPage() {
                         {/* Edit with Full-Screen Elementor Builder */}
                         <Link
                           href={`/admin/pages/builder/${pageItem._id}`}
-                          className="px-3.5 py-1.5 rounded-xl bg-[#064FE0] hover:bg-[#0439A8] text-white font-bold transition-all shadow-xs flex items-center gap-1.5 text-base"
+                          className="px-3.5 py-1.5 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold transition-all shadow-xs flex items-center gap-1.5 text-base"
                           title="Open Full-Screen Elementor Visual Drag & Drop Builder"
                         >
                           <span>🎨 Edit in Builder</span>
@@ -453,7 +453,7 @@ export default function AdminPagesPage() {
                         slug: prev.slug ? prev.slug : generateSlug(title),
                       }));
                     }}
-                    className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     placeholder="e.g. Services Overview"
                   />
                 </div>
@@ -467,7 +467,7 @@ export default function AdminPagesPage() {
                     type="text"
                     value={form.slug}
                     onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
-                    className="w-full bg-[#f8fbfd] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#064FE0]"
+                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
                     placeholder="services-overview"
                   />
                 </div>
@@ -481,7 +481,7 @@ export default function AdminPagesPage() {
                     onClick={() => setActiveTab("visual")}
                     className={`px-3.5 py-2 text-base font-bold border-b-2 transition-all cursor-pointer ${
                       activeTab === "visual"
-                        ? "border-[#064FE0] text-[#064FE0]"
+                        ? "border-[#e74b2d] text-[#e74b2d]"
                         : "border-transparent text-zinc-500 hover:text-zinc-800"
                     }`}
                   >
@@ -492,7 +492,7 @@ export default function AdminPagesPage() {
                     onClick={() => setActiveTab("html")}
                     className={`px-3.5 py-2 text-base font-bold border-b-2 transition-all cursor-pointer ${
                       activeTab === "html"
-                        ? "border-[#064FE0] text-[#064FE0]"
+                        ? "border-[#e74b2d] text-[#e74b2d]"
                         : "border-transparent text-zinc-500 hover:text-zinc-800"
                     }`}
                   >
@@ -503,7 +503,7 @@ export default function AdminPagesPage() {
                     onClick={() => setActiveTab("seo")}
                     className={`px-3.5 py-2 text-base font-bold border-b-2 transition-all cursor-pointer ${
                       activeTab === "seo"
-                        ? "border-[#064FE0] text-[#064FE0]"
+                        ? "border-[#e74b2d] text-[#e74b2d]"
                         : "border-transparent text-zinc-500 hover:text-zinc-800"
                     }`}
                   >
@@ -517,21 +517,21 @@ export default function AdminPagesPage() {
                   <button
                     type="button"
                     onClick={() => insertTemplateBlock("hero")}
-                    className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#064FE0] rounded-lg font-bold transition-all cursor-pointer"
+                    className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#e74b2d] rounded-lg font-bold transition-all cursor-pointer"
                   >
                     + Hero Banner
                   </button>
                   <button
                     type="button"
                     onClick={() => insertTemplateBlock("faq")}
-                    className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#064FE0] rounded-lg font-bold transition-all cursor-pointer"
+                    className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#e74b2d] rounded-lg font-bold transition-all cursor-pointer"
                   >
                     + FAQ Accordion
                   </button>
                   <button
                     type="button"
                     onClick={() => insertTemplateBlock("contact")}
-                    className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#064FE0] rounded-lg font-bold transition-all cursor-pointer"
+                    className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#e74b2d] rounded-lg font-bold transition-all cursor-pointer"
                   >
                     + Contact Info
                   </button>
@@ -567,7 +567,7 @@ export default function AdminPagesPage() {
                     rows={12}
                     value={form.content}
                     onChange={(e) => setForm((prev) => ({ ...prev, content: e.target.value }))}
-                    className="w-full bg-[#0f1117] text-sky-300 font-mono text-base rounded-2xl p-4 border border-zinc-800 focus:outline-none focus:border-[#064FE0] leading-relaxed resize-y"
+                    className="w-full bg-[#0f1117] text-sky-300 font-mono text-base rounded-2xl p-4 border border-zinc-800 focus:outline-none focus:border-[#e74b2d] leading-relaxed resize-y"
                     placeholder="<h2>Page Heading</h2><p>Write your page text content here...</p>"
                   />
                 </div>
@@ -575,7 +575,7 @@ export default function AdminPagesPage() {
 
               {/* Tab 3: SEO Meta Tags */}
               {activeTab === "seo" && (
-                <div className="space-y-4 p-4 bg-[#f8fbfd] border border-sky-100 rounded-2xl">
+                <div className="space-y-4 p-4 bg-[#fbfaf7] border border-sky-100 rounded-2xl">
                   <div>
                     <label className="text-base font-bold text-zinc-700 block mb-1">
                       Meta Title (Browser Title)
@@ -612,7 +612,7 @@ export default function AdminPagesPage() {
                       type="checkbox"
                       checked={form.isPublished}
                       onChange={(e) => setForm((prev) => ({ ...prev, isPublished: e.target.checked }))}
-                      className="rounded accent-[#064FE0]"
+                      className="rounded accent-[#e74b2d]"
                     />
                     <span className="text-base font-bold text-zinc-800">Publish immediately</span>
                   </label>
@@ -622,7 +622,7 @@ export default function AdminPagesPage() {
                       type="checkbox"
                       checked={form.addToHeaderMenu}
                       onChange={(e) => setForm((prev) => ({ ...prev, addToHeaderMenu: e.target.checked }))}
-                      className="rounded accent-[#064FE0]"
+                      className="rounded accent-[#e74b2d]"
                     />
                     <span className="text-base font-bold text-zinc-800">
                       Automatically add link to Header Navigation Menu
@@ -643,7 +643,7 @@ export default function AdminPagesPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 py-2.5 bg-[#064FE0] hover:bg-[#0439A8] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
                 >
                   {saving ? "Saving Page..." : editingPage ? "Update Custom Page" : "Publish Custom Page"}
                 </button>

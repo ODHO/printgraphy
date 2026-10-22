@@ -1,4 +1,4 @@
-# XPrintz Clone — Full Project Blueprint
+# Printgraphi — Full Project Blueprint
 
 ### Business Card / Print Design Web App — Next.js + MongoDB
 

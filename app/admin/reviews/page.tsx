@@ -157,7 +157,7 @@ export default function AdminReviewsPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-black text-zinc-900 tracking-tight">User Reviews Management</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-base font-bold bg-[#064FE0]/10 text-[#064FE0]">
+            <span className="px-2.5 py-0.5 rounded-full text-base font-bold bg-[#e74b2d]/10 text-[#e74b2d]">
               {reviews.length} Total Reviews
             </span>
           </div>
@@ -206,14 +206,14 @@ export default function AdminReviewsPage() {
             placeholder="Search by customer name, comment, title, or product ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-zinc-300 text-base font-medium focus:outline-none focus:border-[#064FE0]"
+            className="w-full px-4 py-2.5 rounded-xl border border-zinc-300 text-base font-medium focus:outline-none focus:border-[#e74b2d]"
           />
         </div>
 
         <select
           value={filterRating}
           onChange={(e) => setFilterRating(e.target.value === "all" ? "all" : Number(e.target.value))}
-          className="px-4 py-2.5 rounded-xl border border-zinc-300 text-base font-bold text-zinc-700 bg-white focus:outline-none focus:border-[#064FE0] w-full sm:w-auto"
+          className="px-4 py-2.5 rounded-xl border border-zinc-300 text-base font-bold text-zinc-700 bg-white focus:outline-none focus:border-[#e74b2d] w-full sm:w-auto"
         >
           <option value="all">All Star Ratings</option>
           <option value="5">5 Stars Only</option>
@@ -227,7 +227,7 @@ export default function AdminReviewsPage() {
       {/* Reviews Table / Cards */}
       {loading ? (
         <div className="bg-white p-12 rounded-2xl border border-zinc-200 text-center">
-          <div className="w-8 h-8 border-2 border-[#064FE0] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="w-8 h-8 border-2 border-[#e74b2d] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-base font-bold text-zinc-600">Loading user reviews...</p>
         </div>
       ) : filteredReviews.length === 0 ? (
@@ -288,7 +288,7 @@ export default function AdminReviewsPage() {
                       <Link
                         href={`/product/${r.productId}`}
                         target="_blank"
-                        className="font-bold text-[#064FE0] hover:underline truncate max-w-[160px] block"
+                        className="font-bold text-[#e74b2d] hover:underline truncate max-w-[160px] block"
                         title={r.productId}
                       >
                         {r.productId}
@@ -309,7 +309,7 @@ export default function AdminReviewsPage() {
                             rows={3}
                             value={replyDraft}
                             onChange={(e) => setReplyDraft(e.target.value)}
-                            className="w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-base focus:outline-none focus:border-[#064FE0]"
+                            className="w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-base focus:outline-none focus:border-[#e74b2d]"
                             placeholder="Write a reply to this review"
                           />
                           <div className="flex gap-2">
@@ -317,7 +317,7 @@ export default function AdminReviewsPage() {
                               type="button"
                               onClick={() => saveReply(r._id)}
                               disabled={savingReply}
-                              className="px-3 py-1.5 bg-[#064FE0] text-white text-base font-bold rounded-lg cursor-pointer disabled:opacity-60"
+                              className="px-3 py-1.5 bg-[#e74b2d] text-white text-base font-bold rounded-lg cursor-pointer disabled:opacity-60"
                             >
                               {savingReply ? "Saving..." : "Save reply"}
                             </button>
@@ -348,7 +348,7 @@ export default function AdminReviewsPage() {
                             setReplyingId(r._id);
                             setReplyDraft(r.adminReply || "");
                           }}
-                          className="px-3 py-1.5 bg-sky-50 hover:bg-[#064FE0] text-[#064FE0] hover:text-white border border-sky-200 text-base font-bold rounded-lg transition-all cursor-pointer"
+                          className="px-3 py-1.5 bg-sky-50 hover:bg-[#e74b2d] text-[#e74b2d] hover:text-white border border-sky-200 text-base font-bold rounded-lg transition-all cursor-pointer"
                         >
                           {r.adminReply ? "Edit reply" : "Reply"}
                         </button>

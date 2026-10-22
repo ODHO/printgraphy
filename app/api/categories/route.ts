@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Category from "@/models/Category";
+import { catalogImageFor } from "@/lib/catalogImages";
 
 // GET /api/categories — public endpoint
 export async function GET(req: NextRequest) {
@@ -19,5 +20,11 @@ export async function GET(req: NextRequest) {
     .select("-__v")
     .lean();
 
-  return NextResponse.json({ success: true, categories });
+  const themedCategories = categories.map((category) => ({
+    ...category,
+    image: catalogImageFor(category.name, category.slug),
+    galleryImages: [catalogImageFor(category.name, category.slug)],
+  }));
+
+  return NextResponse.json({ success: true, categories: themedCategories });
 }
