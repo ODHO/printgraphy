@@ -50,7 +50,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#fbfaf7]">
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#ffffff]">
         {/* <GlobalApiLoader /> */}
         <ScrollMemory />
         <Header />

@@ -15,7 +15,7 @@ export default async function Home() {
   const content = mergeHomepage(doc?.content);
 
   return (
-    <div className="flex-1 bg-[#fbfaf7]">
+    <div className="flex-1 bg-[#ffffff]">
       <Hero hero={content.hero} />
       <CategoryCarousel />
       <ShopByCollection collections={content.collections} />

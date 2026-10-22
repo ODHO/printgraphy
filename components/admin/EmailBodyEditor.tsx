@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 function run(command: string, value?: string) {
   document.execCommand(command, false, value);
@@ -40,13 +40,29 @@ export default function EmailBodyEditor({
   };
 
   return (
-    <div className="mt-1 overflow-hidden rounded-xl border border-zinc-200 bg-white">
-      <div className="flex flex-wrap items-center gap-1 border-b border-zinc-200 bg-[#fbfaf7] px-2 py-1.5">
-        <ToolButton label="B" title="Bold" onClick={() => format("bold")} className="font-bold" />
-        <ToolButton label="I" title="Italic" onClick={() => format("italic")} className="italic" />
-        <ToolButton label="U" title="Underline" onClick={() => format("underline")} className="underline" />
-        <ToolButton label="List" title="Bullet list" onClick={() => format("insertUnorderedList")} />
-        <span className="mx-1 h-4 w-px bg-zinc-200" />
+    <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xs transition focus-within:border-[#329AD4] focus-within:ring-4 focus-within:ring-[#329AD4]/10">
+      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-100 bg-zinc-50/80 px-2.5 py-2">
+        <div className="inline-flex items-center gap-0.5 rounded-lg border border-zinc-200 bg-white p-0.5 shadow-xs">
+          <ToolButton label="B" title="Bold" onClick={() => format("bold")} className="font-bold" />
+          <ToolButton label="I" title="Italic" onClick={() => format("italic")} className="italic font-serif" />
+          <ToolButton label="U" title="Underline" onClick={() => format("underline")} className="underline" />
+          <span className="mx-0.5 h-4 w-px bg-zinc-200" />
+          <ToolButton
+            label={
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01" />
+              </svg>
+            }
+            title="Bullet list"
+            onClick={() => format("insertUnorderedList")}
+          />
+        </div>
+        {placeholders.length > 0 && (
+          <>
+            <span className="hidden sm:block h-5 w-px bg-zinc-200" />
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Insert</span>
+          </>
+        )}
         {placeholders.map((token) => (
           <button
             key={token}
@@ -54,8 +70,9 @@ export default function EmailBodyEditor({
             title={`Insert ${token}`}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => insertField(token)}
-            className="rounded-md bg-white px-2 py-1 text-base font-semibold text-[#e74b2d] border border-zinc-200 cursor-pointer hover:bg-sky-50"
+            className="inline-flex items-center gap-1 rounded-md border border-[#dbeefb] bg-[#EAF5FB] px-2 py-1 font-mono text-[11px] font-semibold text-[#2884b8] cursor-pointer transition-colors hover:border-[#b8e0f6] hover:bg-[#dbeefb]"
           >
+            <span className="text-[#329AD4]/70">+</span>
             {token.replace(/[{}]/g, "")}
           </button>
         ))}
@@ -67,7 +84,7 @@ export default function EmailBodyEditor({
         aria-multiline="true"
         suppressContentEditableWarning
         onInput={sync}
-        className="min-h-[160px] px-3.5 py-3 text-base leading-6 text-zinc-900 outline-none [&_p]:my-2 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5"
+        className="min-h-[180px] px-4 py-3.5 text-sm leading-6 text-zinc-900 outline-none [&_p]:my-2 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5"
       />
     </div>
   );
@@ -79,7 +96,7 @@ function ToolButton({
   onClick,
   className = "",
 }: {
-  label: string;
+  label: ReactNode;
   title: string;
   onClick: () => void;
   className?: string;
@@ -88,9 +105,10 @@ function ToolButton({
     <button
       type="button"
       title={title}
+      aria-label={title}
       onMouseDown={(event) => event.preventDefault()}
       onClick={onClick}
-      className={`min-w-7 rounded-md px-2 py-1 text-base text-zinc-700 hover:bg-white cursor-pointer ${className}`}
+      className={`inline-flex h-7 min-w-7 items-center justify-center rounded-md px-1.5 text-sm text-zinc-600 transition-colors hover:bg-[#EAF5FB] hover:text-[#2884b8] cursor-pointer ${className}`}
     >
       {label}
     </button>

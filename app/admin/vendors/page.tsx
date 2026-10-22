@@ -1,8 +1,27 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Icon,
+  IconButton,
+  Notice,
+  PageHeader,
+  Spinner,
+  SkeletonRows,
+  StatTile,
+  Toolbar,
+  cx,
+  inputClass,
+  labelClass,
+  statusTone,
+  table,
+} from "@/components/admin/ui";
 import { useLiveRefresh } from "@/components/useMessageStream";
 
 interface Vendor {
@@ -22,61 +41,10 @@ interface Vendor {
     onTimePercentage?: number;
     reprintRate?: number;
   };
-  vendorCode?: string;
-  avgRating?: number;
-  totalOrdersCompleted?: number;
-  activeServices?: number;
-  subscriptionPlan?: string;
-  avatarUrl?: string;
 }
 
-const DEFAULT_VENDORS: Vendor[] = [
-  {
-    _id: "vndr-1",
-    vendorCode: "#VNDR1234",
-    name: "John Smith",
-    contactName: "John Smith",
-    email: "john.smith@example.com",
-    phone: "3020267008",
-    status: "active",
-    avgRating: 4.5,
-    totalOrdersCompleted: 20,
-    activeServices: 15,
-    subscriptionPlan: "Free",
-    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face",
-  },
-  {
-    _id: "vndr-2",
-    vendorCode: "#VNDR5678",
-    name: "Jane Doe",
-    contactName: "Jane Doe",
-    email: "jane.doe@example.com",
-    phone: "3050448411",
-    status: "active",
-    avgRating: 4.5,
-    totalOrdersCompleted: 12,
-    activeServices: 11,
-    subscriptionPlan: "Premium Monthly",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-  },
-  {
-    _id: "vndr-3",
-    vendorCode: "#VNDR9012",
-    name: "Michael Lee",
-    contactName: "Michael Lee",
-    email: "michael.lee@example.com",
-    phone: "3242718611",
-    status: "active",
-    avgRating: 4.5,
-    totalOrdersCompleted: 15,
-    activeServices: 13,
-    subscriptionPlan: "Free",
-    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
-  },
-];
-
 export default function AdminVendorsPage() {
-  const [vendors, setVendors] = useState<Vendor[]>(DEFAULT_VENDORS);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -101,18 +69,8 @@ export default function AdminVendorsPage() {
     try {
       const res = await fetch("/api/admin/vendors");
       const data = await res.json();
-      if (data.success && Array.isArray(data.vendors) && data.vendors.length > 0) {
-        setVendors(
-          data.vendors.map((v: any, idx: number) => ({
-            ...v,
-            vendorCode: `#VNDR${String(1000 + idx * 4321).slice(0, 4)}`,
-            avgRating: 4.5,
-            totalOrdersCompleted: v.metrics?.onTimePercentage ? Math.round(v.metrics.onTimePercentage / 5) : 15 + idx * 3,
-            activeServices: v.categoriesFulfilled?.length ? v.categoriesFulfilled.length * 3 : 12,
-            subscriptionPlan: idx % 2 === 1 ? "Premium Monthly" : "Free",
-            avatarUrl: DEFAULT_VENDORS[idx % DEFAULT_VENDORS.length].avatarUrl,
-          }))
-        );
+      if (data.success && Array.isArray(data.vendors)) {
+        setVendors(data.vendors);
       }
     } catch (e) {
       console.error(e);
@@ -234,314 +192,284 @@ export default function AdminVendorsPage() {
     }
   };
 
+  const allSelected = selectedIds.length === vendors.length && vendors.length > 0;
+  const checkboxClass = "h-4 w-4 rounded border-zinc-300 accent-[#329AD4] text-[#329AD4] focus:ring-[#329AD4] cursor-pointer";
+
+  const withMetrics = vendors.filter((v) => typeof v.metrics?.acceptanceRate === "number");
+  const stats = {
+    active: vendors.filter((v) => v.status === "active").length,
+    available: vendors.filter((v) => v.status === "active" && v.isAvailable !== false).length,
+    inactive: vendors.filter((v) => v.status !== "active").length,
+    acceptance: withMetrics.length
+      ? `${Math.round(withMetrics.reduce((sum, v) => sum + (v.metrics?.acceptanceRate ?? 0), 0) / withMetrics.length)}%`
+      : "—",
+    balance: `$${vendors.reduce((sum, v) => sum + (v.earnedBalance ?? 0), 0).toFixed(2)}`,
+  };
+
   return (
     <div className="space-y-6 w-full">
-      {/* Title */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl sm:text-2xl font-bold text-zinc-900">Vendor Management</h1>
-        <button
-          onClick={() => {
-            setEditingVendor(null);
-            setForm({
-              name: "",
-              contactName: "",
-              email: "",
-              phone: "",
-              marketsCovered: "NY, LA, TX",
-              categoriesFulfilled: "Business Cards, Packaging",
-              capacityPerWeek: "500",
-            });
-            setError("");
-            setShowModal(true);
-          }}
-          className="text-xs font-semibold px-3 py-1.5 bg-[#e74b2d] text-white rounded-lg hover:bg-[#c93e23] transition cursor-pointer"
-        >
-          + Add Vendor
-        </button>
+      <PageHeader
+        icon="vendors"
+        title="Vendor Management"
+        description="Onboard print partners, review their performance and manage their status."
+        actions={
+          <Button
+            icon="plus"
+            onClick={() => {
+              setEditingVendor(null);
+              setForm({
+                name: "",
+                contactName: "",
+                email: "",
+                phone: "",
+                marketsCovered: "NY, LA, TX",
+                categoriesFulfilled: "Business Cards, Packaging",
+                capacityPerWeek: "500",
+              });
+              setError("");
+              setShowModal(true);
+            }}
+          >
+            Add Vendor
+          </Button>
+        }
+      />
+
+      {statusNotice && <Notice tone="brand">{statusNotice}</Notice>}
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <StatTile label="Total Vendors" icon="vendors" tone="brand" loading={loading} value={<span className="tabular-nums">{vendors.length}</span>} />
+        <StatTile label="Active" icon="check" tone="green" loading={loading} value={<span className="tabular-nums">{stats.active}</span>} />
+        <StatTile label="Accepting Orders" icon="clock" tone="sky" loading={loading} value={<span className="tabular-nums">{stats.available}</span>} hint="Availability switched on" />
+        <StatTile label="Paused / Deactivated" icon="ban" tone="amber" loading={loading} value={<span className="tabular-nums">{stats.inactive}</span>} />
+        <StatTile label="Avg. Acceptance Rate" icon="analytics" tone="violet" loading={loading} value={<span className="tabular-nums">{stats.acceptance}</span>} />
+        <StatTile label="Wallet Balances" icon="wallet" tone="indigo" loading={loading} value={<span className="tabular-nums">{stats.balance}</span>} hint="Owed to vendors" />
       </div>
 
-      {statusNotice && (
-        <div className="bg-sky-50 border border-sky-200 text-sky-800 text-xs px-4 py-2.5 rounded-xl font-medium animate-in fade-in">
-          {statusNotice}
-        </div>
-      )}
-
-      {/* ─────────────────────────────────────────────────────────────
-          6 STAT CARDS (Matched exactly to Screenshot 4)
-      ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {/* 1. Total Services */}
-        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-          <p className="text-sm font-semibold text-zinc-800">Total Services</p>
-          <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">58</p>
-          <div />
-        </div>
-
-        {/* 2. Average Price (per unit) */}
-        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-          <p className="text-sm font-semibold text-zinc-800">Average Price (per unit)</p>
-          <p className="text-3xl lg:text-4xl font-normal text-zinc-900 text-center my-3">$ 2.45</p>
-          <div />
-        </div>
-
-        {/* 3. Total Active Service */}
-        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-          <p className="text-sm font-semibold text-zinc-800">Total Active Service</p>
-          <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">05</p>
-          <div />
-        </div>
-
-        {/* 4. Total Non Active Service */}
-        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-          <p className="text-sm font-semibold text-zinc-800">Total Non Active Service</p>
-          <p className="text-3xl lg:text-4xl font-normal text-zinc-900 text-center my-3">$ 1670.00</p>
-          <div />
-        </div>
-
-        {/* 5. Total Vendor(s) */}
-        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-          <p className="text-sm font-semibold text-zinc-800">Total Vendor(s)</p>
-          <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">{vendors.length > 0 ? 566 : 566}</p>
-          <div />
-        </div>
-
-        {/* 6. Total Price */}
-        <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-          <p className="text-sm font-semibold text-zinc-800">Total Price</p>
-          <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">98</p>
-          <div />
-        </div>
-      </div>
-
-      {/* ─────────────────────────────────────────────────────────────
-          VENDORS ACTION BAR & TABLE
-      ───────────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-zinc-100 shadow-xs space-y-4">
-        {/* Header Action Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h2 className="text-sm font-bold text-zinc-900">Vendors</h2>
+      {/* Vendors table */}
+      <Card className="overflow-hidden">
+        <Toolbar>
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EAF5FB] text-[#2884b8]">
+              <Icon name="vendors" className="w-4 h-4" />
+            </span>
+            <div className="min-w-0">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
+                Vendors
+                {loading && <Spinner className="h-3.5 w-3.5" />}
+              </h2>
+              <p className="text-xs text-zinc-500 tabular-nums">
+                {selectedIds.length > 0 ? `${selectedIds.length} of ${vendors.length} selected` : `${vendors.length} vendor${vendors.length === 1 ? "" : "s"} · select rows to run an action`}
+              </p>
+            </div>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => handleAction("details")}
-              className="px-3.5 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-lg transition shadow-xs cursor-pointer"
-            >
+            <Button size="sm" variant="secondary" icon="eye" onClick={() => handleAction("details")}>
               View Details
-            </button>
-            <button
-              type="button"
-              onClick={() => handleAction("services")}
-              className="px-3.5 py-1.5 bg-[#6B46C1] hover:bg-[#5B37B0] text-white text-xs font-semibold rounded-lg transition shadow-xs cursor-pointer"
-            >
+            </Button>
+            <Button size="sm" variant="soft" icon="services" onClick={() => handleAction("services")}>
               Manage Services
-            </button>
+            </Button>
             <button
               type="button"
               onClick={() => handleAction("approve")}
-              className="px-3.5 py-1.5 bg-[#10B981] hover:bg-[#059669] text-white text-xs font-semibold rounded-lg transition shadow-xs cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-emerald-500/25 transition-all hover:bg-emerald-600 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
             >
+              <Icon name="check" className="w-3.5 h-3.5" strokeWidth={2.2} />
               Approve
             </button>
-            <button
-              type="button"
-              onClick={() => handleAction("suspend")}
-              className="px-3.5 py-1.5 bg-[#EF4444] hover:bg-[#DC2626] text-white text-xs font-semibold rounded-lg transition shadow-xs cursor-pointer"
-            >
+            <Button size="sm" variant="danger" icon="ban" onClick={() => handleAction("suspend")}>
               Suspend
-            </button>
+            </Button>
           </div>
-        </div>
+        </Toolbar>
 
-        {/* Table Container */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
-            {/* Header row with light blue pill background */}
-            <thead>
-              <tr className="bg-[#d7ebf7] text-zinc-800 text-xs font-semibold rounded-xl">
-                <th className="py-3 pl-4 pr-2 rounded-l-xl w-10">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.length === vendors.length && vendors.length > 0}
-                    onChange={toggleSelectAll}
-                    className="rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
-                  />
-                </th>
-                <th className="py-3 px-3 font-semibold whitespace-nowrap">Vendor ID</th>
-                <th className="py-3 px-4 font-semibold whitespace-nowrap">Vendor Name/Email</th>
-                <th className="py-3 px-4 font-semibold whitespace-nowrap">Avg. Rating</th>
-                <th className="py-3 px-4 font-semibold whitespace-nowrap text-center">Total Orders Completed</th>
-                <th className="py-3 px-4 font-semibold whitespace-nowrap text-center">No. of Active Services</th>
-                <th className="py-3 pr-4 pl-3 rounded-r-xl font-semibold whitespace-nowrap">Subscription Plan</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {vendors.map((v) => {
-                const isChecked = selectedIds.includes(v._id);
-                return (
-                  <tr
-                    key={v._id}
-                    className={`hover:bg-sky-50/30 transition-colors ${isChecked ? "bg-sky-50/50" : ""}`}
-                  >
-                    {/* Checkbox */}
-                    <td className="py-3.5 pl-4 pr-2">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => toggleSelect(v._id)}
-                        className="rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
-                      />
-                    </td>
+        {loading && vendors.length === 0 ? (
+          <SkeletonRows rows={5} />
+        ) : vendors.length === 0 ? (
+          <EmptyState icon="vendors" title="No vendors yet" description="Add your first print partner to start assigning orders." />
+        ) : (
+          <div className={table.wrap}>
+            <table className={table.table}>
+              <thead className={table.thead}>
+                <tr>
+                  <th className={cx(table.th, "w-10 pr-2")}>
+                    <input
+                      type="checkbox"
+                      aria-label="Select all vendors"
+                      checked={allSelected}
+                      onChange={toggleSelectAll}
+                      className={checkboxClass}
+                    />
+                  </th>
+                  <th className={table.th}>Vendor Name/Email</th>
+                  <th className={table.th}>Status</th>
+                  <th className={cx(table.th, "text-center")}>Acceptance</th>
+                  <th className={cx(table.th, "text-center")}>On-time</th>
+                  <th className={cx(table.th, "text-center")}>Categories</th>
+                  <th className={cx(table.th, "text-right")}>Wallet</th>
+                  <th className={cx(table.th, "text-right")}>
+                    <span className="sr-only">Open</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className={table.tbody}>
+                {vendors.map((v) => {
+                  const isChecked = selectedIds.includes(v._id);
+                  return (
+                    <tr key={v._id} className={cx(table.tr, isChecked && "bg-[#EAF5FB]/60")}>
+                      <td className={cx(table.td, "pr-2")}>
+                        <input
+                          type="checkbox"
+                          aria-label={`Select ${v.name}`}
+                          checked={isChecked}
+                          onChange={() => toggleSelect(v._id)}
+                          className={checkboxClass}
+                        />
+                      </td>
 
-                    {/* Vendor ID */}
-                    <td className="py-3.5 px-3 font-semibold text-zinc-900 whitespace-nowrap">
-                      {v.vendorCode || "#VNDR1234"}
-                    </td>
-
-                    {/* Vendor Name / Email with avatar */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full overflow-hidden bg-zinc-200 shrink-0 border border-zinc-200">
-                          {v.avatarUrl ? (
-                            <img
-                              src={v.avatarUrl}
-                              alt={v.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs font-bold text-zinc-600 bg-sky-100">
-                              {v.name.slice(0, 2).toUpperCase()}
-                            </div>
-                          )}
+                      <td className={cx(table.td, "whitespace-nowrap")}>
+                        <div className="flex items-center gap-3">
+                          <Avatar name={v.name} />
+                          <div className="min-w-0">
+                            <p className="font-semibold text-zinc-900">{v.name}</p>
+                            <p className="text-xs text-zinc-500">{v.email}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold text-zinc-900 text-xs sm:text-sm">{v.name}</p>
-                          <p className="text-zinc-500 text-xs">{v.email}</p>
-                        </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Avg. Rating */}
-                    <td className="py-3.5 px-4 font-semibold text-amber-500 whitespace-nowrap">
-                      {v.avgRating ?? 4.5}
-                    </td>
+                      <td className={table.td}>
+                        <Badge tone={statusTone(v.status)} dot>
+                          {v.status}
+                        </Badge>
+                      </td>
 
-                    {/* Total Orders Completed */}
-                    <td className="py-3.5 px-4 text-center font-normal text-zinc-900 whitespace-nowrap">
-                      {v.totalOrdersCompleted ?? 20}
-                    </td>
+                      <td className={cx(table.td, "text-center font-semibold text-zinc-900 tabular-nums")}>
+                        {typeof v.metrics?.acceptanceRate === "number" ? `${v.metrics.acceptanceRate}%` : "—"}
+                      </td>
 
-                    {/* No. of Active Services */}
-                    <td className="py-3.5 px-4 text-center font-semibold text-emerald-600 whitespace-nowrap">
-                      {v.activeServices ?? 15}
-                    </td>
+                      <td className={cx(table.td, "text-center text-zinc-900 tabular-nums")}>
+                        {typeof v.metrics?.onTimePercentage === "number" ? `${v.metrics.onTimePercentage}%` : "—"}
+                      </td>
 
-                    {/* Subscription Plan */}
-                    <td className="py-3.5 pr-4 pl-3 font-medium text-zinc-800 whitespace-nowrap">
-                      {v.subscriptionPlan || "Free"}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                      <td className={cx(table.td, "text-center")}>
+                        <span
+                          className="inline-flex min-w-8 justify-center rounded-full bg-[#EAF5FB] px-2 py-0.5 text-xs font-semibold text-[#2884b8] tabular-nums"
+                          title={(v.categoriesFulfilled ?? []).join(", ")}
+                        >
+                          {v.categoriesFulfilled?.length ?? 0}
+                        </span>
+                      </td>
+
+                      <td className={cx(table.td, "text-right font-semibold text-zinc-900 tabular-nums whitespace-nowrap")}>
+                        ${(v.earnedBalance ?? 0).toFixed(2)}
+                      </td>
+
+                      <td className={cx(table.td, "text-right")}>
+                        <Link
+                          href={`/admin/vendors/${v._id}`}
+                          aria-label={`Open ${v.name}`}
+                          title="Open vendor"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-[#EAF5FB] hover:text-[#2884b8]"
+                        >
+                          <Icon name="chevronRight" className="w-4 h-4" />
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
 
       {/* Modal for Details / Edit / Create */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-zinc-100 space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
-              <h3 className="font-bold text-zinc-900 text-base">
-                {editingVendor ? "Vendor Details & Edit" : "Onboard New Vendor"}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="text-zinc-400 hover:text-zinc-700 text-lg cursor-pointer"
-              >
-                ✕
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/50 p-4 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-zinc-200/80 max-h-[calc(100vh-2rem)] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-zinc-100">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8]">
+                  <Icon name={editingVendor ? "edit" : "plus"} className="w-4 h-4" />
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold text-zinc-900">
+                    {editingVendor ? "Vendor Details & Edit" : "Onboard New Vendor"}
+                  </h3>
+                  {editingVendor && <p className="text-xs text-zinc-500 truncate">{editingVendor.email}</p>}
+                </div>
+              </div>
+              <IconButton icon="close" label="Close" onClick={() => setShowModal(false)} />
             </div>
 
-            {error && (
-              <div className="bg-red-50 text-red-600 text-xs p-3 rounded-lg border border-red-200">
-                {error}
-              </div>
-            )}
+            <form onSubmit={handleSubmit} className="space-y-4 px-5 sm:px-6 py-5">
+              {error && <Notice tone="red">{error}</Notice>}
 
-            <form onSubmit={handleSubmit} className="space-y-3 text-xs sm:text-sm">
               <div>
-                <label className="block font-semibold text-zinc-700 mb-1">Company / Facility Name</label>
+                <label className={labelClass}>Company / Facility Name</label>
                 <input
                   type="text"
                   required
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-700 mb-1">Contact Person Name</label>
+                <label className={labelClass}>Contact Person Name</label>
                 <input
                   type="text"
                   required
                   value={form.contactName}
                   onChange={(e) => setForm({ ...form, contactName: e.target.value })}
-                  className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
+                  className={inputClass}
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-zinc-700 mb-1">Email</label>
+                  <label className={labelClass}>Email</label>
                   <input
                     type="email"
                     required
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
+                    className={inputClass}
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-zinc-700 mb-1">Phone</label>
+                  <label className={labelClass}>Phone</label>
                   <input
                     type="text"
                     required
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
+                    className={inputClass}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-700 mb-1">Categories Fulfilled (comma-separated)</label>
+                <label className={labelClass}>Categories Fulfilled (comma-separated)</label>
                 <input
                   type="text"
                   value={form.categoriesFulfilled}
                   onChange={(e) => setForm({ ...form, categoriesFulfilled: e.target.value })}
                   placeholder="Business Cards, Postcards, Banners"
-                  className="w-full px-3 py-2 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e74b2d]"
+                  className={inputClass}
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-zinc-100">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-zinc-200 rounded-xl text-zinc-700 font-semibold hover:bg-zinc-50 cursor-pointer"
-                >
+              <div className="flex justify-end gap-2 pt-4 border-t border-zinc-100">
+                <Button variant="secondary" onClick={() => setShowModal(false)}>
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white rounded-xl font-semibold shadow-xs transition cursor-pointer"
-                >
+                </Button>
+                <Button type="submit" disabled={saving} icon={saving ? undefined : "check"}>
                   {saving ? "Saving..." : "Save Vendor"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

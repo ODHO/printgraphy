@@ -44,7 +44,7 @@ export default function ShopByCollection({ collections }: { collections: Homepag
       </div>
 
       {/* Outer wrapper: light bg card */}
-      <div className="relative rounded-[2rem] bg-[#f3e8dc] px-10 py-8">
+      <div className="relative rounded-[2rem] bg-[#EAF5FB] px-10 py-8">
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}

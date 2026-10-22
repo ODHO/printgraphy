@@ -191,20 +191,20 @@ export default function ChangePasswordPage() {
 
   if (fetchingUser) {
     return (
-      <div className="min-h-screen bg-[#fbfaf7] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#ffffff] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#329AD4] rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fbfaf7] font-sans text-zinc-900 pb-20">
+    <div className="min-h-screen bg-[#ffffff] font-sans text-zinc-900 pb-20">
       {/* Top Navbar */}
       <div className="bg-white border-b border-zinc-200/80">
         <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/">
-              <Image src="/logo/printgraphy-brand-v2.png" alt="Printgraphy Logo" width={200} height={54} className="h-8 w-auto object-contain" />
+              <Image src="/logo/logo.png" alt="Printgraphy Logo" width={378} height={108} className="h-8 w-auto object-contain" />
             </Link>
             <span className="text-zinc-300">/</span>
             <Link href="/profile" className="text-base font-semibold text-zinc-500 hover:text-zinc-800 transition-colors">
@@ -228,7 +228,7 @@ export default function ChangePasswordPage() {
         <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs p-6 sm:p-8 space-y-6">
           
           <div className="text-center space-y-1">
-            <div className="w-12 h-12 rounded-2xl bg-sky-50 text-[#e74b2d] flex items-center justify-center mx-auto text-xl border border-sky-100">
+            <div className="w-12 h-12 rounded-2xl bg-sky-50 text-[#329AD4] flex items-center justify-center mx-auto text-xl border border-sky-100">
               🔒
             </div>
             <h1 className="text-xl font-bold text-zinc-900 pt-2">
@@ -289,7 +289,7 @@ export default function ChangePasswordPage() {
                     type="button"
                     onClick={handleSendResetEmail}
                     disabled={sendingOtp}
-                    className="text-xs font-bold text-[#e74b2d] hover:underline cursor-pointer disabled:opacity-50"
+                    className="text-xs font-bold text-[#329AD4] hover:underline cursor-pointer disabled:opacity-50"
                   >
                     {sendingOtp ? "Sending code..." : "Forgot password?"}
                   </button>
@@ -301,7 +301,7 @@ export default function ChangePasswordPage() {
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] transition-colors pr-12"
+                    className="w-full bg-[#ffffff] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] transition-colors pr-12"
                   />
                   <button
                     type="button"
@@ -325,7 +325,7 @@ export default function ChangePasswordPage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="At least 6 characters"
-                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] transition-colors pr-12"
+                    className="w-full bg-[#ffffff] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] transition-colors pr-12"
                   />
                   <button
                     type="button"
@@ -350,7 +350,7 @@ export default function ChangePasswordPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Re-enter new password"
-                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] transition-colors pr-12"
+                    className="w-full bg-[#ffffff] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] transition-colors pr-12"
                   />
                   <button
                     type="button"
@@ -367,7 +367,7 @@ export default function ChangePasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-xs disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-xs disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -386,7 +386,7 @@ export default function ChangePasswordPage() {
                   type="button"
                   onClick={handleSendResetEmail}
                   disabled={sendingOtp}
-                  className="text-xs text-zinc-500 hover:text-[#e74b2d] font-medium transition-colors cursor-pointer"
+                  className="text-xs text-zinc-500 hover:text-[#329AD4] font-medium transition-colors cursor-pointer"
                 >
                   Don&apos;t remember your password? <span className="font-bold underline">Send Reset Email →</span>
                 </button>
@@ -407,7 +407,7 @@ export default function ChangePasswordPage() {
                     type="button"
                     onClick={handleSendResetEmail}
                     disabled={sendingOtp}
-                    className="text-xs font-bold text-[#e74b2d] hover:underline cursor-pointer disabled:opacity-50"
+                    className="text-xs font-bold text-[#329AD4] hover:underline cursor-pointer disabled:opacity-50"
                   >
                     {sendingOtp ? "Resending..." : "Resend Code"}
                   </button>
@@ -419,7 +419,7 @@ export default function ChangePasswordPage() {
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
                   placeholder="e.g. 123456"
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm font-mono tracking-widest text-zinc-900 focus:outline-none focus:border-[#e74b2d] transition-colors"
+                  className="w-full bg-[#ffffff] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm font-mono tracking-widest text-zinc-900 focus:outline-none focus:border-[#329AD4] transition-colors"
                 />
                 <span className="text-[11px] text-zinc-400 mt-1 block">Check your inbox ({userEmail}) for the 6-digit reset code.</span>
               </div>
@@ -436,7 +436,7 @@ export default function ChangePasswordPage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="At least 6 characters"
-                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] transition-colors pr-12"
+                    className="w-full bg-[#ffffff] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] transition-colors pr-12"
                   />
                   <button
                     type="button"
@@ -460,7 +460,7 @@ export default function ChangePasswordPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Re-enter new password"
-                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] transition-colors pr-12"
+                    className="w-full bg-[#ffffff] border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] transition-colors pr-12"
                   />
                   <button
                     type="button"
@@ -477,7 +477,7 @@ export default function ChangePasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-xs disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-xs disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>

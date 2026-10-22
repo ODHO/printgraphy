@@ -76,7 +76,7 @@ export default function ShopByBusinessUse() {
           <Link
             key={idx}
             href={`/product/${item.slug}`}
-            className="bg-white rounded-3xl border border-zinc-200/80 p-4 shadow-xs hover:shadow-xl hover:border-[#e74b2d]/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+            className="bg-white rounded-3xl border border-zinc-200/80 p-4 shadow-xs hover:shadow-xl hover:border-[#329AD4]/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
           >
             <div>
               {/* Image */}
@@ -92,7 +92,7 @@ export default function ShopByBusinessUse() {
 
               {/* Content */}
               <div className="space-y-1.5">
-                <h3 className="text-base font-extrabold text-zinc-900 leading-snug group-hover:text-[#e74b2d] transition-colors">
+                <h3 className="text-base font-extrabold text-zinc-900 leading-snug group-hover:text-[#329AD4] transition-colors">
                   {item.title}
                 </h3>
                 <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2">
@@ -120,7 +120,7 @@ export default function ShopByBusinessUse() {
                 <div className="text-base font-black text-zinc-900">{item.price}</div>
                 <div className="text-[11px] text-zinc-400 font-medium">{item.unitPrice}</div>
               </div>
-              <span className="w-8 h-8 rounded-full bg-zinc-100 group-hover:bg-[#e74b2d] group-hover:text-white flex items-center justify-center text-zinc-600 font-bold text-sm transition-all shadow-2xs">
+              <span className="w-8 h-8 rounded-full bg-zinc-100 group-hover:bg-[#329AD4] group-hover:text-white flex items-center justify-center text-zinc-600 font-bold text-sm transition-all shadow-2xs">
                 →
               </span>
             </div>

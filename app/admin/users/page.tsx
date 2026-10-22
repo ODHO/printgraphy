@@ -1,6 +1,22 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Icon,
+  PageHeader,
+  Pagination as PaginationBar,
+  SearchInput,
+  SkeletonRows,
+  StatTile,
+  Toolbar,
+  cx,
+  table,
+} from "@/components/admin/ui";
 
 interface User {
   _id: string;
@@ -58,126 +74,125 @@ export default function AdminUsersPage() {
     setToggling(null);
   };
 
+  // Derived from the page of users already loaded — no extra requests.
+  const adminCount = users.filter((u) => u.isAdmin).length;
+  const verifiedCount = users.filter((u) => u.isVerified).length;
+  const unverifiedCount = users.length - verifiedCount;
+  const statsLoading = loading && !pagination;
+
   return (
     <div className="space-y-6 max-w-7xl">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">User Accounts & Team Roles</h1>
-          <p className="text-zinc-500 text-base mt-0.5">{pagination ? `${pagination.total} registered customer and admin accounts` : "Loading..."}</p>
-        </div>
+      <PageHeader
+        icon="users"
+        title="User Accounts & Team Roles"
+        description={pagination ? `${pagination.total} registered customer and admin accounts` : "Loading..."}
+      />
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <StatTile label="Total accounts" icon="users" tone="brand" loading={statsLoading} value={<span className="tabular-nums">{pagination?.total ?? 0}</span>} hint="Customers and admins" />
+        <StatTile label="Admins" icon="settings" tone="violet" loading={statsLoading} value={<span className="tabular-nums">{adminCount}</span>} hint="On this page" />
+        <StatTile label="Verified" icon="check" tone="green" loading={statsLoading} value={<span className="tabular-nums">{verifiedCount}</span>} hint="On this page" />
+        <StatTile label="Unverified" icon="clock" tone="amber" loading={statsLoading} value={<span className="tabular-nums">{unverifiedCount}</span>} hint="On this page" />
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Search by name or email..."
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-xs"
-        />
-      </div>
+      <Card className="overflow-hidden">
+        <Toolbar>
+          <SearchInput
+            value={search}
+            onChange={(value) => { setSearch(value); setPage(1); }}
+            placeholder="Search by name or email..."
+          />
+          {pagination && (
+            <p className="text-xs text-zinc-500">
+              <span className="font-semibold text-zinc-700 tabular-nums">{pagination.total}</span> account{pagination.total === 1 ? "" : "s"}
+            </p>
+          )}
+        </Toolbar>
 
-      <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
-          <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
-          </div>
+          <SkeletonRows rows={6} />
         ) : users.length === 0 ? (
-          <div className="py-16 text-center text-zinc-400 text-base">
-            No user accounts found matching your query.
-          </div>
+          <EmptyState icon="users" title="No users found" description="No user accounts found matching your query." />
         ) : (
           <>
-            <table className="w-full text-base">
-              <thead>
-                <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
-                  <th className="text-left px-5 py-3.5 font-bold">User</th>
-                  <th className="text-left px-5 py-3.5 font-bold hidden md:table-cell">Email</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Verified</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Role</th>
-                  <th className="text-left px-5 py-3.5 font-bold hidden lg:table-cell">Joined</th>
-                  <th className="text-right px-5 py-3.5 font-bold">Admin Toggle</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {users.map((user) => (
-                  <tr key={user._id} className="hover:bg-sky-50/40 transition-colors">
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[#e74b2d] text-white flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
-                          {user.firstName.charAt(0)}{user.lastName.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-bold text-zinc-900">{user.firstName} {user.lastName}</p>
-                          <p className="text-zinc-400 text-base md:hidden">{user.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5 hidden md:table-cell">
-                      <span className="text-zinc-600 font-mono text-base">{user.email}</span>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      {user.isVerified ? (
-                        <span className="inline-flex items-center gap-1 text-base text-emerald-600 font-bold">
-                          ✓ Verified
-                        </span>
-                      ) : (
-                        <span className="text-base text-zinc-400">Unverified</span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      {user.isAdmin ? (
-                        <span className="px-2.5 py-1 rounded-full text-base font-bold bg-sky-50 text-sky-700 border border-sky-200">
-                          ADMIN
-                        </span>
-                      ) : (
-                        <span className="text-base text-zinc-600 font-medium capitalize">{user.role}</span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3.5 hidden lg:table-cell">
-                      <span className="text-zinc-400 text-base">
-                        {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <button
-                        onClick={() => handleToggleAdmin(user._id, user.isAdmin)}
-                        disabled={toggling === user._id}
-                        className={`px-3 py-1.5 rounded-xl font-bold text-base transition-all cursor-pointer border ${
-                          user.isAdmin
-                            ? "bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100"
-                            : "bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200"
-                        }`}
-                      >
-                        {user.isAdmin ? "Remove Admin" : "Make Admin"}
-                      </button>
-                    </td>
+            <div className={table.wrap}>
+              <table className={table.table}>
+                <thead className={table.thead}>
+                  <tr>
+                    <th className={table.th}>User</th>
+                    <th className={cx(table.th, "hidden md:table-cell")}>Email</th>
+                    <th className={table.th}>Verified</th>
+                    <th className={table.th}>Role</th>
+                    <th className={cx(table.th, "hidden lg:table-cell")}>Joined</th>
+                    <th className={cx(table.th, "text-right")}>Admin Toggle</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className={table.tbody}>
+                  {users.map((user) => (
+                    <tr key={user._id} className={table.tr}>
+                      <td className={table.td}>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Avatar name={`${user.firstName} ${user.lastName}`} />
+                          <div className="min-w-0">
+                            <p className="font-semibold text-zinc-900 truncate">{user.firstName} {user.lastName}</p>
+                            <p className="text-xs text-zinc-400 truncate md:hidden">{user.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className={cx(table.td, "hidden md:table-cell")}>
+                        <span className="text-zinc-600">{user.email}</span>
+                      </td>
+                      <td className={table.td}>
+                        {user.isVerified ? (
+                          <Badge tone="green" dot>Verified</Badge>
+                        ) : (
+                          <Badge tone="gray" dot>Unverified</Badge>
+                        )}
+                      </td>
+                      <td className={table.td}>
+                        {user.isAdmin ? (
+                          <Badge tone="violet" dot>Admin</Badge>
+                        ) : (
+                          <Badge tone="brand">{user.role}</Badge>
+                        )}
+                      </td>
+                      <td className={cx(table.td, "hidden lg:table-cell whitespace-nowrap text-zinc-500")}>
+                        {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </td>
+                      <td className={cx(table.td, "text-right whitespace-nowrap")}>
+                        <Button
+                          size="sm"
+                          variant={user.isAdmin ? "danger" : "soft"}
+                          onClick={() => handleToggleAdmin(user._id, user.isAdmin)}
+                          disabled={toggling === user._id}
+                        >
+                          {toggling === user._id ? (
+                            <span className="h-3.5 w-3.5 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                          ) : (
+                            <Icon name={user.isAdmin ? "close" : "plus"} className="w-3.5 h-3.5" strokeWidth={2.2} />
+                          )}
+                          {user.isAdmin ? "Remove Admin" : "Make Admin"}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-            {pagination && pagination.pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#fff7f3]/30">
-                <p className="text-base text-zinc-500 font-medium">Showing {(page - 1) * pagination.limit + 1}–{Math.min(page * pagination.limit, pagination.total)} of {pagination.total}</p>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer">
-                    Previous
-                  </button>
-                  <span className="text-base font-mono font-bold text-zinc-800 px-2">{page} / {pagination.pages}</span>
-                  <button onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))} disabled={page === pagination.pages} className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer">
-                    Next
-                  </button>
-                </div>
-              </div>
+            {pagination && (
+              <PaginationBar
+                page={page}
+                pages={pagination.pages}
+                total={pagination.total}
+                limit={pagination.limit}
+                onPage={(next) => setPage(Math.min(pagination.pages, Math.max(1, next)))}
+              />
             )}
           </>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

@@ -5,6 +5,27 @@ import { useRouter } from "next/navigation";
 import MessagePanel from "@/components/MessagePanel";
 import { useLiveRefresh } from "@/components/useMessageStream";
 import VendorSidebar, { type VendorTab } from "../_components/VendorSidebar";
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  EmptyState,
+  Field,
+  Icon,
+  IconButton,
+  LoadingState,
+  Notice,
+  PageHeader,
+  StatTile,
+  TONES,
+  cx,
+  inputClass,
+  labelClass,
+  table,
+  type IconName,
+  type Tone,
+} from "@/components/admin/ui";
 
 interface ShippingAddress {
   name: string;
@@ -400,356 +421,337 @@ export default function VendorDashboardPage() {
       setNotice("Withdrawal failed.");
     }
   };
-
   const accepting = Boolean(profile?.isAvailable && profile.status === "active");
 
   if (loadingProfile) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-3 border-sky-100 border-t-[#e74b2d] rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingState label="Loading vendor portal…" />
       </div>
     );
   }
 
+  const metrics: Metric[] = [
+    { label: "Available Balance", value: money(profile?.earnedBalance || 0), hint: "Ready for withdrawal", icon: "wallet", tone: "green" },
+    { label: "Pending Payouts", value: money(pendingBalance), hint: "In production / delivered", icon: "clock", tone: "amber" },
+    { label: "Incoming Orders", value: formatCount(orders.length, 0), hint: "Awaiting claim", icon: "inbox", tone: "brand" },
+    { label: "Active Jobs", value: formatCount(jobs.length, 0), hint: "In printing / shipping", icon: "services", tone: "indigo" },
+    { label: "Acceptance Rate", value: `${profile?.metrics?.acceptanceRate ?? 100}%`, hint: "Benchmark: > 95%", icon: "check", tone: "violet" },
+    { label: "Reprint Rate", value: `${profile?.metrics?.reprintRate ?? 0}%`, hint: "Quality score", icon: "refresh", tone: "red" },
+  ];
+
+  const incomingActions = (order: VendorOrder) => (
+    <>
+      <Button variant="secondary" size="sm" onClick={() => decline(order._id)} disabled={busyId === order._id}>
+        Decline
+      </Button>
+      <Button size="sm" icon="check" onClick={() => claim(order._id)} disabled={busyId === order._id}>
+        {busyId === order._id ? "Claiming..." : "Accept Order"}
+      </Button>
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-white font-sans text-zinc-900 flex flex-col justify-between">
-      <div className="w-full">
-        {/* Main Body: Left Sidebar + Right Content matching Admin Layout */}
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
-          {/* Vendor Navigation Sidebar */}
-          <VendorSidebar
-            currentTab={tab}
-            onSelectTab={setTab}
-            vendorName={profile?.name || "Vendor Facility"}
-            isAvailable={accepting}
-            onToggleAvailability={setAvailability}
-            unreadCount={unread}
-            incomingCount={orders.length}
-            jobsCount={jobs.length}
-          />
+    <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-5 lg:gap-7 items-start">
+      {/* Vendor Navigation Sidebar */}
+      <VendorSidebar
+        currentTab={tab}
+        onSelectTab={setTab}
+        vendorName={profile?.name || "Vendor Facility"}
+        isAvailable={accepting}
+        onToggleAvailability={setAvailability}
+        unreadCount={unread}
+        incomingCount={orders.length}
+        jobsCount={jobs.length}
+      />
 
-          {/* Right Main Content */}
-          <main className="flex-1 w-full min-w-0 space-y-6">
-            {/* Header Title & Subtitle */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-zinc-900">
-                  {profile?.name ? `${profile.name} — Vendor Portal` : "Vendor Portal"}
-                </h1>
-                <p className="text-xs sm:text-sm text-zinc-500 mt-1">
-                  Manage print production, fulfill incoming orders, and track your printing payouts.
-                </p>
-              </div>
+      {/* Right Main Content */}
+      <main className="flex-1 w-full min-w-0">
+        {/* Single wrapper so the global `main > div` storefront rule doesn't paint white blocks over the shell gradient. */}
+        <div className="admin-shell space-y-5">
+          {/* ── Header: hero on the dashboard, PageHeader on every other tab ── */}
+          {tab === "dashboard" ? (
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#329AD4] to-[#2884b8] px-6 py-6 sm:px-8 text-white">
+              <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-white/10" aria-hidden="true" />
+              <div className="absolute right-28 -bottom-20 h-40 w-40 rounded-full bg-white/10" aria-hidden="true" />
+              <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-white/75">
+                    {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
+                  </p>
+                  <h1 className="mt-0.5 text-xl sm:text-2xl font-bold tracking-tight break-words">
+                    {profile?.name ? `${profile.name} — Vendor Portal` : "Vendor Portal"}
+                  </h1>
+                  <p className="mt-1 max-w-xl text-sm text-white/85">
+                    Manage print production, fulfill incoming orders, and track your printing payouts.
+                  </p>
 
-              {/* Fulfilled Category Badges */}
-              {profile && profile.categoriesFulfilled.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 self-start sm:self-auto">
-                  {profile.categoriesFulfilled.map((cat) => (
-                    <span
-                      key={cat}
-                      className="rounded-full bg-[#fff1eb] border border-sky-100 px-3 py-1 text-xs font-semibold text-[#e74b2d]"
-                    >
-                      {cat}
-                    </span>
-                  ))}
+                  {/* Fulfilled Category Badges */}
+                  {profile && profile.categoriesFulfilled.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {profile.categoriesFulfilled.map((cat) => (
+                        <span key={cat} className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white ring-1 ring-inset ring-white/20">
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Notification alert banner */}
-            {notice && (
-              <div className="p-3.5 bg-sky-50 border border-sky-200 text-[#e74b2d] text-xs sm:text-sm rounded-xl font-semibold flex items-center justify-between">
-                <span>{notice}</span>
-                <button
-                  type="button"
-                  onClick={() => setNotice("")}
-                  className="text-zinc-400 hover:text-zinc-700 cursor-pointer ml-3"
-                >
-                  ✕
-                </button>
-              </div>
-            )}
-
-            {/* ─────────────────────────────────────────────────────────────
-                THE 6 SIGNATURE STAT CARDS (Exact Admin Dimensions & Colors)
-            ───────────────────────────────────────────────────────────── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {/* 1. Available Balance */}
-              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-                <p className="text-sm font-semibold text-zinc-800">Available Balance</p>
-                <p className="text-3xl lg:text-4xl font-normal text-zinc-900 text-center my-3">
-                  {money(profile?.earnedBalance || 0)}
-                </p>
-                <p className="text-[11px] text-zinc-500 text-center">Ready for withdrawal</p>
-              </div>
-
-              {/* 2. Pending Payouts */}
-              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-                <p className="text-sm font-semibold text-zinc-800">Pending Payouts</p>
-                <p className="text-3xl lg:text-4xl font-normal text-zinc-900 text-center my-3">
-                  {money(pendingBalance)}
-                </p>
-                <p className="text-[11px] text-zinc-500 text-center">In production / delivered</p>
-              </div>
-
-              {/* 3. Incoming Orders */}
-              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-                <p className="text-sm font-semibold text-zinc-800">Incoming Orders</p>
-                <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
-                  {formatCount(orders.length, 0)}
-                </p>
-                <p className="text-[11px] text-zinc-500 text-center">Awaiting claim</p>
-              </div>
-
-              {/* 4. Active Jobs */}
-              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-                <p className="text-sm font-semibold text-zinc-800">Active Jobs</p>
-                <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
-                  {formatCount(jobs.length, 0)}
-                </p>
-                <p className="text-[11px] text-zinc-500 text-center">In printing / shipping</p>
-              </div>
-
-              {/* 5. Acceptance Rate */}
-              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-                <p className="text-sm font-semibold text-zinc-800">Acceptance Rate</p>
-                <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
-                  {profile?.metrics?.acceptanceRate ?? 100}%
-                </p>
-                <p className="text-[11px] text-emerald-600 font-medium text-center">Benchmark: &gt; 95%</p>
-              </div>
-
-              {/* 6. Reprint Rate */}
-              <div className="bg-[#fff1eb] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] transition-transform hover:translate-y-[-1px]">
-                <p className="text-sm font-semibold text-zinc-800">Reprint Rate</p>
-                <p className="text-4xl lg:text-5xl font-normal text-zinc-900 text-center my-3">
-                  {profile?.metrics?.reprintRate ?? 0}%
-                </p>
-                <p className="text-[11px] text-zinc-500 text-center">Quality score</p>
-              </div>
-            </div>
-
-            {/* ─────────────────────────────────────────────────────────────
-                MAIN TABS CONTENT (Dashboard, Incoming, Jobs, Catalog, Earnings, Messages)
-            ───────────────────────────────────────────────────────────── */}
-
-            {/* TAB: Dashboard (Overview showing recent Incoming & Active Jobs side-by-side) */}
-            {tab === "dashboard" && (
-              <div className="space-y-6">
-                {/* Incoming Orders Section */}
-                <div className="bg-white rounded-2xl p-5 sm:p-6 border border-zinc-100 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
-                    <div>
-                      <h2 className="text-base sm:text-lg font-bold text-zinc-900">
-                        Incoming Print Orders ({orders.length})
-                      </h2>
-                      <p className="text-xs text-zinc-500">First facility to accept the job claims it.</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setTab("incoming")}
-                      className="text-xs font-semibold text-[#e74b2d] hover:underline cursor-pointer"
-                    >
-                      View All
-                    </button>
+                <div className="flex shrink-0 items-center gap-3 rounded-2xl bg-white/15 px-4 py-3 ring-1 ring-inset ring-white/20">
+                  <span className={cx("flex h-9 w-9 items-center justify-center rounded-xl", accepting ? "bg-emerald-400/90" : "bg-amber-400/90")}>
+                    <Icon name={accepting ? "check" : "clock"} className="w-[18px] h-[18px]" strokeWidth={2.2} />
+                  </span>
+                  <div>
+                    <p className="text-[11px] font-medium text-white/75">Facility status</p>
+                    <p className="text-sm font-semibold">{accepting ? "Accepting Orders" : "Orders Paused"}</p>
                   </div>
+                </div>
+              </div>
+            </div>
+          ) : tab === "incoming" ? (
+            <PageHeader
+              icon="inbox"
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Incoming Orders Queue <CountPill value={orders.length} />
+                </span>
+              }
+              description="First facility to accept the job claims it."
+              actions={
+                <Button variant="soft" icon="refresh" onClick={() => loadOrders()}>
+                  Refresh Queue
+                </Button>
+              }
+            />
+          ) : tab === "jobs" ? (
+            <PageHeader
+              icon="services"
+              title={
+                <span className="inline-flex items-center gap-2">
+                  My Production Jobs <CountPill value={jobs.length} />
+                </span>
+              }
+              description="Track and update orders currently in production."
+              actions={
+                <Button variant="soft" icon="refresh" onClick={() => loadOrders()}>
+                  Refresh Jobs
+                </Button>
+              }
+            />
+          ) : tab === "catalog" ? (
+            <PageHeader
+              icon="tag"
+              title="Catalog Costs & Pricing"
+              description="Set your wholesale fulfillment cost per category and check it against the benchmark."
+            />
+          ) : tab === "earnings" ? (
+            <PageHeader
+              icon="wallet"
+              title="Earnings & Payouts"
+              description="Withdraw available printing proceeds and manage your payout account."
+            />
+          ) : (
+            <PageHeader
+              icon="messages"
+              title="Live Messages"
+              description="Talk to the Printgraphy operations team about your orders."
+            />
+          )}
 
+          {/* Notification alert banner */}
+          {notice && (
+            <div className="flex items-start justify-between gap-3 rounded-xl border border-[#dbeefb] bg-[#f0f8fd] px-4 py-3 text-sm text-[#1b5b80]" role="status">
+              <span className="flex items-start gap-2.5 min-w-0">
+                <Icon name="sparkle" className="mt-0.5 w-4 h-4 shrink-0 text-[#329AD4]" />
+                <span className="font-medium break-words">{notice}</span>
+              </span>
+              <IconButton icon="close" label="Dismiss" onClick={() => setNotice("")} className="-my-1 -mr-1 shrink-0" />
+            </div>
+          )}
+
+          {/* ── Key metrics: full tiles on the dashboard, a compact strip elsewhere ── */}
+          {tab === "dashboard" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              {metrics.map((m) => (
+                <StatTile key={m.label} label={m.label} value={<span className="tabular-nums">{m.value}</span>} hint={m.hint} icon={m.icon} tone={m.tone} />
+              ))}
+            </div>
+          ) : (
+            <MetricStrip items={metrics} />
+          )}
+
+          {/* TAB: Dashboard (Overview showing recent Incoming & Active Jobs) */}
+          {tab === "dashboard" && (
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 items-start">
+              <div className="xl:col-span-2 space-y-5 min-w-0">
+                {/* Incoming Orders Section */}
+                <Card>
+                  <CardHeader
+                    icon="inbox"
+                    title={
+                      <span className="inline-flex items-center gap-2">
+                        Incoming Print Orders <CountPill value={orders.length} />
+                      </span>
+                    }
+                    subtitle="First facility to accept the job claims it."
+                    action={
+                      <Button variant="ghost" size="sm" onClick={() => setTab("incoming")}>
+                        View All
+                        <Icon name="chevronRight" className="w-3.5 h-3.5" strokeWidth={2.2} />
+                      </Button>
+                    }
+                  />
                   {loadingOrders ? (
-                    <div className="py-8 text-center">
-                      <div className="w-6 h-6 border-2 border-sky-100 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
-                    </div>
+                    <LoadingState label="Loading orders…" />
                   ) : orders.length === 0 ? (
-                    <div className="py-8 text-center text-xs sm:text-sm text-zinc-500 bg-[#F9FAFB] rounded-xl border border-zinc-100">
-                      {accepting
-                        ? "No incoming orders in your market area currently."
-                        : "Availability is paused. Toggle 'Accepting Orders' to receive incoming print jobs."}
-                    </div>
+                    accepting ? (
+                      <EmptyState icon="inbox" title="No incoming orders in your market area currently." description="New jobs that match your markets and catalog will appear here." />
+                    ) : (
+                      <EmptyState icon="clock" title="Availability is paused" description="Toggle 'Accepting Orders' to receive incoming print jobs." />
+                    )
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-3 p-4 sm:p-5">
                       {orders.slice(0, 3).map((order) => (
                         <OrderCard
                           key={order._id}
                           order={order}
                           open={openId === order._id}
                           onToggle={() => setOpenId(openId === order._id ? null : order._id)}
-                          actions={
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => decline(order._id)}
-                                disabled={busyId === order._id}
-                                className="px-4 py-2 rounded-full border border-zinc-200 bg-white text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition cursor-pointer"
-                              >
-                                Decline
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => claim(order._id)}
-                                disabled={busyId === order._id}
-                                className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-xs rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
-                              >
-                                {busyId === order._id ? "Claiming..." : "Accept Order"}
-                              </button>
-                            </>
-                          }
+                          actions={incomingActions(order)}
                         />
                       ))}
                     </div>
                   )}
-                </div>
+                </Card>
 
                 {/* Active Jobs Section */}
-                <div className="bg-white rounded-2xl p-5 sm:p-6 border border-zinc-100 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
-                    <div>
-                      <h2 className="text-base sm:text-lg font-bold text-zinc-900">
-                        Active Production Jobs ({jobs.length})
-                      </h2>
-                      <p className="text-xs text-zinc-500">Orders currently in fulfillment.</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setTab("jobs")}
-                      className="text-xs font-semibold text-[#e74b2d] hover:underline cursor-pointer"
-                    >
-                      View All
-                    </button>
-                  </div>
-
+                <Card>
+                  <CardHeader
+                    icon="services"
+                    title={
+                      <span className="inline-flex items-center gap-2">
+                        Active Production Jobs <CountPill value={jobs.length} />
+                      </span>
+                    }
+                    subtitle="Orders currently in fulfillment."
+                    action={
+                      <Button variant="ghost" size="sm" onClick={() => setTab("jobs")}>
+                        View All
+                        <Icon name="chevronRight" className="w-3.5 h-3.5" strokeWidth={2.2} />
+                      </Button>
+                    }
+                  />
                   {jobs.length === 0 ? (
-                    <div className="py-8 text-center text-xs sm:text-sm text-zinc-500 bg-[#F9FAFB] rounded-xl border border-zinc-100">
-                      No active production jobs yet. Accept incoming orders above to begin printing.
-                    </div>
+                    <EmptyState icon="services" title="No active production jobs yet" description="Accept incoming orders above to begin printing." />
                   ) : (
-                    <div className="space-y-3">
-                      {jobs.slice(0, 3).map((order) => renderJobCard(order))}
-                    </div>
+                    <div className="space-y-3 p-4 sm:p-5">{jobs.slice(0, 3).map((order) => renderJobCard(order))}</div>
                   )}
-                </div>
+                </Card>
               </div>
-            )}
 
-            {/* TAB: Incoming Orders */}
-            {tab === "incoming" && (
-              <div className="bg-white rounded-2xl p-5 sm:p-6 border border-zinc-100 shadow-xs space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-                  <div>
-                    <h2 className="text-base sm:text-lg font-bold text-zinc-900">
-                      Incoming Orders Queue ({orders.length})
-                    </h2>
-                    <p className="text-xs text-zinc-500">First facility to accept the job claims it.</p>
+              {/* Side column: performance + coverage */}
+              <div className="space-y-5 min-w-0">
+                <Card>
+                  <CardHeader icon="analytics" title="Performance" subtitle="How your facility is tracking" />
+                  <div className="space-y-4 p-5 sm:p-6">
+                    <ProgressRow label="Acceptance rate" value={profile?.metrics?.acceptanceRate ?? 100} barClass="bg-emerald-500" caption="Benchmark: > 95%" />
+                    <ProgressRow label="On-time delivery" value={profile?.metrics?.onTimePercentage} barClass="bg-[#329AD4]" />
+                    <ProgressRow label="Reprint rate" value={profile?.metrics?.reprintRate ?? 0} barClass="bg-rose-500" caption="Lower is better" />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => loadOrders()}
-                    className="px-4 py-2 bg-[#fff1eb] hover:bg-sky-100 text-[#e74b2d] text-xs font-semibold rounded-full transition cursor-pointer"
-                  >
-                    Refresh Queue
-                  </button>
-                </div>
+                </Card>
 
-                {loadingOrders ? (
-                  <div className="py-12 text-center">
-                    <div className="w-8 h-8 border-2 border-sky-100 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
-                  </div>
-                ) : orders.length === 0 ? (
-                  <div className="py-12 text-center text-sm text-zinc-500 bg-[#F9FAFB] rounded-2xl border border-zinc-100 p-8">
-                    {accepting
-                      ? "No new orders currently match your covered market and catalog."
-                      : "Availability is currently paused. Switch on 'Accepting Orders' in the sidebar."}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {orders.map((order) => (
-                      <OrderCard
-                        key={order._id}
-                        order={order}
-                        open={openId === order._id}
-                        onToggle={() => setOpenId(openId === order._id ? null : order._id)}
-                        actions={
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => decline(order._id)}
-                              disabled={busyId === order._id}
-                              className="px-4 py-2 rounded-full border border-zinc-200 bg-white text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition cursor-pointer"
-                            >
-                              Decline
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => claim(order._id)}
-                              disabled={busyId === order._id}
-                              className="px-6 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-xs rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
-                            >
-                              {busyId === order._id ? "Claiming..." : "Accept Order"}
-                            </button>
-                          </>
-                        }
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* TAB: My Jobs */}
-            {tab === "jobs" && (
-              <div className="bg-white rounded-2xl p-5 sm:p-6 border border-zinc-100 shadow-xs space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-                  <div>
-                    <h2 className="text-base sm:text-lg font-bold text-zinc-900">
-                      My Production Jobs ({jobs.length})
-                    </h2>
-                    <p className="text-xs text-zinc-500">Track and update orders currently in production.</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => loadOrders()}
-                    className="px-4 py-2 bg-[#fff1eb] hover:bg-sky-100 text-[#e74b2d] text-xs font-semibold rounded-full transition cursor-pointer"
-                  >
-                    Refresh Jobs
-                  </button>
-                </div>
-
-                {jobs.length === 0 ? (
-                  <div className="py-12 text-center text-sm text-zinc-500 bg-[#F9FAFB] rounded-2xl border border-zinc-100 p-8">
-                    Accepted orders show up here for printing, packing, and dispatch.
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {jobs.map((order) => renderJobCard(order))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* TAB: Catalog Costs & Benchmark Pricing */}
-            {tab === "catalog" && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Form to set unit cost */}
-                <div className="bg-white rounded-2xl border border-zinc-100 p-5 sm:p-6 shadow-xs space-y-4">
-                  <div>
-                    <h2 className="text-base font-bold text-zinc-900">Set Category Unit Cost</h2>
-                    <p className="text-xs text-zinc-500 mt-0.5">
-                      Enter your wholesale fulfillment cost for each category.
-                    </p>
-                  </div>
-
-                  {costNotice && (
-                    <div className="p-3 bg-[#fff1eb] border border-sky-100 text-[#e74b2d] text-xs rounded-xl font-semibold">
-                      {costNotice}
+                <Card>
+                  <CardHeader icon="globe" title="Coverage" subtitle="Markets and categories you fulfil" />
+                  <div className="space-y-4 p-5 sm:p-6">
+                    <div>
+                      <p className="text-xs font-semibold text-zinc-500">Markets covered</p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {profile?.marketsCovered?.length ? (
+                          profile.marketsCovered.map((m) => (
+                            <Badge key={m} tone="brand">
+                              {m}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-xs text-zinc-400">None set</span>
+                        )}
+                      </div>
                     </div>
-                  )}
+                    <div>
+                      <p className="text-xs font-semibold text-zinc-500">Categories fulfilled</p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {profile?.categoriesFulfilled?.length ? (
+                          profile.categoriesFulfilled.map((c) => (
+                            <Badge key={c} tone="violet">
+                              {c}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-xs text-zinc-400">None set</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: Incoming Orders */}
+          {tab === "incoming" && (
+            <Card>
+              {loadingOrders ? (
+                <LoadingState label="Loading orders…" />
+              ) : orders.length === 0 ? (
+                accepting ? (
+                  <EmptyState icon="inbox" title="No new orders right now" description="No new orders currently match your covered market and catalog." />
+                ) : (
+                  <EmptyState icon="clock" title="Availability is paused" description="Availability is currently paused. Switch on 'Accepting Orders' in the sidebar." />
+                )
+              ) : (
+                <div className="space-y-4 p-4 sm:p-5">
+                  {orders.map((order) => (
+                    <OrderCard
+                      key={order._id}
+                      order={order}
+                      open={openId === order._id}
+                      onToggle={() => setOpenId(openId === order._id ? null : order._id)}
+                      actions={incomingActions(order)}
+                    />
+                  ))}
+                </div>
+              )}
+            </Card>
+          )}
+
+          {/* TAB: My Jobs */}
+          {tab === "jobs" && (
+            <Card>
+              {jobs.length === 0 ? (
+                loadingOrders ? (
+                  <LoadingState label="Loading jobs…" />
+                ) : (
+                  <EmptyState icon="services" title="No production jobs yet" description="Accepted orders show up here for printing, packing, and dispatch." />
+                )
+              ) : (
+                <div className="space-y-4 p-4 sm:p-5">{jobs.map((order) => renderJobCard(order))}</div>
+              )}
+            </Card>
+          )}
+
+          {/* TAB: Catalog Costs & Benchmark Pricing */}
+          {tab === "catalog" && (
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
+              {/* Form to set unit cost */}
+              <Card className="lg:col-span-2">
+                <CardHeader icon="edit" title="Set Category Unit Cost" subtitle="Enter your wholesale fulfillment cost for each category." />
+                <div className="space-y-4 p-5 sm:p-6">
+                  {costNotice && <Notice tone="brand">{costNotice}</Notice>}
 
                   <form onSubmit={saveCost} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-700 mb-1">Select Category</label>
-                      <select
-                        value={selectedProductId}
-                        onChange={(e) => setSelectedProductId(e.target.value)}
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
-                      >
+                    <Field label="Select Category">
+                      <select value={selectedProductId} onChange={(e) => setSelectedProductId(e.target.value)} className={cx(inputClass, "cursor-pointer")}>
                         <option value="">Select category...</option>
                         {products.map((p) => (
                           <option key={p._id} value={p._id}>
@@ -757,23 +759,24 @@ export default function VendorDashboardPage() {
                           </option>
                         ))}
                       </select>
-                    </div>
+                    </Field>
 
                     {selectedProduct && (
-                      <div className="bg-[#fff1eb] rounded-xl p-3 border border-sky-100 text-xs text-zinc-700 space-y-1">
-                        <div className="flex justify-between">
-                          <span className="font-semibold">Recommended range:</span>
-                          <span>{money(benchmarkMin)} – {money(benchmarkMax)}</span>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="rounded-xl border border-[#dbeefb] bg-[#f0f8fd] px-3.5 py-3">
+                          <p className="text-[11px] font-semibold text-[#2884b8]">Recommended range</p>
+                          <p className="mt-1 text-sm font-semibold text-zinc-900 tabular-nums">
+                            {money(benchmarkMin)} – {money(benchmarkMax)}
+                          </p>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="font-semibold">Cost Ceiling Cap:</span>
-                          <span className="text-amber-700 font-bold">{money(costCap)}</span>
+                        <div className="rounded-xl border border-amber-100 bg-amber-50 px-3.5 py-3">
+                          <p className="text-[11px] font-semibold text-amber-700">Cost Ceiling Cap</p>
+                          <p className="mt-1 text-sm font-semibold text-amber-800 tabular-nums">{money(costCap)}</p>
                         </div>
                       </div>
                     )}
 
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-700 mb-1">Your Unit Production Cost ($)</label>
+                    <Field label="Your Unit Production Cost ($)">
                       <input
                         type="number"
                         step="0.01"
@@ -781,240 +784,224 @@ export default function VendorDashboardPage() {
                         value={vendorCostInput}
                         onChange={(e) => setVendorCostInput(e.target.value)}
                         placeholder="e.g. 15.50"
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 font-mono"
+                        className={cx(inputClass, "tabular-nums")}
                       />
-                    </div>
+                    </Field>
 
-                    <button
-                      type="submit"
-                      disabled={savingCost || !selectedProductId}
-                      className="w-full py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
-                    >
+                    <Button type="submit" disabled={savingCost || !selectedProductId} icon="check" className="w-full">
                       {savingCost ? "Saving Cost..." : "Save Cost Benchmark"}
-                    </button>
+                    </Button>
                   </form>
                 </div>
+              </Card>
 
-                {/* Saved Catalog List */}
-                <div className="bg-white rounded-2xl border border-zinc-100 p-5 sm:p-6 shadow-xs space-y-4">
-                  <div>
-                    <h2 className="text-base font-bold text-zinc-900">Configured Catalog Margins</h2>
-                    <p className="text-xs text-zinc-500 mt-0.5">Your active category fulfillment rates.</p>
+              {/* Saved Catalog List */}
+              <Card className="lg:col-span-3">
+                <CardHeader
+                  icon="layers"
+                  title="Configured Catalog Margins"
+                  subtitle="Your active category fulfillment rates."
+                  action={<CountPill value={catalog.length} />}
+                />
+                {catalog.length === 0 ? (
+                  <EmptyState icon="tag" title="No category costs configured yet" description="Pick a category on the left and save your unit cost to start receiving matching jobs." />
+                ) : (
+                  <div className={table.wrap}>
+                    <table className={table.table}>
+                      <thead className={table.thead}>
+                        <tr>
+                          <th className={table.th}>Category</th>
+                          <th className={table.th}>Benchmark</th>
+                          <th className={cx(table.th, "text-right")}>Your Cost</th>
+                          <th className={cx(table.th, "text-right")}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className={table.tbody}>
+                        {catalog.map((entry) => {
+                          const product = typeof entry.productId === "object" ? entry.productId : null;
+                          return (
+                            <tr key={entry._id} className={table.tr}>
+                              <td className={cx(table.td, "font-medium text-zinc-900")}>{entry.name || product?.name || "Category"}</td>
+                              <td className={cx(table.td, "whitespace-nowrap text-zinc-500 tabular-nums")}>
+                                {money(entry.categoryBenchmarkMin)} – {money(entry.categoryBenchmarkMax)}
+                              </td>
+                              <td className={cx(table.td, "whitespace-nowrap text-right font-semibold text-zinc-900 tabular-nums")}>{money(entry.vendorCost)}</td>
+                              <td className={cx(table.td, "text-right")}>
+                                <Badge tone={entry.isEligible ? "green" : "amber"} dot>
+                                  {entry.isEligible ? "Eligible" : "Above Cap"}
+                                </Badge>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </Card>
+            </div>
+          )}
+
+          {/* TAB: Earnings & Wallet */}
+          {tab === "earnings" && profile && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
+              {/* Available Wallet & Withdrawal */}
+              <Card>
+                <CardHeader icon="wallet" title="Wallet & Instant Payout" subtitle="Withdraw available printing proceeds to bank." />
+                <div className="space-y-5 p-5 sm:p-6">
+                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 text-white shadow-md shadow-emerald-500/20">
+                    <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-white/10" aria-hidden="true" />
+                    <p className="relative text-xs font-medium text-white/80">Available Balance</p>
+                    <p className="relative mt-1 text-3xl font-bold tracking-tight tabular-nums">{money(profile.earnedBalance)}</p>
+                    <div className="relative mt-3 flex flex-wrap items-center gap-2 text-xs">
+                      <span className="rounded-full bg-white/15 px-2.5 py-1 font-medium tabular-nums">Pending release: {money(pendingBalance)}</span>
+                      {reprintTotal > 0 && (
+                        <span className="rounded-full bg-rose-50 px-2.5 py-1 font-semibold text-rose-600 tabular-nums">
+                          Reprint deductions: −{money(reprintTotal)}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  {catalog.length === 0 ? (
-                    <div className="py-8 text-center text-xs text-zinc-500 bg-[#F9FAFB] rounded-xl border border-zinc-100">
-                      No category costs configured yet.
-                    </div>
-                  ) : (
-                    <div className="space-y-2.5 divide-y divide-zinc-100">
-                      {catalog.map((entry) => {
-                        const product = typeof entry.productId === "object" ? entry.productId : null;
-                        return (
-                          <div key={entry._id} className="pt-2.5 first:pt-0 flex items-center justify-between gap-3">
-                            <div>
-                              <p className="text-xs font-bold text-zinc-900">
-                                {entry.name || product?.name || "Category"}
-                              </p>
-                              <p className="text-[11px] text-zinc-500">
-                                Benchmark: {money(entry.categoryBenchmarkMin)} – {money(entry.categoryBenchmarkMax)}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-xs font-bold text-zinc-900 font-mono">
-                                {money(entry.vendorCost)}
-                              </p>
-                              <span
-                                className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                  entry.isEligible
-                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                    : "bg-amber-50 text-amber-700 border border-amber-200"
-                                }`}
-                              >
-                                {entry.isEligible ? "Eligible" : "Above Cap"}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* TAB: Earnings & Wallet */}
-            {tab === "earnings" && profile && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Available Wallet & Withdrawal */}
-                <div className="bg-white rounded-2xl border border-zinc-100 p-5 sm:p-6 shadow-xs space-y-4">
-                  <div>
-                    <h2 className="text-base font-bold text-zinc-900">Wallet & Instant Payout</h2>
-                    <p className="text-xs text-zinc-500 mt-0.5">Withdraw available printing proceeds to bank.</p>
-                  </div>
-
-                  <div className="bg-[#fff1eb] rounded-2xl p-5 border border-sky-100">
-                    <p className="text-xs font-semibold text-zinc-700">Available Balance</p>
-                    <p className="text-3xl font-bold text-emerald-600 my-1 font-mono">
-                      {money(profile.earnedBalance)}
-                    </p>
-                    <div className="flex items-center gap-3 text-[11px] text-zinc-600 pt-1">
-                      <span>Pending release: {money(pendingBalance)}</span>
-                      {reprintTotal > 0 && <span className="text-red-500 font-medium">Reprint deductions: −{money(reprintTotal)}</span>}
-                    </div>
-                  </div>
-
-                  <form onSubmit={withdraw} className="space-y-3 pt-2">
-                    <label className="block text-xs font-semibold text-zinc-700">Withdraw Amount ($)</label>
-                    <div className="flex gap-2">
+                  <form onSubmit={withdraw}>
+                    <label htmlFor="vendor-withdraw-amount" className={labelClass}>
+                      Withdraw Amount ($)
+                    </label>
+                    <div className="flex flex-col gap-2 sm:flex-row">
                       <input
+                        id="vendor-withdraw-amount"
                         value={withdrawAmount}
                         onChange={(e) => setWithdrawAmount(e.target.value)}
                         type="number"
                         step="0.01"
                         min="1"
                         placeholder="Enter amount"
-                        className="flex-1 bg-white border border-zinc-300 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
+                        className={cx(inputClass, "tabular-nums")}
                       />
                       <button
                         type="submit"
                         disabled={!withdrawAmount || Number(withdrawAmount) <= 0}
-                        className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
+                        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-emerald-600/25 transition-all hover:bg-emerald-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
+                        <Icon name="download" className="w-4 h-4" strokeWidth={2.2} />
                         Withdraw
                       </button>
                     </div>
                   </form>
                 </div>
+              </Card>
 
-                {/* Stripe Connected Account Keys */}
-                <div className="bg-white rounded-2xl border border-zinc-100 p-5 sm:p-6 shadow-xs space-y-4">
-                  <div>
-                    <h2 className="text-base font-bold text-zinc-900">Payout Account Settings</h2>
-                    <p className="text-xs text-zinc-500 mt-0.5">Stripe keys for direct automated bank transfers.</p>
-                  </div>
-
-                  <form onSubmit={saveStripe} className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-700 mb-1">Account Holder Name</label>
-                      <input
-                        value={accountHolder}
-                        onChange={(e) => setAccountHolder(e.target.value)}
-                        placeholder="Facility or Legal Name"
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-700 mb-1">Stripe Account Email</label>
+              {/* Stripe Connected Account Keys */}
+              <Card>
+                <CardHeader icon="settings" title="Payout Account Settings" subtitle="Stripe keys for direct automated bank transfers." />
+                <form onSubmit={saveStripe} className="space-y-4 p-5 sm:p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field label="Account Holder Name">
+                      <input value={accountHolder} onChange={(e) => setAccountHolder(e.target.value)} placeholder="Facility or Legal Name" className={inputClass} />
+                    </Field>
+                    <Field label="Stripe Account Email">
                       <input
                         value={stripeEmail}
                         onChange={(e) => setStripeEmail(e.target.value)}
                         type="email"
                         placeholder="payouts@facility.com"
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                        className={inputClass}
                       />
-                    </div>
+                    </Field>
+                  </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-700 mb-1">Publishable Key</label>
-                      <input
-                        value={stripePublishable}
-                        onChange={(e) => setStripePublishable(e.target.value)}
-                        placeholder="pk_test_... or pk_live_..."
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d]"
-                      />
-                    </div>
+                  <Field label="Publishable Key">
+                    <input
+                      value={stripePublishable}
+                      onChange={(e) => setStripePublishable(e.target.value)}
+                      placeholder="pk_test_... or pk_live_..."
+                      className={cx(inputClass, "font-mono")}
+                    />
+                  </Field>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-zinc-700 mb-1">Secret Key</label>
-                      <input
-                        value={stripeSecret}
-                        onChange={(e) => setStripeSecret(e.target.value)}
-                        type="password"
-                        placeholder={profile.stripeSecretSaved ? "Secret key saved (enter new to update)" : "sk_test_... or sk_live_..."}
-                        className="w-full bg-white border border-zinc-300 rounded-xl px-3.5 py-2 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d]"
-                      />
-                    </div>
+                  <Field
+                    label={
+                      <span className="inline-flex items-center gap-2">
+                        Secret Key
+                        {profile.stripeSecretSaved && (
+                          <Badge tone="green" dot>
+                            Saved
+                          </Badge>
+                        )}
+                      </span>
+                    }
+                  >
+                    <input
+                      value={stripeSecret}
+                      onChange={(e) => setStripeSecret(e.target.value)}
+                      type="password"
+                      placeholder={profile.stripeSecretSaved ? "Secret key saved (enter new to update)" : "sk_test_... or sk_live_..."}
+                      className={cx(inputClass, "font-mono")}
+                    />
+                  </Field>
 
-                    <button
-                      type="submit"
-                      disabled={savingStripe}
-                      className="w-full py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer disabled:opacity-50"
-                    >
-                      {savingStripe ? "Saving..." : "Save Payout Credentials"}
-                    </button>
-                  </form>
-                </div>
+                  <Button type="submit" disabled={savingStripe} className="w-full">
+                    {savingStripe ? "Saving..." : "Save Payout Credentials"}
+                  </Button>
+                </form>
+              </Card>
 
-                {/* Wallet Activity Table */}
-                <div className="lg:col-span-2 bg-white rounded-2xl border border-zinc-100 p-5 sm:p-6 shadow-xs space-y-4">
-                  <h2 className="text-base font-bold text-zinc-900">Wallet Transactions History</h2>
-                  {walletEntries.length === 0 ? (
-                    <div className="py-8 text-center text-xs text-zinc-500 bg-[#F9FAFB] rounded-xl border border-zinc-100">
-                      No wallet transactions recorded yet.
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs text-zinc-600">
-                        <thead className="bg-[#fff1eb] text-zinc-800 font-semibold rounded-xl">
-                          <tr>
-                            <th className="p-3 rounded-l-xl">Date</th>
-                            <th className="p-3">Description</th>
-                            <th className="p-3">Type</th>
-                            <th className="p-3 text-right rounded-r-xl">Amount</th>
+              {/* Wallet Activity Table */}
+              <Card className="lg:col-span-2">
+                <CardHeader icon="clock" title="Wallet Transactions History" action={<CountPill value={walletEntries.length} />} />
+                {walletEntries.length === 0 ? (
+                  <EmptyState icon="wallet" title="No wallet transactions recorded yet" description="Credits, withdrawals and reprint deductions will be listed here." />
+                ) : (
+                  <div className={table.wrap}>
+                    <table className={table.table}>
+                      <thead className={table.thead}>
+                        <tr>
+                          <th className={table.th}>Date</th>
+                          <th className={table.th}>Description</th>
+                          <th className={table.th}>Type</th>
+                          <th className={cx(table.th, "text-right")}>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody className={table.tbody}>
+                        {walletEntries.map((entry, index) => (
+                          <tr key={`${entry.createdAt}-${index}`} className={table.tr}>
+                            <td className={cx(table.td, "whitespace-nowrap font-medium text-zinc-900 tabular-nums")}>
+                              {new Date(entry.createdAt).toLocaleDateString()}
+                            </td>
+                            <td className={cx(table.td, "min-w-[12rem]")}>{entry.note}</td>
+                            <td className={table.td}>
+                              <Badge tone={entry.type === "credit" ? "green" : entry.type === "withdrawal" ? "brand" : "red"}>{entry.type}</Badge>
+                            </td>
+                            <td
+                              className={cx(
+                                table.td,
+                                "whitespace-nowrap text-right font-semibold tabular-nums",
+                                entry.type === "credit" ? "text-emerald-600" : "text-rose-600"
+                              )}
+                            >
+                              {entry.type === "credit" ? "+" : "−"}
+                              {money(entry.amount)}
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody className="divide-y divide-zinc-100">
-                          {walletEntries.map((entry, index) => (
-                            <tr key={`${entry.createdAt}-${index}`} className="hover:bg-zinc-50/70">
-                              <td className="p-3 font-medium text-zinc-800">
-                                {new Date(entry.createdAt).toLocaleDateString()}
-                              </td>
-                              <td className="p-3">{entry.note}</td>
-                              <td className="p-3">
-                                <span
-                                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                    entry.type === "credit"
-                                      ? "bg-emerald-50 text-emerald-700"
-                                      : entry.type === "withdrawal"
-                                      ? "bg-sky-50 text-[#e74b2d]"
-                                      : "bg-red-50 text-red-600"
-                                  }`}
-                                >
-                                  {entry.type}
-                                </span>
-                              </td>
-                              <td
-                                className={`p-3 text-right font-bold font-mono ${
-                                  entry.type === "credit" ? "text-emerald-600" : "text-red-500"
-                                }`}
-                              >
-                                {entry.type === "credit" ? "+" : "−"}{money(entry.amount)}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </Card>
+            </div>
+          )}
 
-            {/* TAB: Live Messages */}
-            {tab === "messages" && (
-              <div className="bg-white rounded-2xl border border-zinc-100 p-5 sm:p-6 shadow-xs">
-                <MessagePanel
-                  endpoint="/api/vendor/messages"
-                  title="Admin Support & Order Coordination"
-                  hint="Direct real-time communication channel with the Printgraphy Operations team."
-                />
-              </div>
-            )}
-          </main>
+          {/* TAB: Live Messages */}
+          {tab === "messages" && (
+            <MessagePanel
+              endpoint="/api/vendor/messages"
+              title="Admin Support & Order Coordination"
+              hint="Direct real-time communication channel with the Printgraphy Operations team."
+            />
+          )}
         </div>
-      </div>
+      </main>
     </div>
   );
 
@@ -1022,80 +1009,75 @@ export default function VendorDashboardPage() {
   function renderJobCard(order: VendorOrder) {
     const isWorking = busyId === order._id;
     const isPast24h = order.shippedAt && Date.now() - new Date(order.shippedAt).getTime() > 24 * 60 * 60 * 1000;
+    const status = order.fulfillmentStatus || "";
+    const stepIndex = JOB_STEPS.indexOf(status);
 
     return (
-      <div
-        key={order._id}
-        className="bg-[#F8F9FA] rounded-2xl border border-zinc-200/90 p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] space-y-4 transition-all hover:border-zinc-300"
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-bold text-sm text-[#e74b2d] underline">
-                #{order.orderNumber}
+      <div key={order._id} className="rounded-2xl border border-zinc-200/80 bg-white shadow-xs transition-all hover:border-[#b8e0f6] hover:shadow-md">
+        <div className="space-y-4 p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+            <div className="flex items-start gap-3 min-w-0">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8]">
+                <Icon name="orders" className="w-5 h-5" />
               </span>
-              <span
-                className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                  order.fulfillmentStatus === "delivered"
-                    ? "bg-emerald-100 text-emerald-800"
-                    : order.fulfillmentStatus === "shipped"
-                    ? "bg-indigo-100 text-indigo-800"
-                    : order.fulfillmentStatus === "in_production"
-                    ? "bg-amber-100 text-amber-800"
-                    : "bg-sky-100 text-sky-800"
-                }`}
-              >
-                {STATUS_LABEL[order.fulfillmentStatus || ""] || order.fulfillmentStatus}
-              </span>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-semibold text-zinc-900">#{order.orderNumber}</span>
+                  <Badge tone={JOB_TONE[status] || "gray"} dot>
+                    {STATUS_LABEL[status] || order.fulfillmentStatus}
+                  </Badge>
+                </div>
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-zinc-500">
+                  <Icon name="truck" className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">
+                    Destination: {order.shippingAddress?.city}, {order.shippingAddress?.state} {order.shippingAddress?.zip}
+                  </span>
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-zinc-500 mt-1">
-              Destination: {order.shippingAddress?.city}, {order.shippingAddress?.state} {order.shippingAddress?.zip}
-            </p>
+
+            <div className="sm:text-right shrink-0">
+              <span className="block text-xs text-zinc-500">Vendor Payout</span>
+              <span className="text-lg font-semibold text-zinc-900 tabular-nums">{money(order.vendorPayment || order.totalAmount)}</span>
+            </div>
           </div>
 
-          <div className="text-left sm:text-right">
-            <span className="text-xs text-zinc-500 block">Vendor Payout</span>
-            <span className="text-base sm:text-lg font-bold text-zinc-900 font-mono">
-              {money(order.vendorPayment || order.totalAmount)}
-            </span>
-          </div>
-        </div>
+          {/* Progress through the production workflow */}
+          {stepIndex >= 0 && (
+            <ol className="grid grid-cols-4 gap-1.5" aria-label="Fulfilment progress">
+              {JOB_STEPS.map((step, i) => {
+                const done = i <= stepIndex;
+                return (
+                  <li key={step} className="min-w-0">
+                    <span className={cx("block h-1.5 rounded-full", done ? (status === "delivered" ? "bg-emerald-500" : "bg-[#329AD4]") : "bg-zinc-200")} />
+                    <span className={cx("mt-1.5 block truncate text-[11px]", i === stepIndex ? "font-semibold text-zinc-800" : done ? "text-zinc-600" : "text-zinc-400")}>
+                      {STATUS_LABEL[step]}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
 
-        {/* Order Items */}
-        <div className="bg-white rounded-xl p-3 border border-zinc-100 text-xs text-zinc-700 space-y-1">
-          {order.items.map((item, idx) => (
-            <div key={idx} className="flex justify-between">
-              <span className="font-medium text-zinc-900">{item.name}</span>
-              <span className="text-zinc-500">Qty: {item.quantity}</span>
-            </div>
-          ))}
+          {/* Order Items */}
+          <ItemList items={order.items} />
         </div>
 
         {/* Action Controls for Production Workflow */}
-        <div className="flex flex-wrap items-center justify-end gap-2.5 pt-2 border-t border-zinc-200/60">
+        <div className="flex flex-wrap items-center justify-end gap-2.5 rounded-b-2xl border-t border-zinc-100 bg-zinc-50/60 px-4 py-3 sm:px-5">
           {order.fulfillmentStatus === "assigned" && (
             <>
-              <button
-                type="button"
-                onClick={() => release(order._id)}
-                disabled={isWorking}
-                className="px-4 py-2 rounded-full border border-zinc-200 bg-white text-xs font-semibold text-zinc-600 hover:bg-zinc-50 transition cursor-pointer"
-              >
+              <Button variant="secondary" size="sm" onClick={() => release(order._id)} disabled={isWorking}>
                 Release to Queue
-              </button>
-              <button
-                type="button"
-                onClick={() => updateStatus(order._id, "in_production")}
-                disabled={isWorking}
-                className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer"
-              >
+              </Button>
+              <Button size="sm" icon="services" onClick={() => updateStatus(order._id, "in_production")} disabled={isWorking}>
                 {isWorking ? "Updating..." : "Start Production"}
-              </button>
+              </Button>
             </>
           )}
 
           {order.fulfillmentStatus === "in_production" && (
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
               <input
                 value={tracking[order._id]?.carrier || "UPS"}
                 onChange={(e) =>
@@ -1105,7 +1087,8 @@ export default function VendorDashboardPage() {
                   }))
                 }
                 placeholder="Carrier"
-                className="w-24 bg-white border border-zinc-300 rounded-xl px-3 py-1.5 text-xs text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                aria-label="Carrier"
+                className={cx(compactInput, "sm:w-28")}
               />
               <input
                 value={tracking[order._id]?.number || ""}
@@ -1116,23 +1099,20 @@ export default function VendorDashboardPage() {
                   }))
                 }
                 placeholder="Tracking #"
-                className="w-36 bg-white border border-zinc-300 rounded-xl px-3 py-1.5 text-xs text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d]"
+                aria-label="Tracking number"
+                className={cx(compactInput, "font-mono sm:w-44")}
               />
-              <button
-                type="button"
-                onClick={() => updateStatus(order._id, "shipped")}
-                disabled={isWorking}
-                className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer"
-              >
+              <Button size="sm" icon="truck" onClick={() => updateStatus(order._id, "shipped")} disabled={isWorking}>
                 {isWorking ? "Updating..." : "Dispatch & Ship"}
-              </button>
+              </Button>
             </div>
           )}
 
           {order.fulfillmentStatus === "shipped" && (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center justify-end gap-3">
               {isPast24h && (
-                <span className="text-[11px] font-semibold text-amber-700">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700">
+                  <Icon name="clock" className="w-3.5 h-3.5" />
                   &gt;24h since dispatch. Mark delivered when completed.
                 </span>
               )}
@@ -1140,22 +1120,100 @@ export default function VendorDashboardPage() {
                 type="button"
                 onClick={() => updateStatus(order._id, "delivered")}
                 disabled={isWorking}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-full shadow-sm transition cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-emerald-600/25 transition-all hover:bg-emerald-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
+                <Icon name="check" className="w-3.5 h-3.5" strokeWidth={2.2} />
                 {isWorking ? "Updating..." : "Mark Delivered"}
               </button>
             </div>
           )}
 
           {order.fulfillmentStatus === "delivered" && (
-            <span className="text-xs font-semibold text-emerald-700">
-              ✓ Marked Delivered. Awaiting customer confirmation for funds release.
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
+              <Icon name="check" className="w-4 h-4" strokeWidth={2.2} />
+              Marked Delivered. Awaiting customer confirmation for funds release.
             </span>
           )}
         </div>
       </div>
     );
   }
+}
+
+/* ── Local presentational helpers ── */
+
+const JOB_STEPS = ["assigned", "in_production", "shipped", "delivered"];
+
+const JOB_TONE: Record<string, Tone> = {
+  assigned: "brand",
+  in_production: "amber",
+  shipped: "indigo",
+  delivered: "green",
+};
+
+const compactInput =
+  "w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 shadow-xs transition focus:outline-none focus:border-[#329AD4] focus:ring-4 focus:ring-[#329AD4]/10";
+
+interface Metric {
+  label: string;
+  value: string;
+  hint: string;
+  icon: IconName;
+  tone: Tone;
+}
+
+function CountPill({ value }: { value: number }) {
+  return <span className="rounded-full bg-[#EAF5FB] px-2 py-0.5 text-xs font-semibold text-[#2884b8] tabular-nums">{value}</span>;
+}
+
+function MetricStrip({ items }: { items: Metric[] }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+      {items.map((m) => (
+        <div key={m.label} title={m.hint} className="flex min-w-0 items-center gap-3 rounded-2xl border border-zinc-200/70 bg-white px-3.5 py-3 shadow-xs">
+          <span className={cx("flex h-8 w-8 shrink-0 items-center justify-center rounded-lg", TONES[m.tone].soft)}>
+            <Icon name={m.icon} className="w-4 h-4" />
+          </span>
+          <div className="min-w-0">
+            <p className="truncate text-[11px] font-medium text-zinc-500">{m.label}</p>
+            <p className="truncate text-sm font-semibold text-zinc-900 tabular-nums">{m.value}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ProgressRow({ label, value, barClass, caption }: { label: string; value?: number; barClass: string; caption?: string }) {
+  const known = typeof value === "number" && Number.isFinite(value);
+  const pct = known ? Math.max(0, Math.min(100, value)) : 0;
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="text-sm text-zinc-700">{label}</span>
+        <span className="text-sm font-semibold text-zinc-900 tabular-nums">{known ? `${value}%` : "—"}</span>
+      </div>
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-100">
+        <div className={cx("h-full rounded-full transition-all", barClass)} style={{ width: `${pct}%` }} />
+      </div>
+      {caption && <p className="mt-1 text-[11px] text-zinc-400">{caption}</p>}
+    </div>
+  );
+}
+
+function ItemList({ items }: { items: OrderItem[] }) {
+  return (
+    <ul className="divide-y divide-zinc-100 rounded-xl border border-zinc-100 bg-zinc-50/60">
+      {items.map((item, index) => (
+        <li key={index} className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm">
+          <span className="min-w-0 truncate font-medium text-zinc-800">{item.name}</span>
+          <span className="shrink-0 rounded-md bg-white px-2 py-0.5 text-xs font-medium text-zinc-500 ring-1 ring-inset ring-zinc-200 tabular-nums">
+            Qty: {item.quantity}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 function OrderCard({
@@ -1170,75 +1228,101 @@ function OrderCard({
   actions: ReactNode;
 }) {
   const address = order.shippingAddress;
+  const hasSpecs = order.items.some((i) => i.specs && Object.keys(i.specs).length > 0);
   return (
-    <div className="bg-[#F8F9FA] rounded-2xl border border-zinc-200/90 p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] space-y-3 transition-all hover:border-zinc-300">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <button
-            type="button"
-            onClick={onToggle}
-            className="font-mono font-bold text-sm text-[#e74b2d] hover:underline cursor-pointer flex items-center gap-1.5"
-          >
-            <span>Order #{order.orderNumber}</span>
-            <span className="text-[11px] text-zinc-400 font-sans">({open ? "Hide details" : "Show details"})</span>
-          </button>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            Destination: {address?.city}, {address?.state} {address?.zip}
-          </p>
+    <div className="rounded-2xl border border-zinc-200/80 bg-white shadow-xs transition-all hover:border-[#b8e0f6] hover:shadow-md">
+      <div className="space-y-4 p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8]">
+              <Icon name="inbox" className="w-5 h-5" />
+            </span>
+            <div className="min-w-0">
+              <button
+                type="button"
+                onClick={onToggle}
+                aria-expanded={open}
+                className="group flex flex-wrap items-center gap-x-2 gap-y-0.5 text-left cursor-pointer"
+              >
+                <span className="text-sm font-semibold text-zinc-900 group-hover:text-[#2884b8]">Order #{order.orderNumber}</span>
+                <span className="inline-flex items-center gap-0.5 text-xs font-medium text-[#329AD4]">
+                  {open ? "Hide details" : "Show details"}
+                  <Icon name="chevronRight" className={cx("w-3.5 h-3.5 transition-transform", open && "rotate-90")} strokeWidth={2.2} />
+                </span>
+              </button>
+              <p className="mt-1 flex items-center gap-1.5 text-xs text-zinc-500">
+                <Icon name="truck" className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">
+                  Destination: {address?.city}, {address?.state} {address?.zip}
+                </span>
+              </p>
+            </div>
+          </div>
+          <div className="sm:text-right shrink-0">
+            <span className="block text-xs text-zinc-500">Offer Payout</span>
+            <span className="text-lg font-semibold text-emerald-600 tabular-nums">{money(order.vendorPayment || order.totalAmount)}</span>
+          </div>
         </div>
-        <div className="text-left sm:text-right">
-          <span className="text-xs text-zinc-500 block">Offer Payout</span>
-          <span className="text-base sm:text-lg font-bold text-zinc-900 font-mono">
-            {money(order.vendorPayment || order.totalAmount)}
-          </span>
-        </div>
+
+        <ItemList items={order.items} />
+
+        {open && (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 text-xs text-zinc-600">
+            <div className="rounded-xl border border-[#dbeefb] bg-[#f0f8fd] p-3.5">
+              <p className="flex items-center gap-1.5 font-semibold text-[#1b5b80]">
+                <Icon name="truck" className="w-3.5 h-3.5" />
+                Shipping Recipient
+              </p>
+              <div className="mt-1.5 space-y-0.5 text-zinc-700">
+                <p className="font-medium text-zinc-900">{address?.name}</p>
+                <p>
+                  {address?.line1}
+                  {address?.line2 ? `, ${address.line2}` : ""}
+                </p>
+                <p>
+                  {address?.city}, {address?.state} {address?.zip}
+                </p>
+                {address?.phone && <p>Phone: {address.phone}</p>}
+              </div>
+            </div>
+
+            {(order.notes || hasSpecs) && (
+              <div className="space-y-3 rounded-xl border border-zinc-100 bg-zinc-50/70 p-3.5">
+                {order.notes && (
+                  <div>
+                    <p className="flex items-center gap-1.5 font-semibold text-zinc-800">
+                      <Icon name="messages" className="w-3.5 h-3.5" />
+                      Special Instructions
+                    </p>
+                    <p className="mt-1 text-zinc-700">{order.notes}</p>
+                  </div>
+                )}
+
+                {hasSpecs && (
+                  <div className={cx(order.notes && "border-t border-zinc-200/60 pt-3")}>
+                    <p className="flex items-center gap-1.5 font-semibold text-zinc-800">
+                      <Icon name="settings" className="w-3.5 h-3.5" />
+                      Technical Specs
+                    </p>
+                    {order.items.map((item, idx) => (
+                      <dl key={idx} className="mt-1.5 space-y-0.5">
+                        {Object.entries(item.specs || {}).map(([k, v]) => (
+                          <div key={k} className="flex gap-2">
+                            <dt className="text-zinc-500">{k}:</dt>
+                            <dd className="font-medium text-zinc-800">{v}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      <div className="bg-white rounded-xl p-3 border border-zinc-100 text-xs text-zinc-700 space-y-1">
-        {order.items.map((item, index) => (
-          <div key={index} className="flex justify-between">
-            <span className="font-medium text-zinc-900">{item.name}</span>
-            <span className="text-zinc-500">Qty: {item.quantity}</span>
-          </div>
-        ))}
-      </div>
-
-      {open && (
-        <div className="rounded-xl bg-zinc-50 border border-zinc-100 p-3.5 text-xs text-zinc-600 space-y-2">
-          <div>
-            <span className="font-semibold text-zinc-800">Shipping Recipient:</span>
-            <p className="mt-0.5">{address?.name}</p>
-            <p>{address?.line1}{address?.line2 ? `, ${address.line2}` : ""}</p>
-            <p>{address?.city}, {address?.state} {address?.zip}</p>
-            {address?.phone && <p>Phone: {address.phone}</p>}
-          </div>
-
-          {order.notes && (
-            <div className="pt-1 border-t border-zinc-200/50">
-              <span className="font-semibold text-zinc-800">Special Instructions:</span>
-              <p className="mt-0.5">{order.notes}</p>
-            </div>
-          )}
-
-          {order.items.some((i) => i.specs && Object.keys(i.specs).length > 0) && (
-            <div className="pt-1 border-t border-zinc-200/50">
-              <span className="font-semibold text-zinc-800">Technical Specs:</span>
-              {order.items.map((item, idx) => (
-                <div key={idx} className="mt-1 space-y-0.5 text-[11px]">
-                  {Object.entries(item.specs || {}).map(([k, v]) => (
-                    <div key={k} className="flex gap-2">
-                      <span className="text-zinc-500">{k}:</span>
-                      <span className="text-zinc-800 font-medium">{v}</span>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="flex flex-wrap justify-end gap-2 pt-2 border-t border-zinc-200/60">{actions}</div>
+      <div className="flex flex-wrap justify-end gap-2 rounded-b-2xl border-t border-zinc-100 bg-zinc-50/60 px-4 py-3 sm:px-5">{actions}</div>
     </div>
   );
 }

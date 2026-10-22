@@ -152,7 +152,7 @@ function WishlistContent() {
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* Header Title */}
-      <div className="bg-gradient-to-b from-[#fff7f3] to-white border-b border-zinc-200/80 py-8">
+      <div className="bg-gradient-to-b from-[#f0f8fd] to-white border-b border-zinc-200/80 py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -174,7 +174,7 @@ function WishlistContent() {
               </Link>
               <Link
                 href="/customize"
-                className="px-5 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-base font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5"
               >
                 <span>+ Start New Design</span>
               </Link>
@@ -187,12 +187,12 @@ function WishlistContent() {
               onClick={() => handleTabChange("wishlist")}
               className={`flex items-center gap-2 px-5 py-3 text-base sm:text-base font-bold border-b-2 transition-all cursor-pointer ${
                 activeTab === "wishlist"
-                  ? "border-[#e74b2d] text-[#e74b2d]"
+                  ? "border-[#329AD4] text-[#329AD4]"
                   : "border-transparent text-zinc-500 hover:text-zinc-900"
               }`}
             >
               <span>❤️ Wishlist</span>
-              <span className={`px-2 py-0.5 rounded-full text-base ${activeTab === "wishlist" ? "bg-[#e74b2d]/10 text-[#e74b2d]" : "bg-zinc-100 text-zinc-600"}`}>
+              <span className={`px-2 py-0.5 rounded-full text-base ${activeTab === "wishlist" ? "bg-[#329AD4]/10 text-[#329AD4]" : "bg-zinc-100 text-zinc-600"}`}>
                 {wishlistItems.length}
               </span>
             </button>
@@ -201,12 +201,12 @@ function WishlistContent() {
               onClick={() => handleTabChange("drafts")}
               className={`flex items-center gap-2 px-5 py-3 text-base sm:text-base font-bold border-b-2 transition-all cursor-pointer ${
                 activeTab === "drafts"
-                  ? "border-[#e74b2d] text-[#e74b2d]"
+                  ? "border-[#329AD4] text-[#329AD4]"
                   : "border-transparent text-zinc-500 hover:text-zinc-900"
               }`}
             >
               <span>🎨 Draft Designs</span>
-              <span className={`px-2 py-0.5 rounded-full text-base ${activeTab === "drafts" ? "bg-[#e74b2d]/10 text-[#e74b2d]" : "bg-zinc-100 text-zinc-600"}`}>
+              <span className={`px-2 py-0.5 rounded-full text-base ${activeTab === "drafts" ? "bg-[#329AD4]/10 text-[#329AD4]" : "bg-zinc-100 text-zinc-600"}`}>
                 {drafts.length}
               </span>
             </button>
@@ -237,7 +237,7 @@ function WishlistContent() {
                 </p>
                 <Link
                   href="/business-cards"
-                  className="inline-block px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl shadow transition-all"
+                  className="inline-block px-6 py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white text-base font-bold rounded-xl shadow transition-all"
                 >
                   Explore Product Categories →
                 </Link>
@@ -251,7 +251,7 @@ function WishlistContent() {
                   return (
                     <div
                       key={prod._id}
-                      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#e74b2d] transition-all duration-300 flex flex-col justify-between"
+                      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#329AD4] transition-all duration-300 flex flex-col justify-between"
                     >
                       <div>
                         {/* Mini Studio Presentation Frame */}
@@ -290,7 +290,7 @@ function WishlistContent() {
 
                         {/* Title & Details */}
                         <div className="p-5 space-y-2">
-                          <h3 className="text-base font-extrabold text-zinc-900 group-hover:text-[#e74b2d] transition-colors line-clamp-1">
+                          <h3 className="text-base font-extrabold text-zinc-900 group-hover:text-[#329AD4] transition-colors line-clamp-1">
                             <Link href={targetHref}>{prod.name}</Link>
                           </h3>
 
@@ -316,7 +316,7 @@ function WishlistContent() {
                       <div className="p-5 pt-0">
                         <Link
                           href={targetHref}
-                          className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-[#e74b2d] text-white text-base font-bold rounded-xl transition-all shadow-xs"
+                          className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-[#329AD4] text-white text-base font-bold rounded-xl transition-all shadow-xs"
                         >
                           <span>Customize in Studio</span>
                           <span>→</span>
@@ -341,7 +341,7 @@ function WishlistContent() {
               </div>
             ) : drafts.length === 0 ? (
               <div className="max-w-md mx-auto text-center py-16 px-4">
-                <div className="w-16 h-16 rounded-full bg-sky-50 text-[#e74b2d] flex items-center justify-center text-2xl mx-auto mb-4 border border-sky-100">
+                <div className="w-16 h-16 rounded-full bg-sky-50 text-[#329AD4] flex items-center justify-center text-2xl mx-auto mb-4 border border-sky-100">
                   🎨
                 </div>
                 <h3 className="text-lg font-extrabold text-zinc-900">No Draft Designs Yet</h3>
@@ -350,7 +350,7 @@ function WishlistContent() {
                 </p>
                 <Link
                   href="/customize"
-                  className="inline-block px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl shadow transition-all"
+                  className="inline-block px-6 py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white text-base font-bold rounded-xl shadow transition-all"
                 >
                   Create First Design Draft →
                 </Link>
@@ -365,7 +365,7 @@ function WishlistContent() {
                   return (
                     <div
                       key={d._id}
-                      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#e74b2d] transition-all duration-300 flex flex-col justify-between"
+                      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#329AD4] transition-all duration-300 flex flex-col justify-between"
                     >
                       <div>
                         {/* Design Studio Frame Preview */}
@@ -383,7 +383,7 @@ function WishlistContent() {
                           </div>
 
                           <div className="absolute top-3 right-3 z-10">
-                            <span className="px-2.5 py-1 rounded-full text-base font-extrabold bg-[#e74b2d]/90 text-white shadow-md">
+                            <span className="px-2.5 py-1 rounded-full text-base font-extrabold bg-[#329AD4]/90 text-white shadow-md">
                               {draftCategory}
                             </span>
                           </div>
@@ -391,7 +391,7 @@ function WishlistContent() {
 
                         {/* Title & Details */}
                         <div className="p-5 space-y-2">
-                          <h3 className="text-base font-extrabold text-zinc-900 group-hover:text-[#e74b2d] transition-colors truncate">
+                          <h3 className="text-base font-extrabold text-zinc-900 group-hover:text-[#329AD4] transition-colors truncate">
                             <Link href={studioHref}>{d.name}</Link>
                           </h3>
 
@@ -401,7 +401,7 @@ function WishlistContent() {
 
                           <div className="pt-2 flex items-center justify-between text-base border-t border-zinc-100">
                             <span className="text-base text-zinc-400">Saved {formatDate(d.updatedAt || d.createdAt)}</span>
-                            <span className="text-base font-bold text-[#e74b2d] flex items-center gap-1">
+                            <span className="text-base font-bold text-[#329AD4] flex items-center gap-1">
                               <span>✨</span> 3D Studio Ready
                             </span>
                           </div>
@@ -412,7 +412,7 @@ function WishlistContent() {
                       <div className="p-5 pt-0 flex items-center gap-2">
                         <Link
                           href={studioHref}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-xs"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-base font-bold rounded-xl transition-all shadow-xs"
                         >
                           <span>Open in 3D Studio</span>
                           <span>→</span>
@@ -446,7 +446,7 @@ export default function WishlistPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-white flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-sky-200 border-t-[#329AD4] rounded-full animate-spin" />
         </div>
       }
     >

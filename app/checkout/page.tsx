@@ -288,12 +288,12 @@ export default function CheckoutPage() {
   const isMockPayment = isMock || !clientSecret || clientSecret.includes("mock") || !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.startsWith("pk_test_51...");
 
   return (
-    <div className="min-h-screen bg-[#fbfaf7] font-sans">
+    <div className="min-h-screen bg-[#ffffff] font-sans">
       {/* Header */}
       <div className="bg-white border-b border-zinc-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-4">
           <Link href="/" className="inline-block">
-            <img src="/logo/printgraphy-brand-v2.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
+            <img src="/logo/logo.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
           </Link>
           <span className="text-zinc-300">/</span>
           <h1 className="text-base font-semibold text-zinc-600">Checkout</h1>

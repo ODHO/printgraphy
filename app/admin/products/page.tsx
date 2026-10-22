@@ -2,6 +2,22 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import {
+  Badge,
+  ButtonLink,
+  Card,
+  EmptyState,
+  Icon,
+  IconButton,
+  PageHeader,
+  Pagination as PaginationBar,
+  SearchInput,
+  SkeletonRows,
+  StatTile,
+  Toolbar,
+  cx,
+  table,
+} from "@/components/admin/ui";
 
 interface Product {
   _id: string;
@@ -68,136 +84,144 @@ export default function AdminProductsPage() {
     setToggling(null);
   };
 
+  const activeOnPage = products.filter((p) => p.isActive).length;
+
   return (
     <div className="space-y-6 max-w-7xl">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Products Catalog</h1>
-          <p className="text-zinc-500 text-base mt-0.5">{pagination ? `${pagination.total} total products` : "Loading..."}</p>
-        </div>
-        <Link
-          href="/admin/products/new"
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          New Product
-        </Link>
+      <PageHeader
+        icon="services"
+        title="Print Services"
+        description={pagination ? `${pagination.total} total products in the catalog` : "Loading catalog…"}
+        actions={<ButtonLink href="/admin/products/new" icon="plus">New Product</ButtonLink>}
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatTile label="Total products" icon="services" tone="brand" loading={!pagination} value={<span className="tabular-nums">{pagination?.total ?? 0}</span>} />
+        <StatTile label="Active on this page" icon="check" tone="green" loading={loading} value={<span className="tabular-nums">{activeOnPage}</span>} />
+        <StatTile label="Hidden on this page" icon="eye" tone="amber" loading={loading} value={<span className="tabular-nums">{products.length - activeOnPage}</span>} />
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Search catalog products..."
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-xs"
-        />
-      </div>
+      <Card className="overflow-hidden">
+        <Toolbar>
+          <SearchInput
+            value={search}
+            onChange={(value) => { setSearch(value); setPage(1); }}
+            placeholder="Search catalog products…"
+            className="sm:max-w-sm"
+          />
+          {pagination && (
+            <p className="text-xs text-zinc-500">
+              Page <span className="font-semibold text-zinc-700 tabular-nums">{page}</span> of <span className="tabular-nums">{Math.max(1, pagination.pages)}</span>
+            </p>
+          )}
+        </Toolbar>
 
-      {/* Table */}
-      <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
-          <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
-          </div>
+          <SkeletonRows rows={6} />
         ) : products.length === 0 ? (
-          <div className="py-16 text-center space-y-2">
-            <p className="text-zinc-400 text-base">No products found.</p>
-            <Link href="/admin/products/new" className="text-[#e74b2d] text-base font-bold hover:underline inline-block">Add your first product →</Link>
-          </div>
+          <EmptyState
+            icon="services"
+            title="No products found"
+            description={search ? "Try a different search term." : "Products you add will appear here."}
+            action={<ButtonLink href="/admin/products/new" icon="plus" variant="soft">Add your first product</ButtonLink>}
+          />
         ) : (
           <>
-            <table className="w-full text-base">
-              <thead>
-                <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
-                  <th className="text-left px-5 py-3.5 font-bold">Product Name</th>
-                  <th className="text-left px-5 py-3.5 font-bold hidden md:table-cell">Category</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Base Price</th>
-                  <th className="text-left px-5 py-3.5 font-bold hidden lg:table-cell">Rating</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Status</th>
-                  <th className="text-right px-5 py-3.5 font-bold">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {products.map((p) => (
-                  <tr key={p._id} className="hover:bg-sky-50/40 transition-colors">
-                    <td className="px-5 py-3.5">
-                      <p className="font-bold text-zinc-900">{p.name}</p>
-                      <p className="text-zinc-400 text-base font-mono">{p.slug}</p>
-                    </td>
-                    <td className="px-5 py-3.5 hidden md:table-cell">
-                      <span className="px-2.5 py-1 bg-zinc-100 text-zinc-700 font-semibold rounded-md text-base">{p.categoryId?.name ?? "General"}</span>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <p className="font-bold text-zinc-900">${p.price.toFixed(2)}</p>
-                      {p.unitPrice && <p className="text-zinc-400 text-base">{p.unitPrice}</p>}
-                    </td>
-                    <td className="px-5 py-3.5 hidden lg:table-cell">
-                      <div className="flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 20 20">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <span className="text-zinc-600 font-medium">{p.rating} ({p.reviewCount.toLocaleString()})</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <button
-                        onClick={() => handleToggle(p._id, p.isActive)}
-                        disabled={toggling === p._id}
-                        className="flex items-center gap-2 text-base font-bold cursor-pointer"
-                      >
-                        <div className={`w-8 h-4.5 rounded-full transition-colors relative ${p.isActive ? "bg-[#e74b2d]" : "bg-zinc-300"}`}>
-                          <span className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow transition-all ${p.isActive ? "left-4" : "left-0.5"}`} />
-                        </div>
-                        <span className={p.isActive ? "text-[#e74b2d]" : "text-zinc-400"}>{p.isActive ? "Active" : "Off"}</span>
-                      </button>
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/admin/products/${p._id}/edit`}
-                          className="px-3 py-1.5 rounded-xl border border-zinc-200 text-zinc-700 font-bold hover:bg-zinc-50 transition-all text-base"
-                        >
-                          Edit
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(p._id, p.name)}
-                          disabled={deleting === p._id}
-                          className="px-3 py-1.5 rounded-xl border border-red-200 text-red-600 font-bold hover:bg-red-50 transition-all text-base cursor-pointer"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+            <div className={table.wrap}>
+              <table className={table.table}>
+                <thead className={table.thead}>
+                  <tr>
+                    <th className={table.th}>Product</th>
+                    <th className={cx(table.th, "hidden md:table-cell")}>Category</th>
+                    <th className={table.th}>Base Price</th>
+                    <th className={cx(table.th, "hidden lg:table-cell")}>Rating</th>
+                    <th className={table.th}>Status</th>
+                    <th className={cx(table.th, "text-right")}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className={table.tbody}>
+                  {products.map((p) => (
+                    <tr key={p._id} className={table.tr}>
+                      <td className={table.td}>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8]">
+                            <Icon name="services" className="w-[18px] h-[18px]" />
+                          </span>
+                          <div className="min-w-0">
+                            <Link href={`/admin/products/${p._id}/edit`} className="block truncate font-semibold text-zinc-900 hover:text-[#2884b8]">
+                              {p.name}
+                            </Link>
+                            <p className="truncate font-mono text-xs text-zinc-400">{p.slug}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className={cx(table.td, "hidden md:table-cell")}>
+                        <Badge tone="brand">{p.categoryId?.name ?? "General"}</Badge>
+                      </td>
+                      <td className={table.td}>
+                        <p className="font-semibold text-zinc-900 tabular-nums">${p.price.toFixed(2)}</p>
+                        {p.unitPrice && <p className="text-xs text-zinc-400">{p.unitPrice}</p>}
+                      </td>
+                      <td className={cx(table.td, "hidden lg:table-cell")}>
+                        <div className="flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                          <span className="font-medium text-zinc-700 tabular-nums">{p.rating}</span>
+                          <span className="text-xs text-zinc-400 tabular-nums">({p.reviewCount.toLocaleString()})</span>
+                        </div>
+                      </td>
+                      <td className={table.td}>
+                        <button
+                          type="button"
+                          onClick={() => handleToggle(p._id, p.isActive)}
+                          disabled={toggling === p._id}
+                          className="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer disabled:opacity-50"
+                          aria-label={p.isActive ? "Deactivate product" : "Activate product"}
+                        >
+                          <span className={cx("relative h-5 w-9 rounded-full transition-colors", p.isActive ? "bg-[#329AD4]" : "bg-zinc-300")}>
+                            <span className={cx("absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all", p.isActive ? "left-[18px]" : "left-0.5")} />
+                          </span>
+                          <span className={p.isActive ? "text-[#2884b8]" : "text-zinc-400"}>{p.isActive ? "Active" : "Off"}</span>
+                        </button>
+                      </td>
+                      <td className={cx(table.td, "text-right")}>
+                        <div className="flex items-center justify-end gap-1">
+                          <Link
+                            href={`/admin/products/${p._id}/edit`}
+                            aria-label="Edit product"
+                            title="Edit"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-[#EAF5FB] hover:text-[#2884b8]"
+                          >
+                            <Icon name="edit" className="w-4 h-4" />
+                          </Link>
+                          <IconButton
+                            icon="trash"
+                            label="Delete"
+                            tone="danger"
+                            onClick={() => handleDelete(p._id, p.name)}
+                            disabled={deleting === p._id}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-            {pagination && pagination.pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#fff7f3]/30">
-                <p className="text-base text-zinc-500 font-medium">Showing {(page - 1) * pagination.limit + 1}–{Math.min(page * pagination.limit, pagination.total)} of {pagination.total}</p>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer">
-                    Previous
-                  </button>
-                  <span className="text-base font-mono font-bold text-zinc-800 px-2">{page} / {pagination.pages}</span>
-                  <button onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))} disabled={page === pagination.pages} className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer">
-                    Next
-                  </button>
-                </div>
-              </div>
+            {pagination && (
+              <PaginationBar
+                page={page}
+                pages={pagination.pages}
+                total={pagination.total}
+                limit={pagination.limit}
+                onPage={(next) => setPage(Math.min(pagination.pages, Math.max(1, next)))}
+              />
             )}
           </>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

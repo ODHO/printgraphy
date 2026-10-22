@@ -2,6 +2,25 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import {
+  Badge,
+  Button,
+  ButtonLink,
+  Card,
+  EmptyState,
+  Icon,
+  IconButton,
+  LoadingState,
+  Notice,
+  PageHeader,
+  Tabs,
+  Toolbar,
+  buttonClass,
+  cx,
+  inputClass,
+  labelClass,
+  table,
+} from "@/components/admin/ui";
 
 interface PageItem {
   _id: string;
@@ -208,7 +227,7 @@ export default function AdminPagesPage() {
   const insertTemplateBlock = (type: "faq" | "contact" | "hero") => {
     if (type === "hero") {
       const heroSnippet = `
-        <div style="background: linear-[#e74b2d]; color: white; padding: 40px; border-radius: 16px; margin-bottom: 24px;">
+        <div style="background: linear-[#329AD4]; color: white; padding: 40px; border-radius: 16px; margin-bottom: 24px;">
           <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 12px;">Headline Heading Here</h1>
           <p style="font-size: 16px; opacity: 0.9;">Describe your key message or product offering clearly in a few sentences.</p>
         </div>
@@ -231,7 +250,7 @@ export default function AdminPagesPage() {
       setForm((prev) => ({ ...prev, content: prev.content + "\n" + faqSnippet }));
     } else if (type === "contact") {
       const contactSnippet = `
-        <div style="background: #fbfaf7; border: 1px solid #e2e8f0; padding: 24px; border-radius: 16px; margin-top: 24px;">
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 24px; border-radius: 16px; margin-top: 24px;">
           <h3>Get In Touch</h3>
           <p>Have questions? Reach out to our support team directly:</p>
           <ul>
@@ -244,203 +263,243 @@ export default function AdminPagesPage() {
     }
   };
 
+  const publishedCount = pages.filter((p) => p.isPublished).length;
+
+  const renderStatus = (pageItem: PageItem) => (
+    <button
+      type="button"
+      onClick={() => handleTogglePublished(pageItem._id, pageItem.isPublished)}
+      className="cursor-pointer rounded-full transition-opacity hover:opacity-80"
+      title={pageItem.isPublished ? "Click to unpublish" : "Click to publish"}
+    >
+      <Badge tone={pageItem.isPublished ? "green" : "amber"} dot>
+        {pageItem.isPublished ? "Published" : "Draft"}
+      </Badge>
+    </button>
+  );
+
+  const renderActions = (pageItem: PageItem) => (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {/* Shortcut to add to Header Menu */}
+      <Button
+        variant="soft"
+        size="sm"
+        icon={addingToMenu === pageItem._id ? undefined : "plus"}
+        onClick={() => handleAddToHeaderMenu(pageItem.title, pageItem.slug, pageItem._id)}
+        disabled={addingToMenu === pageItem._id}
+        title="Add shortcut to Header Navigation Bar"
+      >
+        {addingToMenu === pageItem._id ? "Adding..." : "Header Menu"}
+      </Button>
+
+      {/* Edit with Full-Screen Elementor Builder */}
+      <Link
+        href={`/admin/pages/builder/${pageItem._id}`}
+        className={buttonClass("primary", "sm")}
+        title="Open Full-Screen Elementor Visual Drag & Drop Builder"
+      >
+        <Icon name="edit" className="w-3.5 h-3.5" strokeWidth={2.2} />
+        Edit in Builder
+      </Link>
+
+      <IconButton icon="settings" label="Page Settings & SEO" onClick={() => openEditDrawer(pageItem)} />
+      <IconButton icon="trash" label="Delete Page" tone="danger" onClick={() => handleDelete(pageItem._id, pageItem.title)} />
+    </div>
+  );
+
+  const tabItems: { value: "visual" | "html" | "seo"; label: React.ReactNode }[] = [
+    { value: "visual", label: <><Icon name="eye" className="w-3.5 h-3.5" /> Live Preview</> },
+    { value: "html", label: <><Icon name="pages" className="w-3.5 h-3.5" /> HTML / Content Editor</> },
+    { value: "seo", label: <><Icon name="search" className="w-3.5 h-3.5" /> SEO & Meta Tags</> },
+  ];
+
   return (
     <div className="space-y-6 max-w-7xl pb-16">
       {/* Toast Notification */}
       {toast && (
-        <div
-          className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl shadow-xl border text-base font-bold flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4 duration-300 ${
-            toast.type === "success"
-              ? "bg-emerald-900 text-emerald-100 border-emerald-700"
-              : "bg-red-900 text-red-100 border-red-700"
-          }`}
-        >
-          <span>{toast.type === "success" ? "✓" : "⚠️"}</span>
+        <div className="fixed bottom-6 right-4 sm:right-6 z-[60] flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-800 shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <span
+            className={cx(
+              "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
+              toast.type === "success" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+            )}
+          >
+            <Icon name={toast.type === "success" ? "check" : "ban"} className="w-4 h-4" strokeWidth={2.2} />
+          </span>
           <span>{toast.message}</span>
         </div>
       )}
 
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-zinc-900">Custom Pages (CMS)</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-base font-black bg-emerald-100 text-emerald-800 uppercase tracking-wider">
-              WordPress Style
+      <PageHeader
+        icon="pages"
+        title={
+          <span className="inline-flex flex-wrap items-center gap-2">
+            Custom Pages (CMS)
+            <Badge tone="brand">WordPress Style</Badge>
+          </span>
+        }
+        description="Create custom landing pages, policy documents, and promotional content pages for your website."
+        actions={
+          <>
+            <ButtonLink href="/admin/header-menu" variant="secondary" icon="menu">
+              Header Menu Manager
+            </ButtonLink>
+            <Button icon="plus" onClick={openCreateDrawer}>
+              Create Custom Page
+            </Button>
+          </>
+        }
+      />
+
+      {/* Page List Card */}
+      <Card className="overflow-hidden">
+        <Toolbar>
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EAF5FB] text-[#2884b8]">
+              <Icon name="layers" className="w-4 h-4" />
             </span>
+            <div>
+              <h2 className="text-sm font-semibold text-zinc-900">All pages</h2>
+              <p className="text-xs text-zinc-500">Published pages are live at /pages/your-slug</p>
+            </div>
           </div>
-          <p className="text-zinc-500 text-base mt-1">
-            Create custom landing pages, policy documents, and promotional content pages for your website.
-          </p>
-        </div>
+          {!loading && pages.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone="gray">{pages.length} total</Badge>
+              <Badge tone="green" dot>{publishedCount} published</Badge>
+              <Badge tone="amber" dot>{pages.length - publishedCount} draft</Badge>
+            </div>
+          )}
+        </Toolbar>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/admin/header-menu"
-            className="px-3.5 py-2 text-base font-bold text-zinc-700 bg-white border border-zinc-200 hover:bg-zinc-50 rounded-xl transition-all shadow-xs"
-          >
-            ≡ Header Menu Manager
-          </Link>
-
-          <button
-            onClick={openCreateDrawer}
-            className="flex items-center gap-2 px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 cursor-pointer"
-          >
-            <span className="text-base font-black">+</span> Create Custom Page
-          </button>
-        </div>
-      </div>
-
-      {/* Page List Table Card */}
-      <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
-          <div className="py-20 text-center space-y-2">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
-            <p className="text-base text-zinc-400">Loading custom pages...</p>
-          </div>
+          <LoadingState label="Loading custom pages..." />
         ) : pages.length === 0 ? (
-          <div className="py-16 text-center space-y-3">
-            <p className="text-zinc-500 text-base font-semibold">No custom pages created yet.</p>
-            <button
-              onClick={openCreateDrawer}
-              className="px-4 py-2 bg-[#e74b2d] text-white text-base font-bold rounded-xl hover:bg-[#c93e23] transition-all cursor-pointer"
-            >
-              + Create First Page
-            </button>
-          </div>
+          <EmptyState
+            icon="pages"
+            title="No custom pages created yet."
+            description="Build landing pages, policies and promotional content with the visual builder."
+            action={
+              <Button icon="plus" onClick={openCreateDrawer}>
+                Create First Page
+              </Button>
+            }
+          />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-base text-zinc-600">
-              <thead className="bg-[#fbfaf7] border-b border-zinc-100 font-bold text-zinc-700 uppercase tracking-wider text-base">
-                <tr>
-                  <th className="px-6 py-4">Page Title</th>
-                  <th className="px-6 py-4">URL Slug</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Last Updated</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {pages.map((pageItem) => (
-                  <tr key={pageItem._id} className="hover:bg-sky-50/40 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="space-y-0.5">
-                        <Link
-                          href={`/pages/${pageItem.slug}`}
-                          target="_blank"
-                          className="font-bold text-zinc-900 hover:text-[#e74b2d] transition-colors text-base"
-                        >
-                          {pageItem.title} ↗
-                        </Link>
-                        {pageItem.metaDescription && (
-                          <p className="text-base text-zinc-400 line-clamp-1 max-w-sm">
-                            {pageItem.metaDescription}
-                          </p>
-                        )}
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4 font-mono text-zinc-500">
-                      /pages/{pageItem.slug}
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleTogglePublished(pageItem._id, pageItem.isPublished)}
-                        className={`px-2.5 py-1 rounded-full text-base font-bold border transition-all cursor-pointer ${
-                          pageItem.isPublished
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
-                            : "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
-                        }`}
-                      >
-                        {pageItem.isPublished ? "Published" : "Draft"}
-                      </button>
-                    </td>
-
-                    <td className="px-6 py-4 text-zinc-400">
-                      {new Date(pageItem.updatedAt || pageItem.createdAt).toLocaleDateString()}
-                    </td>
-
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2 w-max">
-                        {/* Shortcut to add to Header Menu */}
-                        <button
-                          onClick={() => handleAddToHeaderMenu(pageItem.title, pageItem.slug, pageItem._id)}
-                          disabled={addingToMenu === pageItem._id}
-                          className="px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#e74b2d] text-base font-bold transition-all border border-sky-200 cursor-pointer disabled:opacity-50"
-                          title="Add shortcut to Header Navigation Bar"
-                        >
-                          {addingToMenu === pageItem._id ? "Adding..." : "+ Header Menu"}
-                        </button>
-
-                        {/* Edit with Full-Screen Elementor Builder */}
-                        <Link
-                          href={`/admin/pages/builder/${pageItem._id}`}
-                          className="px-3.5 py-1.5 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold transition-all shadow-xs flex items-center gap-1.5 text-base"
-                          title="Open Full-Screen Elementor Visual Drag & Drop Builder"
-                        >
-                          <span>🎨 Edit in Builder</span>
-                        </Link>
-
-                        <button
-                          onClick={() => openEditDrawer(pageItem)}
-                          className="p-2 rounded-xl border border-zinc-200 hover:bg-zinc-50 text-zinc-600 font-bold transition-all cursor-pointer text-base"
-                          title="Page Settings & SEO"
-                        >
-                          ⚙️
-                        </button>
-
-                        <button
-                          onClick={() => handleDelete(pageItem._id, pageItem.title)}
-                          className="p-2 rounded-xl text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer"
-                          title="Delete Page"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Desktop table */}
+            <div className={cx(table.wrap, "hidden md:block")}>
+              <table className={table.table}>
+                <thead className={table.thead}>
+                  <tr>
+                    <th className={table.th}>Page Title</th>
+                    <th className={table.th}>URL Slug</th>
+                    <th className={table.th}>Status</th>
+                    <th className={table.th}>Last Updated</th>
+                    <th className={cx(table.th, "text-right")}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className={table.tbody}>
+                  {pages.map((pageItem) => (
+                    <tr key={pageItem._id} className={table.tr}>
+                      <td className={table.td}>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#329AD4]">
+                            <Icon name="pages" className="w-4 h-4" />
+                          </span>
+                          <div className="min-w-0 space-y-0.5">
+                            <Link
+                              href={`/pages/${pageItem.slug}`}
+                              target="_blank"
+                              className="inline-flex items-center gap-1 font-semibold text-zinc-900 hover:text-[#2884b8] transition-colors"
+                            >
+                              {pageItem.title}
+                              <Icon name="chevronRight" className="w-3 h-3 -rotate-45 opacity-60" strokeWidth={2.4} />
+                            </Link>
+                            {pageItem.metaDescription && (
+                              <p className="text-xs text-zinc-400 line-clamp-1 max-w-xs">{pageItem.metaDescription}</p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className={table.td}>
+                        <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-xs text-zinc-600">/pages/{pageItem.slug}</code>
+                      </td>
+
+                      <td className={table.td}>{renderStatus(pageItem)}</td>
+
+                      <td className={cx(table.td, "text-xs whitespace-nowrap")}>
+                        {new Date(pageItem.updatedAt || pageItem.createdAt).toLocaleDateString()}
+                      </td>
+
+                      <td className={table.td}>
+                        <div className="flex justify-end">{renderActions(pageItem)}</div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="divide-y divide-zinc-100 md:hidden">
+              {pages.map((pageItem) => (
+                <div key={pageItem._id} className="space-y-3 px-5 py-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 space-y-1">
+                      <Link
+                        href={`/pages/${pageItem.slug}`}
+                        target="_blank"
+                        className="block truncate text-sm font-semibold text-zinc-900 hover:text-[#2884b8]"
+                      >
+                        {pageItem.title}
+                      </Link>
+                      <code className="block truncate font-mono text-xs text-zinc-500">/pages/{pageItem.slug}</code>
+                    </div>
+                    {renderStatus(pageItem)}
+                  </div>
+                  {pageItem.metaDescription && <p className="text-xs text-zinc-400 line-clamp-2">{pageItem.metaDescription}</p>}
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs text-zinc-400">
+                      Updated {new Date(pageItem.updatedAt || pageItem.createdAt).toLocaleDateString()}
+                    </span>
+                    {renderActions(pageItem)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
-      </div>
+      </Card>
 
       {/* ── WORDPRESS-STYLE PAGE EDITOR MODAL / DRAWER ──────────────── */}
       {showDrawer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white border border-zinc-200 rounded-3xl w-full max-w-4xl p-6 space-y-5 shadow-2xl my-6">
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-              <div>
-                <h2 className="text-base font-bold text-zinc-900">
-                  {editingPage ? `Edit Page: ${editingPage.title}` : "Create New WordPress-style Page"}
-                </h2>
-                <p className="text-base text-zinc-400">
-                  Design your custom page content using formatted HTML or rich blocks.
-                </p>
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/40 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl ring-1 ring-zinc-900/5 my-6 overflow-hidden">
+            <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-zinc-100">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#55b2e7] to-[#2884b8] text-white shadow-md shadow-[#329AD4]/25">
+                  <Icon name={editingPage ? "edit" : "plus"} className="w-5 h-5" />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="text-base font-semibold text-zinc-900 truncate">
+                    {editingPage ? `Edit Page: ${editingPage.title}` : "Create New WordPress-style Page"}
+                  </h2>
+                  <p className="text-xs text-zinc-500">Design your custom page content using formatted HTML or rich blocks.</p>
+                </div>
               </div>
-              <button
-                onClick={() => setShowDrawer(false)}
-                className="w-8 h-8 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-400 hover:text-zinc-800 cursor-pointer"
-              >
-                ✕
-              </button>
+              <IconButton icon="close" label="Close" onClick={() => setShowDrawer(false)} className="shrink-0" />
             </div>
 
-            {errorMsg && (
-              <div className="px-3.5 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-base font-semibold">
-                {errorMsg}
-              </div>
-            )}
+            <form onSubmit={handleFormSubmit} className="space-y-5 p-5 sm:p-6">
+              {errorMsg && <Notice tone="red">{errorMsg}</Notice>}
 
-            <form onSubmit={handleFormSubmit} className="space-y-4">
               {/* Title & Slug Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-base font-bold text-zinc-700 block mb-1">
-                    Page Title *
-                  </label>
+                  <label className={labelClass}>Page Title *</label>
                   <input
                     required
                     type="text"
@@ -453,98 +512,50 @@ export default function AdminPagesPage() {
                         slug: prev.slug ? prev.slug : generateSlug(title),
                       }));
                     }}
-                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                    className={inputClass}
                     placeholder="e.g. Services Overview"
                   />
                 </div>
 
                 <div>
-                  <label className="text-base font-bold text-zinc-700 block mb-1">
-                    URL Slug * (accessible at /pages/your-slug)
-                  </label>
+                  <label className={labelClass}>URL Slug * (accessible at /pages/your-slug)</label>
                   <input
                     required
                     type="text"
                     value={form.slug}
                     onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
-                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                    className={cx(inputClass, "font-mono")}
                     placeholder="services-overview"
                   />
                 </div>
               </div>
 
               {/* Navigation Tabs (Visual Preview vs HTML Editor vs SEO Meta) */}
-              <div className="border-b border-zinc-200 flex items-center justify-between pt-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("visual")}
-                    className={`px-3.5 py-2 text-base font-bold border-b-2 transition-all cursor-pointer ${
-                      activeTab === "visual"
-                        ? "border-[#e74b2d] text-[#e74b2d]"
-                        : "border-transparent text-zinc-500 hover:text-zinc-800"
-                    }`}
-                  >
-                    👁 Live Preview
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("html")}
-                    className={`px-3.5 py-2 text-base font-bold border-b-2 transition-all cursor-pointer ${
-                      activeTab === "html"
-                        ? "border-[#e74b2d] text-[#e74b2d]"
-                        : "border-transparent text-zinc-500 hover:text-zinc-800"
-                    }`}
-                  >
-                    💻 HTML / Content Editor
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("seo")}
-                    className={`px-3.5 py-2 text-base font-bold border-b-2 transition-all cursor-pointer ${
-                      activeTab === "seo"
-                        ? "border-[#e74b2d] text-[#e74b2d]"
-                        : "border-transparent text-zinc-500 hover:text-zinc-800"
-                    }`}
-                  >
-                    🔍 SEO & Meta Tags
-                  </button>
-                </div>
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <Tabs value={activeTab} onChange={setActiveTab} items={tabItems} />
 
                 {/* Quick Block Builder Buttons */}
-                <div className="hidden sm:flex items-center gap-1.5 text-base">
-                  <span className="text-zinc-400 font-semibold">Insert Block:</span>
-                  <button
-                    type="button"
-                    onClick={() => insertTemplateBlock("hero")}
-                    className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#e74b2d] rounded-lg font-bold transition-all cursor-pointer"
-                  >
-                    + Hero Banner
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => insertTemplateBlock("faq")}
-                    className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#e74b2d] rounded-lg font-bold transition-all cursor-pointer"
-                  >
-                    + FAQ Accordion
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => insertTemplateBlock("contact")}
-                    className="px-2 py-1 bg-sky-50 hover:bg-sky-100 text-[#e74b2d] rounded-lg font-bold transition-all cursor-pointer"
-                  >
-                    + Contact Info
-                  </button>
+                <div className="hidden sm:flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs font-medium text-zinc-400 mr-1">Insert block:</span>
+                  <Button variant="soft" size="sm" icon="plus" onClick={() => insertTemplateBlock("hero")}>
+                    Hero Banner
+                  </Button>
+                  <Button variant="soft" size="sm" icon="plus" onClick={() => insertTemplateBlock("faq")}>
+                    FAQ Accordion
+                  </Button>
+                  <Button variant="soft" size="sm" icon="plus" onClick={() => insertTemplateBlock("contact")}>
+                    Contact Info
+                  </Button>
                 </div>
               </div>
 
               {/* Tab 1: Visual Live Preview */}
               {activeTab === "visual" && (
                 <div className="space-y-2">
-                  <span className="text-base text-zinc-400 font-bold uppercase tracking-wider block">
+                  <span className="text-xs text-zinc-400 font-semibold uppercase tracking-wide block">
                     Page Live Preview Output
                   </span>
-                  <div className="border border-zinc-200 rounded-2xl p-6 min-h-[260px] max-h-[360px] overflow-y-auto bg-white prose prose-zinc max-w-none text-base leading-relaxed">
+                  <div className="border border-zinc-200 rounded-2xl p-6 min-h-[260px] max-h-[360px] overflow-y-auto bg-white prose prose-zinc max-w-none text-sm leading-relaxed">
                     {form.content ? (
                       <div dangerouslySetInnerHTML={{ __html: form.content }} />
                     ) : (
@@ -557,17 +568,17 @@ export default function AdminPagesPage() {
               {/* Tab 2: HTML / Content Editor */}
               {activeTab === "html" && (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-base text-zinc-400 font-bold uppercase tracking-wider">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs text-zinc-400 font-semibold uppercase tracking-wide">
                       Page Content (HTML / Rich Text)
                     </span>
-                    <span className="text-base text-zinc-400">Supports standard HTML elements</span>
+                    <span className="text-xs text-zinc-400">Supports standard HTML elements</span>
                   </div>
                   <textarea
                     rows={12}
                     value={form.content}
                     onChange={(e) => setForm((prev) => ({ ...prev, content: e.target.value }))}
-                    className="w-full bg-[#0f1117] text-sky-300 font-mono text-base rounded-2xl p-4 border border-zinc-800 focus:outline-none focus:border-[#e74b2d] leading-relaxed resize-y"
+                    className="w-full bg-[#0f1117] text-sky-300 font-mono text-sm rounded-2xl p-4 border border-zinc-800 focus:outline-none focus:border-[#329AD4] focus:ring-4 focus:ring-[#329AD4]/10 leading-relaxed resize-y"
                     placeholder="<h2>Page Heading</h2><p>Write your page text content here...</p>"
                   />
                 </div>
@@ -575,29 +586,25 @@ export default function AdminPagesPage() {
 
               {/* Tab 3: SEO Meta Tags */}
               {activeTab === "seo" && (
-                <div className="space-y-4 p-4 bg-[#fbfaf7] border border-sky-100 rounded-2xl">
+                <div className="space-y-4 rounded-2xl border border-[#dbeefb] bg-[#f0f8fd] p-4 sm:p-5">
                   <div>
-                    <label className="text-base font-bold text-zinc-700 block mb-1">
-                      Meta Title (Browser Title)
-                    </label>
+                    <label className={labelClass}>Meta Title (Browser Title)</label>
                     <input
                       type="text"
                       value={form.metaTitle}
                       onChange={(e) => setForm((prev) => ({ ...prev, metaTitle: e.target.value }))}
-                      className="w-full bg-white border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none"
+                      className={inputClass}
                       placeholder="e.g. Custom Printing Services — Printgraphy"
                     />
                   </div>
 
                   <div>
-                    <label className="text-base font-bold text-zinc-700 block mb-1">
-                      Meta Description (Search Engine Snippet)
-                    </label>
+                    <label className={labelClass}>Meta Description (Search Engine Snippet)</label>
                     <textarea
                       rows={3}
                       value={form.metaDescription}
                       onChange={(e) => setForm((prev) => ({ ...prev, metaDescription: e.target.value }))}
-                      className="w-full bg-white border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none resize-none"
+                      className={cx(inputClass, "resize-none")}
                       placeholder="Brief 1-2 sentence description for search engines..."
                     />
                   </div>
@@ -605,48 +612,36 @@ export default function AdminPagesPage() {
               )}
 
               {/* Publishing & Header Menu Options */}
-              <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-zinc-100">
-                <div className="flex items-center gap-6">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={form.isPublished}
-                      onChange={(e) => setForm((prev) => ({ ...prev, isPublished: e.target.checked }))}
-                      className="rounded accent-[#e74b2d]"
-                    />
-                    <span className="text-base font-bold text-zinc-800">Publish immediately</span>
-                  </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-zinc-100 pt-5">
+                <label className="flex items-center gap-3 rounded-xl border border-zinc-200 px-4 py-3 cursor-pointer select-none transition-colors hover:border-[#b8e0f6] hover:bg-[#f0f8fd]/60 has-[:checked]:border-[#b8e0f6] has-[:checked]:bg-[#f0f8fd]">
+                  <input
+                    type="checkbox"
+                    checked={form.isPublished}
+                    onChange={(e) => setForm((prev) => ({ ...prev, isPublished: e.target.checked }))}
+                    className="h-4 w-4 rounded accent-[#329AD4]"
+                  />
+                  <span className="text-sm font-medium text-zinc-800">Publish immediately</span>
+                </label>
 
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={form.addToHeaderMenu}
-                      onChange={(e) => setForm((prev) => ({ ...prev, addToHeaderMenu: e.target.checked }))}
-                      className="rounded accent-[#e74b2d]"
-                    />
-                    <span className="text-base font-bold text-zinc-800">
-                      Automatically add link to Header Navigation Menu
-                    </span>
-                  </label>
-                </div>
+                <label className="flex items-center gap-3 rounded-xl border border-zinc-200 px-4 py-3 cursor-pointer select-none transition-colors hover:border-[#b8e0f6] hover:bg-[#f0f8fd]/60 has-[:checked]:border-[#b8e0f6] has-[:checked]:bg-[#f0f8fd]">
+                  <input
+                    type="checkbox"
+                    checked={form.addToHeaderMenu}
+                    onChange={(e) => setForm((prev) => ({ ...prev, addToHeaderMenu: e.target.checked }))}
+                    className="h-4 w-4 rounded accent-[#329AD4]"
+                  />
+                  <span className="text-sm font-medium text-zinc-800">Automatically add link to Header Navigation Menu</span>
+                </label>
               </div>
 
               {/* Form Buttons */}
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowDrawer(false)}
-                  className="flex-1 py-2.5 text-base text-zinc-600 font-bold border border-zinc-200 rounded-xl hover:bg-zinc-50 cursor-pointer"
-                >
+              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-1">
+                <Button variant="secondary" onClick={() => setShowDrawer(false)}>
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
-                >
+                </Button>
+                <Button type="submit" disabled={saving} icon={saving ? undefined : "check"}>
                   {saving ? "Saving Page..." : editingPage ? "Update Custom Page" : "Publish Custom Page"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

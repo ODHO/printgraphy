@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLiveRefresh } from "@/components/useMessageStream";
 import Link from "next/link";
+import { Avatar, Badge, Card, CardHeader, cx, EmptyState, LoadingState, Notice, PageHeader, SkeletonRows, StatTile, table } from "@/components/admin/ui";
 
 interface WalletRow {
   _id: string;
@@ -59,84 +60,111 @@ export default function AdminWalletPage() {
 
   return (
     <div className="space-y-6 max-w-6xl">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Wallets</h1>
-        <p className="text-base text-zinc-500 mt-1">Admin keeps what the customer paid, minus the vendor payment. A vendor-fault reprint is taken from the vendor and added back here.</p>
-      </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Stat label="Customer paid" value={money(platform.collected)} />
-        <Stat label="Vendor share" value={money(platform.vendorShare)} />
-        <Stat label="Reprints recovered" value={money(platform.reprints)} />
-        <Stat label="Admin wallet" value={money(platform.adminWallet)} />
-      </div>
-      <p className="text-base text-zinc-500">Admin wallet = customer paid − vendor payment + fault reprints. A $120 order assigned at $40 leaves $80 here. A later $10 reprint makes it $90.</p>
-      <div className="bg-white rounded-3xl border border-zinc-200 overflow-hidden">
-        <table className="w-full text-base">
-          <thead>
-            <tr className="text-left text-zinc-500 bg-zinc-50">
-              <th className="px-4 py-3">Order</th>
-              <th className="px-4 py-3">Customer paid</th>
-              <th className="px-4 py-3">Vendor payment</th>
-              <th className="px-4 py-3">Reprint</th>
-              <th className="px-4 py-3">Vendor gets</th>
-              <th className="px-4 py-3">Admin keeps</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order._id} className="border-t border-zinc-100">
-                <td className="px-4 py-3">
-                  <Link href={`/admin/orders/${order._id}`} className="font-bold text-[#e74b2d]">{order.orderNumber}</Link>
-                  <p className="text-zinc-400">{order.vendor || "Unassigned"}{order.released ? " · released" : ""}</p>
-                </td>
-                <td className="px-4 py-3">{money(order.customerPaid)}</td>
-                <td className="px-4 py-3">{money(order.vendorPayment)}</td>
-                <td className="px-4 py-3 text-red-600">{order.reprint ? `−${money(order.reprint)}` : "—"}</td>
-                <td className="px-4 py-3 font-bold">{money(order.vendorNet)}</td>
-                <td className="px-4 py-3 font-bold text-emerald-700">{money(order.adminKeeps)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="bg-white rounded-3xl border border-zinc-200 overflow-hidden">
-        {loading ? <p className="p-8 text-base text-zinc-500">Loading wallets...</p> : (
-          <table className="w-full text-base">
-            <thead>
-              <tr className="text-left text-zinc-500 bg-zinc-50">
-                <th className="px-4 py-3">Vendor</th>
-                <th className="px-4 py-3">Stripe</th>
-                <th className="px-4 py-3">Available</th>
-                <th className="px-4 py-3">Pending</th>
-                <th className="px-4 py-3">Withdrawn</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row._id} className="border-t border-zinc-100">
-                  <td className="px-4 py-3">
-                    <Link href={`/admin/vendors/${row._id}`} className="font-bold text-[#e74b2d]">{row.name}</Link>
-                    <p className="text-zinc-400">{row.email}</p>
-                  </td>
-                  <td className="px-4 py-3 text-zinc-600">{row.stripePublishableKey ? "Keys saved" : "Not added"}{row.accountHolderName ? ` · ${row.accountHolderName}` : ""}</td>
-                  <td className="px-4 py-3 font-bold text-emerald-700">{money(row.available)}</td>
-                  <td className="px-4 py-3">{money(row.pending)}</td>
-                  <td className="px-4 py-3">{money(row.withdrawn)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </div>
-  );
-}
+      <PageHeader
+        icon="wallet"
+        title="Wallets"
+        description="Admin keeps what the customer paid, minus the vendor payment. A vendor-fault reprint is taken from the vendor and added back here."
+      />
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-white rounded-2xl border border-zinc-200 p-4">
-      <p className="text-base font-bold uppercase tracking-wide text-zinc-400">{label}</p>
-      <p className="text-xl font-black text-zinc-900 mt-1">{value}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatTile label="Customer paid" value={<span className="tabular-nums">{money(platform.collected)}</span>} icon="dollar" tone="brand" loading={loading} />
+        <StatTile label="Vendor share" value={<span className="tabular-nums">{money(platform.vendorShare)}</span>} icon="vendors" tone="violet" loading={loading} />
+        <StatTile label="Reprints recovered" value={<span className="tabular-nums">{money(platform.reprints)}</span>} icon="refresh" tone="amber" loading={loading} />
+        <StatTile label="Admin wallet" value={<span className="tabular-nums">{money(platform.adminWallet)}</span>} icon="wallet" tone="green" loading={loading} />
+      </div>
+
+      <Notice tone="brand" title="How the admin wallet is calculated">
+        Admin wallet = customer paid − vendor payment + fault reprints. A $120 order assigned at $40 leaves $80 here. A later $10 reprint makes it $90.
+      </Notice>
+
+      <Card className="overflow-hidden">
+        <CardHeader icon="orders" title="Order money flow" subtitle="Per-order split between vendor and admin" />
+        {loading ? (
+          <SkeletonRows rows={4} />
+        ) : orders.length === 0 ? (
+          <EmptyState icon="orders" title="No orders yet" description="Paid orders will appear here with their vendor and admin split." />
+        ) : (
+          <div className={table.wrap}>
+            <table className={table.table}>
+              <thead className={table.thead}>
+                <tr>
+                  <th className={table.th}>Order</th>
+                  <th className={cx(table.th, "text-right")}>Customer paid</th>
+                  <th className={cx(table.th, "text-right")}>Vendor payment</th>
+                  <th className={cx(table.th, "text-right")}>Reprint</th>
+                  <th className={cx(table.th, "text-right")}>Vendor gets</th>
+                  <th className={cx(table.th, "text-right")}>Admin keeps</th>
+                </tr>
+              </thead>
+              <tbody className={table.tbody}>
+                {orders.map((order) => (
+                  <tr key={order._id} className={table.tr}>
+                    <td className={table.td}>
+                      <Link href={`/admin/orders/${order._id}`} className="font-semibold text-[#329AD4] hover:text-[#2884b8]">{order.orderNumber}</Link>
+                      <p className="mt-0.5 flex items-center gap-1.5 text-xs text-zinc-500 whitespace-nowrap">
+                        {order.vendor || "Unassigned"}
+                        {order.released ? <Badge tone="green" className="!px-1.5 !py-0 text-[10px]">released</Badge> : ""}
+                      </p>
+                    </td>
+                    <td className={cx(table.td, "text-right tabular-nums whitespace-nowrap")}>{money(order.customerPaid)}</td>
+                    <td className={cx(table.td, "text-right tabular-nums whitespace-nowrap")}>{money(order.vendorPayment)}</td>
+                    <td className={cx(table.td, "text-right tabular-nums whitespace-nowrap", order.reprint ? "text-rose-600" : "text-zinc-400")}>{order.reprint ? `−${money(order.reprint)}` : "—"}</td>
+                    <td className={cx(table.td, "text-right tabular-nums whitespace-nowrap font-semibold text-zinc-900")}>{money(order.vendorNet)}</td>
+                    <td className={cx(table.td, "text-right tabular-nums whitespace-nowrap")}>
+                      <span className="inline-flex rounded-lg bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">{money(order.adminKeeps)}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+
+      <Card className="overflow-hidden">
+        <CardHeader icon="vendors" title="Vendor wallets" subtitle="Balances and Stripe payout setup per vendor" />
+        {loading ? <LoadingState label="Loading wallets..." /> : rows.length === 0 ? (
+          <EmptyState icon="wallet" title="No vendor wallets yet" />
+        ) : (
+          <div className={table.wrap}>
+            <table className={table.table}>
+              <thead className={table.thead}>
+                <tr>
+                  <th className={table.th}>Vendor</th>
+                  <th className={table.th}>Stripe</th>
+                  <th className={cx(table.th, "text-right")}>Available</th>
+                  <th className={cx(table.th, "text-right")}>Pending</th>
+                  <th className={cx(table.th, "text-right")}>Withdrawn</th>
+                </tr>
+              </thead>
+              <tbody className={table.tbody}>
+                {rows.map((row) => (
+                  <tr key={row._id} className={table.tr}>
+                    <td className={table.td}>
+                      <div className="flex items-center gap-3">
+                        <Avatar name={row.name || row.email || "?"} />
+                        <div className="min-w-0">
+                          <Link href={`/admin/vendors/${row._id}`} className="font-semibold text-[#329AD4] hover:text-[#2884b8]">{row.name}</Link>
+                          <p className="text-xs text-zinc-500 truncate">{row.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className={table.td}>
+                      <div className="flex flex-col items-start gap-1">
+                        <Badge tone={row.stripePublishableKey ? "green" : "gray"} dot>{row.stripePublishableKey ? "Keys saved" : "Not added"}</Badge>
+                        {row.accountHolderName ? <span className="text-xs text-zinc-500">{row.accountHolderName}</span> : null}
+                      </div>
+                    </td>
+                    <td className={cx(table.td, "text-right tabular-nums whitespace-nowrap font-semibold text-emerald-700")}>{money(row.available)}</td>
+                    <td className={cx(table.td, "text-right tabular-nums whitespace-nowrap")}>{money(row.pending)}</td>
+                    <td className={cx(table.td, "text-right tabular-nums whitespace-nowrap")}>{money(row.withdrawn)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

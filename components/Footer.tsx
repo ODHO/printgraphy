@@ -74,21 +74,21 @@ export default function Footer() {
   }
 
   return (
-    <footer className="w-full bg-[#fbfaf7] px-4 sm:px-6 lg:px-8 pt-8 pb-0">
+    <footer className="w-full bg-[#ffffff] px-4 sm:px-6 lg:px-8 pt-8 pb-0">
       {/* Floating Card Footer with Rounded Top Corners and Side Margins */}
       <div
         className="max-w-[1440px] mx-auto rounded-t-[2rem] rounded-b-none p-8 sm:p-12 lg:p-14 text-black border border-black/10 shadow-[0_-8px_40px_rgba(31,29,27,0.06)]"
-        style={{ background: "#f3e8dc" }}
+        style={{ background: "#EAF5FB" }}
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
           {/* Column 1 — Logo + Sustainability Note */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex-shrink-0 w-fit">
               <Image
-                src="/logo/printgraphy-brand-v2.png"
+                src="/logo/logo.png"
                 alt="Printgraphy"
-                width={220}
-                height={60}
+                width={378}
+                height={108}
                 className="h-11 w-auto object-contain"
               />
             </Link>

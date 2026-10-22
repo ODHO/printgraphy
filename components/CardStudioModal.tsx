@@ -154,27 +154,27 @@ export default function CardStudioModal({
           {/* Rotate 90° */}
           <button
             onClick={handleRotate}
-            className="flex flex-col items-center justify-center hover:text-[#e74b2d] transition-colors group cursor-pointer"
+            className="flex flex-col items-center justify-center hover:text-[#329AD4] transition-colors group cursor-pointer"
             title="Rotate 90 degrees"
           >
-            <svg className="w-5 h-5 text-zinc-600 group-hover:text-[#e74b2d] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-zinc-600 group-hover:text-[#329AD4] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span className="text-base font-medium mt-0.5 text-zinc-600 group-hover:text-[#e74b2d]">Rotate 90°</span>
+            <span className="text-base font-medium mt-0.5 text-zinc-600 group-hover:text-[#329AD4]">Rotate 90°</span>
           </button>
 
           {/* Fit To Bleed */}
           <button
             onClick={handleFitToBleed}
             className={`flex flex-col items-center justify-center transition-colors group cursor-pointer ${
-              fitMode === "bleed" ? "text-[#e74b2d]" : "hover:text-[#e74b2d]"
+              fitMode === "bleed" ? "text-[#329AD4]" : "hover:text-[#329AD4]"
             }`}
             title="Fit artwork to bleed area"
           >
-            <svg className={`w-5 h-5 ${fitMode === "bleed" ? "text-[#e74b2d]" : "text-zinc-600 group-hover:text-[#e74b2d]"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 ${fitMode === "bleed" ? "text-[#329AD4]" : "text-zinc-600 group-hover:text-[#329AD4]"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M8 7h8M8 17h8M12 3v18" />
             </svg>
-            <span className={`text-base font-medium mt-0.5 ${fitMode === "bleed" ? "text-[#e74b2d]" : "text-zinc-600 group-hover:text-[#e74b2d]"}`}>
+            <span className={`text-base font-medium mt-0.5 ${fitMode === "bleed" ? "text-[#329AD4]" : "text-zinc-600 group-hover:text-[#329AD4]"}`}>
               Fit To Bleed
             </span>
           </button>
@@ -183,14 +183,14 @@ export default function CardStudioModal({
           <button
             onClick={handleFitToArea}
             className={`flex flex-col items-center justify-center transition-colors group cursor-pointer ${
-              fitMode === "safe" ? "text-[#e74b2d]" : "hover:text-[#e74b2d]"
+              fitMode === "safe" ? "text-[#329AD4]" : "hover:text-[#329AD4]"
             }`}
             title="Fit artwork within safe zone"
           >
-            <svg className={`w-5 h-5 ${fitMode === "safe" ? "text-[#e74b2d]" : "text-zinc-600 group-hover:text-[#e74b2d]"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 ${fitMode === "safe" ? "text-[#329AD4]" : "text-zinc-600 group-hover:text-[#329AD4]"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
             </svg>
-            <span className={`text-base font-medium mt-0.5 ${fitMode === "safe" ? "text-[#e74b2d]" : "text-zinc-600 group-hover:text-[#e74b2d]"}`}>
+            <span className={`text-base font-medium mt-0.5 ${fitMode === "safe" ? "text-[#329AD4]" : "text-zinc-600 group-hover:text-[#329AD4]"}`}>
               Fit To Area
             </span>
           </button>
@@ -234,7 +234,7 @@ export default function CardStudioModal({
             {/* Title above upload box */}
             <div className="text-center mb-6">
               <h2 className="text-2xl font-extrabold text-zinc-900">Upload Your Design</h2>
-              <p className="text-base font-semibold text-[#e74b2d] mt-0.5">Specs and templates</p>
+              <p className="text-base font-semibold text-[#329AD4] mt-0.5">Specs and templates</p>
             </div>
 
             {/* Dropzone / Upload Box */}
@@ -244,11 +244,11 @@ export default function CardStudioModal({
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 className={`w-full max-w-md aspect-[4/3] rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center p-8 text-center bg-white shadow-sm ${
-                  isDragOver ? "border-[#e74b2d] bg-sky-50/50 scale-[1.01]" : "border-[#e74b2d]/70 hover:border-[#e74b2d]"
+                  isDragOver ? "border-[#329AD4] bg-sky-50/50 scale-[1.01]" : "border-[#329AD4]/70 hover:border-[#329AD4]"
                 }`}
               >
                 {/* Cloud Upload Icon */}
-                <div className="w-14 h-14 rounded-full bg-sky-50 text-[#e74b2d] flex items-center justify-center mb-4">
+                <div className="w-14 h-14 rounded-full bg-sky-50 text-[#329AD4] flex items-center justify-center mb-4">
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
@@ -318,14 +318,14 @@ export default function CardStudioModal({
                 {/* Uploaded File Info & Re-upload Controls */}
                 <div className="mt-4 flex items-center justify-between w-full max-w-[340px] bg-white px-4 py-2.5 rounded-xl border border-zinc-200 shadow-2xs">
                   <div className="flex items-center space-x-2 truncate pr-2">
-                    <svg className="w-4 h-4 text-[#e74b2d] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-[#329AD4] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <span className="text-base font-semibold text-zinc-700 truncate">{fileName || "Uploaded Artwork"}</span>
                   </div>
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer shrink-0"
+                    className="text-base font-bold text-[#329AD4] hover:underline cursor-pointer shrink-0"
                   >
                     Change
                   </button>
@@ -406,7 +406,7 @@ export default function CardStudioModal({
                 ))}
               </div>
               {activeTemplate && (
-                <p className="text-base text-[#e74b2d] font-medium">
+                <p className="text-base text-[#329AD4] font-medium">
                   Downloading {activeTemplate} template...
                 </p>
               )}
@@ -488,7 +488,7 @@ export default function CardStudioModal({
               <button
                 type="button"
                 onClick={() => handleTemplateDownload("Guidelines-PDF")}
-                className="text-base font-semibold text-zinc-800 hover:text-[#e74b2d] underline cursor-pointer"
+                className="text-base font-semibold text-zinc-800 hover:text-[#329AD4] underline cursor-pointer"
               >
                 Download detailed guidelines
               </button>
@@ -501,7 +501,7 @@ export default function CardStudioModal({
             <button
               type="button"
               onClick={handleFinish}
-              className="w-full py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-base rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer"
+              className="w-full py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white font-semibold text-base rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
               Finish
             </button>
@@ -529,7 +529,7 @@ export default function CardStudioModal({
                 setShowFinishSuccess(false);
                 onClose();
               }}
-              className="w-full py-2.5 bg-[#e74b2d] text-white font-semibold text-base rounded-lg hover:bg-[#c93e23] cursor-pointer"
+              className="w-full py-2.5 bg-[#329AD4] text-white font-semibold text-base rounded-lg hover:bg-[#2884b8] cursor-pointer"
             >
               Continue Shopping
             </button>

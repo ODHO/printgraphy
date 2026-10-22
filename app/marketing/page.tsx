@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function MarketingPage() {
   return (
-    <div className="min-h-screen bg-[#fbfaf7] font-sans flex flex-col justify-between text-zinc-900">
+    <div className="min-h-screen bg-[#ffffff] font-sans flex flex-col justify-between text-zinc-900">
       <div>
         {/* Hero Section */}
         <MarketingHero />

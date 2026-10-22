@@ -241,7 +241,7 @@ export default function RecentProjectsPage() {
                             ? "/browsedesigns"
                             : `/browsedesigns?designId=${proj.id}`
                         }
-                        className="px-6 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-xs sm:text-sm rounded-full shadow-sm transition-all"
+                        className="px-6 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-semibold text-xs sm:text-sm rounded-full shadow-sm transition-all"
                       >
                         Open in Editor →
                       </Link>

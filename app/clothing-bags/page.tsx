@@ -29,7 +29,7 @@ export default async function ClothingBagsHubPage() {
     .lean();
 
   return (
-    <div className="min-h-screen bg-[#fbfaf7] font-sans">
+    <div className="min-h-screen bg-[#ffffff] font-sans">
       <div className="bg-white border-b border-zinc-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
           <h1 className="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
@@ -73,7 +73,7 @@ export default async function ClothingBagsHubPage() {
                     <p className="text-sm text-white/80 mt-1 line-clamp-2">
                       {cat.description || "Customize with your logo or message"}
                     </p>
-                    <span className="inline-flex mt-4 text-sm font-bold text-white bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-2 group-hover:bg-[#e74b2d] group-hover:border-[#e74b2d] transition-colors">
+                    <span className="inline-flex mt-4 text-sm font-bold text-white bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-2 group-hover:bg-[#329AD4] group-hover:border-[#329AD4] transition-colors">
                       Shop {cat.name} →
                     </span>
                   </div>

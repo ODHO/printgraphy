@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Avatar, Icon, cx, type IconName } from "@/components/admin/ui";
 
 export type VendorTab = "dashboard" | "incoming" | "jobs" | "catalog" | "earnings" | "messages";
 
@@ -14,6 +15,13 @@ interface VendorSidebarProps {
   unreadCount?: number;
   incomingCount?: number;
   jobsCount?: number;
+}
+
+interface NavItem {
+  id: VendorTab;
+  label: string;
+  icon: IconName;
+  badge?: number;
 }
 
 export default function VendorSidebar({
@@ -44,80 +52,48 @@ export default function VendorSidebar({
     }
   };
 
-  const navItems: { id: VendorTab; label: string; badge?: number; icon: ReactNode }[] = [
+  const sections: { title: string; items: NavItem[] }[] = [
     {
-      id: "dashboard",
-      label: "Dashboard",
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
-      ),
+      title: "Overview",
+      items: [{ id: "dashboard", label: "Dashboard", icon: "dashboard" }],
     },
     {
-      id: "incoming",
-      label: "Incoming Orders",
-      badge: incomingCount > 0 ? incomingCount : undefined,
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-        </svg>
-      ),
+      title: "Fulfilment",
+      items: [
+        { id: "incoming", label: "Incoming Orders", icon: "inbox", badge: incomingCount > 0 ? incomingCount : undefined },
+        { id: "jobs", label: "My Production Jobs", icon: "services", badge: jobsCount > 0 ? jobsCount : undefined },
+      ],
     },
     {
-      id: "jobs",
-      label: "My Production Jobs",
-      badge: jobsCount > 0 ? jobsCount : undefined,
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-        </svg>
-      ),
+      title: "Business",
+      items: [
+        { id: "catalog", label: "Catalog Costs & Pricing", icon: "tag" },
+        { id: "earnings", label: "Earnings & Payouts", icon: "wallet" },
+      ],
     },
     {
-      id: "catalog",
-      label: "Catalog Costs & Pricing",
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-        </svg>
-      ),
-    },
-    {
-      id: "earnings",
-      label: "Earnings & Payouts",
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-        </svg>
-      ),
-    },
-    {
-      id: "messages",
-      label: "Live Messages",
-      badge: unreadCount > 0 ? unreadCount : undefined,
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      ),
+      title: "Support",
+      items: [{ id: "messages", label: "Live Messages", icon: "messages", badge: unreadCount > 0 ? unreadCount : undefined }],
     },
   ];
 
   return (
     <>
       {/* Mobile Toggle Button */}
-      <div className="lg:hidden w-full mb-3 flex items-center justify-between bg-[#fff1eb] p-3 rounded-xl border border-sky-100">
-        <span className="font-semibold text-sm text-zinc-800">Vendor Navigation</span>
+      <div className="lg:hidden w-full flex items-center justify-between bg-white p-3 rounded-2xl border border-zinc-200/70 shadow-xs">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#55b2e7] to-[#2884b8] text-white">
+            <Icon name="sparkle" className="w-4 h-4" />
+          </span>
+          <span className="font-semibold text-sm text-zinc-800 truncate">Vendor Portal</span>
+        </div>
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#e74b2d] text-white text-xs font-semibold rounded-lg shadow-xs hover:bg-[#c93e23] transition cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#329AD4] text-white text-xs font-semibold rounded-lg shadow-xs hover:bg-[#2884b8] transition cursor-pointer"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d={mobileOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-          </svg>
-          <span>{mobileOpen ? "Close Menu" : "Menu"}</span>
+          <Icon name={mobileOpen ? "close" : "menu"} className="w-4 h-4" strokeWidth={2} />
+          <span>{mobileOpen ? "Close" : "Menu"}</span>
         </button>
       </div>
 
@@ -131,103 +107,143 @@ export default function VendorSidebar({
 
       {/* Sidebar Container */}
       <aside
-        className={`
-          ${mobileOpen ? "fixed inset-y-0 left-0 z-50 flex w-72 p-4 shadow-2xl" : "hidden"}
-          lg:flex lg:w-60 xl:w-64 shrink-0 flex-col justify-between
-          bg-[#fff1eb] rounded-2xl p-3 sm:p-4 min-h-[580px] lg:min-h-[620px]
-          border border-sky-100/80 transition-all duration-200
-        `}
+        className={cx(
+          mobileOpen ? "fixed inset-y-0 left-0 z-50 flex w-72 overflow-y-auto rounded-none shadow-2xl" : "hidden",
+          "lg:flex lg:sticky lg:top-6 lg:w-64 shrink-0 flex-col justify-between gap-6",
+          "bg-gradient-to-b from-[#EAF5FB] to-[#f4fafd] lg:rounded-3xl p-4 lg:h-[calc(100vh-3rem)] lg:overflow-y-auto",
+          "border border-[#dbeefb] scrollbar-hide"
+        )}
       >
-        <div className="space-y-1">
-          {/* Mobile close icon */}
-          <div className="lg:hidden flex items-center justify-between pb-3 mb-2 border-b border-sky-200/60">
-            <span className="font-bold text-zinc-900 text-sm">Printgraphy Vendor</span>
+        <div>
+          {/* Brand block */}
+          <div className="flex items-center justify-between gap-2 px-2 pb-4 mb-2 border-b border-[#cfe7f6]">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#55b2e7] to-[#2884b8] text-white shadow-md shadow-[#329AD4]/25">
+                <Icon name="sparkle" className="w-[18px] h-[18px]" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-zinc-900 leading-tight">Printgraphy</p>
+                <p className="text-[11px] font-medium text-[#2884b8]">Vendor Portal</p>
+              </div>
+            </div>
             <button
+              type="button"
               onClick={() => setMobileOpen(false)}
-              className="p-1 rounded-lg hover:bg-white/60 text-zinc-600 cursor-pointer"
+              className="lg:hidden p-1 rounded-lg hover:bg-white/60 text-zinc-600 cursor-pointer"
+              aria-label="Close menu"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <Icon name="close" className="w-5 h-5" strokeWidth={2} />
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="flex flex-col space-y-1">
-            {navItems.map((item) => {
-              const isActive = currentTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => {
-                    onSelectTab(item.id);
-                    setMobileOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium transition-all text-left cursor-pointer ${
-                    isActive
-                      ? "bg-[#e74b2d] text-white shadow-xs font-semibold"
-                      : "text-zinc-600 hover:text-zinc-900 hover:bg-white/50"
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="shrink-0">{item.icon}</span>
-                    <span className="truncate">{item.label}</span>
-                  </div>
-                  {item.badge !== undefined && (
-                    <span
-                      className={`ml-2 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        isActive ? "bg-white text-[#e74b2d]" : "bg-[#e74b2d] text-white"
-                      }`}
-                    >
-                      {item.badge > 99 ? "99+" : item.badge}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+          {/* Navigation */}
+          <nav className="space-y-4">
+            {sections.map((section) => (
+              <div key={section.title}>
+                <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-400">{section.title}</p>
+                <div className="flex flex-col gap-0.5">
+                  {section.items.map((item) => {
+                    const isActive = currentTab === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => {
+                          onSelectTab(item.id);
+                          setMobileOpen(false);
+                        }}
+                        aria-current={isActive ? "page" : undefined}
+                        className={cx(
+                          "group w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-left transition-all cursor-pointer",
+                          isActive
+                            ? "bg-[#329AD4] text-white font-semibold shadow-md shadow-[#329AD4]/25"
+                            : "text-zinc-600 hover:text-zinc-900 hover:bg-white/80"
+                        )}
+                      >
+                        <span
+                          className={cx(
+                            "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors",
+                            isActive ? "bg-white/20 text-white" : "bg-white text-[#329AD4] shadow-xs group-hover:bg-[#EAF5FB]"
+                          )}
+                        >
+                          <Icon name={item.icon} className="w-4 h-4" />
+                        </span>
+                        <span className="truncate flex-1">{item.label}</span>
+                        {item.badge !== undefined && (
+                          <span
+                            className={cx(
+                              "ml-1 min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-[10px] font-bold tabular-nums",
+                              isActive ? "bg-white text-[#2884b8]" : "bg-[#329AD4] text-white"
+                            )}
+                          >
+                            {item.badge > 99 ? "99+" : item.badge}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
         </div>
 
         {/* Bottom Section: Availability Toggle, Vendor Info & Logout */}
-        <div className="pt-6 space-y-3">
+        <div className="space-y-2.5">
           {/* Availability Status Toggle */}
           {onToggleAvailability && (
             <button
               type="button"
+              role="switch"
+              aria-checked={isAvailable}
               onClick={() => onToggleAvailability(!isAvailable)}
-              className={`w-full px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+              className={cx(
+                "w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer",
                 isAvailable
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/80"
-                  : "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/80"
-              }`}
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70"
+                  : "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/70"
+              )}
             >
+              <span className="flex items-center gap-2 min-w-0">
+                <span className={cx("h-2 w-2 shrink-0 rounded-full", isAvailable ? "bg-emerald-500 animate-pulse" : "bg-amber-500")} />
+                <span className="truncate">{isAvailable ? "Accepting Orders" : "Orders Paused"}</span>
+              </span>
               <span
-                className={`w-2 h-2 rounded-full ${
-                  isAvailable ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
-                }`}
-              />
-              <span>{isAvailable ? "Accepting Orders" : "Orders Paused"}</span>
+                className={cx(
+                  "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors",
+                  isAvailable ? "bg-emerald-500" : "bg-zinc-300"
+                )}
+                aria-hidden="true"
+              >
+                <span
+                  className={cx(
+                    "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform",
+                    isAvailable ? "translate-x-[18px]" : "translate-x-0.5"
+                  )}
+                />
+              </span>
             </button>
           )}
 
           {/* Vendor Profile Info Box */}
-          <div className="bg-white/80 p-2.5 rounded-xl border border-sky-100 flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-[#e74b2d]/10 text-[#e74b2d] font-bold text-xs flex items-center justify-center shrink-0">
-              V
-            </div>
+          <div className="flex items-center gap-2.5 rounded-xl border border-[#dbeefb] bg-white/90 p-2.5 shadow-xs">
+            <Avatar name={vendorName} size="sm" />
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-zinc-900 truncate">{vendorName}</p>
-              <p className="text-[10px] text-zinc-500 truncate">Print Vendor Facility</p>
+              <p className="text-xs font-semibold text-zinc-900 truncate">{vendorName}</p>
+              <p className="text-[11px] text-zinc-500 truncate">Print Vendor Facility</p>
             </div>
           </div>
 
           {/* Logout Button */}
           <button
+            type="button"
             onClick={handleSignOut}
             disabled={signingOut}
-            className="w-full text-left px-3.5 py-2 rounded-xl text-xs sm:text-[13px] font-medium text-red-500 hover:text-red-600 hover:bg-red-50/70 transition-colors cursor-pointer"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-rose-500 hover:text-rose-600 hover:bg-rose-50/80 transition-colors cursor-pointer disabled:opacity-60"
           >
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-xs">
+              <Icon name="logout" className="w-4 h-4" />
+            </span>
             {signingOut ? "Logging out..." : "Logout"}
           </button>
         </div>

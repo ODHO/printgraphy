@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Badge, Card, CardHeader, EmptyState, Icon, PageHeader, SkeletonRows, StatTile } from "@/components/admin/ui";
 
 interface ProductItem {
   _id: string;
@@ -16,6 +17,12 @@ interface VendorProductItem {
   isEligible: boolean;
   vendorId?: { _id: string; name: string };
   productId?: { _id: string; name: string; price: number };
+}
+
+function gateStatus(vp: VendorProductItem) {
+  const ok = vp.isEligible && vp.vendorCost <= Number(vp.categoryBenchmarkMax || vp.vendorCost);
+  const label = !vp.isEligible ? "MARGIN LOW" : vp.vendorCost > Number(vp.categoryBenchmarkMax || 0) ? "OUTLIER" : "IN RANGE";
+  return { ok, label };
 }
 
 export default function AdminPricingPage() {
@@ -35,76 +42,99 @@ export default function AdminPricingPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const passing = vendorProducts.filter((vp) => gateStatus(vp).ok).length;
+  const flagged = vendorProducts.length - passing;
+
   return (
     <div className="space-y-6 max-w-7xl">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Pricing Oversight & Benchmark Gating</h1>
-        <p className="text-zinc-500 text-base mt-0.5">
-          Fixed customer platform pricing vs vendor entered costs and 25% margin eligibility rules.
-        </p>
+      <PageHeader
+        icon="subscription"
+        title="Pricing Oversight & Benchmark Gating"
+        description="Fixed customer platform pricing vs vendor entered costs and 25% margin eligibility rules."
+      />
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatTile label="Customer prices" value={<span className="tabular-nums">{products.length}</span>} hint="Fixed platform products" icon="tag" tone="brand" loading={loading} />
+        <StatTile label="Vendor entries" value={<span className="tabular-nums">{vendorProducts.length}</span>} hint="Unit costs submitted" icon="vendors" tone="violet" loading={loading} />
+        <StatTile label="In range" value={<span className="tabular-nums">{passing}</span>} hint="Passing the margin gate" icon="check" tone="green" loading={loading} />
+        <StatTile label="Flagged" value={<span className="tabular-nums">{flagged}</span>} hint="Margin low or outlier" icon="ban" tone="red" loading={loading} />
       </div>
 
-      {loading ? (
-        <div className="py-16 text-center">
-          <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Customer Fixed Platform Prices */}
-          <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-xs">
-            <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">
-              Customer Fixed Prices ({products.length})
-            </h2>
-
-            <div className="space-y-2">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Customer Fixed Platform Prices */}
+        <Card className="lg:col-span-2 overflow-hidden">
+          <CardHeader
+            icon="tag"
+            title="Customer Fixed Prices"
+            subtitle="What customers pay on the storefront"
+            action={!loading && <Badge tone="brand">{products.length}</Badge>}
+          />
+          {loading ? (
+            <SkeletonRows rows={6} />
+          ) : products.length === 0 ? (
+            <EmptyState icon="tag" title="No products priced yet" />
+          ) : (
+            <ul className="divide-y divide-zinc-100">
               {products.map((p) => (
-                <div key={p._id} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#fff7f3]/40 border border-sky-100/60">
-                  <span className="text-zinc-900 text-base font-bold">{p.name}</span>
-                  <span className="text-[#e74b2d] font-mono font-black text-base">${p.price.toFixed(2)}</span>
-                </div>
+                <li key={p._id} className="flex items-center justify-between gap-3 px-5 sm:px-6 py-3 hover:bg-[#f0f8fd]/70 transition-colors">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EAF5FB] text-[#2884b8]">
+                      <Icon name="products" className="w-4 h-4" />
+                    </span>
+                    <span className="text-sm font-medium text-zinc-900 truncate">{p.name}</span>
+                  </div>
+                  <span className="shrink-0 rounded-lg bg-[#f0f8fd] px-2.5 py-1 text-sm font-semibold text-[#1b5b80] tabular-nums">
+                    ${p.price.toFixed(2)}
+                  </span>
+                </li>
               ))}
-            </div>
-          </div>
+            </ul>
+          )}
+        </Card>
 
-          {/* Vendor Costs & Margin Gating */}
-          <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-xs">
-            <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">
-              Vendor Cost Entries & Margin Gate ({vendorProducts.length})
-            </h2>
-
-            {vendorProducts.length === 0 ? (
-              <p className="text-zinc-400 text-base py-10 text-center">
-                No vendor cost entries recorded yet. Vendors enter unit costs in their fulfillment portal.
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {vendorProducts.map((vp) => (
-                  <div key={vp._id} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#fff7f3]/40 border border-sky-100/60">
-                    <div>
-                      <p className="text-zinc-900 text-base font-bold">{vp.vendorId?.name || "Vendor"}</p>
-                      <p className="text-zinc-400 text-base">{vp.productId?.name || "Product"}</p>
+        {/* Vendor Costs & Margin Gating */}
+        <Card className="lg:col-span-3 overflow-hidden">
+          <CardHeader
+            icon="vendors"
+            title="Vendor Cost Entries & Margin Gate"
+            subtitle="Vendor unit costs checked against category benchmarks"
+            action={!loading && <Badge tone="violet">{vendorProducts.length}</Badge>}
+          />
+          {loading ? (
+            <SkeletonRows rows={6} />
+          ) : vendorProducts.length === 0 ? (
+            <EmptyState
+              icon="vendors"
+              title="No vendor cost entries"
+              description="No vendor cost entries recorded yet. Vendors enter unit costs in their fulfillment portal."
+            />
+          ) : (
+            <ul className="divide-y divide-zinc-100">
+              {vendorProducts.map((vp) => {
+                const gate = gateStatus(vp);
+                return (
+                  <li key={vp._id} className="flex flex-col gap-3 px-5 sm:px-6 py-3.5 sm:flex-row sm:items-center sm:justify-between hover:bg-[#f0f8fd]/70 transition-colors">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-zinc-900 truncate">{vp.vendorId?.name || "Vendor"}</p>
+                      <p className="text-xs text-zinc-500 truncate">{vp.productId?.name || "Product"}</p>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <span className="text-zinc-500 font-mono text-base">
+                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                      <span className="rounded-lg bg-zinc-50 px-2 py-1 text-xs text-zinc-500 tabular-nums ring-1 ring-inset ring-zinc-200/70">
                         Bench ${Number(vp.categoryBenchmarkMin || 0).toFixed(0)}–${Number(vp.categoryBenchmarkMax || 0).toFixed(0)}
                       </span>
-                      <span className="text-zinc-700 font-mono font-bold text-base">Cost: ${vp.vendorCost.toFixed(2)}</span>
-                      <span className={`px-2.5 py-1 rounded-full text-base font-bold ${
-                        vp.isEligible && vp.vendorCost <= Number(vp.categoryBenchmarkMax || vp.vendorCost)
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                          : "bg-red-50 text-red-700 border border-red-200"
-                      }`}>
-                        {!vp.isEligible ? "MARGIN LOW" : vp.vendorCost > Number(vp.categoryBenchmarkMax || 0) ? "OUTLIER" : "IN RANGE"}
-                      </span>
+                      <span className="text-sm font-semibold text-zinc-800 tabular-nums">Cost: ${vp.vendorCost.toFixed(2)}</span>
+                      <Badge tone={gate.ok ? "green" : "red"} dot className="uppercase tracking-wide">
+                        {gate.label}
+                      </Badge>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Card>
+      </div>
     </div>
   );
 }

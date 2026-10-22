@@ -198,11 +198,11 @@ export default function BusinessCardsCustomizeFlow({
     logoSize: initialData?.logoSize ?? 36,
     imageOpacity: initialData?.imageOpacity ?? 100,
     bgMode: "color",
-    bgGradient: "#e74b2d",
+    bgGradient: "#329AD4",
     bgGradientAngle: 135,
     backBgColor: initialData?.backBgColor || "#141414",
     backBgMode: initialData?.backBgMode || "color",
-    backBgGradient: initialData?.backBgGradient || "#e74b2d",
+    backBgGradient: initialData?.backBgGradient || "#329AD4",
     backBgGradientAngle: initialData?.backBgGradientAngle ?? 135,
     backUploadedImage: initialData?.backUploadedImage || null,
     side: "front",
@@ -1333,7 +1333,7 @@ export default function BusinessCardsCustomizeFlow({
     { label: "White", value: "#ffffff" },
     { label: "Dark Charcoal", value: "#18181b" },
     { label: "Gold", value: "#f59e0b" },
-    { label: "Sky Blue", value: "#f88768" },
+    { label: "Sky Blue", value: "#55b2e7" },
     { label: "Emerald", value: "#10b981" },
     { label: "Rose", value: "#f43f5e" },
     { label: "Purple", value: "#8b5cf6" },
@@ -2088,7 +2088,7 @@ export default function BusinessCardsCustomizeFlow({
   });
 
   return (
-    <div className="min-h-screen bg-[#fff7f3] font-sans text-zinc-900 flex flex-col justify-between">
+    <div className="min-h-screen bg-[#f0f8fd] font-sans text-zinc-900 flex flex-col justify-between">
 
       {/* ─────────────────────────────────────────────────────────────
           BREADCRUMB ROW (Only on non-review steps)
@@ -2134,10 +2134,10 @@ export default function BusinessCardsCustomizeFlow({
                 <button
                   type="button"
                   onClick={() => setStep("preferences")}
-                  className={`transition-colors cursor-pointer flex items-center gap-1.5 ${step === "preferences" ? "text-[#c93e23] font-bold" : "text-zinc-500 hover:text-zinc-800"
+                  className={`transition-colors cursor-pointer flex items-center gap-1.5 ${step === "preferences" ? "text-[#2884b8] font-bold" : "text-zinc-500 hover:text-zinc-800"
                     }`}
                 >
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${step === "preferences" ? "bg-[#c93e23] text-white" : "bg-zinc-100 text-zinc-600"
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${step === "preferences" ? "bg-[#2884b8] text-white" : "bg-zinc-100 text-zinc-600"
                     }`}>2</span>
                   <span>Options</span>
                 </button>
@@ -2149,10 +2149,10 @@ export default function BusinessCardsCustomizeFlow({
                 <button
                   type="button"
                   onClick={() => setStep("cart")}
-                  className={`transition-colors cursor-pointer flex items-center gap-1.5 ${step === "cart" ? "text-[#c93e23] font-bold" : "text-zinc-500 hover:text-zinc-800"
+                  className={`transition-colors cursor-pointer flex items-center gap-1.5 ${step === "cart" ? "text-[#2884b8] font-bold" : "text-zinc-500 hover:text-zinc-800"
                     }`}
                 >
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${step === "cart" ? "bg-[#c93e23] text-white" : "bg-zinc-100 text-zinc-600"
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${step === "cart" ? "bg-[#2884b8] text-white" : "bg-zinc-100 text-zinc-600"
                     }`}>3</span>
                   <span>Review</span>
                 </button>
@@ -2165,7 +2165,7 @@ export default function BusinessCardsCustomizeFlow({
                 </span>
                 <div className="w-24 h-1 bg-zinc-200 rounded-full mt-1 overflow-hidden">
                   <div
-                    className="h-full bg-[#c93e23] rounded-full transition-all duration-300"
+                    className="h-full bg-[#2884b8] rounded-full transition-all duration-300"
                     style={{ width: step === "preferences" ? "66.6%" : "100%" }}
                   />
                 </div>
@@ -2175,7 +2175,7 @@ export default function BusinessCardsCustomizeFlow({
             {/* Right: "Draft saved" badge and Save Draft Button */}
             <div className="flex items-center gap-2.5">
               {/* Draft Saved Badge */}
-              <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-600 bg-[#fff7f3] border border-[#e2e8f0] px-2.5 py-1.5 rounded-full shadow-2xs">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-600 bg-[#f0f8fd] border border-[#e2e8f0] px-2.5 py-1.5 rounded-full shadow-2xs">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
                 <span className="font-semibold text-zinc-700">Draft saved</span>
               </div>
@@ -2218,7 +2218,7 @@ export default function BusinessCardsCustomizeFlow({
                 placeholder="Search sizes or categories..."
                 value={categorySearchQuery}
                 onChange={(e) => setCategorySearchQuery(e.target.value)}
-                className="w-full bg-white border border-zinc-200/90 rounded-xl pl-10 pr-8 py-2.5 text-xs sm:text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-2xs"
+                className="w-full bg-white border border-zinc-200/90 rounded-xl pl-10 pr-8 py-2.5 text-xs sm:text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#329AD4] shadow-2xs"
               />
               {categorySearchQuery && (
                 <button
@@ -2241,7 +2241,7 @@ export default function BusinessCardsCustomizeFlow({
                   applyCategory(cat);
                   setStep("upload");
                 }}
-                className="group text-left bg-white border border-zinc-200/90 hover:border-[#e74b2d] hover:shadow-xl rounded-2xl overflow-hidden shadow-xs cursor-pointer transition-all duration-200 flex flex-col justify-between"
+                className="group text-left bg-white border border-zinc-200/90 hover:border-[#329AD4] hover:shadow-xl rounded-2xl overflow-hidden shadow-xs cursor-pointer transition-all duration-200 flex flex-col justify-between"
               >
                 <div className="aspect-[4/3] bg-zinc-100 relative overflow-hidden">
                   {cat.image ? (
@@ -2257,10 +2257,10 @@ export default function BusinessCardsCustomizeFlow({
                 </div>
                 <div className="p-4 bg-white flex items-center justify-between">
                   <div>
-                    <p className="text-base font-extrabold text-zinc-900 group-hover:text-[#e74b2d] transition-colors">{cat.name}</p>
+                    <p className="text-base font-extrabold text-zinc-900 group-hover:text-[#329AD4] transition-colors">{cat.name}</p>
                     <p className="text-xs text-zinc-400 mt-0.5">Customizable 2D/3D</p>
                   </div>
-                  <span className="w-8 h-8 rounded-xl bg-zinc-100 group-hover:bg-[#e74b2d] group-hover:text-white text-zinc-500 flex items-center justify-center text-sm font-bold transition-colors">
+                  <span className="w-8 h-8 rounded-xl bg-zinc-100 group-hover:bg-[#329AD4] group-hover:text-white text-zinc-500 flex items-center justify-center text-sm font-bold transition-colors">
                     →
                   </span>
                 </div>
@@ -2275,7 +2275,7 @@ export default function BusinessCardsCustomizeFlow({
               <button
                 type="button"
                 onClick={() => setStep("upload")}
-                className="px-6 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm font-bold rounded-xl cursor-pointer shadow-sm transition-all"
+                className="px-6 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-xl cursor-pointer shadow-sm transition-all"
               >
                 Continue to Studio →
               </button>
@@ -2293,7 +2293,7 @@ export default function BusinessCardsCustomizeFlow({
           {/* Top Action Toolbar */}
           <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-zinc-200/80 shadow-xs flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#e74b2d]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#329AD4]" />
               <span className="text-sm sm:text-base font-extrabold text-zinc-900">Artwork &amp; Canvas Setup</span>
               <span className="text-xs text-zinc-400 font-mono hidden md:inline">
                 ({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit})
@@ -2320,7 +2320,7 @@ export default function BusinessCardsCustomizeFlow({
               <button
                 type="button"
                 onClick={handleRotate}
-                className="px-3 py-1.5 rounded-xl border border-zinc-200 hover:border-[#e74b2d] hover:text-[#e74b2d] text-zinc-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors cursor-pointer bg-white"
+                className="px-3 py-1.5 rounded-xl border border-zinc-200 hover:border-[#329AD4] hover:text-[#329AD4] text-zinc-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors cursor-pointer bg-white"
                 title="Rotate 90 degrees"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -2334,7 +2334,7 @@ export default function BusinessCardsCustomizeFlow({
                 type="button"
                 onClick={() => setCardData((prev) => ({ ...prev, fitMode: "bleed" }))}
                 className={`px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer ${cardData.fitMode === "bleed"
-                    ? "bg-sky-50 border-[#e74b2d] text-[#e74b2d]"
+                    ? "bg-sky-50 border-[#329AD4] text-[#329AD4]"
                     : "border-zinc-200 text-zinc-700 hover:border-zinc-300 bg-white"
                   }`}
                 title="Fit artwork to bleed area"
@@ -2347,7 +2347,7 @@ export default function BusinessCardsCustomizeFlow({
                 type="button"
                 onClick={() => setCardData((prev) => ({ ...prev, fitMode: "safe" }))}
                 className={`px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer ${cardData.fitMode === "safe"
-                    ? "bg-sky-50 border-[#e74b2d] text-[#e74b2d]"
+                    ? "bg-sky-50 border-[#329AD4] text-[#329AD4]"
                     : "border-zinc-200 text-zinc-700 hover:border-zinc-300 bg-white"
                   }`}
                 title="Fit artwork within safe zone"
@@ -2365,7 +2365,7 @@ export default function BusinessCardsCustomizeFlow({
                   }
                   setStep("review");
                 }}
-                className="px-4 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
+                className="px-4 py-1.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
               >
                 <span>Design Studio</span>
                 <span>→</span>
@@ -2391,7 +2391,7 @@ export default function BusinessCardsCustomizeFlow({
                     if (needsCategory) setStep("category");
                     else setStep("review");
                   }}
-                  className="text-sm font-bold text-[#e74b2d] hover:underline cursor-pointer hidden sm:inline-block"
+                  className="text-sm font-bold text-[#329AD4] hover:underline cursor-pointer hidden sm:inline-block"
                 >
                   Start blank from scratch →
                 </button>
@@ -2420,7 +2420,7 @@ export default function BusinessCardsCustomizeFlow({
                         height: `${uploadFit.renderHeight}px`,
                         ...cardBackdrop,
                       }}
-                      className={`relative overflow-hidden rounded-2xl border-2 border-dashed shadow-xl flex flex-col items-center justify-center text-center px-6 cursor-pointer transition-all ${isDragOver ? "border-[#e74b2d] bg-sky-50/20 scale-[1.01]" : "border-zinc-300 hover:border-[#e74b2d]"
+                      className={`relative overflow-hidden rounded-2xl border-2 border-dashed shadow-xl flex flex-col items-center justify-center text-center px-6 cursor-pointer transition-all ${isDragOver ? "border-[#329AD4] bg-sky-50/20 scale-[1.01]" : "border-zinc-300 hover:border-[#329AD4]"
                         }`}
                     >
                       <div className="absolute inset-0 bg-black/40" />
@@ -2492,7 +2492,7 @@ export default function BusinessCardsCustomizeFlow({
 
                   <div className="mt-4 flex items-center justify-between w-full max-w-md bg-zinc-50 px-4 py-2.5 rounded-xl border border-zinc-200">
                     <div className="flex items-center space-x-2 truncate pr-2">
-                      <svg className="w-4 h-4 text-[#e74b2d] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 text-[#329AD4] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       <span className="text-sm font-bold text-zinc-700 truncate">{cardData.fileName || "Uploaded Artwork"}</span>
@@ -2501,7 +2501,7 @@ export default function BusinessCardsCustomizeFlow({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="text-sm font-bold text-[#e74b2d] hover:underline cursor-pointer"
+                        className="text-sm font-bold text-[#329AD4] hover:underline cursor-pointer"
                       >
                         Change
                       </button>
@@ -2540,7 +2540,7 @@ export default function BusinessCardsCustomizeFlow({
                     <button
                       type="button"
                       onClick={() => setStep("review")}
-                      className="px-8 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-sm rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
+                      className="px-8 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold text-sm rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
                     >
                       <span>Proceed to Design Studio</span>
                       <span>→</span>
@@ -2575,7 +2575,7 @@ export default function BusinessCardsCustomizeFlow({
                             })
                           }
                           className={`px-3 py-2 rounded-xl border text-left cursor-pointer transition-all ${selected
-                              ? "border-[#e74b2d] bg-sky-50 shadow-2xs text-[#e74b2d]"
+                              ? "border-[#329AD4] bg-sky-50 shadow-2xs text-[#329AD4]"
                               : "border-zinc-200 bg-white hover:border-zinc-300 text-zinc-700"
                             }`}
                         >
@@ -2659,7 +2659,7 @@ export default function BusinessCardsCustomizeFlow({
                     if (needsCategory) setStep("category");
                     else setStep("review");
                   }}
-                  className="w-full py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm font-bold rounded-xl transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-xl transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
                 >
                   <span>Continue to Studio</span>
                   <span>→</span>
@@ -2704,9 +2704,9 @@ export default function BusinessCardsCustomizeFlow({
               <Link href="/" className="flex items-center gap-2 group">
                 <div className="relative w-8 h-8 flex items-center justify-center">
                   <svg viewBox="0 0 40 40" className="w-8 h-8" fill="none">
-                    <path d="M6 10 C6 8, 8 6, 10 6 L20 6 L12 24 L6 18 Z" fill="#e74b2d" />
-                    <path d="M12 24 L20 6 L30 16 L20 34 Z" fill="#c93e23" />
-                    <path d="M20 34 L30 16 L34 22 C35 24, 34 28, 30 32 Z" fill="#e74b2d" />
+                    <path d="M6 10 C6 8, 8 6, 10 6 L20 6 L12 24 L6 18 Z" fill="#329AD4" />
+                    <path d="M12 24 L20 6 L30 16 L20 34 Z" fill="#2884b8" />
+                    <path d="M20 34 L30 16 L34 22 C35 24, 34 28, 30 32 Z" fill="#329AD4" />
                   </svg>
                 </div>
                 <span className="text-2xl font-bold tracking-tight text-zinc-900 font-sans">
@@ -2732,7 +2732,7 @@ export default function BusinessCardsCustomizeFlow({
               <button
                 type="button"
                 onClick={() => setStep("preferences")}
-                className="px-8 py-2 rounded-full bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm font-semibold shadow-xs transition-all cursor-pointer"
+                className="px-8 py-2 rounded-full bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-semibold shadow-xs transition-all cursor-pointer"
               >
                 Next
               </button>
@@ -2888,20 +2888,20 @@ export default function BusinessCardsCustomizeFlow({
                 <button
                   type="button"
                   onClick={() => setIsSizeModalOpen(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-zinc-200 bg-white hover:border-[#e74b2d] text-zinc-700 transition-colors shadow-2xs cursor-pointer group whitespace-nowrap shrink-0"
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-zinc-200 bg-white hover:border-[#329AD4] text-zinc-700 transition-colors shadow-2xs cursor-pointer group whitespace-nowrap shrink-0"
                   title="Select product size and dimensions"
                 >
-                  <svg className="w-3.5 h-3.5 text-[#e74b2d] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 text-[#329AD4] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                   </svg>
                   <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider hidden sm:inline">Size:</span>
-                  <span className="text-xs font-bold text-zinc-800 group-hover:text-[#e74b2d] whitespace-nowrap">
+                  <span className="text-xs font-bold text-zinc-800 group-hover:text-[#329AD4] whitespace-nowrap">
                     {currentSizeShortName}
                   </span>
                   <span className="text-[11px] text-zinc-400 font-mono hidden xl:inline whitespace-nowrap">
                     ({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit || "mm"})
                   </span>
-                  <svg className="w-3 h-3 text-zinc-400 group-hover:text-[#e74b2d] ml-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 text-zinc-400 group-hover:text-[#329AD4] ml-0.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
@@ -2910,7 +2910,7 @@ export default function BusinessCardsCustomizeFlow({
                 <button
                   type="button"
                   onClick={handleSwapOrientation}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-200 text-zinc-600 hover:text-[#e74b2d] hover:bg-sky-50 transition-colors cursor-pointer shrink-0"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-zinc-200 text-zinc-600 hover:text-[#329AD4] hover:bg-sky-50 transition-colors cursor-pointer shrink-0"
                   title={`Swap orientation (${activeCanvasConfig.width >= activeCanvasConfig.height ? "Landscape to Portrait" : "Portrait to Landscape"})`}
                 >
                   <svg className="w-3.5 h-3.5 rotate-90" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -2928,7 +2928,7 @@ export default function BusinessCardsCustomizeFlow({
               className="hidden xl:flex 2xl:hidden items-center gap-1.5 px-2.5 py-1 rounded-md border border-zinc-200 bg-zinc-50 text-[11px] text-zinc-600 font-medium whitespace-nowrap shrink-0"
               title="Your background should reach this line - it prevents white lines along the edges."
             >
-              <span className="text-[#e74b2d]">💡</span>
+              <span className="text-[#329AD4]">💡</span>
               <span>Bleed line prevents white edges</span>
             </div>
 
@@ -2938,7 +2938,7 @@ export default function BusinessCardsCustomizeFlow({
               <button
                 type="button"
                 onClick={() => addTextLayer()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-[#e74b2d] text-[#e74b2d] hover:text-white border border-sky-200 hover:border-[#e74b2d] text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-[#329AD4] text-[#329AD4] hover:text-white border border-sky-200 hover:border-[#329AD4] text-xs font-bold transition-all cursor-pointer shadow-2xs"
                 title="Add New Text Layer"
               >
                 <span className="text-sm font-black leading-none">+</span>
@@ -3008,7 +3008,7 @@ export default function BusinessCardsCustomizeFlow({
                     <button
                       type="button"
                       onClick={bringToFront}
-                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#e74b2d] flex items-center justify-between transition-colors cursor-pointer"
+                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#329AD4] flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <span>Bring to Front</span>
                       <span className="text-zinc-400 font-mono text-[10px]">Top</span>
@@ -3016,7 +3016,7 @@ export default function BusinessCardsCustomizeFlow({
                     <button
                       type="button"
                       onClick={bringForward}
-                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#e74b2d] flex items-center justify-between transition-colors cursor-pointer"
+                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#329AD4] flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <span>Bring Forward</span>
                       <span className="text-zinc-400 font-mono text-[10px]">+1</span>
@@ -3024,7 +3024,7 @@ export default function BusinessCardsCustomizeFlow({
                     <button
                       type="button"
                       onClick={sendBackward}
-                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#e74b2d] flex items-center justify-between transition-colors cursor-pointer"
+                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#329AD4] flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <span>Send Backward</span>
                       <span className="text-zinc-400 font-mono text-[10px]">-1</span>
@@ -3032,7 +3032,7 @@ export default function BusinessCardsCustomizeFlow({
                     <button
                       type="button"
                       onClick={sendToBack}
-                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#e74b2d] flex items-center justify-between transition-colors cursor-pointer"
+                      className="w-full px-3 py-2 text-left hover:bg-sky-50 hover:text-[#329AD4] flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <span>Send to Back</span>
                       <span className="text-zinc-400 font-mono text-[10px]">Bottom</span>
@@ -3082,7 +3082,7 @@ export default function BusinessCardsCustomizeFlow({
                 <button
                   type="button"
                   onClick={() => setIsSizeModalOpen(true)}
-                  className="w-9 h-9 rounded-lg text-zinc-600 hover:bg-sky-50 hover:text-[#e74b2d] flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-9 h-9 rounded-lg text-zinc-600 hover:bg-sky-50 hover:text-[#329AD4] flex items-center justify-center transition-colors cursor-pointer"
                   title="Select Size & Dimensions"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -3095,7 +3095,7 @@ export default function BusinessCardsCustomizeFlow({
                   type="button"
                   onClick={() => setViewMode(viewMode === "3d" ? "2d" : "3d")}
                   className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
-                    viewMode === "3d" ? "bg-[#e74b2d] text-white" : "text-zinc-600 hover:bg-zinc-100"
+                    viewMode === "3d" ? "bg-[#329AD4] text-white" : "text-zinc-600 hover:bg-zinc-100"
                   }`}
                   title="3D View"
                 >
@@ -3108,7 +3108,7 @@ export default function BusinessCardsCustomizeFlow({
                 <div className="relative">
                   <button
                     type="button"
-                    className="w-9 h-9 rounded-lg bg-[#e74b2d] text-white flex items-center justify-center shadow-xs cursor-pointer"
+                    className="w-9 h-9 rounded-lg bg-[#329AD4] text-white flex items-center justify-center shadow-xs cursor-pointer"
                     title="Edit Text"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -3116,7 +3116,7 @@ export default function BusinessCardsCustomizeFlow({
                     </svg>
                   </button>
                   {/* Right pointer arrow */}
-                  <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-0 h-0 border-y-[5px] border-y-transparent border-l-[6px] border-l-[#e74b2d]" />
+                  <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-0 h-0 border-y-[5px] border-y-transparent border-l-[6px] border-l-[#329AD4]" />
                 </div>
 
                 {/* 3. Shapes / Elements Icon */}
@@ -3162,7 +3162,7 @@ export default function BusinessCardsCustomizeFlow({
                     <button
                       type="button"
                       onClick={() => addTextLayer()}
-                      className="text-xs font-semibold text-[#e74b2d] hover:text-[#c93e23] transition-colors cursor-pointer"
+                      className="text-xs font-semibold text-[#329AD4] hover:text-[#2884b8] transition-colors cursor-pointer"
                     >
                       + Add
                     </button>
@@ -3177,7 +3177,7 @@ export default function BusinessCardsCustomizeFlow({
                           onChange={(e) => updateTextLayer(layer.id, { text: e.target.value })}
                           placeholder={`Line ${index + 1}`}
                           className={`flex-1 min-w-0 border-b pb-1 text-sm bg-transparent outline-none transition-colors ${
-                            activeTextId === layer.id ? "border-[#e74b2d] text-zinc-900 font-semibold" : "border-zinc-300 text-zinc-700"
+                            activeTextId === layer.id ? "border-[#329AD4] text-zinc-900 font-semibold" : "border-zinc-300 text-zinc-700"
                           }`}
                         />
                         <button
@@ -3202,7 +3202,7 @@ export default function BusinessCardsCustomizeFlow({
                 <button
                   type="button"
                   onClick={() => setStep("preferences")}
-                  className="w-full mt-8 py-2.5 rounded-full bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm font-semibold shadow-xs transition-all cursor-pointer text-center"
+                  className="w-full mt-8 py-2.5 rounded-full bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-semibold shadow-xs transition-all cursor-pointer text-center"
                 >
                   Next
                 </button>
@@ -3245,15 +3245,15 @@ export default function BusinessCardsCustomizeFlow({
                       <button
                         type="button"
                         onClick={() => setIsSizeModalOpen(true)}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 border border-zinc-200 text-[11px] font-semibold text-zinc-700 hover:border-[#e74b2d] hover:text-[#e74b2d] hover:shadow-xs transition-all shadow-2xs cursor-pointer group"
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 border border-zinc-200 text-[11px] font-semibold text-zinc-700 hover:border-[#329AD4] hover:text-[#329AD4] hover:shadow-xs transition-all shadow-2xs cursor-pointer group"
                         title="Change product dimensions"
                       >
-                        <svg className="w-3 h-3 text-[#e74b2d]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <svg className="w-3 h-3 text-[#329AD4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                         </svg>
-                        <span className="font-bold text-zinc-800 group-hover:text-[#e74b2d]">{currentSizeName}</span>
+                        <span className="font-bold text-zinc-800 group-hover:text-[#329AD4]">{currentSizeName}</span>
                         <span className="text-[10px] text-zinc-400 font-mono">({cWidth} × {cHeight} {activeCanvasConfig.unit || "mm"})</span>
-                        <span className="text-[10px] text-[#e74b2d] font-bold ml-0.5">Change ▾</span>
+                        <span className="text-[10px] text-[#329AD4] font-bold ml-0.5">Change ▾</span>
                       </button>
 
                       {/* Shape Testing Quick-Switcher Bar */}
@@ -3277,7 +3277,7 @@ export default function BusinessCardsCustomizeFlow({
                               }}
                               className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
                                 isActive
-                                  ? "bg-[#e74b2d] text-white shadow-xs font-bold"
+                                  ? "bg-[#329AD4] text-white shadow-xs font-bold"
                                   : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
                               }`}
                               title={`Test print on ${sh.label}`}
@@ -3408,7 +3408,7 @@ export default function BusinessCardsCustomizeFlow({
                           />
                           {/* Right cyan peaked shape */}
                           <div
-                            className="w-7 h-11 bg-[#e74b2d]"
+                            className="w-7 h-11 bg-[#329AD4]"
                             style={{
                               clipPath: "polygon(0 0, 100% 45%, 100% 100%, 0 100%)",
                             }}
@@ -3420,7 +3420,7 @@ export default function BusinessCardsCustomizeFlow({
                       <div className="absolute top-[52%] left-1/2 -translate-x-1/2 w-[65%] h-[1.5px] bg-white pointer-events-none z-15" />
 
                       {/* Vibrant Cyan-Blue Bottom Banner */}
-                      <div className="absolute bottom-0 left-0 right-0 h-[22%] bg-[#e74b2d] z-10" />
+                      <div className="absolute bottom-0 left-0 right-0 h-[22%] bg-[#329AD4] z-10" />
                     </>
                   )}
 
@@ -3452,7 +3452,7 @@ export default function BusinessCardsCustomizeFlow({
                           zIndex: zIdx,
                         }}
                         className={`group/canvas-img select-none transition-shadow ${
-                          isSelected ? "ring-2 ring-[#e74b2d] ring-offset-1 rounded-sm" : "hover:ring-1 hover:ring-zinc-400/60"
+                          isSelected ? "ring-2 ring-[#329AD4] ring-offset-1 rounded-sm" : "hover:ring-1 hover:ring-zinc-400/60"
                         }`}
                       >
                         <img
@@ -3506,7 +3506,7 @@ export default function BusinessCardsCustomizeFlow({
                           zIndex: zIdx,
                         }}
                         className={`group/canvas-text px-2 py-0.5 whitespace-nowrap transition-shadow ${
-                          isSelected ? "border border-[#e74b2d] ring-1 ring-[#e74b2d]/40" : "border border-transparent"
+                          isSelected ? "border border-[#329AD4] ring-1 ring-[#329AD4]/40" : "border border-transparent"
                         }`}
                       >
                         {layer.text}
@@ -3531,7 +3531,7 @@ export default function BusinessCardsCustomizeFlow({
                   {alignmentLines.map((line, i) => (
                     <div
                       key={i}
-                      className="absolute bg-[#e74b2d] pointer-events-none z-30"
+                      className="absolute bg-[#329AD4] pointer-events-none z-30"
                       style={{
                         left: line.type === "v" ? `${line.pos}%` : 0,
                         top: line.type === "h" ? `${line.pos}%` : 0,
@@ -3558,7 +3558,7 @@ export default function BusinessCardsCustomizeFlow({
                     tabIndex={0}
                     onClick={() => selectSide(idx)}
                     className={`bg-[#e2e4e9] p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
-                      isActive ? "border-[#e74b2d] shadow-md ring-1 ring-[#e74b2d]/50" : "border-transparent hover:border-zinc-300"
+                      isActive ? "border-[#329AD4] shadow-md ring-1 ring-[#329AD4]/50" : "border-transparent hover:border-zinc-300"
                     }`}
                   >
                     <div
@@ -3577,7 +3577,7 @@ export default function BusinessCardsCustomizeFlow({
                       ) : idx === 0 && !selectedTemplate && !cardData.uploadedImage && (activeCategoryName.includes("card") || !activeCategoryName) ? (
                         <>
                           <div className="w-full h-[78%] bg-[#0c0d12]" />
-                          <div className="w-full h-[22%] bg-[#e74b2d]" />
+                          <div className="w-full h-[22%] bg-[#329AD4]" />
                         </>
                       ) : (
                         <div className="w-full h-full bg-zinc-50 flex items-center justify-center">
@@ -3587,7 +3587,7 @@ export default function BusinessCardsCustomizeFlow({
                         </div>
                       )}
                     </div>
-                    <p className={`text-xs font-semibold text-center mt-1.5 truncate ${isActive ? "text-[#e74b2d]" : "text-zinc-700"}`}>
+                    <p className={`text-xs font-semibold text-center mt-1.5 truncate ${isActive ? "text-[#329AD4]" : "text-zinc-700"}`}>
                       {label}
                     </p>
                   </div>
@@ -3654,7 +3654,7 @@ export default function BusinessCardsCustomizeFlow({
                     <button
                       type="button"
                       onClick={() => setIsSizeModalOpen(true)}
-                      className="font-semibold text-[#e74b2d] hover:underline cursor-pointer"
+                      className="font-semibold text-[#329AD4] hover:underline cursor-pointer"
                       title="Change product size"
                     >
                       {currentSizeName} ({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit || "mm"})
@@ -3677,7 +3677,7 @@ export default function BusinessCardsCustomizeFlow({
                     className="hidden xl:flex min-h-[42px] px-4 py-2 bg-white hover:bg-zinc-50 border border-[#e2e8f0] text-zinc-800 rounded-xl text-xs sm:text-sm font-semibold shadow-2xs items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                     title="Download Proof PNG"
                   >
-                    <svg className="w-4 h-4 text-[#e74b2d]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-[#329AD4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     <span>{downloadingProof ? "Downloading..." : "Download PNG"}</span>
@@ -3692,7 +3692,7 @@ export default function BusinessCardsCustomizeFlow({
                     title="Download PNG"
                     aria-label="Download PNG"
                   >
-                    <svg className="w-4 h-4 text-[#e74b2d]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-[#329AD4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                   </button>
@@ -3703,7 +3703,7 @@ export default function BusinessCardsCustomizeFlow({
                       type="checkbox"
                       checked={cardData.approved}
                       onChange={(e) => setCardData((prev) => ({ ...prev, approved: e.target.checked }))}
-                      className="w-4 h-4 rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
+                      className="w-4 h-4 rounded border-zinc-300 text-[#329AD4] focus:ring-[#329AD4] cursor-pointer"
                     />
                     <span>I approve my design</span>
                   </label>
@@ -3717,7 +3717,7 @@ export default function BusinessCardsCustomizeFlow({
                       }
                       setStep("preferences");
                     }}
-                    className="min-h-[42px] px-6 py-2.5 rounded-full font-bold text-sm transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white"
+                    className="min-h-[42px] px-6 py-2.5 rounded-full font-bold text-sm transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2 bg-[#329AD4] hover:bg-[#2884b8] text-white"
                   >
                     <span>Continue to Options</span>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -3746,7 +3746,7 @@ export default function BusinessCardsCustomizeFlow({
                       className="p-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
                       title="Download PNG Proof"
                     >
-                      <svg className="w-3.5 h-3.5 text-[#e74b2d]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5 text-[#329AD4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
                       <span>PNG</span>
@@ -3755,7 +3755,7 @@ export default function BusinessCardsCustomizeFlow({
                     <button
                       type="button"
                       onClick={() => setShowDetailsModal((prev) => !prev)}
-                      className="px-2 py-1 text-xs font-bold text-[#e74b2d] hover:underline flex items-center gap-0.5 cursor-pointer"
+                      className="px-2 py-1 text-xs font-bold text-[#329AD4] hover:underline flex items-center gap-0.5 cursor-pointer"
                     >
                       <span>Details</span>
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -3772,7 +3772,7 @@ export default function BusinessCardsCustomizeFlow({
                       type="checkbox"
                       checked={cardData.approved}
                       onChange={(e) => setCardData((prev) => ({ ...prev, approved: e.target.checked }))}
-                      className="w-4 h-4 rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
+                      className="w-4 h-4 rounded border-zinc-300 text-[#329AD4] focus:ring-[#329AD4] cursor-pointer"
                     />
                     <span>I approve</span>
                   </label>
@@ -3785,7 +3785,7 @@ export default function BusinessCardsCustomizeFlow({
                       }
                       setStep("preferences");
                     }}
-                    className="flex-1 py-2.5 px-4 rounded-full font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-center"
+                    className="flex-1 py-2.5 px-4 rounded-full font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-center"
                   >
                     <span>Continue to Options</span>
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -3810,7 +3810,7 @@ export default function BusinessCardsCustomizeFlow({
                       <button
                         type="button"
                         onClick={() => setIsSizeModalOpen(true)}
-                        className="font-bold text-[#e74b2d] hover:underline cursor-pointer"
+                        className="font-bold text-[#329AD4] hover:underline cursor-pointer"
                       >
                         {currentSizeName} ({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit || "mm"})
                       </button>
@@ -3987,7 +3987,7 @@ export default function BusinessCardsCustomizeFlow({
                           type="button"
                           onClick={() => selectSide(idx)}
                           className={`px-5 py-1.5 text-base font-semibold rounded-full transition-all cursor-pointer ${activeSideIndex === idx
-                              ? "bg-[#e74b2d] text-white shadow-xs"
+                              ? "bg-[#329AD4] text-white shadow-xs"
                               : "text-zinc-600 hover:text-zinc-900"
                             }`}
                         >
@@ -4025,16 +4025,16 @@ export default function BusinessCardsCustomizeFlow({
                         const selectedValName = selectedVariations[groupName] || (vGroup.values[0]?.name ?? "");
 
                         return (
-                          <div key={vGroup._id || groupName} className="bg-[#fbfaf7] rounded-2xl p-4 border border-zinc-200/60">
+                          <div key={vGroup._id || groupName} className="bg-[#ffffff] rounded-2xl p-4 border border-zinc-200/60">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-[#e74b2d] text-white flex items-center justify-center">
+                              <div className="w-8 h-8 rounded-lg bg-[#329AD4] text-white flex items-center justify-center">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
                                 </svg>
                               </div>
                               <div>
                                 <span className="text-base font-bold text-zinc-900 block">Select {groupName}</span>
-                                <span className="text-base text-[#e74b2d] font-extrabold">{selectedValName}</span>
+                                <span className="text-base text-[#329AD4] font-extrabold">{selectedValName}</span>
                               </div>
                             </div>
 
@@ -4055,7 +4055,7 @@ export default function BusinessCardsCustomizeFlow({
                                       }
                                     }}
                                     className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${isSelected
-                                        ? "border-[#e74b2d] bg-sky-50/40 shadow-2xs ring-1 ring-[#e74b2d]/30"
+                                        ? "border-[#329AD4] bg-sky-50/40 shadow-2xs ring-1 ring-[#329AD4]/30"
                                         : "border-zinc-200 hover:border-zinc-300 bg-white"
                                       }`}
                                   >
@@ -4082,9 +4082,9 @@ export default function BusinessCardsCustomizeFlow({
                       })
                     ) : (
                       <>
-                        <div className="bg-[#fbfaf7] rounded-2xl p-4 border border-zinc-200/60">
+                        <div className="bg-[#ffffff] rounded-2xl p-4 border border-zinc-200/60">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#e74b2d] text-white flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-lg bg-[#329AD4] text-white flex items-center justify-center">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
                               </svg>
@@ -4104,7 +4104,7 @@ export default function BusinessCardsCustomizeFlow({
                                 key={item.name}
                                 onClick={() => setCardData((prev) => ({ ...prev, thickness: item.name }))}
                                 className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${cardData.thickness === item.name
-                                    ? "border-[#e74b2d] bg-sky-50/40"
+                                    ? "border-[#329AD4] bg-sky-50/40"
                                     : "border-zinc-200 hover:border-zinc-300 bg-white"
                                   }`}
                               >
@@ -4118,9 +4118,9 @@ export default function BusinessCardsCustomizeFlow({
                           </div>
                         </div>
 
-                        <div className="bg-[#fbfaf7] rounded-2xl p-4 border border-zinc-200/60">
+                        <div className="bg-[#ffffff] rounded-2xl p-4 border border-zinc-200/60">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#e74b2d] text-white flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-lg bg-[#329AD4] text-white flex items-center justify-center">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                               </svg>
@@ -4141,7 +4141,7 @@ export default function BusinessCardsCustomizeFlow({
                                 key={item.name}
                                 onClick={() => setCardData((prev) => ({ ...prev, texture: item.name }))}
                                 className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${cardData.texture === item.name
-                                    ? "border-[#e74b2d] bg-sky-50/40"
+                                    ? "border-[#329AD4] bg-sky-50/40"
                                     : "border-zinc-200 hover:border-zinc-300 bg-white"
                                   }`}
                               >
@@ -4155,9 +4155,9 @@ export default function BusinessCardsCustomizeFlow({
                           </div>
                         </div>
 
-                        <div className="bg-[#fbfaf7] rounded-2xl p-4 border border-zinc-200/60">
+                        <div className="bg-[#ffffff] rounded-2xl p-4 border border-zinc-200/60">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#e74b2d] text-white flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-lg bg-[#329AD4] text-white flex items-center justify-center">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
                               </svg>
@@ -4177,7 +4177,7 @@ export default function BusinessCardsCustomizeFlow({
                                 key={item.name}
                                 onClick={() => setCardData((prev) => ({ ...prev, corners: item.name }))}
                                 className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${cardData.corners === item.name
-                                    ? "border-[#e74b2d] bg-sky-50/40"
+                                    ? "border-[#329AD4] bg-sky-50/40"
                                     : "border-zinc-200 hover:border-zinc-300 bg-white"
                                   }`}
                               >
@@ -4238,7 +4238,7 @@ export default function BusinessCardsCustomizeFlow({
                       type="button"
                       disabled={addingToCart}
                       onClick={handleAddToCartAndProceed}
-                      className="px-7 py-3 bg-[#e74b2d] hover:bg-theme-darkblue text-white text-base font-bold rounded-full shadow-md transition-all cursor-pointer disabled:opacity-50"
+                      className="px-7 py-3 bg-[#329AD4] hover:bg-theme-darkblue text-white text-base font-bold rounded-full shadow-md transition-all cursor-pointer disabled:opacity-50"
                     >
                       {addingToCart ? "Adding to Cart..." : "Add to cart →"}
                     </button>
@@ -4360,7 +4360,7 @@ export default function BusinessCardsCustomizeFlow({
                       }
                       router.push("/checkout");
                     }}
-                    className="w-full py-3.5 bg-[#e74b2d] hover:bg-theme-darkblue text-white text-base font-bold rounded-xl shadow-md transition-all cursor-pointer"
+                    className="w-full py-3.5 bg-[#329AD4] hover:bg-theme-darkblue text-white text-base font-bold rounded-xl shadow-md transition-all cursor-pointer"
                   >
                     Check Out
                   </button>
@@ -4402,7 +4402,7 @@ export default function BusinessCardsCustomizeFlow({
                 <div className="px-6 py-5 border-b border-zinc-100 flex items-center justify-between">
                   <div>
                     <h3 className="text-xl font-bold text-zinc-900 flex items-center gap-2">
-                      <svg className="w-5 h-5 text-[#e74b2d]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-[#329AD4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                       </svg>
                       Select Product Size
@@ -4447,7 +4447,7 @@ export default function BusinessCardsCustomizeFlow({
                             }}
                             className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
                               isSelected
-                                ? "border-[#e74b2d] bg-sky-50/50 shadow-xs ring-1 ring-[#e74b2d]/20"
+                                ? "border-[#329AD4] bg-sky-50/50 shadow-xs ring-1 ring-[#329AD4]/20"
                                 : "border-zinc-200/80 hover:border-zinc-300 bg-white hover:bg-zinc-50/60"
                             }`}
                           >
@@ -4462,7 +4462,7 @@ export default function BusinessCardsCustomizeFlow({
                                     maxWidth: "36px",
                                   }}
                                   className={`rounded-xs transition-colors ${
-                                    isSelected ? "bg-[#e74b2d]" : "bg-zinc-400"
+                                    isSelected ? "bg-[#329AD4]" : "bg-zinc-400"
                                   }`}
                                 />
                               </div>
@@ -4471,7 +4471,7 @@ export default function BusinessCardsCustomizeFlow({
                                 <div className="flex items-center gap-2">
                                   <p className="text-sm font-bold text-zinc-900">{s.name}</p>
                                   {isSelected && (
-                                    <span className="bg-[#e74b2d] text-white text-[10px] font-bold px-1.5 py-0.2 rounded-xs">
+                                    <span className="bg-[#329AD4] text-white text-[10px] font-bold px-1.5 py-0.2 rounded-xs">
                                       Active
                                     </span>
                                   )}
@@ -4488,7 +4488,7 @@ export default function BusinessCardsCustomizeFlow({
                             </div>
 
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                              isSelected ? "border-[#e74b2d] bg-[#e74b2d] text-white" : "border-zinc-300"
+                              isSelected ? "border-[#329AD4] bg-[#329AD4] text-white" : "border-zinc-300"
                             }`}>
                               {isSelected && (
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
@@ -4514,7 +4514,7 @@ export default function BusinessCardsCustomizeFlow({
                       <button
                         type="button"
                         onClick={handleSwapOrientation}
-                        className="text-xs font-semibold text-[#e74b2d] hover:underline flex items-center gap-1 cursor-pointer"
+                        className="text-xs font-semibold text-[#329AD4] hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         <svg className="w-3.5 h-3.5 rotate-90" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
@@ -4534,7 +4534,7 @@ export default function BusinessCardsCustomizeFlow({
                             step="1"
                             value={customWidth}
                             onChange={(e) => setCustomWidth(Number(e.target.value) || 0)}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#e74b2d]"
+                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4]"
                           />
                         </div>
 
@@ -4547,7 +4547,7 @@ export default function BusinessCardsCustomizeFlow({
                             step="1"
                             value={customHeight}
                             onChange={(e) => setCustomHeight(Number(e.target.value) || 0)}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#e74b2d]"
+                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4]"
                           />
                         </div>
 
@@ -4556,7 +4556,7 @@ export default function BusinessCardsCustomizeFlow({
                           <select
                             value={customUnit}
                             onChange={(e) => setCustomUnit(e.target.value as CanvasUnit)}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#e74b2d] cursor-pointer"
+                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4] cursor-pointer"
                           >
                             <option value="mm">mm (millimeters)</option>
                             <option value="cm">cm (centimeters)</option>
@@ -4578,7 +4578,7 @@ export default function BusinessCardsCustomizeFlow({
                                 setCustomBleed(val);
                                 setCustomSafeArea(val);
                               }}
-                              className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#e74b2d]"
+                              className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4]"
                               placeholder="3"
                             />
                             <span className="text-xs font-mono text-zinc-400">{customUnit}</span>
@@ -4590,7 +4590,7 @@ export default function BusinessCardsCustomizeFlow({
                         <button
                           type="button"
                           onClick={handleApplyCustomSize}
-                          className="px-5 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-2"
+                          className="px-5 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-2"
                         >
                           <span>Apply Custom Size</span>
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

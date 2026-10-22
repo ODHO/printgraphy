@@ -3,6 +3,20 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IVariation } from "@/models/Product";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Field,
+  Icon,
+  IconButton,
+  Notice,
+  PageHeader,
+  Spinner,
+  buttonClass,
+  cx,
+  inputClass,
+} from "@/components/admin/ui";
 
 interface Category {
   _id: string;
@@ -276,407 +290,401 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl pb-16">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">
-            {mode === "create" ? "New Catalog Product" : "Edit Product"}
-          </h1>
-          <p className="text-zinc-500 text-base mt-0.5">
-            {isApparelCategory
-              ? "Link this SKU to a Clothing & Bags category — colors, sizes, and decoration come from the category."
-              : "Configure product metadata, custom variations (Paper Stock, Corners, etc.), and pricing"}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => router.push("/admin/products")}
-            className="px-4 py-2 text-base font-bold text-zinc-600 border border-zinc-200 rounded-xl hover:bg-white transition-all cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 disabled:opacity-60 cursor-pointer"
-          >
-            {saving ? "Saving..." : mode === "create" ? "Create Product" : "Save Changes"}
-          </button>
-        </div>
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
+      <PageHeader
+        icon="services"
+        back={{ href: "/admin/products", label: "Back to Print Services" }}
+        title={mode === "create" ? "New Catalog Product" : "Edit Product"}
+        description={
+          isApparelCategory
+            ? "Link this SKU to a Clothing & Bags category — colors, sizes, and decoration come from the category."
+            : "Configure product metadata, custom variations (Paper Stock, Corners, etc.), and pricing"
+        }
+      />
 
-      {error && (
-        <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 font-bold text-base">
-          {error}
-        </div>
-      )}
+      {error && <Notice tone="red" title="Couldn't save product">{error}</Notice>}
 
-      {/* Product Info Card */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-xs">
-        <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Product Info</h2>
-
-        <div>
-          <label className="text-base font-bold text-zinc-700 block mb-1">Product Name *</label>
-          <input
-            required
-            type="text"
-            value={form.name}
-            onChange={(e) => {
-              const n = e.target.value;
-              setForm((prev) => ({ ...prev, name: n, slug: generateSlug(n) }));
-            }}
-            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-            placeholder="e.g., Standard Business Cards"
-          />
-        </div>
-
-        <div>
-          <label className="text-base font-bold text-zinc-700 block mb-1">Slug *</label>
-          <input
-            required
-            type="text"
-            value={form.slug}
-            onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
-            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 font-mono focus:outline-none focus:border-[#e74b2d]"
-            placeholder="standard-business-cards"
-          />
-        </div>
-
-        <div>
-          <label className="text-base font-bold text-zinc-700 block mb-1">Description</label>
-          <textarea
-            value={form.description}
-            onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-            rows={3}
-            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] resize-none"
-            placeholder="Brief product description..."
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">Category</label>
-            <select
-              value={form.categoryId}
-              onChange={(e) => setForm((prev) => ({ ...prev, categoryId: e.target.value }))}
-              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
-            >
-              <option value="">No category</option>
-              {categories.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                  {c.canvas_type === "mockup"
-                    ? " (Clothing & Bags)"
-                    : c.canvas_type === "dieline"
-                      ? " (Packaging)"
-                      : ""}
-                </option>
-              ))}
-            </select>
-            {isApparelCategory && (
-              <p className="mt-2 text-sm text-zinc-500">
-                Apparel colors, sizes, placements, and decoration methods are configured on the{" "}
-                <a
-                  href={`/admin/categories/${form.categoryId}/edit`}
-                  className="font-bold text-[#e74b2d] hover:underline"
-                >
-                  category
-                </a>
-                . This product is the storefront SKU linked to that mockup category.
-              </p>
-            )}
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-base font-bold text-zinc-700">Product Image (S3 Upload or URL)</label>
-              <label className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer">
-                {uploadingImage ? "Uploading..." : "↑ Upload Image"}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
+        {/* Product Info Card */}
+        <Card className="lg:col-span-2">
+          <CardHeader icon="products" title="Product Info" subtitle="Name, URL slug, description and catalog placement" />
+          <div className="space-y-5 p-5 sm:p-6">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <Field label="Product Name *">
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProductImageUpload}
-                  disabled={uploadingImage}
-                  className="hidden"
+                  required
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => {
+                    const n = e.target.value;
+                    setForm((prev) => ({ ...prev, name: n, slug: generateSlug(n) }));
+                  }}
+                  className={inputClass}
+                  placeholder="e.g., Standard Business Cards"
                 />
-              </label>
+              </Field>
+
+              <Field label="Slug *" hint="Used in the storefront URL">
+                <input
+                  required
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
+                  className={cx(inputClass, "font-mono")}
+                  placeholder="standard-business-cards"
+                />
+              </Field>
             </div>
-            <div className="flex gap-2 items-center">
+
+            <Field label="Description">
+              <textarea
+                value={form.description}
+                onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+                rows={4}
+                className={cx(inputClass, "resize-none")}
+                placeholder="Brief product description..."
+              />
+            </Field>
+
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div>
+                <Field label="Category">
+                  <select
+                    value={form.categoryId}
+                    onChange={(e) => setForm((prev) => ({ ...prev, categoryId: e.target.value }))}
+                    className={cx(inputClass, "cursor-pointer")}
+                  >
+                    <option value="">No category</option>
+                    {categories.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.name}
+                        {c.canvas_type === "mockup"
+                          ? " (Clothing & Bags)"
+                          : c.canvas_type === "dieline"
+                            ? " (Packaging)"
+                            : ""}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                {isApparelCategory && (
+                  <p className="mt-2 rounded-xl border border-[#dbeefb] bg-[#f0f8fd] px-3 py-2 text-xs leading-relaxed text-[#1b5b80]">
+                    Apparel colors, sizes, placements, and decoration methods are configured on the{" "}
+                    <a
+                      href={`/admin/categories/${form.categoryId}/edit`}
+                      className="font-semibold text-[#2884b8] underline-offset-2 hover:underline"
+                    >
+                      category
+                    </a>
+                    . This product is the storefront SKU linked to that mockup category.
+                  </p>
+                )}
+              </div>
+
+              <Field label="Tags (comma separated)">
+                <input
+                  type="text"
+                  value={form.tags}
+                  onChange={(e) => setForm((prev) => ({ ...prev, tags: e.target.value }))}
+                  className={inputClass}
+                  placeholder="matte, standard, business"
+                />
+              </Field>
+            </div>
+          </div>
+        </Card>
+
+        {/* Right column */}
+        <div className="space-y-6">
+          {/* Product Image */}
+          <Card>
+            <CardHeader
+              icon="image"
+              title="Product Image"
+              subtitle="S3 upload or URL"
+              action={
+                <label className={cx(buttonClass("soft", "sm"), uploadingImage && "pointer-events-none opacity-60")}>
+                  <Icon name="upload" className="w-3.5 h-3.5" strokeWidth={2.2} />
+                  {uploadingImage ? "Uploading..." : "Upload"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProductImageUpload}
+                    disabled={uploadingImage}
+                    className="hidden"
+                  />
+                </label>
+              }
+            />
+            <div className="space-y-3 p-5 sm:p-6">
+              <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-dashed border-[#b8e0f6] bg-[#f0f8fd]">
+                {form.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={form.image} alt="Product preview" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center gap-2 text-[#329AD4]">
+                    {uploadingImage ? <Spinner /> : <Icon name="image" className="w-8 h-8" />}
+                    <span className="text-xs text-zinc-500">{uploadingImage ? "Uploading..." : "No image yet"}</span>
+                  </div>
+                )}
+              </div>
               <input
                 type="text"
                 value={form.image}
                 onChange={(e) => setForm((prev) => ({ ...prev, image: e.target.value }))}
                 placeholder="https://... or /custom-business.png"
-                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                aria-label="Product image URL"
+                className={inputClass}
               />
-              {form.image && (
-                <img
-                  src={form.image}
-                  alt="Product preview"
-                  className="w-9 h-9 rounded-lg object-cover border border-zinc-200 shadow-xs flex-shrink-0 bg-white"
+            </div>
+          </Card>
+
+          {/* Pricing Card */}
+          <Card>
+            <CardHeader icon="dollar" title="Base Pricing" />
+            <div className="space-y-5 p-5 sm:p-6">
+              <Field label="Base Price (USD) *">
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-zinc-400">$</span>
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.price}
+                    onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
+                    className={cx(inputClass, "pl-8 font-semibold tabular-nums")}
+                  />
+                </div>
+              </Field>
+              <Field label="Unit Price Label">
+                <input
+                  type="text"
+                  value={form.unitPrice}
+                  onChange={(e) => setForm((prev) => ({ ...prev, unitPrice: e.target.value }))}
+                  className={inputClass}
+                  placeholder="e.g. $0.15 Each / 100 Units"
                 />
-              )}
+              </Field>
             </div>
-          </div>
-        </div>
-
-        <div>
-          <label className="text-base font-bold text-zinc-700 block mb-1">Tags (comma separated)</label>
-          <input
-            type="text"
-            value={form.tags}
-            onChange={(e) => setForm((prev) => ({ ...prev, tags: e.target.value }))}
-            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-            placeholder="matte, standard, business"
-          />
-        </div>
-      </div>
-
-      {/* Pricing Card */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-xs">
-        <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Base Pricing</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">Base Price (USD) *</label>
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 font-bold text-base">$</span>
-              <input
-                required
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.price}
-                onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl pl-8 pr-4 py-2 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">Unit Price Label</label>
-            <input
-              type="text"
-              value={form.unitPrice}
-              onChange={(e) => setForm((prev) => ({ ...prev, unitPrice: e.target.value }))}
-              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-              placeholder="e.g. $0.15 Each / 100 Units"
-            />
-          </div>
+          </Card>
         </div>
       </div>
 
       {/* Product Variations Card (Vistaprint style) */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-6 shadow-xs">
-        <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
-          <div>
-            <h2 className="text-base font-bold text-zinc-900">
-              {isApparelCategory ? "Extra paid options (optional)" : "Product Variations & Options"}
-            </h2>
-            <p className="text-base text-zinc-500 mt-0.5">
-              {isApparelCategory
-                ? "Colors, sizes, and decoration methods come from the Clothing & Bags category. Add optional paid extras here if needed (e.g. rush print)."
-                : "Add multiple variation groups (e.g. Paper Stock, Finish, Corner Style). Each variation contains options with name, image, price ($0 = Free), and description."}
-            </p>
+      <Card>
+        <div className="flex flex-col gap-3 border-b border-zinc-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="flex items-start gap-3 min-w-0">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EAF5FB] text-[#2884b8]">
+              <Icon name="layers" className="w-4 h-4" />
+            </span>
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold text-zinc-900">
+                {isApparelCategory ? "Extra paid options (optional)" : "Product Variations & Options"}
+              </h2>
+              <p className="mt-0.5 max-w-2xl text-xs text-zinc-500">
+                {isApparelCategory
+                  ? "Colors, sizes, and decoration methods come from the Clothing & Bags category. Add optional paid extras here if needed (e.g. rush print)."
+                  : "Add multiple variation groups (e.g. Paper Stock, Finish, Corner Style). Each variation contains options with name, image, price ($0 = Free), and description."}
+              </p>
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={addVariation}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-xs"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-            </svg>
+          <Button variant="primary" size="sm" icon="plus" onClick={addVariation} className="shrink-0 self-start sm:self-center">
             Add Variation Group
-          </button>
+          </Button>
         </div>
 
-        {variations.length === 0 ? (
-          <div className="text-center py-8 bg-[#fbfaf7] border-2 border-dashed border-zinc-200 rounded-2xl">
-            <p className="text-base font-medium text-zinc-500 mb-2">No product variations created yet.</p>
-            <button
-              type="button"
-              onClick={addVariation}
-              className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer"
-            >
-              + Click here to add your first variation (e.g. Paper Stock)
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {variations.map((v, varIdx) => (
-              <div
-                key={v._id || `var-${varIdx}`}
-                className="border border-zinc-200/80 rounded-2xl p-5 bg-[#fafcfd] space-y-4 relative"
+        <div className="p-5 sm:p-6">
+          {variations.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#dbeefb] bg-[#f0f8fd]/60 px-6 py-10 text-center">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#329AD4] shadow-xs">
+                <Icon name="layers" className="w-6 h-6" />
+              </span>
+              <p className="mt-3 text-sm font-medium text-zinc-600">No product variations created yet.</p>
+              <button
+                type="button"
+                onClick={addVariation}
+                className="mt-1 text-sm font-semibold text-[#329AD4] hover:text-[#2884b8] hover:underline cursor-pointer"
               >
-                {/* Variation Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-zinc-200/60 shadow-2xs">
-                  <div className="flex-1 w-full sm:w-auto">
-                    <label className="text-base font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                      Variation Group Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={v.name}
-                      onChange={(e) => updateVariationField(varIdx, "name", e.target.value)}
-                      placeholder="e.g. Paper Stock, Corners, Finish"
-                      className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-3 py-1.5 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-4 self-end sm:self-center">
-                    <label className="flex items-center gap-2 text-base font-bold text-zinc-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={v.required}
-                        onChange={(e) => updateVariationField(varIdx, "required", e.target.checked)}
-                        className="rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] w-4 h-4 cursor-pointer"
-                      />
-                      Required Selection
-                    </label>
-
-                    <button
-                      type="button"
-                      onClick={() => removeVariation(varIdx)}
-                      className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                      title="Delete variation group"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                + Click here to add your first variation (e.g. Paper Stock)
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {variations.map((v, varIdx) => (
+                <div
+                  key={v._id || `var-${varIdx}`}
+                  className="relative overflow-hidden rounded-2xl border border-[#dbeefb] bg-gradient-to-b from-[#f0f8fd] to-white"
+                >
+                  {/* Variation Header */}
+                  <div className="flex flex-col gap-3 border-b border-[#dbeefb] bg-white/70 p-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="flex w-full flex-1 items-end gap-3 sm:w-auto">
+                      <span className="mb-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#329AD4] text-xs font-semibold text-white tabular-nums">
+                        {varIdx + 1}
+                      </span>
+                      <Field label="Variation Group Name *" className="flex-1">
+                        <input
+                          type="text"
+                          required
+                          value={v.name}
+                          onChange={(e) => updateVariationField(varIdx, "name", e.target.value)}
+                          placeholder="e.g. Paper Stock, Corners, Finish"
+                          className={cx(inputClass, "py-2 font-semibold")}
                         />
-                      </svg>
-                    </button>
+                      </Field>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end">
+                      <label className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 cursor-pointer hover:border-[#b8e0f6]">
+                        <input
+                          type="checkbox"
+                          checked={v.required}
+                          onChange={(e) => updateVariationField(varIdx, "required", e.target.checked)}
+                          className="rounded border-zinc-300 text-[#329AD4] focus:ring-[#329AD4] w-4 h-4 cursor-pointer accent-[#329AD4]"
+                        />
+                        Required Selection
+                      </label>
+
+                      <IconButton
+                        icon="trash"
+                        label="Delete variation group"
+                        tone="danger"
+                        onClick={() => removeVariation(varIdx)}
+                        className="h-9 w-9 border border-zinc-200 bg-white"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                {/* Values List */}
-                <div className="space-y-3 pt-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-base font-bold text-zinc-700 uppercase tracking-wider">
-                      Option Values for &ldquo;{v.name || "Variation"}&rdquo;
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={() => addVariationValue(varIdx)}
-                      className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer"
-                    >
-                      + Add Option Value
-                    </button>
-                  </div>
-
-                  {v.values.map((val, valIdx) => {
-                    const uploadKey = `${varIdx}-${valIdx}`;
-                    const isUploadingThis = uploadingValImage === uploadKey;
-                    const isFree = parseFloat(val.price) === 0 || val.price === "" || val.price === "0";
-
-                    return (
-                      <div
-                        key={val._id || `val-${varIdx}-${valIdx}`}
-                        className="bg-white border border-zinc-200 rounded-xl p-3.5 space-y-3 shadow-2xs"
+                  {/* Values List */}
+                  <div className="space-y-3 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                        Option Values for &ldquo;{v.name || "Variation"}&rdquo;
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => addVariationValue(varIdx)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#329AD4] hover:text-[#2884b8] cursor-pointer"
                       >
-                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
-                          {/* Option Name */}
-                          <div className="sm:col-span-5">
-                            <label className="text-base font-bold text-zinc-500 block mb-1">
-                              Option Name *
-                            </label>
-                            <input
-                              type="text"
-                              required
-                              value={val.name}
-                              onChange={(e) => updateVariationValue(varIdx, valIdx, "name", e.target.value)}
-                              placeholder="e.g. Standard Matte (14 pt)"
-                              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-3 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                            />
-                          </div>
+                        <Icon name="plus" className="w-3.5 h-3.5" strokeWidth={2.2} />
+                        Add Option Value
+                      </button>
+                    </div>
 
-                          {/* Extra Cost / Price */}
-                          <div className="sm:col-span-3">
-                            <div className="flex items-center justify-between mb-1">
-                              <label className="text-base font-bold text-zinc-500">Price (USD)</label>
-                              <span
-                                className={`text-base font-extrabold px-1.5 py-0.5 rounded-full ${
-                                  isFree ? "bg-emerald-100 text-emerald-700" : "bg-blue-50 text-blue-700"
-                                }`}
-                              >
-                                {isFree ? "FREE ($0)" : `+$${parseFloat(val.price || "0").toFixed(2)}`}
-                              </span>
-                            </div>
-                            <div className="relative">
-                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 text-base font-bold">
-                                $
-                              </span>
-                              <input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={val.price}
-                                onChange={(e) =>
-                                  updateVariationValue(varIdx, valIdx, "price", e.target.value)
-                                }
-                                placeholder="0 (Free)"
-                                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg pl-6 pr-3 py-1.5 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                              />
-                            </div>
-                          </div>
+                    {v.values.map((val, valIdx) => {
+                      const uploadKey = `${varIdx}-${valIdx}`;
+                      const isUploadingThis = uploadingValImage === uploadKey;
+                      const isFree = parseFloat(val.price) === 0 || val.price === "" || val.price === "0";
 
-                          {/* Image Field */}
-                          <div className="sm:col-span-3">
-                            <div className="flex items-center justify-between mb-1">
-                              <label className="text-base font-bold text-zinc-500">Image</label>
-                              <label className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer">
-                                {isUploadingThis ? "Uploading..." : "↑ Upload"}
+                      return (
+                        <div
+                          key={val._id || `val-${varIdx}-${valIdx}`}
+                          className="space-y-3 rounded-xl border border-zinc-200/80 bg-white p-4 shadow-xs transition-colors hover:border-[#b8e0f6]"
+                        >
+                          <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-12">
+                            {/* Option Name */}
+                            <div className="sm:col-span-5">
+                              <Field label="Option Name *">
                                 <input
-                                  type="file"
-                                  accept="image/*"
-                                  disabled={isUploadingThis}
-                                  onChange={(e) => handleValueImageUpload(varIdx, valIdx, e)}
-                                  className="hidden"
+                                  type="text"
+                                  required
+                                  value={val.name}
+                                  onChange={(e) => updateVariationValue(varIdx, valIdx, "name", e.target.value)}
+                                  placeholder="e.g. Standard Matte (14 pt)"
+                                  className={cx(inputClass, "py-2")}
                                 />
-                              </label>
+                              </Field>
                             </div>
-                            <div className="flex gap-2 items-center">
-                              <input
-                                type="text"
-                                value={val.image}
-                                onChange={(e) =>
-                                  updateVariationValue(varIdx, valIdx, "image", e.target.value)
-                                }
-                                placeholder="Image URL / S3"
-                                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-2.5 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+
+                            {/* Extra Cost / Price */}
+                            <div className="sm:col-span-3">
+                              <div className="mb-1.5 flex items-center justify-between gap-2">
+                                <span className="text-xs font-semibold text-zinc-700">Price (USD)</span>
+                                <span
+                                  className={cx(
+                                    "rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset tabular-nums",
+                                    isFree
+                                      ? "bg-emerald-50 text-emerald-700 ring-emerald-600/15"
+                                      : "bg-[#EAF5FB] text-[#2884b8] ring-[#329AD4]/20"
+                                  )}
+                                >
+                                  {isFree ? "FREE ($0)" : `+$${parseFloat(val.price || "0").toFixed(2)}`}
+                                </span>
+                              </div>
+                              <div className="relative">
+                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-zinc-400">
+                                  $
+                                </span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={val.price}
+                                  onChange={(e) =>
+                                    updateVariationValue(varIdx, valIdx, "price", e.target.value)
+                                  }
+                                  placeholder="0 (Free)"
+                                  aria-label="Option price"
+                                  className={cx(inputClass, "py-2 pl-7 font-semibold tabular-nums")}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Image Field */}
+                            <div className="sm:col-span-3">
+                              <div className="mb-1.5 flex items-center justify-between gap-2">
+                                <span className="text-xs font-semibold text-zinc-700">Image</span>
+                                <label
+                                  className={cx(
+                                    "inline-flex items-center gap-1 text-xs font-semibold text-[#329AD4] hover:text-[#2884b8] cursor-pointer",
+                                    isUploadingThis && "pointer-events-none opacity-60"
+                                  )}
+                                >
+                                  <Icon name="upload" className="w-3.5 h-3.5" strokeWidth={2.2} />
+                                  {isUploadingThis ? "Uploading..." : "Upload"}
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    disabled={isUploadingThis}
+                                    onChange={(e) => handleValueImageUpload(varIdx, valIdx, e)}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="text"
+                                  value={val.image}
+                                  onChange={(e) =>
+                                    updateVariationValue(varIdx, valIdx, "image", e.target.value)
+                                  }
+                                  placeholder="Image URL / S3"
+                                  aria-label="Option image URL"
+                                  className={cx(inputClass, "py-2 min-w-0")}
+                                />
+                                {val.image && (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img
+                                    src={val.image}
+                                    alt="Variation value preview"
+                                    className="h-9 w-9 shrink-0 rounded-lg border border-zinc-200 bg-white object-cover shadow-xs"
+                                  />
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Delete option value button */}
+                            <div className="flex items-center justify-end sm:col-span-1 sm:justify-center sm:pt-6">
+                              <IconButton
+                                icon="close"
+                                label="Remove option"
+                                tone="danger"
+                                onClick={() => removeVariationValue(varIdx, valIdx)}
                               />
-                              {val.image && (
-                                <img
-                                  src={val.image}
-                                  alt="Variation value preview"
-                                  className="w-7 h-7 rounded-md object-cover border border-zinc-200 shadow-2xs flex-shrink-0 bg-white"
-                                />
-                              )}
                             </div>
                           </div>
 
-                          {/* Delete option value button */}
-                          <div className="sm:col-span-1 flex items-center justify-center pt-5">
-                            <button
-                              type="button"
-                              onClick={() => removeVariationValue(varIdx, valIdx)}
-                              className="text-zinc-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                              title="Remove option"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Description field */}
-                        <div>
+                          {/* Description field */}
                           <input
                             type="text"
                             value={val.description}
@@ -684,25 +692,25 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
                               updateVariationValue(varIdx, valIdx, "description", e.target.value)
                             }
                             placeholder="Optional description (e.g., Smooth coated paper with subtle sheen)"
-                            className="w-full bg-[#fbfaf7] border border-zinc-100 rounded-lg px-3 py-1 text-base text-zinc-600 focus:outline-none focus:border-[#e74b2d]"
+                            aria-label="Option description"
+                            className="w-full rounded-lg border border-zinc-100 bg-zinc-50/60 px-3 py-1.5 text-xs text-zinc-600 placeholder-zinc-400 transition focus:outline-none focus:border-[#329AD4] focus:bg-white"
                           />
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </Card>
 
       {/* Reviews & Status Card */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-xs">
-        <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Reviews & Visibility</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">Rating (0–5)</label>
+      <Card>
+        <CardHeader icon="star" title="Reviews & Visibility" />
+        <div className="grid grid-cols-1 gap-5 p-5 sm:p-6 md:grid-cols-3">
+          <Field label="Rating (0–5)">
             <input
               type="number"
               min="0"
@@ -710,38 +718,60 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
               step="0.1"
               value={form.rating}
               onChange={(e) => setForm((prev) => ({ ...prev, rating: e.target.value }))}
-              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+              className={cx(inputClass, "tabular-nums")}
             />
-          </div>
-          <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">Review Count</label>
+          </Field>
+          <Field label="Review Count">
             <input
               type="number"
               min="0"
               value={form.reviewCount}
               onChange={(e) => setForm((prev) => ({ ...prev, reviewCount: e.target.value }))}
-              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+              className={cx(inputClass, "tabular-nums")}
             />
+          </Field>
+          <div className="flex items-center justify-between gap-4 rounded-xl border border-[#dbeefb] bg-[#f0f8fd] px-4 py-3 md:self-end">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-zinc-900">Active Visibility</p>
+              <p className="text-xs text-zinc-500">Display this product live in storefront catalog</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={form.isActive}
+              aria-label="Active Visibility"
+              onClick={() => setForm((prev) => ({ ...prev, isActive: !prev.isActive }))}
+              className={cx(
+                "relative h-6 w-11 shrink-0 rounded-full transition-colors cursor-pointer",
+                form.isActive ? "bg-[#329AD4]" : "bg-zinc-300"
+              )}
+            >
+              <span
+                className={cx(
+                  "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all",
+                  form.isActive ? "left-[22px]" : "left-0.5"
+                )}
+              />
+            </button>
           </div>
         </div>
-        <div className="flex items-center justify-between pt-2 border-t border-zinc-100">
-          <div>
-            <p className="text-base font-bold text-zinc-900">Active Visibility</p>
-            <p className="text-base text-zinc-400">Display this product live in storefront catalog</p>
+      </Card>
+
+      {/* Sticky action bar */}
+      <div className="sticky bottom-4 z-20">
+        <div className="flex flex-col gap-3 rounded-2xl border border-[#dbeefb] bg-white/90 px-4 py-3 shadow-lg shadow-[#329AD4]/10 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <p className="flex items-center gap-2 text-xs text-zinc-500">
+            <span className={cx("h-2 w-2 rounded-full", form.isActive ? "bg-emerald-500" : "bg-zinc-300")} />
+            {form.isActive ? "Will be visible in the storefront" : "Hidden from the storefront"}
+          </p>
+          <div className="flex items-center gap-2 sm:justify-end">
+            <Button variant="secondary" onClick={() => router.push("/admin/products")} className="flex-1 sm:flex-none">
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" icon="check" disabled={saving} className="flex-1 sm:flex-none">
+              {saving ? "Saving..." : mode === "create" ? "Create Product" : "Save Changes"}
+            </Button>
           </div>
-          <button
-            type="button"
-            onClick={() => setForm((prev) => ({ ...prev, isActive: !prev.isActive }))}
-            className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer ${
-              form.isActive ? "bg-[#e74b2d]" : "bg-zinc-300"
-            }`}
-          >
-            <span
-              className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${
-                form.isActive ? "left-5.5" : "left-0.5"
-              }`}
-            />
-          </button>
         </div>
       </div>
     </form>

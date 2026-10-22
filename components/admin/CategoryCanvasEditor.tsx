@@ -18,6 +18,52 @@ import {
 import type { ICanvasGuideLine, SideMode } from "@/models/Category";
 import CanvasGuideLinesOverlay from "@/components/CanvasGuideLinesOverlay";
 import { cleanGuideLines } from "@/lib/guideLines";
+import { Icon, cx, labelClass, type IconName } from "@/components/admin/ui";
+
+/* ── Editor chrome tokens (light, brand palette) ── */
+const edInput =
+  "w-full rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 shadow-xs transition focus:outline-none focus:border-[#329AD4] focus:ring-4 focus:ring-[#329AD4]/10";
+const edSection = "text-[11px] font-semibold uppercase tracking-wider text-zinc-400";
+const edGhostBtn =
+  "inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white text-xs font-semibold text-zinc-700 shadow-xs transition-all cursor-pointer hover:border-[#329AD4] hover:text-[#2884b8] disabled:opacity-40 disabled:cursor-not-allowed";
+
+/* Extra 24px stroke icons used only by this editor's chrome. */
+const ED_ICONS = {
+  undo: "M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 010 11H11",
+  redo: "M15 14l5-5-5-5m5 5H9.5a5.5 5.5 0 000 11H13",
+  expand: "M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",
+  shrink: "M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5",
+  type: "M5 6V4h14v2M12 4v16m-3 0h6",
+  shapes: "M4 4h7v7H4V4zm13.5 0a3.5 3.5 0 110 7 3.5 3.5 0 010-7zM7.5 13L11 20H4l3.5-7zM14 14h6v6h-6v-6z",
+  palette: "M12 3a9 9 0 100 18c1 0 1.5-.7 1.5-1.5 0-.4-.2-.8-.4-1.1-.3-.3-.4-.6-.4-1 0-.8.7-1.4 1.5-1.4H16a5 5 0 005-5c0-4.4-4-8-9-8zM7.5 12a1 1 0 100-2 1 1 0 000 2zm3-4a1 1 0 100-2 1 1 0 000 2zm4 0a1 1 0 100-2 1 1 0 000 2z",
+  copy: "M9 9h10v10H9V9zM5 15V5h10",
+  lock: "M7 11V8a5 5 0 0110 0v3M6 11h12v9H6v-9z",
+  unlock: "M7 11V8a5 5 0 019.5-2M6 11h12v9H6v-9z",
+  link: "M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1",
+  cube: "M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zm0 0v9m0 0l8-4.5M12 12l-8-4.5",
+  pen: "M4 20h4L18.5 9.5a2.1 2.1 0 00-3-3L5 17v3zM13.5 6.5l3 3",
+  arrowUp: "M12 19V5m-6 6l6-6 6 6",
+  arrowDown: "M12 5v14m6-6l-6 6-6-6",
+  toTop: "M5 4h14M12 20V8m-5 5l5-5 5 5",
+  toBottom: "M5 20h14M12 4v12m-5-5l5 5 5-5",
+} as const;
+
+const TAB_ICONS: Record<string, { ui?: IconName; ed?: keyof typeof ED_ICONS }> = {
+  text: { ed: "type" },
+  shapes: { ed: "shapes" },
+  images: { ui: "image" },
+  background: { ed: "palette" },
+  variations: { ui: "tag" },
+  layers: { ui: "layers" },
+};
+
+function EdIcon({ name, className = "w-4 h-4" }: { name: keyof typeof ED_ICONS; className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d={ED_ICONS[name]} />
+    </svg>
+  );
+}
 
 export interface CanvasObject {
   id: string;
@@ -180,7 +226,7 @@ interface CategoryCanvasEditorProps {
 const COLOR_PALETTE = [
   "#18181b", "#141414", "#09090b", "#ffffff", "#f4f4f5",
   "#ef4444", "#f97316", "#f59e0b", "#10b981", "#06b6d4",
-  "#e74b2d", "#6366f1", "#8b5cf6", "#ec4899", "#78716c",
+  "#329AD4", "#6366f1", "#8b5cf6", "#ec4899", "#78716c",
 ];
 
 const FONT_FAMILIES = [
@@ -294,7 +340,7 @@ export default function CategoryCanvasEditor({
           width: 50,
           height: 10,
           fontSize: 13,
-          color: "#f88768",
+          color: "#55b2e7",
           fontWeight: "normal",
           textAlign: "left",
         },
@@ -578,7 +624,7 @@ export default function CategoryCanvasEditor({
       y: 35,
       width: 20,
       height: 20,
-      fill: "#e74b2d",
+      fill: "#329AD4",
       stroke: "#ffffff",
       strokeWidth: 0,
       borderRadius: shapeType === "rounded-rect" ? 12 : 0,
@@ -1124,7 +1170,7 @@ export default function CategoryCanvasEditor({
           } else {
             ctx.rect(x, y, w, h);
           }
-          ctx.fillStyle = obj.fill || "#e74b2d";
+          ctx.fillStyle = obj.fill || "#329AD4";
           ctx.fill();
         } else if (obj.type === "text") {
           ctx.fillStyle = obj.color || "#ffffff";
@@ -1214,38 +1260,43 @@ export default function CategoryCanvasEditor({
 
   return (
     <div
-      className={`flex flex-col min-w-0 bg-[#0f1117] text-zinc-100 font-sans transition-all ${
+      className={`flex flex-col gap-2 p-2 min-w-0 bg-[#f6fafd] text-zinc-900 font-sans transition-all ${
         isFullscreen
           ? "fixed inset-0 z-[999] h-screen w-screen overflow-hidden"
-          : "h-[calc(100vh-100px)] rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl"
+          : "h-[calc(100vh-100px)] rounded-2xl overflow-hidden border border-[#dbeefb] shadow-xs"
       }`}
     >
       {/* ── TOP HEADER TOOLBAR ─────────────────────────────────────── */}
-      <header className="h-14 border-b border-zinc-800 bg-[#161821] px-4 flex items-center justify-between gap-3 shrink-0 z-30 text-xs">
+      <header className="h-16 rounded-2xl border border-zinc-200/70 bg-white px-3 flex items-center justify-between gap-3 shrink-0 z-30 text-xs shadow-xs">
         {/* Left: Back Link, Title & Category Selector */}
         <div className="flex items-center gap-2.5 min-w-0">
           <Link
             href="/admin/templates"
-            className="px-2.5 py-1 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 transition-colors text-xs font-semibold flex items-center gap-1 shrink-0 whitespace-nowrap"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-600 hover:border-[#329AD4] hover:text-[#2884b8] transition-colors shrink-0 whitespace-nowrap"
             title="Exit Editor & Back to Templates"
           >
-            ← Exit Editor
+            <Icon name="arrowLeft" className="w-3.5 h-3.5" strokeWidth={2.2} />
+            Exit
           </Link>
+
+          <span className="hidden xl:flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#55b2e7] to-[#2884b8] text-white shadow-md shadow-[#329AD4]/25">
+            <Icon name="templates" className="w-4 h-4" />
+          </span>
 
           <div className="min-w-0 flex flex-col justify-center">
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-transparent border-b border-transparent hover:border-zinc-700 focus:border-[#e74b2d] text-xs font-bold text-white px-1 py-0.5 focus:outline-none truncate max-w-[200px]"
+              className="bg-transparent rounded-md text-sm font-semibold text-zinc-900 placeholder-zinc-400 px-1.5 py-0.5 -ml-1.5 hover:bg-[#f0f8fd] focus:bg-[#f0f8fd] focus:ring-1 focus:ring-[#b8e0f6] focus:outline-none truncate max-w-[220px]"
               placeholder="Template Title..."
             />
-            <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
+            <div className="flex items-center gap-1.5 text-xs text-zinc-500 mt-0.5">
               {allCategories.length > 1 ? (
                 <select
                   value={category._id || ""}
                   onChange={(e) => handleCategoryChange(e.target.value)}
-                  className="bg-zinc-800 text-sky-400 font-semibold px-1.5 py-0.5 rounded border border-zinc-700 focus:outline-none cursor-pointer text-xs max-w-[140px] truncate"
+                  className="bg-[#f0f8fd] text-[#2884b8] font-semibold px-1.5 py-0.5 rounded-md border border-[#dbeefb] focus:outline-none focus:border-[#329AD4] cursor-pointer text-[11px] max-w-[140px] truncate"
                 >
                   {allCategories.map((c) => (
                     <option key={c._id || c.name} value={c._id}>
@@ -1254,7 +1305,7 @@ export default function CategoryCanvasEditor({
                   ))}
                 </select>
               ) : (
-                <span className="font-semibold text-sky-400">{category.name}</span>
+                <span className="font-semibold text-[#2884b8]">{category.name}</span>
               )}
               <span>•</span>
               {(category.printSizes || []).length > 0 && (
@@ -1299,7 +1350,7 @@ export default function CategoryCanvasEditor({
                       safeAreaUnit: size.safeAreaUnit,
                     });
                   }}
-                  className="bg-zinc-800 text-zinc-200 font-semibold px-1.5 py-0.5 rounded border border-zinc-700 focus:outline-none cursor-pointer text-xs max-w-[150px] truncate"
+                  className="bg-white text-zinc-700 font-semibold px-1.5 py-0.5 rounded-md border border-zinc-200 focus:outline-none focus:border-[#329AD4] cursor-pointer text-[11px] max-w-[150px] truncate"
                 >
                   <option value="default">
                     Default {(allCategories.find((c) => c._id === category._id) || category).canvas_width}×
@@ -1313,10 +1364,10 @@ export default function CategoryCanvasEditor({
                   ))}
                 </select>
               )}
-              <span className="px-2 py-0.5 rounded-md bg-sky-950/80 text-sky-300 border border-sky-800 font-bold">
+              <span className="px-2 py-0.5 rounded-full bg-[#EAF5FB] text-[#2884b8] ring-1 ring-inset ring-[#329AD4]/20 text-[11px] font-semibold whitespace-nowrap">
                 {styleLabel}
               </span>
-              <span className="font-mono text-white font-bold">{widthLabel}</span>
+              <span className="font-mono text-[11px] text-zinc-700 font-semibold whitespace-nowrap">{widthLabel}</span>
               {category.bleed > 0 && (
                 <span className="text-zinc-500 font-mono">
                   (+{category.bleed}
@@ -1331,7 +1382,7 @@ export default function CategoryCanvasEditor({
         <div className="flex items-center gap-2 shrink-0 max-w-[52%] overflow-x-auto scrollbar-hide">
           {/* Side Switcher — uses category side names (box panels / front-back / single) */}
           {sidesCount > 1 ? (
-            <div className="inline-flex p-0.5 bg-zinc-900 rounded-lg border border-zinc-800 text-xs font-medium">
+            <div className="inline-flex gap-0.5 p-1 bg-zinc-100/80 rounded-xl text-xs font-semibold">
               {sideNames.map((name, idx) => (
                 <button
                   key={`${name}-${idx}`}
@@ -1340,8 +1391,8 @@ export default function CategoryCanvasEditor({
                     setActiveSideIndex(idx);
                     setSelectedObjectId(null);
                   }}
-                  className={`px-2.5 py-1 rounded-md transition-all cursor-pointer whitespace-nowrap ${
-                    activeSideIndex === idx ? "bg-[#e74b2d] text-white shadow-xs" : "text-zinc-400 hover:text-white"
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                    activeSideIndex === idx ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
                   }`}
                   title={name}
                 >
@@ -1350,28 +1401,30 @@ export default function CategoryCanvasEditor({
               ))}
             </div>
           ) : (
-            <div className="px-2 py-0.5 rounded-md bg-zinc-800/80 text-xs text-zinc-400 font-medium">
+            <div className="px-2.5 py-1 rounded-lg bg-zinc-100/80 text-xs text-zinc-500 font-semibold">
               {sideNames[0] || "Single-Sided"}
             </div>
           )}
 
           {/* 2D / 3D Mode Toggle */}
-          <div className="inline-flex p-0.5 bg-zinc-900 rounded-lg border border-zinc-800 text-xs font-medium ml-1 shrink-0">
+          <div className="inline-flex gap-0.5 p-1 bg-zinc-100/80 rounded-xl text-xs font-semibold ml-1 shrink-0">
             <button
               onClick={() => setViewMode("2d")}
-              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
-                viewMode === "2d" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                viewMode === "2d" ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
               }`}
             >
-              ✏️ 2D Canvas
+              <EdIcon name="pen" className="w-3.5 h-3.5" />
+              2D Canvas
             </button>
             <button
               onClick={() => setViewMode("3d")}
-              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
-                viewMode === "3d" ? "bg-emerald-600 text-white" : "text-zinc-400 hover:text-white"
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                viewMode === "3d" ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
               }`}
             >
-              ✨ 3D Studio
+              <EdIcon name="cube" className="w-3.5 h-3.5" />
+              3D Studio
             </button>
           </div>
         </div>
@@ -1380,34 +1433,39 @@ export default function CategoryCanvasEditor({
         <div className="flex items-center gap-2 shrink-0">
           {/* Status Badge */}
           <span
-            className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ring-1 ring-inset ${
               status === "PUBLISHED"
-                ? "bg-emerald-950/80 text-emerald-400 border border-emerald-800"
+                ? "bg-emerald-50 text-emerald-700 ring-emerald-600/15"
                 : status === "ARCHIVED"
-                ? "bg-red-950/80 text-red-400 border border-red-800"
-                : "bg-amber-950/80 text-amber-400 border border-amber-800"
+                ? "bg-rose-50 text-rose-700 ring-rose-600/15"
+                : "bg-amber-50 text-amber-700 ring-amber-600/15"
             }`}
           >
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${
+                status === "PUBLISHED" ? "bg-emerald-500" : status === "ARCHIVED" ? "bg-rose-500" : "bg-amber-500"
+              }`}
+            />
             {status}
           </span>
 
           {/* Undo / Redo */}
-          <div className="flex items-center gap-1 border-r border-zinc-800 pr-1.5">
+          <div className="flex items-center gap-0.5 rounded-xl bg-zinc-100/80 p-1">
             <button
               onClick={handleUndo}
               disabled={historyIndex <= 0}
-              className="p-1.5 rounded-lg bg-zinc-800/60 hover:bg-zinc-700 disabled:opacity-30 text-zinc-300 transition-all cursor-pointer text-xs"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-zinc-500 hover:bg-white hover:text-[#2884b8] hover:shadow-xs disabled:opacity-30 disabled:hover:bg-transparent transition-all cursor-pointer"
               title="Undo (Ctrl+Z)"
             >
-              ↩
+              <EdIcon name="undo" className="w-4 h-4" />
             </button>
             <button
               onClick={handleRedo}
               disabled={historyIndex >= history.length - 1}
-              className="p-1.5 rounded-lg bg-zinc-800/60 hover:bg-zinc-700 disabled:opacity-30 text-zinc-300 transition-all cursor-pointer text-xs"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-zinc-500 hover:bg-white hover:text-[#2884b8] hover:shadow-xs disabled:opacity-30 disabled:hover:bg-transparent transition-all cursor-pointer"
               title="Redo (Ctrl+Y)"
             >
-              ↪
+              <EdIcon name="redo" className="w-4 h-4" />
             </button>
           </div>
 
@@ -1415,18 +1473,18 @@ export default function CategoryCanvasEditor({
           <button
             type="button"
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="px-2 py-1 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 transition-all text-xs font-semibold flex items-center gap-1 cursor-pointer border border-zinc-700/60 whitespace-nowrap"
+            className={cx(edGhostBtn, "h-9 w-9 2xl:w-auto 2xl:px-3 whitespace-nowrap")}
             title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
           >
             {isFullscreen ? (
               <>
-                <span className="text-xs">⤓</span>
-                <span>Exit Fullscreen</span>
+                <EdIcon name="shrink" className="w-4 h-4" />
+                <span className="hidden 2xl:inline">Exit Fullscreen</span>
               </>
             ) : (
               <>
-                <span className="text-xs">⛶</span>
-                <span>Fullscreen</span>
+                <EdIcon name="expand" className="w-4 h-4" />
+                <span className="hidden 2xl:inline">Fullscreen</span>
               </>
             )}
           </button>
@@ -1435,7 +1493,7 @@ export default function CategoryCanvasEditor({
           <button
             onClick={() => handleSave("DRAFT")}
             disabled={isSaving}
-            className="px-3 py-1.5 rounded-lg border border-zinc-700 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold transition-all cursor-pointer disabled:opacity-50 whitespace-nowrap"
+            className={cx(edGhostBtn, "h-9 px-3 whitespace-nowrap rounded-xl")}
           >
             Save Draft
           </button>
@@ -1444,8 +1502,13 @@ export default function CategoryCanvasEditor({
           <button
             onClick={() => handleSave("PUBLISHED")}
             disabled={isSaving}
-            className="px-3.5 py-1.5 rounded-lg bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold transition-all shadow-md shadow-[#e74b2d]/20 cursor-pointer disabled:opacity-50 whitespace-nowrap"
+            className="inline-flex h-9 items-center gap-1.5 px-3.5 rounded-xl bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs font-semibold transition-all shadow-sm shadow-[#329AD4]/25 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
           >
+            {isSaving ? (
+              <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+            ) : (
+              <Icon name="check" className="w-3.5 h-3.5" strokeWidth={2.4} />
+            )}
             {isSaving ? "Saving..." : "Publish Template"}
           </button>
         </div>
@@ -1453,60 +1516,70 @@ export default function CategoryCanvasEditor({
 
       {/* ── SAVE NOTIFICATION TOAST ───────────────────────────────── */}
       {saveMessage && (
-        <div className="bg-[#1e293b] border-b border-sky-500/40 py-1 px-4 text-center text-xs font-semibold text-sky-300">
+        <div className="shrink-0 rounded-xl border border-[#dbeefb] bg-[#f0f8fd] py-1.5 px-4 text-center text-xs font-semibold text-[#1b5b80] flex items-center justify-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#329AD4]" />
           {saveMessage}
         </div>
       )}
 
       {/* ── MAIN WORKSPACE (LEFT PANEL + CANVAS + RIGHT PANEL) ─────── */}
-      <div className="flex-1 flex min-h-0 overflow-hidden">
+      <div className="flex-1 flex gap-2 min-h-0 overflow-hidden">
         {/* ── 1. LEFT TOOLBAR PANEL (240px) ───────────────────────── */}
-        <aside className="w-80 px-2 bg-[#12141c] border-r border-zinc-800 flex flex-col shrink-0">
+        <aside className="w-80 bg-white border border-zinc-200/70 rounded-2xl shadow-xs flex flex-col shrink-0 overflow-hidden">
           {/* Navigation Tabs */}
-          <div className="flex border-b border-zinc-800 text-xs font-medium overflow-x-auto">
+          <div className="grid grid-cols-6 gap-1 p-2 border-b border-zinc-100 text-xs font-medium">
             {(["text", "shapes", "images", "background", "variations", "layers"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-2.5 px-2 text-center text-xs font-semibold capitalize transition-colors cursor-pointer border-b-2 whitespace-nowrap ${
+                title={tab}
+                className={`flex flex-col items-center gap-1 rounded-xl py-2 px-0.5 text-center text-[10px] font-semibold capitalize transition-all cursor-pointer whitespace-nowrap ${
                   activeTab === tab
-                    ? "border-[#e74b2d] text-white bg-zinc-800/40"
-                    : "border-transparent text-zinc-400 hover:text-zinc-200"
+                    ? "bg-[#EAF5FB] ring-1 ring-[#b8e0f6] text-[#2884b8]"
+                    : "text-zinc-500 hover:bg-[#f0f8fd] hover:text-zinc-800"
                 }`}
               >
-                {tab}
+                {TAB_ICONS[tab]?.ed ? (
+                  <EdIcon name={TAB_ICONS[tab].ed!} className="w-4 h-4" />
+                ) : (
+                  <Icon name={TAB_ICONS[tab]?.ui || "grid"} className="w-4 h-4" />
+                )}
+                <span className="max-w-full truncate">{tab === "background" ? "Backgr." : tab}</span>
               </button>
             ))}
           </div>
 
           {/* Tab Content Body */}
-          <div className="flex-1 p-3 overflow-y-auto space-y-3.5 text-xs">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs">
             {/* TEXT TAB */}
             {activeTab === "text" && (
               <div className="space-y-3">
-                <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Add Typography</p>
+                <p className={edSection}>Add Typography</p>
                 <button
                   onClick={() => handleAddText("heading")}
-                  className="w-full p-2.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-left border border-zinc-700/60 font-bold text-xs text-white transition-all cursor-pointer"
+                  className="group w-full px-3 py-3 rounded-xl bg-white hover:bg-[#f0f8fd] text-left border border-zinc-200 hover:border-[#b8e0f6] font-bold text-sm text-zinc-900 transition-all cursor-pointer flex items-center justify-between"
                 >
-                  + Add Heading
+                  Add Heading
+                  <Icon name="plus" className="w-4 h-4 text-zinc-300 group-hover:text-[#329AD4]" strokeWidth={2.2} />
                 </button>
                 <button
                   onClick={() => handleAddText("subheading")}
-                  className="w-full p-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-left border border-zinc-700/60 font-semibold text-xs text-zinc-200 transition-all cursor-pointer"
+                  className="group w-full px-3 py-2.5 rounded-xl bg-white hover:bg-[#f0f8fd] text-left border border-zinc-200 hover:border-[#b8e0f6] font-semibold text-xs text-zinc-800 transition-all cursor-pointer flex items-center justify-between"
                 >
-                  + Add Subheading
+                  Add Subheading
+                  <Icon name="plus" className="w-4 h-4 text-zinc-300 group-hover:text-[#329AD4]" strokeWidth={2.2} />
                 </button>
                 <button
                   onClick={() => handleAddText("body")}
-                  className="w-full p-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-left border border-zinc-700/60 text-xs text-zinc-300 transition-all cursor-pointer"
+                  className="group w-full px-3 py-2.5 rounded-xl bg-white hover:bg-[#f0f8fd] text-left border border-zinc-200 hover:border-[#b8e0f6] text-xs text-zinc-600 transition-all cursor-pointer flex items-center justify-between"
                 >
-                  + Add Body Text
+                  Add Body Text
+                  <Icon name="plus" className="w-4 h-4 text-zinc-300 group-hover:text-[#329AD4]" strokeWidth={2.2} />
                 </button>
 
-                <div className="pt-2.5 border-t border-zinc-800 space-y-1.5">
-                  <p className="text-[11px] font-semibold text-zinc-500 uppercase">Tip</p>
-                  <p className="text-zinc-400 text-xs leading-relaxed">
+                <div className="rounded-xl border border-[#dbeefb] bg-[#f0f8fd] p-3 space-y-1">
+                  <p className="text-[11px] font-semibold text-[#1b5b80] uppercase tracking-wider">Tip</p>
+                  <p className="text-[#1b5b80]/80 text-xs leading-relaxed">
                     Click any text layer on the canvas to drag, resize font, adjust colors, and align.
                   </p>
                 </div>
@@ -1516,38 +1589,38 @@ export default function CategoryCanvasEditor({
             {/* SHAPES TAB */}
             {activeTab === "shapes" && (
               <div className="space-y-4">
-                <p className="text-base font-bold text-zinc-400 uppercase tracking-wider">Vector Shapes</p>
+                <p className={edSection}>Vector Shapes</p>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => handleAddShape("rectangle")}
-                    className="p-4 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/60 flex flex-col items-center gap-2 cursor-pointer transition-all"
+                    className="p-4 rounded-xl bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] flex flex-col items-center gap-2.5 cursor-pointer transition-all text-zinc-700 hover:text-[#1b5b80]"
                   >
-                    <div className="w-8 h-6 bg-[#e74b2d] rounded-sm" />
-                    <span className="text-base font-bold">Rectangle</span>
+                    <div className="w-8 h-6 bg-[#329AD4] rounded-sm" />
+                    <span className="text-xs font-semibold">Rectangle</span>
                   </button>
 
                   <button
                     onClick={() => handleAddShape("rounded-rect")}
-                    className="p-4 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/60 flex flex-col items-center gap-2 cursor-pointer transition-all"
+                    className="p-4 rounded-xl bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] flex flex-col items-center gap-2.5 cursor-pointer transition-all text-zinc-700 hover:text-[#1b5b80]"
                   >
                     <div className="w-8 h-6 bg-[#10b981] rounded-lg" />
-                    <span className="text-base font-bold">Rounded</span>
+                    <span className="text-xs font-semibold">Rounded</span>
                   </button>
 
                   <button
                     onClick={() => handleAddShape("circle")}
-                    className="p-4 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/60 flex flex-col items-center gap-2 cursor-pointer transition-all"
+                    className="p-4 rounded-xl bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] flex flex-col items-center gap-2.5 cursor-pointer transition-all text-zinc-700 hover:text-[#1b5b80]"
                   >
                     <div className="w-7 h-7 bg-[#f59e0b] rounded-full" />
-                    <span className="text-base font-bold">Circle</span>
+                    <span className="text-xs font-semibold">Circle</span>
                   </button>
 
                   <button
                     onClick={() => handleAddShape("badge")}
-                    className="p-4 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/60 flex flex-col items-center gap-2 cursor-pointer transition-all"
+                    className="p-4 rounded-xl bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] flex flex-col items-center gap-2.5 cursor-pointer transition-all text-zinc-700 hover:text-[#1b5b80]"
                   >
                     <div className="w-8 h-4 bg-[#8b5cf6] rounded-full" />
-                    <span className="text-base font-bold">Pill Badge</span>
+                    <span className="text-xs font-semibold">Pill Badge</span>
                   </button>
                 </div>
               </div>
@@ -1556,15 +1629,21 @@ export default function CategoryCanvasEditor({
             {/* IMAGES TAB */}
             {activeTab === "images" && (
               <div className="space-y-4">
-                <p className="text-base font-bold text-zinc-400 uppercase tracking-wider">Graphics and logos</p>
-                <label className="border-2 border-dashed border-zinc-700 hover:border-[#e74b2d] bg-zinc-900/60 rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all block">
-                  <span className="text-base font-bold text-white">Add image on the card</span>
-                  <span className="text-base text-zinc-400 mt-0.5">Logo, photo, icon, or QR. Drag it into place after.</span>
+                <p className={edSection}>Graphics and logos</p>
+                <label className="border-2 border-dashed border-[#b8e0f6] hover:border-[#329AD4] bg-[#f0f8fd] hover:bg-[#EAF5FB] rounded-xl p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all block">
+                  <span className="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#329AD4] shadow-xs">
+                    <Icon name="upload" className="w-5 h-5" />
+                  </span>
+                  <span className="text-xs font-semibold text-zinc-900">Add image on the card</span>
+                  <span className="text-xs text-zinc-500 mt-0.5">Logo, photo, icon, or QR. Drag it into place after.</span>
                   <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, false)} className="hidden" />
                 </label>
-                <label className="border border-zinc-700 hover:border-[#e74b2d] bg-zinc-900/40 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all block">
-                  <span className="text-base font-bold text-white">Use image as full background</span>
-                  <span className="text-base text-zinc-400 mt-0.5">Covers this side. Customers still edit the text on top.</span>
+                <label className="border border-zinc-200 hover:border-[#b8e0f6] bg-white hover:bg-[#f0f8fd] rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all block">
+                  <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8]">
+                    <Icon name="image" className="w-4 h-4" />
+                  </span>
+                  <span className="text-xs font-semibold text-zinc-900">Use image as full background</span>
+                  <span className="text-xs text-zinc-500 mt-0.5">Covers this side. Customers still edit the text on top.</span>
                   <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, true)} className="hidden" />
                 </label>
               </div>
@@ -1573,7 +1652,7 @@ export default function CategoryCanvasEditor({
             {/* BACKGROUND TAB */}
             {activeTab === "background" && (
               <div className="space-y-4">
-                <p className="text-base font-bold text-zinc-400 uppercase tracking-wider">
+                <p className={edSection}>
                   {sideNames[activeSideIndex] || (activeSideIndex <= 0 ? "Front" : "Back")} background
                 </p>
                 <div className="grid grid-cols-2 gap-1">
@@ -1601,21 +1680,21 @@ export default function CategoryCanvasEditor({
                             next.bgGradient = undefined;
                             next.bgImage = undefined;
                           } else if (mode === "gradient") {
-                            next.bgGradient = next.bgGradient || "#e74b2d";
+                            next.bgGradient = next.bgGradient || "#329AD4";
                             next.bgGradientAngle = next.bgGradientAngle ?? 135;
                             next.bgImage = undefined;
                           } else if (mode === "image") {
                             next.bgGradient = undefined;
                           } else {
-                            next.bgGradient = next.bgGradient || "#e74b2d";
+                            next.bgGradient = next.bgGradient || "#329AD4";
                             next.bgGradientAngle = next.bgGradientAngle ?? 135;
                           }
                           commitSide(next);
                         }}
-                        className={`py-1.5 rounded-lg border text-base font-bold cursor-pointer ${
+                        className={`py-1.5 rounded-lg border text-xs font-semibold cursor-pointer ${
                           current === mode
-                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
-                            : "border-zinc-700 text-zinc-300"
+                            ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]"
+                            : "bg-white border-zinc-200 text-zinc-600 hover:border-[#b8e0f6]"
                         }`}
                       >
                         {label}
@@ -1637,7 +1716,7 @@ export default function CategoryCanvasEditor({
                         );
                       }}
                       className={`w-8 h-8 rounded-xl border-2 transition-all cursor-pointer ${
-                        currentSideDesign.bgColor === c ? "border-[#e74b2d] scale-110 shadow-lg" : "border-zinc-700"
+                        currentSideDesign.bgColor === c ? "border-[#329AD4] scale-110 shadow-lg" : "border-zinc-200"
                       }`}
                       style={{ backgroundColor: c }}
                     />
@@ -1645,7 +1724,7 @@ export default function CategoryCanvasEditor({
                 </div>
 
                 <div className="pt-2">
-                  <label className="text-base text-zinc-400 block mb-1 font-bold">Custom Hex Color</label>
+                  <label className={labelClass}>Custom Hex Color</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
@@ -1654,7 +1733,7 @@ export default function CategoryCanvasEditor({
                         const next = { ...currentSideDesign, bgColor: e.target.value };
                         setCurrentSideDesign(next);
                       }}
-                      className="w-10 h-9 rounded-xl bg-transparent border border-zinc-700 cursor-pointer"
+                      className="w-10 h-9 rounded-lg bg-white border border-zinc-200 p-0.5 shadow-xs cursor-pointer"
                     />
                     <input
                       type="text"
@@ -1663,20 +1742,20 @@ export default function CategoryCanvasEditor({
                         const next = { ...currentSideDesign, bgColor: e.target.value };
                         setCurrentSideDesign(next);
                       }}
-                      className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-base font-mono text-white focus:outline-none focus:border-[#e74b2d]"
+                      className={cx(edInput, "flex-1 font-mono")}
                     />
                   </div>
                 </div>
 
                 {(currentSideDesign.bgStyle === "gradient" || currentSideDesign.bgStyle === "image-gradient" || (!currentSideDesign.bgStyle && currentSideDesign.bgGradient)) && (
-                <div className="pt-3 border-t border-zinc-800 space-y-2">
+                <div className="pt-3 border-t border-zinc-100 space-y-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-base font-bold text-zinc-400 uppercase tracking-wider">Gradient</p>
+                    <p className={edSection}>Gradient</p>
                     {currentSideDesign.bgGradient && (
                       <button
                         type="button"
                         onClick={() => commitSide({ ...currentSideDesign, bgGradient: undefined })}
-                        className="text-base text-red-400 font-bold cursor-pointer"
+                        className="rounded-md px-1.5 py-0.5 text-xs text-rose-600 font-semibold cursor-pointer hover:bg-rose-50 hover:text-rose-700"
                       >
                         Remove
                       </button>
@@ -1685,11 +1764,11 @@ export default function CategoryCanvasEditor({
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
-                      value={currentSideDesign.bgGradient || "#e74b2d"}
+                      value={currentSideDesign.bgGradient || "#329AD4"}
                       onChange={(e) => commitSide({ ...currentSideDesign, bgGradient: e.target.value, bgGradientAngle: currentSideDesign.bgGradientAngle ?? 135 })}
-                      className="w-10 h-9 rounded-xl bg-transparent border border-zinc-700 cursor-pointer"
+                      className="w-10 h-9 rounded-lg bg-white border border-zinc-200 p-0.5 shadow-xs cursor-pointer"
                     />
-                    <span className="text-base text-zinc-500">Second color blends from the base color.</span>
+                    <span className="text-xs text-zinc-500">Second color blends from the base color.</span>
                   </div>
                   <div className="grid grid-cols-4 gap-1">
                     {[
@@ -1703,13 +1782,13 @@ export default function CategoryCanvasEditor({
                         type="button"
                         onClick={() => commitSide({
                           ...currentSideDesign,
-                          bgGradient: currentSideDesign.bgGradient || "#e74b2d",
+                          bgGradient: currentSideDesign.bgGradient || "#329AD4",
                           bgGradientAngle: item.angle,
                         })}
-                        className={`py-1.5 rounded-lg border text-base cursor-pointer ${
+                        className={`py-1.5 rounded-lg border text-xs cursor-pointer ${
                           (currentSideDesign.bgGradientAngle ?? 135) === item.angle && currentSideDesign.bgGradient
-                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
-                            : "border-zinc-700 text-zinc-300"
+                            ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]"
+                            : "bg-white border-zinc-200 text-zinc-600 hover:border-[#b8e0f6]"
                         }`}
                       >
                         {item.label}
@@ -1720,25 +1799,25 @@ export default function CategoryCanvasEditor({
                 )}
 
                 {(currentSideDesign.bgStyle === "image" || currentSideDesign.bgStyle === "image-gradient" || (!currentSideDesign.bgStyle && currentSideDesign.bgImage)) && (
-                <div className="pt-3 border-t border-zinc-800 space-y-2">
+                <div className="pt-3 border-t border-zinc-100 space-y-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-base font-bold text-zinc-400 uppercase tracking-wider">Background photo</p>
+                    <p className={edSection}>Background photo</p>
                     {currentSideDesign.bgImage && (
                       <button
                         type="button"
                         onClick={() => commitSide({ ...currentSideDesign, bgImage: undefined })}
-                        className="text-base text-red-400 font-bold cursor-pointer"
+                        className="rounded-md px-1.5 py-0.5 text-xs text-rose-600 font-semibold cursor-pointer hover:bg-rose-50 hover:text-rose-700"
                       >
                         Remove
                       </button>
                     )}
                   </div>
                   {currentSideDesign.bgImage ? (
-                    <img src={mediaSrc(currentSideDesign.bgImage) || currentSideDesign.bgImage} alt="" className="w-full h-20 object-cover rounded-xl border border-zinc-700" />
+                    <img src={mediaSrc(currentSideDesign.bgImage) || currentSideDesign.bgImage} alt="" className="w-full h-20 object-cover rounded-xl border border-zinc-200" />
                   ) : (
-                    <p className="text-base text-zinc-500">No photo. Use Images, or upload one here.</p>
+                    <p className="text-xs text-zinc-500">No photo. Use Images, or upload one here.</p>
                   )}
-                  <label className="block text-center py-2 rounded-xl border border-dashed border-zinc-600 text-base font-bold text-zinc-200 cursor-pointer hover:border-[#e74b2d]">
+                  <label className="block text-center py-2 rounded-xl border border-dashed border-[#b8e0f6] bg-[#f0f8fd] text-xs font-semibold text-[#2884b8] cursor-pointer hover:border-[#329AD4] hover:bg-[#EAF5FB] transition-colors">
                     Upload background
                     <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, true)} />
                   </label>
@@ -1748,17 +1827,17 @@ export default function CategoryCanvasEditor({
                         key={fit}
                         type="button"
                         onClick={() => commitSide({ ...currentSideDesign, bgFit: fit })}
-                        className={`py-1.5 rounded-lg border text-base font-bold capitalize cursor-pointer ${
+                        className={`py-1.5 rounded-lg border text-xs font-semibold capitalize cursor-pointer ${
                           (currentSideDesign.bgFit || "cover") === fit
-                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
-                            : "border-zinc-700 text-zinc-300"
+                            ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]"
+                            : "bg-white border-zinc-200 text-zinc-600 hover:border-[#b8e0f6]"
                         }`}
                       >
                         {fit}
                       </button>
                     ))}
                   </div>
-                  <label className="text-base text-zinc-400 block">
+                  <label className="block text-xs font-semibold text-zinc-700">
                     Photo strength {Math.round((currentSideDesign.bgOpacity ?? 1) * 100)}%
                   </label>
                   <input
@@ -1767,7 +1846,7 @@ export default function CategoryCanvasEditor({
                     max={100}
                     value={Math.round((currentSideDesign.bgOpacity ?? 1) * 100)}
                     onChange={(e) => setCurrentSideDesign({ ...currentSideDesign, bgOpacity: Number(e.target.value) / 100 })}
-                    className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
+                    className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#329AD4]"
                   />
                 </div>
                 )}
@@ -1777,27 +1856,30 @@ export default function CategoryCanvasEditor({
             {/* VARIATIONS TAB */}
             {activeTab === "variations" && (
               <div className="space-y-4">
-                <div className="border-b border-zinc-800 pb-2">
-                  <p className="text-base font-bold text-sky-400 uppercase tracking-wider">
+                <div className="rounded-xl border border-[#dbeefb] bg-[#f0f8fd] px-3 py-2.5">
+                  <p className="text-xs font-semibold text-[#1b5b80]">
                     {category.name} Variations
                   </p>
-                  <p className="text-base text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-[#2884b8]/80 mt-0.5">
                     Pre-select default specs for templates in this category
                   </p>
                 </div>
 
                 {!category.variations || category.variations.length === 0 ? (
-                  <div className="text-center py-8 text-zinc-500 text-base font-medium bg-zinc-900/40 rounded-2xl border border-zinc-800 p-4">
-                    <p className="font-bold text-zinc-400 mb-1">No Category Variations</p>
+                  <div className="text-center py-8 text-zinc-500 text-xs bg-zinc-50/70 rounded-xl border border-dashed border-zinc-200 p-4">
+                    <span className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#329AD4]">
+                      <Icon name="tag" className="w-5 h-5" />
+                    </span>
+                    <p className="font-semibold text-zinc-800 mb-1">No Category Variations</p>
                     This category doesn&apos;t have any variations configured yet.
                   </div>
                 ) : (
                   category.variations.map((v) => (
-                    <div key={v.name} className="bg-zinc-900/80 p-3 rounded-2xl border border-zinc-800 space-y-2">
+                    <div key={v.name} className="bg-white p-3 rounded-xl border border-zinc-200 shadow-xs space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-base font-bold text-white">{v.name}</span>
+                        <span className="text-xs font-semibold text-zinc-900">{v.name}</span>
                         {v.required && (
-                          <span className="text-base bg-sky-950 text-sky-400 border border-sky-800/60 px-1.5 py-0.5 rounded font-mono font-bold">
+                          <span className="text-[10px] bg-[#EAF5FB] text-[#2884b8] ring-1 ring-inset ring-[#329AD4]/20 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide">
                             Required
                           </span>
                         )}
@@ -1815,21 +1897,21 @@ export default function CategoryCanvasEditor({
                                   [v.name]: val.name,
                                 }))
                               }
-                              className={`w-full text-left px-3 py-2 rounded-xl text-base font-semibold flex items-center justify-between border transition-all cursor-pointer ${
+                              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between border transition-all cursor-pointer ${
                                 isSelected
-                                  ? "bg-[#e74b2d]/20 border-[#e74b2d] text-white shadow-xs"
-                                  : "bg-zinc-800/40 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
+                                  ? "bg-[#EAF5FB] border-[#b8e0f6] ring-1 ring-[#b8e0f6] text-[#2884b8]"
+                                  : "bg-white border-zinc-200 text-zinc-600 hover:text-zinc-900 hover:border-[#b8e0f6] hover:bg-[#f0f8fd]"
                               }`}
                             >
                               <span className="flex items-center gap-2">
                                 <span className={`w-3 h-3 rounded-full border flex items-center justify-center ${
-                                  isSelected ? "border-[#e74b2d] bg-[#e74b2d]" : "border-zinc-600"
+                                  isSelected ? "border-[#329AD4] bg-[#329AD4]" : "border-zinc-300"
                                 }`}>
                                   {isSelected && <span className="w-1 h-1 rounded-full bg-white" />}
                                 </span>
                                 {val.name}
                               </span>
-                              <span className="text-base font-mono text-zinc-400">
+                              <span className="text-xs font-mono text-zinc-500">
                                 {val.price > 0 ? `+$${val.price.toFixed(2)}` : "Free"}
                               </span>
                             </button>
@@ -1845,32 +1927,43 @@ export default function CategoryCanvasEditor({
             {/* LAYERS TAB */}
             {activeTab === "layers" && (
               <div className="space-y-3">
-                <p className="text-base font-bold text-zinc-400 uppercase tracking-wider">
+                <p className={edSection}>
                   Layers ({currentSideDesign.objects.length})
                 </p>
 
                 {currentSideDesign.objects.length === 0 ? (
-                  <p className="text-zinc-500 text-base italic">No layers on this side.</p>
+                  <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 px-4 py-8 text-center">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#329AD4]">
+                      <Icon name="layers" className="w-5 h-5" />
+                    </span>
+                    <p className="mt-2 text-xs font-semibold text-zinc-700">No layers on this side.</p>
+                  </div>
                 ) : (
                   <div className="space-y-1.5">
                     {[...currentSideDesign.objects].reverse().map((obj) => (
                       <div
                         key={obj.id}
                         onClick={() => setSelectedObjectId(obj.id)}
-                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer transition-all ${
+                        className={`group/layer px-2 py-1.5 rounded-lg border flex items-center justify-between gap-2 cursor-pointer transition-all ${
                           selectedObjectId === obj.id
-                            ? "bg-[#e74b2d]/20 border-[#e74b2d] text-white shadow-xs"
-                            : "bg-zinc-800/40 border-zinc-800 text-zinc-300 hover:bg-zinc-800"
+                            ? "bg-[#EAF5FB] border-[#b8e0f6] ring-1 ring-[#b8e0f6] text-[#2884b8]"
+                            : "bg-white border-transparent text-zinc-700 hover:bg-[#f0f8fd] hover:border-[#dbeefb]"
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">
-                          <span className="text-base">
-                            {obj.type === "text" ? "T" : obj.type === "shape" ? "■" : "🖼️"}
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-zinc-100 text-zinc-500">
+                            {obj.type === "text" ? (
+                              <EdIcon name="type" className="w-3.5 h-3.5" />
+                            ) : obj.type === "shape" ? (
+                              <EdIcon name="shapes" className="w-3.5 h-3.5" />
+                            ) : (
+                              <Icon name="image" className="w-3.5 h-3.5" />
+                            )}
                           </span>
-                          <span className="text-base font-bold truncate max-w-[100px]">
+                          <span className="text-xs font-semibold truncate max-w-[100px]">
                             {obj.text || obj.shapeType || obj.type}
                           </span>
-                          {obj.isLocked && <span className="text-base">🔒</span>}
+                          {obj.isLocked && <EdIcon name="lock" className="w-3.5 h-3.5 shrink-0 text-amber-500" />}
                         </div>
 
                         <div className="flex items-center gap-0.5 shrink-0">
@@ -1880,10 +1973,10 @@ export default function CategoryCanvasEditor({
                               e.stopPropagation();
                               moveLayer(obj.id, "top");
                             }}
-                            className="p-1 hover:bg-zinc-700 rounded text-base text-zinc-400 hover:text-white font-bold"
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 hover:bg-white hover:text-[#2884b8] hover:shadow-xs"
                             title="Bring to Front (Upfront)"
                           >
-                            ▲▲
+                            <EdIcon name="toTop" className="w-3.5 h-3.5" />
                           </button>
                           <button
                             type="button"
@@ -1891,10 +1984,10 @@ export default function CategoryCanvasEditor({
                               e.stopPropagation();
                               moveLayer(obj.id, "up");
                             }}
-                            className="p-1 hover:bg-zinc-700 rounded text-base text-zinc-400 hover:text-white"
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 hover:bg-white hover:text-[#2884b8] hover:shadow-xs"
                             title="Bring Forward"
                           >
-                            ▲
+                            <EdIcon name="arrowUp" className="w-3.5 h-3.5" />
                           </button>
                           <button
                             type="button"
@@ -1902,10 +1995,10 @@ export default function CategoryCanvasEditor({
                               e.stopPropagation();
                               moveLayer(obj.id, "down");
                             }}
-                            className="p-1 hover:bg-zinc-700 rounded text-base text-zinc-400 hover:text-white"
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 hover:bg-white hover:text-[#2884b8] hover:shadow-xs"
                             title="Send Backward"
                           >
-                            ▼
+                            <EdIcon name="arrowDown" className="w-3.5 h-3.5" />
                           </button>
                           <button
                             type="button"
@@ -1913,10 +2006,10 @@ export default function CategoryCanvasEditor({
                               e.stopPropagation();
                               moveLayer(obj.id, "bottom");
                             }}
-                            className="p-1 hover:bg-zinc-700 rounded text-base text-zinc-400 hover:text-white font-bold"
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 hover:bg-white hover:text-[#2884b8] hover:shadow-xs"
                             title="Send to Back (Backward)"
                           >
-                            ▼▼
+                            <EdIcon name="toBottom" className="w-3.5 h-3.5" />
                           </button>
                           <button
                             type="button"
@@ -1924,10 +2017,10 @@ export default function CategoryCanvasEditor({
                               e.stopPropagation();
                               handleDeleteObject(obj.id);
                             }}
-                            className="p-1 hover:bg-red-900/60 rounded text-base text-red-400"
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 hover:bg-rose-50 hover:text-rose-600"
                             title="Delete layer"
                           >
-                            ✕
+                            <Icon name="trash" className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
@@ -1940,52 +2033,52 @@ export default function CategoryCanvasEditor({
         </aside>
 
         {/* ── 2. CENTER CANVAS WORKSPACE ───────────────────────────── */}
-        <main className="flex-1 flex flex-col bg-[#0b0d13] relative overflow-hidden">
+        <main className="flex-1 flex flex-col bg-[#f6fafd] rounded-2xl border border-[#dbeefb] relative overflow-hidden">
           {/* Canvas Top Controls Toolbar */}
-          <div className="h-9 border-b border-zinc-800/80 px-4 flex items-center justify-between text-xs text-zinc-400 shrink-0">
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-1.5 cursor-pointer select-none">
+          <div className="h-11 border-b border-[#dbeefb] bg-white/80 backdrop-blur px-3 flex items-center justify-between gap-3 text-xs text-zinc-500 shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <label className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-2.5 py-1 cursor-pointer select-none hover:border-[#b8e0f6] shadow-xs">
                 <input
                   type="checkbox"
                   checked={showGuides}
                   onChange={(e) => setShowGuides(e.target.checked)}
-                  className="rounded accent-[#e74b2d]"
+                  className="h-3.5 w-3.5 rounded accent-[#329AD4]"
                 />
-                <span className="text-xs font-semibold text-zinc-300">Print Guides (Bleed & Safe)</span>
+                <span className="text-xs font-semibold text-zinc-700 whitespace-nowrap">Print Guides</span>
               </label>
 
               {showGuides && (
-                <div className="flex items-center gap-3 text-xs font-mono">
-                  <span className="flex items-center gap-1 text-red-400">
-                    <span className="w-2 h-2 border border-red-400 inline-block" /> Bleed (+{category.bleed}{category.bleedUnit || category.unit})
+                <div className="flex items-center gap-1.5 text-[11px] font-mono min-w-0 overflow-hidden">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2 py-0.5 text-rose-600 ring-1 ring-inset ring-rose-600/15 whitespace-nowrap">
+                    <span className="w-2 h-2 border border-dashed border-rose-500 inline-block" /> Bleed (+{category.bleed}{category.bleedUnit || category.unit})
                   </span>
-                  <span className="flex items-center gap-1 text-emerald-400">
-                    <span className="w-2 h-2 border border-emerald-400 inline-block" /> Safe Area ({category.safe_area}{category.safeAreaUnit || category.unit})
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-emerald-700 ring-1 ring-inset ring-emerald-600/15 whitespace-nowrap">
+                    <span className="w-2 h-2 border border-dashed border-emerald-500 inline-block" /> Safe Area ({category.safe_area}{category.safeAreaUnit || category.unit})
                   </span>
                 </div>
               )}
             </div>
 
             {/* Zoom Controls */}
-            <div className="flex items-center gap-1.5 text-xs">
+            <div className="flex items-center gap-0.5 rounded-xl bg-zinc-100/80 p-1 text-xs shrink-0">
               <button
                 onClick={() => setZoomLevel((z) => Math.max(0.6, z - 0.1))}
-                className="w-5 h-5 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold flex items-center justify-center cursor-pointer text-xs"
+                className="w-6 h-6 rounded-lg text-zinc-600 hover:bg-white hover:text-[#2884b8] hover:shadow-xs font-semibold flex items-center justify-center cursor-pointer text-sm"
               >
                 -
               </button>
-              <span className="text-zinc-300 font-mono text-xs w-10 text-center">
+              <span className="text-zinc-700 font-mono text-[11px] font-semibold w-11 text-center">
                 {Math.round(zoomLevel * 100)}%
               </span>
               <button
                 onClick={() => setZoomLevel((z) => Math.min(1.8, z + 0.1))}
-                className="w-5 h-5 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold flex items-center justify-center cursor-pointer text-xs"
+                className="w-6 h-6 rounded-lg text-zinc-600 hover:bg-white hover:text-[#2884b8] hover:shadow-xs font-semibold flex items-center justify-center cursor-pointer text-sm"
               >
                 +
               </button>
               <button
                 onClick={() => setZoomLevel(1)}
-                className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold cursor-pointer"
+                className="px-2 h-6 rounded-lg text-zinc-600 hover:bg-white hover:text-[#2884b8] hover:shadow-xs text-[11px] font-semibold cursor-pointer"
               >
                 Reset
               </button>
@@ -1993,10 +2086,10 @@ export default function CategoryCanvasEditor({
           </div>
 
           {/* Canvas Viewport */}
-          <div className="flex-1 flex items-center justify-center p-8 overflow-auto relative">
+          <div className="flex-1 flex items-center justify-center p-8 overflow-auto relative [background-image:radial-gradient(#cfe4f3_1px,transparent_1px)] [background-size:18px_18px]">
             {viewMode === "3d" ? (
               /* ── 3D REALISTIC PREVIEW ────────────────────────── */
-              <div className="w-full h-full max-h-[560px] relative rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
+              <div className="w-full h-full max-h-[560px] relative rounded-2xl overflow-hidden border border-zinc-800 bg-gradient-to-b from-zinc-800 to-zinc-950 text-zinc-100 shadow-xl shadow-[#1b5b80]/15">
                 <ThreeDCardPreview
                   categoryName={category.name}
                   canvasConfig={{
@@ -2111,8 +2204,8 @@ export default function CategoryCanvasEditor({
                     key={idx}
                     className={`absolute pointer-events-none z-30 ${
                       line.type === "v"
-                        ? "top-0 bottom-0 w-[1.5px] bg-[#f88768] shadow-[0_0_8px_#f88768]"
-                        : "left-0 right-0 h-[1.5px] bg-[#f88768] shadow-[0_0_8px_#f88768]"
+                        ? "top-0 bottom-0 w-[1.5px] bg-[#55b2e7] shadow-[0_0_8px_#55b2e7]"
+                        : "left-0 right-0 h-[1.5px] bg-[#55b2e7] shadow-[0_0_8px_#55b2e7]"
                     }`}
                     style={
                       line.type === "v"
@@ -2138,7 +2231,7 @@ export default function CategoryCanvasEditor({
                         obj.isLocked ? "cursor-default" : "cursor-move"
                       } ${
                         isSelected
-                          ? "ring-2 ring-[#e74b2d] ring-offset-1 ring-offset-transparent"
+                          ? "ring-2 ring-[#329AD4] ring-offset-1 ring-offset-transparent"
                           : "hover:ring-1 hover:ring-white/40"
                       }`}
                       style={{
@@ -2169,7 +2262,7 @@ export default function CategoryCanvasEditor({
                         <div
                           className="w-full h-full"
                           style={{
-                            backgroundColor: obj.fill || "#e74b2d",
+                            backgroundColor: obj.fill || "#329AD4",
                             border: obj.stroke && obj.strokeWidth ? `${obj.strokeWidth}px solid ${obj.stroke}` : "none",
                             borderRadius:
                               obj.shapeType === "circle"
@@ -2218,7 +2311,7 @@ export default function CategoryCanvasEditor({
                           aria-label={`Resize ${obj.type}`}
                           title="Drag to resize"
                           onPointerDown={(event) => handleResizePointerDown(obj.id, event)}
-                          className="absolute -bottom-2 -right-2 size-4 rounded-full border-2 border-white bg-[#e74b2d] shadow-md cursor-nwse-resize z-50"
+                          className="absolute -bottom-2 -right-2 size-4 rounded-full border-2 border-white bg-[#329AD4] shadow-md cursor-nwse-resize z-50"
                         />
                       )}
                     </div>
@@ -2230,27 +2323,41 @@ export default function CategoryCanvasEditor({
         </main>
 
         {/* ── 3. RIGHT PROPERTIES INSPECTOR (280px) ────────────────── */}
-        <aside className="w-80 px-2 pr-5 bg-[#12141c] border-l border-zinc-800 p-3.5 flex flex-col shrink-0 overflow-y-auto space-y-3.5 text-xs">
+        <aside className="w-80 bg-white border border-zinc-200/70 rounded-2xl shadow-xs p-4 flex flex-col shrink-0 overflow-y-auto space-y-3.5 text-xs">
           {selectedObject ? (
-            <div className="space-y-3.5">
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-                <p className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider">
-                  {selectedObject.type} Properties
-                </p>
-                <div className="flex items-center gap-1">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-2 -mx-4 -mt-4 px-4 py-3 border-b border-zinc-100">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EAF5FB] text-[#2884b8]">
+                    {selectedObject.type === "text" ? (
+                      <EdIcon name="type" className="w-4 h-4" />
+                    ) : selectedObject.type === "shape" ? (
+                      <EdIcon name="shapes" className="w-4 h-4" />
+                    ) : (
+                      <Icon name="image" className="w-4 h-4" />
+                    )}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-zinc-900 capitalize truncate">
+                      {selectedObject.type} Properties
+                    </p>
+                    <p className="text-[11px] text-zinc-400">Selected layer</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-0.5">
                   <button
                     onClick={() => handleDuplicateObject(selectedObject.id)}
-                    className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white text-xs cursor-pointer"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-[#EAF5FB] hover:text-[#2884b8] transition-colors cursor-pointer"
                     title="Duplicate"
                   >
-                    📋
+                    <EdIcon name="copy" className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteObject(selectedObject.id)}
-                    className="p-1 hover:bg-red-900/40 rounded text-red-400 text-xs cursor-pointer"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
                     title="Delete"
                   >
-                    🗑️
+                    <Icon name="trash" className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -2259,21 +2366,21 @@ export default function CategoryCanvasEditor({
               {selectedObject.type === "text" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="text-xs font-bold text-zinc-300 block mb-1">Text Content</label>
+                    <label className={labelClass}>Text Content</label>
                     <textarea
                       rows={2}
                       value={selectedObject.text || ""}
                       onChange={(e) => updateSelectedObject({ text: e.target.value })}
-                      className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d] resize-none"
+                      className={cx(edInput, "resize-none")}
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-zinc-300 block mb-1">Font Family</label>
+                    <label className={labelClass}>Font Family</label>
                     <select
                       value={selectedObject.fontFamily || FONT_FAMILIES[0].value}
                       onChange={(e) => updateSelectedObject({ fontFamily: e.target.value })}
-                      className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d] cursor-pointer"
+                      className={cx(edInput, "cursor-pointer")}
                     >
                       {FONT_FAMILIES.map((f) => (
                         <option key={f.value} value={f.value}>{f.label}</option>
@@ -2283,31 +2390,31 @@ export default function CategoryCanvasEditor({
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-xs font-bold text-zinc-300 block mb-1">Font Size</label>
+                      <label className={labelClass}>Font Size</label>
                       <input
                         type="number"
                         min={8}
                         max={90}
                         value={selectedObject.fontSize || 14}
                         onChange={(e) => updateSelectedObject({ fontSize: Number(e.target.value) })}
-                        className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d]"
+                        className={edInput}
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-zinc-300 block mb-1">Text Color</label>
+                      <label className={labelClass}>Text Color</label>
                       <div className="flex items-center gap-1.5">
                         <input
                           type="color"
                           value={selectedObject.color || "#ffffff"}
                           onChange={(e) => updateSelectedObject({ color: e.target.value })}
-                          className="w-7 h-7 rounded-lg bg-transparent border border-zinc-700/80 cursor-pointer shrink-0"
+                          className="w-8 h-8 rounded-lg bg-white border border-zinc-200 p-0.5 shadow-xs cursor-pointer shrink-0"
                         />
                         <input
                           type="text"
                           value={selectedObject.color || "#ffffff"}
                           onChange={(e) => updateSelectedObject({ color: e.target.value })}
-                          className="flex-1 min-w-0 bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-[#e74b2d]"
+                          className={cx(edInput, "flex-1 min-w-0 font-mono")}
                         />
                       </div>
                     </div>
@@ -2319,10 +2426,10 @@ export default function CategoryCanvasEditor({
                       <button
                         key={fw}
                         onClick={() => updateSelectedObject({ fontWeight: fw })}
-                        className={`flex-1 py-1 rounded-lg border text-xs font-bold transition-all capitalize ${
+                        className={`flex-1 py-1 rounded-lg border text-xs font-semibold transition-all capitalize ${
                           selectedObject.fontWeight === fw
-                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
-                            : "border-zinc-700/80 text-zinc-400 hover:bg-zinc-800"
+                            ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]"
+                            : "bg-white border-zinc-200 text-zinc-500 hover:bg-[#f0f8fd]"
                         }`}
                       >
                         {fw}
@@ -2332,7 +2439,7 @@ export default function CategoryCanvasEditor({
                       type="button"
                       onClick={() => updateSelectedObject({ fontStyle: selectedObject.fontStyle === "italic" ? "normal" : "italic" })}
                       className={`w-7 py-1 rounded-lg border text-xs italic cursor-pointer ${
-                        selectedObject.fontStyle === "italic" ? "bg-[#e74b2d] border-[#e74b2d] text-white" : "border-zinc-700/80 text-zinc-400"
+                        selectedObject.fontStyle === "italic" ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]" : "bg-white border-zinc-200 text-zinc-500 hover:border-[#b8e0f6]"
                       }`}
                     >
                       I
@@ -2341,7 +2448,7 @@ export default function CategoryCanvasEditor({
                       type="button"
                       onClick={() => updateSelectedObject({ underline: !selectedObject.underline })}
                       className={`w-7 py-1 rounded-lg border text-xs underline cursor-pointer ${
-                        selectedObject.underline ? "bg-[#e74b2d] border-[#e74b2d] text-white" : "border-zinc-700/80 text-zinc-400"
+                        selectedObject.underline ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]" : "bg-white border-zinc-200 text-zinc-500 hover:border-[#b8e0f6]"
                       }`}
                     >
                       U
@@ -2349,8 +2456,8 @@ export default function CategoryCanvasEditor({
                     <button
                       type="button"
                       onClick={() => updateSelectedObject({ textTransform: selectedObject.textTransform === "uppercase" ? "none" : "uppercase" })}
-                      className={`w-7 py-1 rounded-lg border text-xs font-bold cursor-pointer ${
-                        selectedObject.textTransform === "uppercase" ? "bg-[#e74b2d] border-[#e74b2d] text-white" : "border-zinc-700/80 text-zinc-400"
+                      className={`w-7 py-1 rounded-lg border text-xs font-semibold cursor-pointer ${
+                        selectedObject.textTransform === "uppercase" ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]" : "bg-white border-zinc-200 text-zinc-500 hover:border-[#b8e0f6]"
                       }`}
                     >
                       AA
@@ -2359,10 +2466,10 @@ export default function CategoryCanvasEditor({
                       <button
                         key={align}
                         onClick={() => updateSelectedObject({ textAlign: align })}
-                        className={`w-7 py-1 rounded-lg border text-xs font-bold transition-all capitalize ${
+                        className={`w-7 py-1 rounded-lg border text-xs font-semibold transition-all capitalize ${
                           selectedObject.textAlign === align
-                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
-                            : "border-zinc-700/80 text-zinc-400 hover:bg-zinc-800"
+                            ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]"
+                            : "bg-white border-zinc-200 text-zinc-500 hover:bg-[#f0f8fd]"
                         }`}
                       >
                         {align[0].toUpperCase()}
@@ -2376,42 +2483,42 @@ export default function CategoryCanvasEditor({
               {selectedObject.type === "shape" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="text-xs font-bold text-zinc-300 block mb-1">Fill Color</label>
+                    <label className={labelClass}>Fill Color</label>
                     <div className="flex items-center gap-1.5">
                       <input
                         type="color"
-                        value={selectedObject.fill || "#e74b2d"}
+                        value={selectedObject.fill || "#329AD4"}
                         onChange={(e) => updateSelectedObject({ fill: e.target.value })}
-                        className="w-7 h-7 rounded-lg bg-transparent border border-zinc-700/80 cursor-pointer shrink-0"
+                        className="w-8 h-8 rounded-lg bg-white border border-zinc-200 p-0.5 shadow-xs cursor-pointer shrink-0"
                       />
                       <input
                         type="text"
-                        value={selectedObject.fill || "#e74b2d"}
+                        value={selectedObject.fill || "#329AD4"}
                         onChange={(e) => updateSelectedObject({ fill: e.target.value })}
-                        className="flex-1 min-w-0 bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-[#e74b2d]"
+                        className={cx(edInput, "flex-1 min-w-0 font-mono")}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-zinc-300 block mb-1">Corner Radius</label>
+                    <label className={labelClass}>Corner Radius</label>
                     <input
                       type="range"
                       min={0}
                       max={40}
                       value={selectedObject.borderRadius || 0}
                       onChange={(e) => updateSelectedObject({ borderRadius: Number(e.target.value) })}
-                      className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
+                      className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#329AD4]"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-zinc-300 block mb-1">Outline</label>
+                    <label className={labelClass}>Outline</label>
                     <div className="flex items-center gap-2">
                       <input
                         type="color"
                         value={selectedObject.stroke || "#ffffff"}
                         onChange={(e) => updateSelectedObject({ stroke: e.target.value, strokeWidth: selectedObject.strokeWidth || 2 })}
-                        className="w-7 h-7 rounded-lg bg-transparent border border-zinc-700/80 cursor-pointer shrink-0"
+                        className="w-8 h-8 rounded-lg bg-white border border-zinc-200 p-0.5 shadow-xs cursor-pointer shrink-0"
                       />
                       <input
                         type="number"
@@ -2419,7 +2526,7 @@ export default function CategoryCanvasEditor({
                         max={20}
                         value={selectedObject.strokeWidth || 0}
                         onChange={(e) => updateSelectedObject({ strokeWidth: Number(e.target.value) })}
-                        className="w-16 bg-zinc-900 border border-zinc-700/80 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none"
+                        className="w-16 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs text-zinc-900 shadow-xs transition focus:outline-none focus:border-[#329AD4] focus:ring-4 focus:ring-[#329AD4]/10"
                       />
                     </div>
                   </div>
@@ -2428,20 +2535,20 @@ export default function CategoryCanvasEditor({
 
               {(selectedObject.type === "image" || selectedObject.type === "logo") && (
                 <div className="space-y-3">
-                  <label className="block text-center py-2 rounded-xl border border-dashed border-zinc-600 text-xs font-bold text-zinc-200 cursor-pointer hover:border-[#e74b2d]">
+                  <label className="block text-center py-2 rounded-xl border border-dashed border-[#b8e0f6] bg-[#f0f8fd] text-xs font-semibold text-[#2884b8] cursor-pointer hover:border-[#329AD4] hover:bg-[#EAF5FB] transition-colors">
                     Replace image
                     <input type="file" accept="image/*" className="hidden" onChange={handleReplaceImage} />
                   </label>
-                  <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 p-2.5 space-y-2">
+                  <div className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-2.5 space-y-2">
                     <button
                       type="button"
                       onClick={handleRemoveImageBackground}
                       disabled={removingBackgroundId === selectedObject.id}
-                      className="w-full py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-xs font-bold text-white cursor-pointer disabled:opacity-50"
+                      className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-[#EAF5FB] hover:bg-[#dbeefb] text-xs font-semibold text-[#2884b8] cursor-pointer disabled:opacity-50 transition-colors"
                     >
                       {removingBackgroundId === selectedObject.id ? "Removing background..." : "Remove solid background"}
                     </button>
-                    <label className="text-xs text-zinc-400 block">
+                    <label className="block text-xs font-semibold text-zinc-700">
                       Color tolerance {backgroundTolerance}
                     </label>
                     <input
@@ -2450,9 +2557,9 @@ export default function CategoryCanvasEditor({
                       max={100}
                       value={backgroundTolerance}
                       onChange={(event) => setBackgroundTolerance(Number(event.target.value))}
-                      className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
+                      className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#329AD4]"
                     />
-                    <p className="text-[11px] leading-relaxed text-zinc-400">
+                    <p className="text-[11px] leading-relaxed text-zinc-500">
                       Best for white or single-color backgrounds connected to image edges.
                     </p>
                   </div>
@@ -2462,10 +2569,10 @@ export default function CategoryCanvasEditor({
                         key={fit}
                         type="button"
                         onClick={() => updateSelectedObject({ fit })}
-                        className={`py-1.5 rounded-lg border text-xs font-bold capitalize cursor-pointer ${
+                        className={`py-1.5 rounded-lg border text-xs font-semibold capitalize cursor-pointer ${
                           (selectedObject.fit || "contain") === fit
-                            ? "bg-[#e74b2d] border-[#e74b2d] text-white"
-                            : "border-zinc-700 text-zinc-300"
+                            ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]"
+                            : "bg-white border-zinc-200 text-zinc-600 hover:border-[#b8e0f6]"
                         }`}
                       >
                         {fit === "contain" ? "Fit inside" : "Fill frame"}
@@ -2476,14 +2583,14 @@ export default function CategoryCanvasEditor({
                     <button
                       type="button"
                       onClick={() => resizeSelectedObject(0.9)}
-                      className="py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-300 cursor-pointer hover:border-[#e74b2d]"
+                      className="py-1.5 rounded-lg border border-zinc-200 bg-white shadow-xs text-xs font-semibold text-zinc-700 cursor-pointer hover:border-[#329AD4] hover:text-[#2884b8] transition-colors"
                     >
                       Smaller −
                     </button>
                     <button
                       type="button"
                       onClick={() => resizeSelectedObject(1.1)}
-                      className="py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-300 cursor-pointer hover:border-[#e74b2d]"
+                      className="py-1.5 rounded-lg border border-zinc-200 bg-white shadow-xs text-xs font-semibold text-zinc-700 cursor-pointer hover:border-[#329AD4] hover:text-[#2884b8] transition-colors"
                     >
                       Bigger +
                     </button>
@@ -2492,7 +2599,7 @@ export default function CategoryCanvasEditor({
               )}
 
               <div>
-                <label className="text-xs font-bold text-zinc-300 block mb-1">
+                <label className={labelClass}>
                   Opacity {Math.round((selectedObject.opacity ?? 1) * 100)}%
                 </label>
                 <input
@@ -2501,16 +2608,16 @@ export default function CategoryCanvasEditor({
                   max={100}
                   value={Math.round((selectedObject.opacity ?? 1) * 100)}
                   onChange={(e) => updateSelectedObject({ opacity: Number(e.target.value) / 100 })}
-                  className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
+                  className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#329AD4]"
                 />
               </div>
 
               {/* POSITION & DIMENSIONS */}
-              <div className="pt-3 border-t border-zinc-800/80 space-y-2">
-                <p className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider">Position & Size</p>
+              <div className="pt-3 border-t border-zinc-100 space-y-2">
+                <p className={edSection}>Position & Size</p>
                 {selectedObject.type === "text" && (
                   <div className="space-y-2">
-                    <p className="text-[11px] text-zinc-400">Width. Height always fits text.</p>
+                    <p className="text-[11px] text-zinc-500">Width. Height always fits text.</p>
                     <div className="grid grid-cols-3 gap-1">
                       {([
                         ["inline", "Inline"],
@@ -2527,10 +2634,10 @@ export default function CategoryCanvasEditor({
                                 ? { widthMode: "inline", width: 0 }
                                 : { widthMode: "custom", width: selectedObject.width || 40 }
                           )}
-                          className={`py-1 rounded-lg border text-xs font-bold cursor-pointer ${
+                          className={`py-1 rounded-lg border text-xs font-semibold cursor-pointer ${
                             textFrame(selectedObject) === mode
-                              ? "bg-[#e74b2d] border-[#e74b2d] text-white"
-                              : "border-zinc-700/80 text-zinc-300"
+                              ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]"
+                              : "bg-white border-zinc-200 text-zinc-600 hover:border-[#b8e0f6]"
                           }`}
                         >
                           {label}
@@ -2539,21 +2646,21 @@ export default function CategoryCanvasEditor({
                     </div>
                     {textFrame(selectedObject) === "custom" && (
                       <div>
-                        <label className="text-xs text-zinc-400 block mb-1">Width {selectedObject.width}%</label>
+                        <label className={labelClass}>Width {selectedObject.width}%</label>
                         <input
                           type="range"
                           min={10}
                           max={100}
                           value={selectedObject.width || 40}
                           onChange={(e) => updateSelectedObject({ width: Number(e.target.value), widthMode: "custom" })}
-                          className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
+                          className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#329AD4]"
                         />
                       </div>
                     )}
                     <button
                       type="button"
                       onClick={() => placeInCenter(selectedObject)}
-                      className="w-full py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer hover:border-[#e74b2d]"
+                      className="w-full py-1.5 rounded-lg border border-zinc-200 bg-white shadow-xs text-xs font-semibold text-zinc-700 cursor-pointer hover:border-[#329AD4] hover:text-[#2884b8] transition-colors"
                     >
                       Place in center
                     </button>
@@ -2561,14 +2668,14 @@ export default function CategoryCanvasEditor({
                 )}
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <span className="text-xs text-zinc-400">X: {selectedObject.type === "text" && textFrame(selectedObject) === "full" ? 0 : selectedObject.x}%</span>
+                    <span className="flex items-center justify-between rounded-lg bg-zinc-50 border border-zinc-100 px-2.5 py-1.5 text-xs text-zinc-500"><span className="font-semibold text-zinc-400">X</span> <span className="font-mono text-zinc-800">{selectedObject.type === "text" && textFrame(selectedObject) === "full" ? 0 : selectedObject.x}%</span></span>
                   </div>
                   <div>
-                    <span className="text-xs text-zinc-400">Y: {selectedObject.y}%</span>
+                    <span className="flex items-center justify-between rounded-lg bg-zinc-50 border border-zinc-100 px-2.5 py-1.5 text-xs text-zinc-500"><span className="font-semibold text-zinc-400">Y</span> <span className="font-mono text-zinc-800">{selectedObject.y}%</span></span>
                   </div>
                   {selectedObject.type !== "text" && (
                     <>
-                      <label className="col-span-2 text-xs text-zinc-400">
+                      <label className="col-span-2 block text-xs font-semibold text-zinc-700">
                         Width {selectedObject.width}%
                         <input
                           type="range"
@@ -2582,10 +2689,10 @@ export default function CategoryCanvasEditor({
                               : selectedObject.height;
                             updateSelectedObject({ width, height: Math.min(100 - selectedObject.y, height) });
                           }}
-                          className="mt-1 w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
+                          className="mt-1 w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#329AD4]"
                         />
                       </label>
-                      <label className="col-span-2 text-xs text-zinc-400">
+                      <label className="col-span-2 block text-xs font-semibold text-zinc-700">
                         Height {selectedObject.height}%
                         <input
                           type="range"
@@ -2599,24 +2706,27 @@ export default function CategoryCanvasEditor({
                               : selectedObject.width;
                             updateSelectedObject({ height, width: Math.min(100 - selectedObject.x, width) });
                           }}
-                          className="mt-1 w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
+                          className="mt-1 w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#329AD4]"
                         />
                       </label>
                       <button
                         type="button"
                         onClick={() => updateSelectedObject({ lockAspectRatio: selectedObject.lockAspectRatio === false })}
-                        className={`col-span-2 py-1.5 rounded-lg border text-xs font-bold cursor-pointer ${
+                        className={`col-span-2 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer ${
                           selectedObject.lockAspectRatio !== false
-                            ? "bg-[#e74b2d]/20 border-[#e74b2d] text-sky-200"
-                            : "border-zinc-700 text-zinc-400"
+                            ? "bg-[#EAF5FB] border-[#329AD4] text-[#2884b8]"
+                            : "bg-white border-zinc-200 text-zinc-500 hover:border-[#b8e0f6]"
                         }`}
                       >
-                        {selectedObject.lockAspectRatio !== false ? "🔗 Proportions locked" : "🔓 Width and height independent"}
+                        <span className="inline-flex items-center justify-center gap-1.5">
+                          <EdIcon name={selectedObject.lockAspectRatio !== false ? "link" : "unlock"} className="w-3.5 h-3.5" />
+                          {selectedObject.lockAspectRatio !== false ? "Proportions locked" : "Width and height independent"}
+                        </span>
                       </button>
                       <button
                         type="button"
                         onClick={() => placeInCenter(selectedObject)}
-                        className="col-span-2 py-1.5 rounded-lg border border-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer hover:border-[#e74b2d]"
+                        className="col-span-2 py-1.5 rounded-lg border border-zinc-200 bg-white shadow-xs text-xs font-semibold text-zinc-700 cursor-pointer hover:border-[#329AD4] hover:text-[#2884b8] transition-colors"
                       >
                         Place in center
                       </button>
@@ -2626,21 +2736,22 @@ export default function CategoryCanvasEditor({
               </div>
 
               {/* LAYER ORDERING & Z-INDEX */}
-              <div className="pt-3 border-t border-zinc-800/80 space-y-2">
+              <div className="pt-3 border-t border-zinc-100 space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider">
+                  <p className={edSection}>
                     Layer Order & Z-Index
                   </p>
                   <button
                     type="button"
                     onClick={() => updateSelectedObject({ isLocked: !selectedObject.isLocked })}
-                    className={`px-2 py-0.5 rounded text-xs font-bold border transition-all cursor-pointer ${
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
                       selectedObject.isLocked
-                        ? "bg-amber-500/20 border-amber-500 text-amber-400"
-                        : "border-zinc-700 text-zinc-400 hover:text-white"
+                        ? "bg-amber-50 border-amber-200 text-amber-700"
+                        : "bg-white border-zinc-200 text-zinc-500 hover:border-[#b8e0f6] hover:text-[#2884b8]"
                     }`}
                   >
-                    {selectedObject.isLocked ? "🔒 Locked" : "🔓 Lock"}
+                    <EdIcon name={selectedObject.isLocked ? "lock" : "unlock"} className="w-3.5 h-3.5" />
+                    {selectedObject.isLocked ? "Locked" : "Lock"}
                   </button>
                 </div>
 
@@ -2648,90 +2759,96 @@ export default function CategoryCanvasEditor({
                   <button
                     type="button"
                     onClick={() => moveLayer(selectedObject.id, "top")}
-                    className="px-2 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-xs font-bold text-white flex items-center justify-center gap-1 cursor-pointer transition-all"
+                    className="px-2 py-1.5 rounded-lg bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] shadow-xs text-xs font-semibold text-zinc-700 hover:text-[#2884b8] flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                     title="Bring to Front (Upfront)"
                   >
-                    <span>▲▲</span>
+                    <EdIcon name="toTop" className="w-3.5 h-3.5" />
                     <span>Bring to Front</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => moveLayer(selectedObject.id, "bottom")}
-                    className="px-2 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-xs font-bold text-white flex items-center justify-center gap-1 cursor-pointer transition-all"
+                    className="px-2 py-1.5 rounded-lg bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] shadow-xs text-xs font-semibold text-zinc-700 hover:text-[#2884b8] flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                     title="Send to Back (Backward)"
                   >
-                    <span>▼▼</span>
+                    <EdIcon name="toBottom" className="w-3.5 h-3.5" />
                     <span>Send to Back</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => moveLayer(selectedObject.id, "up")}
-                    className="px-2 py-1.5 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700 text-xs font-bold text-zinc-300 flex items-center justify-center gap-1 cursor-pointer transition-all"
+                    className="px-2 py-1.5 rounded-lg bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] shadow-xs text-xs font-semibold text-zinc-600 hover:text-[#2884b8] flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                     title="Bring Forward (+1 step)"
                   >
-                    <span>▲</span>
+                    <EdIcon name="arrowUp" className="w-3.5 h-3.5" />
                     <span>Bring Forward</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => moveLayer(selectedObject.id, "down")}
-                    className="px-2 py-1.5 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700 text-xs font-bold text-zinc-300 flex items-center justify-center gap-1 cursor-pointer transition-all"
+                    className="px-2 py-1.5 rounded-lg bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] shadow-xs text-xs font-semibold text-zinc-600 hover:text-[#2884b8] flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                     title="Send Backward (-1 step)"
                   >
-                    <span>▼</span>
+                    <EdIcon name="arrowDown" className="w-3.5 h-3.5" />
                     <span>Send Backward</span>
                   </button>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="space-y-3.5">
-              <p className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider border-b border-zinc-800 pb-2">
-                Canvas Summary
-              </p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2.5 -mx-4 -mt-4 px-4 py-3 border-b border-zinc-100">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EAF5FB] text-[#2884b8]">
+                  <Icon name="templates" className="w-4 h-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-zinc-900">Canvas Summary</p>
+                  <p className="text-[11px] text-zinc-400">Select a layer to edit it</p>
+                </div>
+              </div>
 
-              <div className="space-y-2 text-sm text-zinc-300">
+              <div className="rounded-xl border border-zinc-100 bg-zinc-50/60 divide-y divide-zinc-100 text-xs text-zinc-700 [&>div]:px-3 [&>div]:py-2">
                 <div className="flex justify-between gap-3">
                   <span className="text-zinc-500 shrink-0">Product</span>
-                  <span className="text-white font-bold text-right">{category.name}</span>
+                  <span className="text-zinc-900 font-semibold text-right">{category.name}</span>
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-zinc-500 shrink-0">Style</span>
-                  <span className="text-sky-300 font-bold text-right">{styleLabel}</span>
+                  <span className="text-[#2884b8] font-semibold text-right">{styleLabel}</span>
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-zinc-500 shrink-0">Width × Height</span>
-                  <span className="text-white font-mono font-bold text-right">{widthLabel}</span>
+                  <span className="text-zinc-900 font-mono font-semibold text-right">{widthLabel}</span>
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-zinc-500 shrink-0">Aspect Ratio</span>
-                  <span className="text-white font-mono text-right">{fitDims.aspectRatio.toFixed(2)}</span>
+                  <span className="text-zinc-900 font-mono text-right">{fitDims.aspectRatio.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-zinc-500 shrink-0">Bleed</span>
-                  <span className="text-white font-mono text-right">{category.bleed} {category.bleedUnit || category.unit}</span>
+                  <span className="text-zinc-900 font-mono text-right">{category.bleed} {category.bleedUnit || category.unit}</span>
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-zinc-500 shrink-0">Safe Margin</span>
-                  <span className="text-white font-mono text-right">{category.safe_area} {category.safeAreaUnit || category.unit}</span>
+                  <span className="text-zinc-900 font-mono text-right">{category.safe_area} {category.safeAreaUnit || category.unit}</span>
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-zinc-500 shrink-0">Sides</span>
-                  <span className="text-white font-bold text-right">
+                  <span className="text-zinc-900 font-semibold text-right">
                     {sidesCount} · {sideMode.toUpperCase()}
                   </span>
                 </div>
                 {sideNames.length > 0 && (
                   <div className="pt-1">
-                    <p className="text-zinc-500 text-xs mb-1">Panels</p>
+                    <p className="text-zinc-500 text-xs mb-1.5">Panels</p>
                     <div className="flex flex-wrap gap-1">
                       {sideNames.map((name, idx) => (
                         <span
                           key={`${name}-${idx}`}
-                          className={`px-1.5 py-0.5 rounded text-xs font-semibold border ${
+                          className={`px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
                             activeSideIndex === idx
-                              ? "bg-[#e74b2d]/20 border-[#e74b2d] text-sky-200"
-                              : "bg-zinc-900 border-zinc-700 text-zinc-400"
+                              ? "bg-[#EAF5FB] border-[#b8e0f6] text-[#2884b8]"
+                              : "bg-white border-zinc-200 text-zinc-500"
                           }`}
                         >
                           {name}
@@ -2742,26 +2859,26 @@ export default function CategoryCanvasEditor({
                 )}
               </div>
 
-              <div className="pt-3 border-t border-zinc-800 space-y-2">
-                <p className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider">Pricing</p>
+              <div className="pt-3 border-t border-zinc-100 space-y-2">
+                <p className={edSection}>Pricing</p>
                 <div>
-                  <label className="text-xs text-zinc-400 block mb-1">Price ($USD, 0 = Free)</label>
+                  <label className={labelClass}>Price ($USD, 0 = Free)</label>
                   <input
                     type="number"
                     min={0}
                     step={0.5}
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d]"
+                    className={edInput}
                   />
                 </div>
               </div>
 
               {/* CATEGORY VARIATIONS & DEFAULTS */}
               {category.variations && category.variations.length > 0 && (
-                <div className="pt-3 border-t border-zinc-800 space-y-3">
+                <div className="pt-3 border-t border-zinc-100 space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-[11px] font-extrabold text-sky-400 uppercase tracking-wider">
+                    <p className="text-[11px] font-semibold text-[#2884b8] uppercase tracking-wider">
                       Template Variations & Defaults
                     </p>
                     <span className="text-xs text-zinc-500 font-medium">Pre-select specs</span>
@@ -2769,7 +2886,7 @@ export default function CategoryCanvasEditor({
 
                   {category.variations.map((v) => (
                     <div key={v.name} className="space-y-1">
-                      <label className="text-xs font-bold text-zinc-300 block">
+                      <label className="block text-xs font-semibold text-zinc-700">
                         {v.name}
                       </label>
                       <select
@@ -2780,7 +2897,7 @@ export default function CategoryCanvasEditor({
                             [v.name]: e.target.value,
                           }))
                         }
-                        className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d] cursor-pointer"
+                        className={cx(edInput, "cursor-pointer")}
                       >
                         {v.values.map((val) => (
                           <option key={val.name} value={val.name}>
@@ -2794,26 +2911,26 @@ export default function CategoryCanvasEditor({
               )}
 
               <div className="pt-2">
-                <label className="text-xs text-zinc-400 block mb-1">Tags (comma-separated)</label>
+                <label className={labelClass}>Tags (comma-separated)</label>
                 <input
                   type="text"
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
                   placeholder="modern, corporate, minimal"
-                  className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#e74b2d]"
+                  className={edInput}
                 />
               </div>
 
-              <div className="pt-3 border-t border-zinc-800 space-y-2">
-                <p className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider">Editor shortcuts</p>
-                <div className="grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-1 text-xs text-zinc-400">
-                  <kbd className="text-zinc-200 text-[11px] bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700">Arrows</kbd><span>Nudge 1% (Shift = 5%)</span>
-                  <kbd className="text-zinc-200 text-[11px] bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700">Ctrl/Cmd + D</kbd><span>Duplicate</span>
-                  <kbd className="text-zinc-200 text-[11px] bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700">Ctrl/Cmd + C / V</kbd><span>Copy / paste</span>
-                  <kbd className="text-zinc-200 text-[11px] bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700">+ / −</kbd><span>Resize selected graphic</span>
-                  <kbd className="text-zinc-200 text-[11px] bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700">Delete</kbd><span>Remove selected layer</span>
-                  <kbd className="text-zinc-200 text-[11px] bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700">Ctrl/Cmd + Z</kbd><span>Undo</span>
-                  <kbd className="text-zinc-200 text-[11px] bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700">Esc</kbd><span>Deselect</span>
+              <div className="pt-3 border-t border-zinc-100 space-y-2">
+                <p className={edSection}>Editor shortcuts</p>
+                <div className="grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-1 text-xs text-zinc-500">
+                  <kbd className="justify-self-start font-mono text-zinc-700 text-[10px] bg-zinc-50 px-1.5 py-0.5 rounded-md border border-zinc-200 shadow-xs">Arrows</kbd><span>Nudge 1% (Shift = 5%)</span>
+                  <kbd className="justify-self-start font-mono text-zinc-700 text-[10px] bg-zinc-50 px-1.5 py-0.5 rounded-md border border-zinc-200 shadow-xs">Ctrl/Cmd + D</kbd><span>Duplicate</span>
+                  <kbd className="justify-self-start font-mono text-zinc-700 text-[10px] bg-zinc-50 px-1.5 py-0.5 rounded-md border border-zinc-200 shadow-xs">Ctrl/Cmd + C / V</kbd><span>Copy / paste</span>
+                  <kbd className="justify-self-start font-mono text-zinc-700 text-[10px] bg-zinc-50 px-1.5 py-0.5 rounded-md border border-zinc-200 shadow-xs">+ / −</kbd><span>Resize selected graphic</span>
+                  <kbd className="justify-self-start font-mono text-zinc-700 text-[10px] bg-zinc-50 px-1.5 py-0.5 rounded-md border border-zinc-200 shadow-xs">Delete</kbd><span>Remove selected layer</span>
+                  <kbd className="justify-self-start font-mono text-zinc-700 text-[10px] bg-zinc-50 px-1.5 py-0.5 rounded-md border border-zinc-200 shadow-xs">Ctrl/Cmd + Z</kbd><span>Undo</span>
+                  <kbd className="justify-self-start font-mono text-zinc-700 text-[10px] bg-zinc-50 px-1.5 py-0.5 rounded-md border border-zinc-200 shadow-xs">Esc</kbd><span>Deselect</span>
                 </div>
               </div>
             </div>

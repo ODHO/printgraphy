@@ -79,12 +79,12 @@ function CustomQuoteFormContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfaf7] font-sans text-zinc-900 pb-20">
+    <div className="min-h-screen bg-[#ffffff] font-sans text-zinc-900 pb-20">
       {/* Header Bar */}
       {/* <div className="bg-white border-b border-zinc-200">
         <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="inline-block">
-            <img src="/logo/printgraphy-brand-v2.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
+            <img src="/logo/logo.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
           </Link>
           <Link href="/browsedesigns" className="text-base font-semibold text-zinc-500 hover:text-zinc-900">
             Catalog →
@@ -258,8 +258,8 @@ function CustomQuoteFormContent() {
 export default function CustomQuotePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#fbfaf7] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#ffffff] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#329AD4] rounded-full animate-spin" />
       </div>
     }>
       <CustomQuoteFormContent />

@@ -7,7 +7,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
 
   return (
-    <div className="min-h-screen bg-[#fbfaf7] font-sans">
+    <div className="min-h-screen bg-[#ffffff] font-sans">
 
       {/* Main Content Area */}
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">

@@ -58,7 +58,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fbfaf7] flex items-center justify-center">
+      <div className="min-h-screen bg-[#ffffff] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
       </div>
     );
@@ -66,7 +66,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-[#fbfaf7] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#ffffff] flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-8 border border-zinc-200 text-center max-w-sm">
           <p className="text-red-500 font-semibold text-base mb-4">{error || "Order not found."}</p>
           <Link href="/dashboard/orders" className="px-4 py-2 bg-zinc-900 text-white text-base font-bold rounded-xl">
@@ -88,13 +88,13 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const currentStepIdx = steps.findIndex((s) => s.key === order.fulfillmentStatus);
 
   return (
-    <div className="min-h-screen bg-[#fbfaf7] font-sans text-zinc-900 pb-20">
+    <div className="min-h-screen bg-[#ffffff] font-sans text-zinc-900 pb-20">
       {/* Header Bar */}
       <div className="bg-white border-b border-zinc-200">
         <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="inline-block">
-            <img src="/logo/printgraphy-brand-v2.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
+            <img src="/logo/logo.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
           </Link>
             <span className="text-zinc-300">/</span>
             <Link href="/dashboard/orders" className="text-base font-semibold text-zinc-500 hover:text-zinc-900">Orders</Link>
@@ -120,7 +120,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 href={`/api/orders/${order._id}/invoice`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-base font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5"
               >
                 <span>🖨️</span>
                 <span>Print Invoice</span>

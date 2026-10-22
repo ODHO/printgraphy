@@ -29,10 +29,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans text-zinc-900 flex flex-col justify-between">
+    <div className="admin-shell min-h-screen bg-gradient-to-b from-[#f6fafd] to-white font-sans text-zinc-900 flex flex-col justify-between">
       <div className="w-full">
         {/* Main Body: Left Sidebar + Right Content */}
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+        <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-5 lg:gap-7 items-start">
           <AdminSidebar />
           <main className="flex-1 w-full min-w-0">{children}</main>
         </div>

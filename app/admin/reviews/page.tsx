@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Avatar, Button, Card, cx, EmptyState, Icon, inputClass, Notice, PageHeader, SearchInput, SkeletonRows, StatTile, table, Tabs, Toolbar } from "@/components/admin/ui";
 
 interface AdminReview {
   _id: string;
@@ -150,224 +151,229 @@ export default function AdminReviewsPage() {
     setSelectedIds((prev) => prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]);
   };
 
+  const averageRating = reviews.length ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length : 0;
+  const repliedCount = reviews.filter((r) => r.adminReply).length;
+  const fiveStarCount = reviews.filter((r) => r.rating === 5).length;
+  const checkboxClass = "h-4 w-4 cursor-pointer rounded border-zinc-300 accent-[#329AD4]";
+
   return (
     <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-zinc-200/80 shadow-xs">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-black text-zinc-900 tracking-tight">User Reviews Management</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-base font-bold bg-[#e74b2d]/10 text-[#e74b2d]">
-              {reviews.length} Total Reviews
-            </span>
-          </div>
-          <p className="text-base text-zinc-500 mt-1">
-            Monitor, inspect, and delete user-submitted reviews across all categories & products.
-          </p>
-        </div>
+      <PageHeader
+        icon="star"
+        title="User Reviews Management"
+        description="Monitor, inspect, and delete user-submitted reviews across all categories & products."
+        actions={
+          <>
+            {selectedIds.length > 0 && (
+              <Button variant="danger" icon="trash" onClick={handleBulkDelete} disabled={bulkDeleting} className="!bg-rose-600 !text-white !border-rose-600 hover:!bg-rose-700">
+                {bulkDeleting ? "Deleting..." : `Delete selected (${selectedIds.length})`}
+              </Button>
+            )}
+            <Button variant="secondary" icon="refresh" onClick={fetchReviews}>
+              Refresh List
+            </Button>
+          </>
+        }
+      />
 
-        <div className="flex items-center gap-2">
-          {selectedIds.length > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              disabled={bulkDeleting}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-base font-bold rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-60"
-            >
-              {bulkDeleting ? "Deleting..." : `Delete selected (${selectedIds.length})`}
-            </button>
-          )}
-          <button
-            onClick={fetchReviews}
-            className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-base font-bold rounded-xl transition-all cursor-pointer shrink-0"
-          >
-            Refresh List
-          </button>
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatTile label="Total Reviews" value={<span className="tabular-nums">{reviews.length}</span>} icon="messages" tone="brand" loading={loading} />
+        <StatTile
+          label="Average rating"
+          value={
+            <span className="flex items-center gap-2 tabular-nums">
+              {averageRating.toFixed(1)}
+              <Icon name="star" className="w-6 h-6 text-amber-400 fill-amber-400" />
+            </span>
+          }
+          icon="star"
+          tone="amber"
+          loading={loading}
+        />
+        <StatTile label="5-star reviews" value={<span className="tabular-nums">{fiveStarCount}</span>} icon="sparkle" tone="green" loading={loading} />
+        <StatTile label="Replied" value={<span className="tabular-nums">{repliedCount}</span>} icon="mail" tone="violet" loading={loading} />
       </div>
 
       {/* Alert Messages */}
-      {message && (
-        <div
-          className={`p-4 rounded-xl text-base font-bold ${
-            message.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-              : "bg-red-50 text-red-800 border border-red-200"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
+      {message && <Notice tone={message.type === "success" ? "green" : "red"}>{message.text}</Notice>}
 
-      {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center gap-3">
-        <div className="relative flex-1 w-full">
-          <input
-            type="text"
-            placeholder="Search by customer name, comment, title, or product ID..."
+      <Card className="overflow-hidden">
+        {/* Filter & Search Bar */}
+        <Toolbar>
+          <SearchInput
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-zinc-300 text-base font-medium focus:outline-none focus:border-[#e74b2d]"
+            onChange={setSearchQuery}
+            placeholder="Search by customer name, comment, title, or product ID..."
+            className="sm:max-w-md"
           />
-        </div>
+          <Tabs
+            value={String(filterRating)}
+            onChange={(value) => setFilterRating(value === "all" ? "all" : Number(value))}
+            items={[
+              { value: "all", label: "All Star Ratings" },
+              ...[5, 4, 3, 2, 1].map((n) => ({
+                value: String(n),
+                label: (
+                  <span className="inline-flex items-center gap-0.5" title={`${n} ${n === 1 ? "Star" : "Stars"} Only`}>
+                    {n}
+                    <Icon name="star" className="w-3 h-3 text-amber-400 fill-amber-400" />
+                  </span>
+                ),
+              })),
+            ]}
+          />
+        </Toolbar>
 
-        <select
-          value={filterRating}
-          onChange={(e) => setFilterRating(e.target.value === "all" ? "all" : Number(e.target.value))}
-          className="px-4 py-2.5 rounded-xl border border-zinc-300 text-base font-bold text-zinc-700 bg-white focus:outline-none focus:border-[#e74b2d] w-full sm:w-auto"
-        >
-          <option value="all">All Star Ratings</option>
-          <option value="5">5 Stars Only</option>
-          <option value="4">4 Stars Only</option>
-          <option value="3">3 Stars Only</option>
-          <option value="2">2 Stars Only</option>
-          <option value="1">1 Star Only</option>
-        </select>
-      </div>
-
-      {/* Reviews Table / Cards */}
-      {loading ? (
-        <div className="bg-white p-12 rounded-2xl border border-zinc-200 text-center">
-          <div className="w-8 h-8 border-2 border-[#e74b2d] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-base font-bold text-zinc-600">Loading user reviews...</p>
-        </div>
-      ) : filteredReviews.length === 0 ? (
-        <div className="bg-white p-12 rounded-2xl border border-zinc-200 text-center">
-          <p className="text-base font-bold text-zinc-800">No user reviews found.</p>
-          <p className="text-base text-zinc-500 mt-1">
-            {searchQuery || filterRating !== "all"
-              ? "Try adjusting your search query or rating filter."
-              : "When customers submit reviews on product detail pages, they will appear here."}
-          </p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-base border-collapse">
-              <thead>
-                <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-extrabold uppercase tracking-wider">
-                  <th className="p-4 w-10">
-                    <input type="checkbox" checked={allFilteredSelected} onChange={toggleAll} aria-label="Select all reviews" className="cursor-pointer" />
+        {/* Reviews Table / Cards */}
+        {loading ? (
+          <SkeletonRows rows={6} />
+        ) : filteredReviews.length === 0 ? (
+          <EmptyState
+            icon="star"
+            title="No user reviews found."
+            description={
+              searchQuery || filterRating !== "all"
+                ? "Try adjusting your search query or rating filter."
+                : "When customers submit reviews on product detail pages, they will appear here."
+            }
+          />
+        ) : (
+          <div className={table.wrap}>
+            <table className={table.table}>
+              <thead className={table.thead}>
+                <tr>
+                  <th className={cx(table.th, "w-10 pr-0")}>
+                    <input type="checkbox" checked={allFilteredSelected} onChange={toggleAll} aria-label="Select all reviews" className={checkboxClass} />
                   </th>
-                  <th className="p-4">Customer</th>
-                  <th className="p-4">Rating</th>
-                  <th className="p-4">Product Target</th>
-                  <th className="p-4">Review Content</th>
-                  <th className="p-4">Submitted</th>
-                  <th className="p-4 text-right">Actions</th>
+                  <th className={table.th}>Customer</th>
+                  <th className={table.th}>Rating</th>
+                  <th className={table.th}>Product Target</th>
+                  <th className={table.th}>Review Content</th>
+                  <th className={table.th}>Submitted</th>
+                  <th className={cx(table.th, "text-right")}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 font-medium">
-                {filteredReviews.map((r) => (
-                  <tr key={r._id} className="hover:bg-zinc-50/80 transition-colors">
-                    <td className="p-4 align-top">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(r._id)}
-                        onChange={() => toggleOne(r._id)}
-                        aria-label={`Select review by ${r.userName}`}
-                        className="cursor-pointer"
-                      />
-                    </td>
-                    <td className="p-4 align-top">
-                      <div className="font-bold text-zinc-900">{r.userName}</div>
-                      <div className="text-base text-zinc-400">{r.role || "Customer"}</div>
-                    </td>
-
-                    <td className="p-4 align-top">
-                      <div className="flex items-center gap-1 text-yellow-400">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <span key={s} className={s <= r.rating ? "text-yellow-400" : "text-zinc-200"}>
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                      <div className="text-base font-bold text-zinc-600 mt-0.5">{r.rating} / 5</div>
-                    </td>
-
-                    <td className="p-4 align-top">
-                      <Link
-                        href={`/product/${r.productId}`}
-                        target="_blank"
-                        className="font-bold text-[#e74b2d] hover:underline truncate max-w-[160px] block"
-                        title={r.productId}
-                      >
-                        {r.productId}
-                      </Link>
-                    </td>
-
-                    <td className="p-4 align-top max-w-xs sm:max-w-md">
-                      {r.title && <div className="font-bold text-zinc-900 mb-0.5">{r.title}</div>}
-                      <p className="text-zinc-600 leading-relaxed line-clamp-3">{r.comment}</p>
-                      {r.adminReply && replyingId !== r._id && (
-                        <p className="mt-2 rounded-lg bg-sky-50 px-2 py-1.5 text-base text-sky-900">
-                          <span className="font-bold">Reply: </span>{r.adminReply}
-                        </p>
-                      )}
-                      {replyingId === r._id && (
-                        <div className="mt-2 space-y-2">
-                          <textarea
-                            rows={3}
-                            value={replyDraft}
-                            onChange={(e) => setReplyDraft(e.target.value)}
-                            className="w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-base focus:outline-none focus:border-[#e74b2d]"
-                            placeholder="Write a reply to this review"
-                          />
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => saveReply(r._id)}
-                              disabled={savingReply}
-                              className="px-3 py-1.5 bg-[#e74b2d] text-white text-base font-bold rounded-lg cursor-pointer disabled:opacity-60"
-                            >
-                              {savingReply ? "Saving..." : "Save reply"}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => { setReplyingId(null); setReplyDraft(""); }}
-                              className="px-3 py-1.5 bg-zinc-100 text-zinc-700 text-base font-bold rounded-lg cursor-pointer"
-                            >
-                              Cancel
-                            </button>
+              <tbody className={table.tbody}>
+                {filteredReviews.map((r) => {
+                  const isSelected = selectedIds.includes(r._id);
+                  return (
+                    <tr key={r._id} className={cx(table.tr, isSelected && "bg-[#f0f8fd]")}>
+                      <td className={cx(table.td, "align-top pr-0")}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleOne(r._id)}
+                          aria-label={`Select review by ${r.userName}`}
+                          className={checkboxClass}
+                        />
+                      </td>
+                      <td className={cx(table.td, "align-top")}>
+                        <div className="flex items-center gap-3 min-w-[10rem]">
+                          <Avatar name={r.userName || "?"} size="sm" />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-zinc-900 truncate">{r.userName}</div>
+                            <div className="text-xs text-zinc-500 capitalize">{r.role || "Customer"}</div>
                           </div>
                         </div>
-                      )}
-                    </td>
+                      </td>
 
-                    <td className="p-4 align-top whitespace-nowrap text-zinc-400 text-base">
-                      {new Date(r.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </td>
+                      <td className={cx(table.td, "align-top whitespace-nowrap")}>
+                        <Stars rating={r.rating} />
+                        <div className="mt-1 text-xs font-medium text-zinc-500 tabular-nums">{r.rating} / 5</div>
+                      </td>
 
-                    <td className="p-4 align-top text-right whitespace-nowrap">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            setReplyingId(r._id);
-                            setReplyDraft(r.adminReply || "");
-                          }}
-                          className="px-3 py-1.5 bg-sky-50 hover:bg-[#e74b2d] text-[#e74b2d] hover:text-white border border-sky-200 text-base font-bold rounded-lg transition-all cursor-pointer"
+                      <td className={cx(table.td, "align-top")}>
+                        <Link
+                          href={`/product/${r.productId}`}
+                          target="_blank"
+                          className="inline-flex max-w-[160px] items-center gap-1 rounded-md bg-[#f0f8fd] px-2 py-0.5 font-mono text-xs font-medium text-[#2884b8] hover:bg-[#EAF5FB] hover:text-[#1b5b80]"
+                          title={r.productId}
                         >
-                          {r.adminReply ? "Edit reply" : "Reply"}
-                        </button>
-                        <button
-                          onClick={() => handleDeleteReview(r._id, r.userName)}
-                          disabled={deletingId === r._id}
-                          className="px-3 py-1.5 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 text-base font-bold rounded-lg transition-all cursor-pointer disabled:opacity-50"
-                        >
-                          {deletingId === r._id ? "Deleting..." : "Delete"}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <span className="truncate">{r.productId}</span>
+                        </Link>
+                      </td>
+
+                      <td className={cx(table.td, "align-top min-w-[16rem] max-w-xs sm:max-w-md")}>
+                        {r.title && <div className="font-semibold text-zinc-900 mb-0.5">{r.title}</div>}
+                        <p className="text-zinc-600 leading-relaxed line-clamp-3">{r.comment}</p>
+                        {r.adminReply && replyingId !== r._id && (
+                          <div className="mt-2 rounded-xl border-l-2 border-[#329AD4] bg-[#f0f8fd] px-3 py-2 text-xs text-[#1b5b80]">
+                            <span className="font-semibold">Reply: </span>{r.adminReply}
+                          </div>
+                        )}
+                        {replyingId === r._id && (
+                          <div className="mt-2 space-y-2">
+                            <textarea
+                              rows={3}
+                              value={replyDraft}
+                              onChange={(e) => setReplyDraft(e.target.value)}
+                              className={cx(inputClass, "resize-y")}
+                              placeholder="Write a reply to this review"
+                            />
+                            <div className="flex gap-2">
+                              <Button size="sm" icon="check" onClick={() => saveReply(r._id)} disabled={savingReply}>
+                                {savingReply ? "Saving..." : "Save reply"}
+                              </Button>
+                              <Button size="sm" variant="ghost" onClick={() => { setReplyingId(null); setReplyDraft(""); }}>
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </td>
+
+                      <td className={cx(table.td, "align-top whitespace-nowrap text-xs text-zinc-500")}>
+                        {new Date(r.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </td>
+
+                      <td className={cx(table.td, "align-top text-right whitespace-nowrap")}>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="soft"
+                            icon="messages"
+                            onClick={() => {
+                              setReplyingId(r._id);
+                              setReplyDraft(r.adminReply || "");
+                            }}
+                          >
+                            {r.adminReply ? "Edit reply" : "Reply"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            icon="trash"
+                            onClick={() => handleDeleteReview(r._id, r.userName)}
+                            disabled={deletingId === r._id}
+                          >
+                            {deletingId === r._id ? "Deleting..." : "Delete"}
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
+      </Card>
+    </div>
+  );
+}
+
+function Stars({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((s) => (
+        <svg key={s} className={cx("h-4 w-4", s <= rating ? "text-amber-400" : "text-zinc-200")} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M9.05 2.93c.3-.92 1.6-.92 1.9 0l1.07 3.29a1 1 0 00.95.69h3.46c.97 0 1.37 1.24.59 1.81l-2.8 2.03a1 1 0 00-.36 1.12l1.07 3.29c.3.92-.76 1.69-1.54 1.12l-2.8-2.03a1 1 0 00-1.18 0l-2.8 2.03c-.78.57-1.84-.2-1.54-1.12l1.07-3.29a1 1 0 00-.36-1.12L2.98 8.72c-.78-.57-.38-1.81.59-1.81h3.46a1 1 0 00.95-.69l1.07-3.29z" />
+        </svg>
+      ))}
     </div>
   );
 }

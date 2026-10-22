@@ -117,16 +117,16 @@ export default function MadeWithPrintgraphi({ madeWith }: { madeWith: HomepageCo
 
   return (
     <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-16">
-      <div className="overflow-hidden rounded-[2rem] bg-[#1e1d1b] px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+      <div className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#EAF5FB] to-[#dbeefb] border border-[#cfe7f6] px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
 
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5 mb-8 sm:mb-10">
         <div className="max-w-md">
-          <h2 className="text-2xl md:text-3xl font-black tracking-[-0.04em] text-white leading-[1.05]">
+          <h2 className="text-2xl md:text-3xl font-black tracking-[-0.04em] text-[#1e1d1b] leading-[1.05]">
             {madeWith.titleBefore}{" "}
-            <span className="text-[#f88768]">{madeWith.titleAccent}</span>
+            <span className="text-[#329AD4]">{madeWith.titleAccent}</span>
           </h2>
-          <p className="mt-3 text-base text-white/70 leading-relaxed">
+          <p className="mt-3 text-base text-zinc-600 leading-relaxed">
             {madeWith.body}
           </p>
         </div>
@@ -136,7 +136,7 @@ export default function MadeWithPrintgraphi({ madeWith }: { madeWith: HomepageCo
           <button
             onClick={goPrev}
             aria-label="Previous photos"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-all duration-200 hover:scale-105 hover:border-[#e74b2d] hover:bg-[#e74b2d] active:scale-95 cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#b8e0f6] bg-white text-[#2884b8] shadow-xs transition-all duration-200 hover:scale-105 hover:border-[#329AD4] hover:bg-[#329AD4] hover:text-white active:scale-95 cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -145,7 +145,7 @@ export default function MadeWithPrintgraphi({ madeWith }: { madeWith: HomepageCo
           <button
             onClick={goNext}
             aria-label="Next photos"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-all duration-200 hover:scale-105 hover:border-[#e74b2d] hover:bg-[#e74b2d] active:scale-95 cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#b8e0f6] bg-white text-[#2884b8] shadow-xs transition-all duration-200 hover:scale-105 hover:border-[#329AD4] hover:bg-[#329AD4] hover:text-white active:scale-95 cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -187,7 +187,7 @@ export default function MadeWithPrintgraphi({ madeWith }: { madeWith: HomepageCo
               className="relative flex-shrink-0 px-2"
               style={{ width: `${100 / photos.length}%` }}
             >
-              <Link href={photo.href || "/business-cards"} className="relative block w-full aspect-square overflow-hidden rounded-[1.35rem] border border-white/10 bg-white/10 group">
+              <Link href={photo.href || "/business-cards"} className="relative block w-full aspect-square overflow-hidden rounded-[1.35rem] border border-white bg-white group">
                 {photo.src.startsWith("/") && !photo.src.startsWith("/api/") ? (
                   <Image src={photo.src} alt={photo.handle} fill draggable={false} sizes="(max-width: 640px) 50vw, 25vw" className="object-cover pointer-events-none transition-transform duration-500 group-hover:scale-105" />
                 ) : (

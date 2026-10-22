@@ -2,6 +2,36 @@
 
 import { useState, useEffect, use, useCallback } from "react";
 import Link from "next/link";
+import { Badge, Icon, cx, labelClass, type IconName } from "@/components/admin/ui";
+
+/* ── Builder chrome tokens (light, brand palette) ── */
+const fieldInput =
+  "w-full rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 shadow-xs transition focus:outline-none focus:border-[#329AD4] focus:ring-4 focus:ring-[#329AD4]/10";
+const fieldLabel = "block text-xs font-semibold text-zinc-700";
+const sectionTitle = "block text-[11px] font-semibold uppercase tracking-wider text-zinc-400";
+const uploadBtn =
+  "inline-flex items-center gap-1 rounded-lg bg-[#EAF5FB] px-2.5 py-1.5 text-xs font-semibold text-[#2884b8] shrink-0 cursor-pointer transition-colors hover:bg-[#dbeefb]";
+
+/* Extra 24px stroke icons used only by the builder chrome. */
+const BUILDER_ICONS = {
+  desktop: "M4 5h16v10H4V5zm4 14h8m-4-4v4",
+  tablet: "M7 3h10a1 1 0 011 1v16a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1zm4 15h2",
+  mobile: "M8.5 3h7a1 1 0 011 1v16a1 1 0 01-1 1h-7a1 1 0 01-1-1V4a1 1 0 011-1zm2.5 15h2",
+  copy: "M9 9h10v10H9V9zM5 15V5h10",
+  arrowUp: "M12 19V5m-6 6l6-6 6 6",
+  arrowDown: "M12 5v14m6-6l-6 6-6-6",
+  external: "M14 4h6v6m0-6L10 14m8 0v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5",
+  columns: "M4 5h16v14H4V5zm8 0v14",
+  sliders: "M4 6h10m4 0h2M4 12h4m4 0h8M4 18h12m4 0h0M14 4v4M8 10v4M16 16v4",
+} as const;
+
+function BuilderIcon({ name, className = "w-4 h-4" }: { name: keyof typeof BUILDER_ICONS; className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d={BUILDER_ICONS[name]} />
+    </svg>
+  );
+}
 
 export interface ColumnItem {
   id: string;
@@ -101,7 +131,7 @@ const DEFAULT_BLOCK_PRESETS: Record<string, Omit<BuilderBlock, "id">> = {
           imgUrl: "/second-marketing-img.png",
           btnText: "Contact Us",
           btnUrl: "/contact",
-          bgColor: "#fbfaf7",
+          bgColor: "#ffffff",
           textColor: "#18181b",
         },
       ],
@@ -304,7 +334,7 @@ const DEFAULT_BLOCK_PRESETS: Record<string, Omit<BuilderBlock, "id">> = {
       buttonUrl: "/browsedesigns",
     },
     styles: {
-      bgColor: "#e74b2d",
+      bgColor: "#329AD4",
       textColor: "#ffffff",
       bgImage: "",
       bgOverlay: "transparent",
@@ -387,7 +417,7 @@ const DEFAULT_BLOCK_PRESETS: Record<string, Omit<BuilderBlock, "id">> = {
       ],
     },
     styles: {
-      bgColor: "#fbfaf7",
+      bgColor: "#ffffff",
       textColor: "#18181b",
       bgImage: "",
       bgOverlay: "transparent",
@@ -495,7 +525,7 @@ const DEFAULT_BLOCK_PRESETS: Record<string, Omit<BuilderBlock, "id">> = {
       cite: "Customer name",
     },
     styles: {
-      bgColor: "#fbfaf7",
+      bgColor: "#ffffff",
       textColor: "#18181b",
       bgImage: "",
       bgOverlay: "transparent",
@@ -653,8 +683,8 @@ const DEFAULT_BLOCK_PRESETS: Record<string, Omit<BuilderBlock, "id">> = {
   html: {
     type: "html",
     props: {
-      code: `<div style="padding: 24px; border: 2px dashed #e74b2d; text-align: center; border-radius: 16px; background: #fff1eb;">
-  <h3 style="color: #e74b2d; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Custom HTML / SVG Container</h3>
+      code: `<div style="padding: 24px; border: 2px dashed #329AD4; text-align: center; border-radius: 16px; background: #EAF5FB;">
+  <h3 style="color: #329AD4; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Custom HTML / SVG Container</h3>
   <p style="color: #4a5568; font-size: 14px;">Embed custom vector graphics, widgets, maps, or HTML sections here.</p>
 </div>`,
     },
@@ -702,9 +732,9 @@ function FieldRow({ name, value, onChange }: { name: string; value: any; onChang
   const label = name.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase());
   if (name === "level") {
     return (
-      <label className="block text-base text-zinc-400">
+      <label className={fieldLabel}>
         Heading level
-        <select value={value || "h2"} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white">
+        <select value={value || "h2"} onChange={(e) => onChange(e.target.value)} className={cx(fieldInput, "mt-1.5")}>
           {["h1", "h2", "h3", "h4"].map((level) => <option key={level} value={level}>{level.toUpperCase()}</option>)}
         </select>
       </label>
@@ -712,9 +742,9 @@ function FieldRow({ name, value, onChange }: { name: string; value: any; onChang
   }
   if (name === "style" && (value === "bullet" || value === "number")) {
     return (
-      <label className="block text-base text-zinc-400">
+      <label className={fieldLabel}>
         List style
-        <select value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white">
+        <select value={value} onChange={(e) => onChange(e.target.value)} className={cx(fieldInput, "mt-1.5")}>
           <option value="bullet">Bulleted</option>
           <option value="number">Numbered</option>
         </select>
@@ -723,9 +753,9 @@ function FieldRow({ name, value, onChange }: { name: string; value: any; onChang
   }
   if (name === "imagePosition") {
     return (
-      <label className="block text-base text-zinc-400">
+      <label className={fieldLabel}>
         Image position
-        <select value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white">
+        <select value={value} onChange={(e) => onChange(e.target.value)} className={cx(fieldInput, "mt-1.5")}>
           <option value="left">Left</option>
           <option value="right">Right</option>
         </select>
@@ -734,34 +764,34 @@ function FieldRow({ name, value, onChange }: { name: string; value: any; onChang
   }
   if (typeof value === "number") {
     return (
-      <label className="block text-base text-zinc-400">
+      <label className={fieldLabel}>
         {label}
-        <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))} className="mt-1 w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white" />
+        <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))} className={cx(fieldInput, "mt-1.5")} />
       </label>
     );
   }
   if (typeof value === "boolean") {
     return (
-      <label className="flex items-center gap-2 text-base text-zinc-300">
-        <input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} />
+      <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-2.5 py-2 text-xs font-semibold text-zinc-700 cursor-pointer hover:border-[#b8e0f6]">
+        <input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} className="h-3.5 w-3.5 accent-[#329AD4]" />
         {label}
       </label>
     );
   }
   if (Array.isArray(value) && value.every((item) => typeof item === "string")) {
     return (
-      <label className="block text-base text-zinc-400">
+      <label className={fieldLabel}>
         {label} (one per line)
-        <textarea rows={4} value={value.join("\n")} onChange={(e) => onChange(e.target.value.split("\n"))} className="mt-1 w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white" />
+        <textarea rows={4} value={value.join("\n")} onChange={(e) => onChange(e.target.value.split("\n"))} className={cx(fieldInput, "mt-1.5")} />
       </label>
     );
   }
   if (Array.isArray(value) && value.every((item) => item && typeof item === "object")) {
     return (
       <div className="space-y-2">
-        <p className="text-base font-bold text-zinc-400">{label}</p>
+        <p className={sectionTitle}>{label}</p>
         {value.map((item, index) => (
-          <div key={index} className="rounded-xl border border-zinc-700 p-2 space-y-2">
+          <div key={index} className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-2.5 space-y-2.5">
             {Object.entries(item).map(([itemKey, itemValue]) => (
               <FieldRow
                 key={itemKey}
@@ -773,15 +803,16 @@ function FieldRow({ name, value, onChange }: { name: string; value: any; onChang
                 }}
               />
             ))}
-            <button type="button" onClick={() => onChange(value.filter((_, entryIndex) => entryIndex !== index))} className="text-base font-bold text-red-400 cursor-pointer">Remove</button>
+            <button type="button" onClick={() => onChange(value.filter((_, entryIndex) => entryIndex !== index))} className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-700 cursor-pointer"><Icon name="trash" className="w-3.5 h-3.5" />Remove</button>
           </div>
         ))}
         <button
           type="button"
           onClick={() => onChange([...value, { ...value[0] }])}
-          className="text-base font-bold text-sky-400 cursor-pointer"
+          className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-[#b8e0f6] bg-[#f0f8fd] py-1.5 text-xs font-semibold text-[#2884b8] hover:bg-[#EAF5FB] cursor-pointer"
         >
-          + Add
+          <Icon name="plus" className="w-3.5 h-3.5" strokeWidth={2.2} />
+          Add
         </button>
       </div>
     );
@@ -789,10 +820,11 @@ function FieldRow({ name, value, onChange }: { name: string; value: any; onChang
   if (typeof value === "string" && isImageKey(name)) {
     return (
       <div>
-        <label className="text-base text-zinc-400 block mb-1">{label}</label>
+        <label className={labelClass}>{label}</label>
         <div className="flex items-center gap-2">
-          <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white" />
-          <label className="px-3 py-1.5 bg-[#e74b2d] text-white text-base font-bold rounded-xl shrink-0 cursor-pointer">
+          <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className={cx(fieldInput, "font-mono")} />
+          <label className={uploadBtn}>
+            <Icon name="upload" className="w-3.5 h-3.5" />
             Upload
             <input type="file" accept="image/*" className="hidden" onChange={async (event) => {
               const file = event.target.files?.[0];
@@ -807,17 +839,17 @@ function FieldRow({ name, value, onChange }: { name: string; value: any; onChang
   }
   if (typeof value === "string" && (value.length > 80 || /body|content|desc|text|subtitle|caption|rows/i.test(name))) {
     return (
-      <label className="block text-base text-zinc-400">
+      <label className={fieldLabel}>
         {label}
-        <textarea rows={3} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white" />
+        <textarea rows={3} value={value} onChange={(e) => onChange(e.target.value)} className={cx(fieldInput, "mt-1.5")} />
       </label>
     );
   }
   if (typeof value === "string") {
     return (
-      <label className="block text-base text-zinc-400">
+      <label className={fieldLabel}>
         {label}
-        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white" />
+        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className={cx(fieldInput, "mt-1.5")} />
       </label>
     );
   }
@@ -829,7 +861,7 @@ function CanvasFallback({ block }: { block: BuilderBlock }) {
   const body = block.props.subtitle || block.props.body || block.props.content || block.props.topDesc || "";
   return (
     <div className="py-4 space-y-2 text-left">
-      <p className="text-base font-bold uppercase tracking-wide text-zinc-400">{block.type}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">{block.type}</p>
       <p className="text-lg font-bold">{title}</p>
       {body && <p className="text-base opacity-80">{body}</p>}
       {Array.isArray(block.props.items) && (
@@ -1055,7 +1087,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
           imgUrl: "",
           btnText: "Learn More",
           btnUrl: "/browsedesigns",
-          bgColor: i % 2 === 0 ? "#ffffff" : "#fbfaf7",
+          bgColor: i % 2 === 0 ? "#ffffff" : "#ffffff",
           textColor: "#18181b",
         });
       }
@@ -1180,7 +1212,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                           ${col.heading ? `<h3 class="text-xl font-extrabold tracking-tight">${col.heading}</h3>` : ""}
                           ${col.text ? `<p class="text-base opacity-90 leading-relaxed">${col.text}</p>` : ""}
                         </div>
-                        ${col.btnText ? `<div><a href="${col.btnUrl}" class="inline-block px-5 py-2.5 bg-[#e74b2d] text-white font-bold rounded-lg text-base shadow-md">${col.btnText}</a></div>` : ""}
+                        ${col.btnText ? `<div><a href="${col.btnUrl}" class="inline-block px-5 py-2.5 bg-[#329AD4] text-white font-bold rounded-lg text-base shadow-md">${col.btnText}</a></div>` : ""}
                       </div>
                     `
                       )
@@ -1197,12 +1229,12 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                 <div class="${containerClass} py-16 sm:py-24 relative z-10">
                   <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                     <div class="lg:col-span-6 space-y-6">
-                      ${block.props.badgeText ? `<div class="inline-block"><span class="px-4 py-1.5 rounded-full bg-[#fff1eb] border border-[#e74b2d]/30 text-[#e74b2d] text-base font-bold tracking-wide shadow-2xs">${block.props.badgeText}</span></div>` : ""}
+                      ${block.props.badgeText ? `<div class="inline-block"><span class="px-4 py-1.5 rounded-full bg-[#EAF5FB] border border-[#329AD4]/30 text-[#329AD4] text-base font-bold tracking-wide shadow-2xs">${block.props.badgeText}</span></div>` : ""}
                       <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.12]" style="color: ${st.textColor};">${block.props.title || ""}</h1>
-                      <p class="text-[#e74b2d] font-bold text-lg sm:text-xl tracking-tight">${block.props.subtitle || ""}</p>
+                      <p class="text-[#329AD4] font-bold text-lg sm:text-xl tracking-tight">${block.props.subtitle || ""}</p>
                       <p class="text-base sm:text-base leading-relaxed max-w-xl opacity-90" style="color: ${st.textColor};">${block.props.body || ""}</p>
                       <div class="flex flex-col sm:flex-row items-center gap-4 pt-2">
-                        ${block.props.btn1Text ? `<a href="${block.props.btn1Url || "#"}" class="w-full sm:w-auto px-7 py-3.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-md text-base sm:text-base shadow-lg shadow-[#e74b2d]/30 transition-all text-center">${block.props.btn1Text}</a>` : ""}
+                        ${block.props.btn1Text ? `<a href="${block.props.btn1Url || "#"}" class="w-full sm:w-auto px-7 py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold rounded-md text-base sm:text-base shadow-lg shadow-[#329AD4]/30 transition-all text-center">${block.props.btn1Text}</a>` : ""}
                         ${block.props.btn2Text ? `<a href="${block.props.btn2Url || "#"}" class="w-full sm:w-auto px-7 py-3.5 bg-[#1c1d22] hover:bg-zinc-800 text-white font-bold rounded-md text-base sm:text-base shadow-lg transition-all text-center">${block.props.btn2Text}</a>` : ""}
                       </div>
                     </div>
@@ -1226,17 +1258,17 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                 <div class="${containerClass}">
                   <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                     <div class="lg:col-span-6 ${isLeft ? "lg:order-1" : "lg:order-2"} space-y-6 z-10">
-                      ${block.props.badgeText ? `<div class="inline-block"><span class="px-4 py-1.5 rounded-full bg-[#fff1eb] border border-[#e74b2d]/30 text-[#e74b2d] text-base font-bold tracking-wide">${block.props.badgeText}</span></div>` : ""}
+                      ${block.props.badgeText ? `<div class="inline-block"><span class="px-4 py-1.5 rounded-full bg-[#EAF5FB] border border-[#329AD4]/30 text-[#329AD4] text-base font-bold tracking-wide">${block.props.badgeText}</span></div>` : ""}
                       <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.12]" style="color: ${st.textColor};">${block.props.title || ""}</h2>
-                      <p class="text-[#e74b2d] font-bold text-lg sm:text-xl tracking-tight">${block.props.tagline || ""}</p>
+                      <p class="text-[#329AD4] font-bold text-lg sm:text-xl tracking-tight">${block.props.tagline || ""}</p>
                       <p class="text-base sm:text-base leading-relaxed opacity-90" style="color: ${st.textColor};">${block.props.body || ""}</p>
                       <ul class="space-y-3.5 pt-2">
                         ${(block.props.features || [])
                           .map(
                             (feat: string) => `
                           <li class="flex items-center gap-3 font-bold text-base sm:text-base" style="color: ${st.textColor};">
-                            <span class="shrink-0 text-[#e74b2d]">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 12L7.25 17L9.875 14M8 12L13.25 17L22 7M16 7L12.5 11" stroke="#e74b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span class="shrink-0 text-[#329AD4]">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 12L7.25 17L9.875 14M8 12L13.25 17L22 7M16 7L12.5 11" stroke="#329AD4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </span>
                             <span>${feat}</span>
                           </li>
@@ -1244,7 +1276,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                           )
                           .join("")}
                       </ul>
-                      ${block.props.btnText ? `<div class="pt-4"><a href="${block.props.btnUrl || "#"}" class="inline-block px-8 py-3.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-md text-base sm:text-base shadow-lg shadow-[#e74b2d]/30 transition-all">${block.props.btnText}</a></div>` : ""}
+                      ${block.props.btnText ? `<div class="pt-4"><a href="${block.props.btnUrl || "#"}" class="inline-block px-8 py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold rounded-md text-base sm:text-base shadow-lg shadow-[#329AD4]/30 transition-all">${block.props.btnText}</a></div>` : ""}
                     </div>
                     <div class="lg:col-span-6 ${isLeft ? "lg:order-2" : "lg:order-1"} relative flex items-center justify-center">
                       ${block.props.imgUrl ? `
@@ -1265,7 +1297,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                 <div class="${containerClass}">
                   <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                     <div class="lg:col-span-4 space-y-4">
-                      ${block.props.badgeText ? `<div class="inline-block"><span class="px-4 py-1.5 rounded-full bg-[#fff1eb] border border-[#e74b2d]/30 text-[#e74b2d] text-base font-bold tracking-wide">${block.props.badgeText}</span></div>` : ""}
+                      ${block.props.badgeText ? `<div class="inline-block"><span class="px-4 py-1.5 rounded-full bg-[#EAF5FB] border border-[#329AD4]/30 text-[#329AD4] text-base font-bold tracking-wide">${block.props.badgeText}</span></div>` : ""}
                       <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight" style="color: ${st.textColor};">${block.props.title || ""}</h2>
                       <p class="text-base leading-relaxed opacity-90" style="color: ${st.textColor};">${block.props.body || ""}</p>
                     </div>
@@ -1300,7 +1332,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                           .map(
                             (bullet: string) => `
                           <div class="flex items-start gap-3 bg-white/5 border border-white/10 backdrop-blur-xs rounded-xl p-4">
-                            <span class="shrink-0 text-[#e74b2d] font-bold">✓</span>
+                            <span class="shrink-0 text-[#329AD4] font-bold">✓</span>
                             <span class="text-base sm:text-base font-medium text-zinc-200">${bullet}</span>
                           </div>
                         `
@@ -1317,11 +1349,11 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
             return `
               <section class="relative w-full overflow-hidden" ${styleAttr}>
                 <div class="py-16 sm:py-24 ${containerClass} text-center space-y-6">
-                  ${block.props.topBadge ? `<span class="px-4 py-1.5 rounded-full bg-[#fff1eb] border border-[#e74b2d]/30 text-[#e74b2d] text-base font-bold tracking-wide inline-block">${block.props.topBadge}</span>` : ""}
+                  ${block.props.topBadge ? `<span class="px-4 py-1.5 rounded-full bg-[#EAF5FB] border border-[#329AD4]/30 text-[#329AD4] text-base font-bold tracking-wide inline-block">${block.props.topBadge}</span>` : ""}
                   <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight max-w-4xl mx-auto" style="color: ${st.textColor};">${block.props.topTitle || ""}</h2>
-                  <p class="text-[#e74b2d] font-bold text-lg sm:text-xl">${block.props.topTagline || ""}</p>
+                  <p class="text-[#329AD4] font-bold text-lg sm:text-xl">${block.props.topTagline || ""}</p>
                   <p class="text-base sm:text-base max-w-2xl mx-auto leading-relaxed opacity-90" style="color: ${st.textColor};">${block.props.topDesc || ""}</p>
-                  ${block.props.topBtnText ? `<div><a href="${block.props.topBtnUrl || "#"}" class="inline-block px-8 py-3.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-md text-base shadow-lg shadow-[#e74b2d]/30 transition-all">${block.props.topBtnText}</a></div>` : ""}
+                  ${block.props.topBtnText ? `<div><a href="${block.props.topBtnUrl || "#"}" class="inline-block px-8 py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold rounded-md text-base shadow-lg shadow-[#329AD4]/30 transition-all">${block.props.topBtnText}</a></div>` : ""}
 
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-10 text-left">
                     ${(block.props.cards || [])
@@ -1345,7 +1377,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                   <div class="${containerClass} text-center space-y-4 relative z-10">
                     ${block.props.bottomBadge ? `<span class="px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-base font-bold">${block.props.bottomBadge}</span>` : ""}
                     <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">${block.props.bottomTitle || ""}</h3>
-                    <p class="text-[#e74b2d] font-bold text-base sm:text-lg">${block.props.bottomTagline || ""}</p>
+                    <p class="text-[#329AD4] font-bold text-base sm:text-lg">${block.props.bottomTagline || ""}</p>
                     <p class="text-zinc-300 text-base max-w-xl mx-auto leading-relaxed">${block.props.bottomDesc || ""}</p>
                     ${block.props.bottomHighlight ? `<div class="pt-2"><span class="inline-block px-6 py-2.5 rounded-xl bg-white text-zinc-900 font-extrabold text-base shadow-lg">${block.props.bottomHighlight}</span></div>` : ""}
                   </div>
@@ -1419,7 +1451,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                 <div class="${containerClass} text-center space-y-6">
                   <h2 class="text-3xl font-extrabold tracking-tight" style="color: ${st.textColor};">${block.props.title || ""}</h2>
                   <p class="text-base opacity-90 max-w-xl mx-auto">${block.props.subtitle || ""}</p>
-                  ${block.props.buttonText ? `<div><a href="${block.props.buttonUrl || "#"}" class="inline-block px-8 py-3.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-md text-base shadow-lg transition-all">${block.props.buttonText}</a></div>` : ""}
+                  ${block.props.buttonText ? `<div><a href="${block.props.buttonUrl || "#"}" class="inline-block px-8 py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold rounded-md text-base shadow-lg transition-all">${block.props.buttonText}</a></div>` : ""}
                 </div>
               </section>
             `;
@@ -1480,7 +1512,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
             return `
               <section class="relative w-full overflow-hidden" ${styleAttr}>
                 <div class="${containerClass}">
-                  <blockquote class="border-l-4 border-[#e74b2d] pl-5 space-y-2">
+                  <blockquote class="border-l-4 border-[#329AD4] pl-5 space-y-2">
                     <p class="text-lg sm:text-xl font-semibold leading-relaxed" style="color: ${st.textColor};">${esc(block.props.text)}</p>
                     ${block.props.cite ? `<cite class="block text-base not-italic opacity-70">${esc(block.props.cite)}</cite>` : ""}
                   </blockquote>
@@ -1492,8 +1524,8 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
             return `
               <section class="relative w-full overflow-hidden" ${styleAttr}>
                 <div class="${containerClass} flex flex-wrap gap-3">
-                  ${block.props.label ? `<a href="${esc(block.props.href || "#")}" class="inline-block px-6 py-3 bg-[#e74b2d] text-white font-bold rounded-lg text-base">${esc(block.props.label)}</a>` : ""}
-                  ${block.props.label2 ? `<a href="${esc(block.props.href2 || "#")}" class="inline-block px-6 py-3 border border-[#e74b2d] text-[#e74b2d] font-bold rounded-lg text-base">${esc(block.props.label2)}</a>` : ""}
+                  ${block.props.label ? `<a href="${esc(block.props.href || "#")}" class="inline-block px-6 py-3 bg-[#329AD4] text-white font-bold rounded-lg text-base">${esc(block.props.label)}</a>` : ""}
+                  ${block.props.label2 ? `<a href="${esc(block.props.href2 || "#")}" class="inline-block px-6 py-3 border border-[#329AD4] text-[#329AD4] font-bold rounded-lg text-base">${esc(block.props.label2)}</a>` : ""}
                 </div>
               </section>
             `;
@@ -1562,7 +1594,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                 <div class="${containerClass} relative z-10 space-y-4">
                   <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight" style="color: ${st.textColor};">${esc(block.props.title)}</h2>
                   ${block.props.subtitle ? `<p class="text-base sm:text-lg opacity-90" style="color: ${st.textColor};">${esc(block.props.subtitle)}</p>` : ""}
-                  ${block.props.buttonText ? `<div><a href="${esc(block.props.buttonUrl || "#")}" class="inline-block px-7 py-3 bg-[#e74b2d] text-white font-bold rounded-lg text-base">${esc(block.props.buttonText)}</a></div>` : ""}
+                  ${block.props.buttonText ? `<div><a href="${esc(block.props.buttonUrl || "#")}" class="inline-block px-7 py-3 bg-[#329AD4] text-white font-bold rounded-lg text-base">${esc(block.props.buttonText)}</a></div>` : ""}
                 </div>
               </section>
             `;
@@ -1609,10 +1641,11 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#1e1e24] flex items-center justify-center text-white font-sans">
-        <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-4 border-sky-400 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-base text-zinc-400 font-mono">Opening Elementor Page Builder...</p>
+      <div className="fixed inset-0 z-50 bg-[#f6fafd] flex items-center justify-center font-sans">
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-zinc-200/70 bg-white px-10 py-8 shadow-xs">
+          <span className="inline-block h-9 w-9 rounded-full border-[3px] border-[#dbeefb] border-t-[#329AD4] animate-spin" />
+          <p className="text-sm font-semibold text-zinc-700">Opening page builder…</p>
+          <p className="text-xs text-zinc-400">Loading sections and media</p>
         </div>
       </div>
     );
@@ -1625,183 +1658,193 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
       ? "w-[768px]"
       : "w-full max-w-6xl";
 
+  const segBtn = (active: boolean) =>
+    cx(
+      "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
+      active ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
+    );
+
+  const tabBtn = (active: boolean) =>
+    cx(
+      "flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold transition-all cursor-pointer",
+      active ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
+    );
+
   return (
-    <div className="fixed inset-0 z-50 bg-[#14151a] text-zinc-100 font-sans flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-[#f6fafd] text-zinc-900 font-sans flex flex-col overflow-hidden">
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed top-16 right-6 z-50 px-4 py-3 rounded-2xl shadow-xl border text-base font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-300 ${
+          className={`fixed top-20 right-6 z-50 px-4 py-3 rounded-xl shadow-lg border text-sm font-semibold flex items-center gap-2.5 animate-in fade-in slide-in-from-top-4 duration-300 ${
             toast.type === "success"
-              ? "bg-emerald-900 text-emerald-100 border-emerald-700"
-              : "bg-red-900 text-red-100 border-red-700"
+              ? "bg-white text-emerald-700 border-emerald-200 shadow-emerald-500/10"
+              : "bg-white text-rose-700 border-rose-200 shadow-rose-500/10"
           }`}
         >
-          <span>{toast.type === "success" ? "✓" : "⚠️"}</span>
+          <span
+            className={`flex h-6 w-6 items-center justify-center rounded-full ${
+              toast.type === "success" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+            }`}
+          >
+            <Icon name={toast.type === "success" ? "check" : "close"} className="w-3.5 h-3.5" strokeWidth={2.4} />
+          </span>
           <span>{toast.message}</span>
         </div>
       )}
 
       {/* ── TOP CONTROL BAR ────────────────────────────────── */}
-      <header className="h-14 bg-[#1e1e24] border-b border-zinc-800 px-4 flex items-center justify-between shrink-0 shadow-md">
-        <div className="flex items-center gap-4 min-w-0">
-          <Link
-            href="/admin/pages"
-            className="flex items-center gap-2 text-base font-bold text-zinc-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-xl"
-          >
-            ← Exit Builder
-          </Link>
-          <div className="h-4 w-px bg-zinc-700 hidden sm:block" />
-          <div className="min-w-0 hidden sm:block">
-            <input
-              type="text"
-              value={pageTitle}
-              onChange={(e) => setPageTitle(e.target.value)}
-              className="bg-transparent text-base font-bold text-white focus:outline-none focus:bg-white/5 px-2 py-1 rounded-lg"
-              placeholder="Page Title"
-            />
+      <div className="shrink-0 px-3 pt-3">
+        <header className="h-14 bg-white border border-zinc-200/70 rounded-2xl px-3 flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href="/admin/pages"
+              title="Exit builder"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-600 hover:border-[#329AD4] hover:text-[#2884b8] transition-colors"
+            >
+              <Icon name="arrowLeft" className="w-3.5 h-3.5" strokeWidth={2.2} />
+              <span className="hidden sm:inline">Pages</span>
+            </Link>
+            <div className="h-6 w-px bg-zinc-200 hidden sm:block" />
+            <span className="hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#55b2e7] to-[#2884b8] text-white shadow-md shadow-[#329AD4]/25">
+              <Icon name="pages" className="w-4 h-4" />
+            </span>
+            <div className="min-w-0 hidden sm:block">
+              <input
+                type="text"
+                value={pageTitle}
+                onChange={(e) => setPageTitle(e.target.value)}
+                className="block w-56 max-w-full bg-transparent text-sm font-semibold text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-[#f0f8fd] focus:ring-1 focus:ring-[#b8e0f6] px-1.5 py-0.5 rounded-md -ml-1.5"
+                placeholder="Page Title"
+              />
+              <p className="px-0 text-[11px] font-mono text-zinc-400 truncate">/pages/{pageSlug || "slug"}</p>
+            </div>
           </div>
-        </div>
 
-        {/* Viewport Switcher */}
-        <div className="flex items-center bg-[#14151a] border border-zinc-700 rounded-xl p-0.5">
-          <button
-            onClick={() => setViewportMode("desktop")}
-            className={`px-3 py-1 text-base font-bold rounded-lg transition-all ${
-              viewportMode === "desktop" ? "bg-[#e74b2d] text-white" : "text-zinc-400 hover:text-white"
-            }`}
-          >
-            💻 Desktop
-          </button>
-          <button
-            onClick={() => setViewportMode("tablet")}
-            className={`px-3 py-1 text-base font-bold rounded-lg transition-all ${
-              viewportMode === "tablet" ? "bg-[#e74b2d] text-white" : "text-zinc-400 hover:text-white"
-            }`}
-          >
-            📱 Tablet
-          </button>
-          <button
-            onClick={() => setViewportMode("mobile")}
-            className={`px-3 py-1 text-base font-bold rounded-lg transition-all ${
-              viewportMode === "mobile" ? "bg-[#e74b2d] text-white" : "text-zinc-400 hover:text-white"
-            }`}
-          >
-            📱 Mobile
-          </button>
-        </div>
+          {/* Viewport Switcher */}
+          <div className="flex items-center gap-1 rounded-xl bg-zinc-100/80 p-1">
+            <button onClick={() => setViewportMode("desktop")} className={segBtn(viewportMode === "desktop")} title="Desktop">
+              <BuilderIcon name="desktop" className="w-4 h-4" />
+              <span className="hidden lg:inline">Desktop</span>
+            </button>
+            <button onClick={() => setViewportMode("tablet")} className={segBtn(viewportMode === "tablet")} title="Tablet">
+              <BuilderIcon name="tablet" className="w-4 h-4" />
+              <span className="hidden lg:inline">Tablet</span>
+            </button>
+            <button onClick={() => setViewportMode("mobile")} className={segBtn(viewportMode === "mobile")} title="Mobile">
+              <BuilderIcon name="mobile" className="w-4 h-4" />
+              <span className="hidden lg:inline">Mobile</span>
+            </button>
+          </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsPublished((p) => !p)}
-            className={`px-3 py-1.5 rounded-xl text-base font-bold border transition-all ${
-              isPublished
-                ? "bg-emerald-950 text-emerald-300 border-emerald-700"
-                : "bg-amber-950 text-amber-300 border-amber-700"
-            }`}
-          >
-            {isPublished ? "Published" : "Draft"}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsPublished((p) => !p)}
+              title="Toggle published / draft"
+              className="cursor-pointer rounded-full transition-opacity hover:opacity-80"
+            >
+              <Badge tone={isPublished ? "green" : "amber"} dot>
+                {isPublished ? "Published" : "Draft"}
+              </Badge>
+            </button>
 
-          <Link
-            href={`/pages/${pageSlug}`}
-            target="_blank"
-            className="px-3 py-1.5 rounded-xl text-base font-bold bg-white/5 hover:bg-white/10 text-zinc-300 border border-zinc-700 hidden md:block"
-          >
-            Preview ↗
-          </Link>
+            <Link
+              href={`/pages/${pageSlug}`}
+              target="_blank"
+              className="hidden md:inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 hover:border-[#329AD4] hover:text-[#2884b8] transition-all"
+            >
+              <Icon name="eye" className="w-3.5 h-3.5" />
+              Preview
+            </Link>
 
-          <button
-            onClick={savePage}
-            disabled={saving}
-            className="px-5 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/30 cursor-pointer disabled:opacity-60"
-          >
-            {saving ? "Saving..." : "Save & Publish"}
-          </button>
-        </div>
-      </header>
+            <button
+              onClick={savePage}
+              disabled={saving}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#329AD4] px-4 py-2 text-xs font-semibold text-white shadow-sm shadow-[#329AD4]/25 transition-all hover:bg-[#2884b8] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {saving ? (
+                <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+              ) : (
+                <Icon name="check" className="w-3.5 h-3.5" strokeWidth={2.4} />
+              )}
+              {saving ? "Saving..." : "Save & Publish"}
+            </button>
+          </div>
+        </header>
+      </div>
 
       {/* ── MAIN WORKSPACE ────────────────────────────────────── */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex gap-3 overflow-hidden p-3">
         {/* LEFT SIDEBAR */}
-        <aside className="w-80 bg-[#1e1e24] border-r border-zinc-800 flex flex-col shrink-0 select-none">
-          <div className="flex border-b border-zinc-800 bg-[#14151a]">
-            <button
-              onClick={() => setLeftTab("elements")}
-              className={`flex-1 py-3 text-base font-bold text-center border-b-2 transition-all ${
-                leftTab === "elements" ? "border-[#e74b2d] text-[#e74b2d] bg-white/5" : "border-transparent text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              + Add Section
-            </button>
-            <button
-              onClick={() => setLeftTab("style")}
-              className={`flex-1 py-3 text-base font-bold text-center border-b-2 transition-all ${
-                leftTab === "style" ? "border-[#e74b2d] text-[#e74b2d] bg-white/5" : "border-transparent text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              ⚙️ Inspector
-            </button>
-            <button
-              onClick={() => setLeftTab("settings")}
-              className={`flex-1 py-3 text-base font-bold text-center border-b-2 transition-all ${
-                leftTab === "settings" ? "border-[#e74b2d] text-[#e74b2d] bg-white/5" : "border-transparent text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              🔍 Page SEO
-            </button>
+        <aside className="w-80 bg-white border border-zinc-200/70 rounded-2xl shadow-xs flex flex-col shrink-0 select-none overflow-hidden">
+          <div className="p-2 border-b border-zinc-100">
+            <div className="flex gap-1 rounded-xl bg-zinc-100/80 p-1">
+              <button onClick={() => setLeftTab("elements")} className={tabBtn(leftTab === "elements")}>
+                <Icon name="plus" className="w-3.5 h-3.5" strokeWidth={2.2} />
+                Add
+              </button>
+              <button onClick={() => setLeftTab("style")} className={tabBtn(leftTab === "style")}>
+                <BuilderIcon name="sliders" className="w-3.5 h-3.5" />
+                Inspector
+              </button>
+              <button onClick={() => setLeftTab("settings")} className={tabBtn(leftTab === "settings")}>
+                <Icon name="search" className="w-3.5 h-3.5" />
+                Page SEO
+              </button>
+            </div>
           </div>
 
           {/* TAB 1: ADD SECTION / CONTAINER WIDGETS */}
           {leftTab === "elements" && (
             <div className="p-4 space-y-4 overflow-y-auto flex-1">
-              <span className="text-base font-bold text-sky-400 uppercase tracking-wider block">
-                Elementor Grid & Columns Container
-              </span>
+              <span className={sectionTitle}>Grid & columns container</span>
 
               <button
                 onClick={() => addBlock("customContainer")}
-                className="w-full p-4 bg-[#e74b2d]/20 border-2 border-dashed border-[#e74b2d] hover:bg-[#e74b2d]/30 rounded-2xl flex items-center justify-center gap-3 text-white font-bold text-base transition-all cursor-pointer shadow-md"
+                className="w-full p-3.5 bg-[#f0f8fd] border-2 border-dashed border-[#b8e0f6] hover:border-[#329AD4] hover:bg-[#EAF5FB] rounded-2xl flex items-center gap-3 text-left transition-all cursor-pointer group"
               >
-                <span className="text-xl">📊</span>
-                <span>Add Grid Container (1, 2, 3, 4 Cols)</span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#329AD4] text-white shadow-sm shadow-[#329AD4]/25 group-hover:scale-105 transition-transform">
+                  <BuilderIcon name="columns" className="w-4 h-4" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-[#1b5b80]">Add Grid Container</span>
+                  <span className="block text-xs text-[#2884b8]/80">1, 2, 3 or 4 columns</span>
+                </span>
               </button>
 
-              <span className="text-base font-bold text-zinc-400 uppercase tracking-wider block pt-2">
-                Pre-Built Layout Sections
-              </span>
+              <span className={cx(sectionTitle, "pt-2")}>Pre-built layout sections</span>
 
               <div className="grid grid-cols-1 gap-2">
-                {[
-                  { key: "marketingHero", label: "Marketing Hero Section", icon: "🚀", desc: "Hero with background banner & dual CTA" },
-                  { key: "splitFeature", label: "Feature Showcase (2-Col)", icon: "✨", desc: "Left/Right image with checkmark list" },
-                  { key: "threeStageGrid", label: "3-Stage Cards Stack", icon: "📦", desc: "Left title + 3 feature cards" },
-                  { key: "darkBanner", label: "Dark Stage Banner", icon: "🌙", desc: "Dark card with SVG bullet points" },
-                  { key: "corporateEcosystem", label: "Corporate Ecosystem", icon: "🏢", desc: "Overlapping cards & half-bg bottom section" },
-                ].map((item) => (
+                {([
+                  { key: "marketingHero", label: "Marketing Hero Section", icon: "sparkle", desc: "Hero with background banner & dual CTA" },
+                  { key: "splitFeature", label: "Feature Showcase (2-Col)", icon: "image", desc: "Left/Right image with checkmark list" },
+                  { key: "threeStageGrid", label: "3-Stage Cards Stack", icon: "layers", desc: "Left title + 3 feature cards" },
+                  { key: "darkBanner", label: "Dark Stage Banner", icon: "banners", desc: "Dark card with SVG bullet points" },
+                  { key: "corporateEcosystem", label: "Corporate Ecosystem", icon: "vendors", desc: "Overlapping cards & half-bg bottom section" },
+                ] as { key: string; label: string; icon: IconName; desc: string }[]).map((item) => (
                   <button
                     key={item.key}
                     onClick={() => addBlock(item.key as any)}
-                    className="p-3 bg-white/5 hover:bg-[#e74b2d]/20 border border-zinc-700/80 hover:border-[#e74b2d] rounded-xl flex items-center gap-3 transition-all cursor-pointer group text-left"
+                    className="p-2.5 bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] rounded-xl flex items-center gap-3 transition-all cursor-pointer group text-left"
                   >
-                    <span className="text-2xl group-hover:scale-110 transition-transform">{item.icon}</span>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#EAF5FB] text-[#2884b8] group-hover:bg-[#329AD4] group-hover:text-white transition-colors">
+                      <Icon name={item.icon} className="w-4 h-4" />
+                    </span>
                     <div className="min-w-0">
-                      <div className="text-base font-bold text-zinc-200 group-hover:text-white">{item.label}</div>
-                      <div className="text-base text-zinc-400 truncate">{item.desc}</div>
+                      <div className="text-xs font-semibold text-zinc-800 group-hover:text-[#1b5b80]">{item.label}</div>
+                      <div className="text-[11px] text-zinc-400 truncate">{item.desc}</div>
                     </div>
                   </button>
                 ))}
               </div>
 
-              <span className="text-base font-bold text-zinc-400 uppercase tracking-wider block pt-3">
-                WordPress blocks
-              </span>
-              <div className="grid grid-cols-2 gap-2">
+              <span className={cx(sectionTitle, "pt-3")}>WordPress blocks</span>
+              <div className="grid grid-cols-3 gap-2">
                 {[
                   { key: "heading", label: "Heading", icon: "H" },
                   { key: "text", label: "Paragraph", icon: "¶" },
                   { key: "list", label: "List", icon: "•" },
                   { key: "quote", label: "Quote", icon: "“" },
-                  { key: "image", label: "Image", icon: "🖼" },
+                  { key: "image", label: "Image", icon: "▨" },
                   { key: "gallery", label: "Gallery", icon: "▦" },
                   { key: "video", label: "Video", icon: "▶" },
                   { key: "buttons", label: "Buttons", icon: "▣" },
@@ -1815,32 +1858,34 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                   <button
                     key={item.key}
                     onClick={() => addBlock(item.key as keyof typeof DEFAULT_BLOCK_PRESETS)}
-                    className="p-3 bg-white/5 hover:bg-[#e74b2d]/20 border border-zinc-700/80 hover:border-[#e74b2d] rounded-xl flex flex-col items-center justify-center gap-1 transition-all cursor-pointer text-center"
+                    className="p-2 bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer text-center group"
                   >
-                    <span className="text-lg">{item.icon}</span>
-                    <span className="text-base font-bold text-zinc-300">{item.label}</span>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-50 text-sm font-bold text-zinc-500 group-hover:bg-[#EAF5FB] group-hover:text-[#2884b8] transition-colors">
+                      {item.icon}
+                    </span>
+                    <span className="text-[11px] font-semibold leading-tight text-zinc-600 group-hover:text-[#1b5b80]">{item.label}</span>
                   </button>
                 ))}
               </div>
 
-              <span className="text-base font-bold text-zinc-400 uppercase tracking-wider block pt-3">
-                More widgets
-              </span>
+              <span className={cx(sectionTitle, "pt-3")}>More widgets</span>
 
               <div className="grid grid-cols-2 gap-2">
-                {[
-                  { key: "hero", label: "Simple Hero", icon: "🎯" },
-                  { key: "features", label: "3-Col Grid", icon: "⚡" },
-                  { key: "contact", label: "Contact Box", icon: "📞" },
-                  { key: "html", label: "Custom HTML", icon: "</>" },
-                ].map((item) => (
+                {([
+                  { key: "hero", label: "Simple Hero", icon: "star" },
+                  { key: "features", label: "3-Col Grid", icon: "grid" },
+                  { key: "contact", label: "Contact Box", icon: "mail" },
+                  { key: "html", label: "Custom HTML", icon: "templates" },
+                ] as { key: string; label: string; icon: IconName }[]).map((item) => (
                   <button
                     key={item.key}
                     onClick={() => addBlock(item.key as any)}
-                    className="p-3 bg-white/5 hover:bg-[#e74b2d]/20 border border-zinc-700/80 hover:border-[#e74b2d] rounded-xl flex flex-col items-center justify-center gap-1 transition-all cursor-pointer group text-center"
+                    className="p-2.5 bg-white hover:bg-[#f0f8fd] border border-zinc-200 hover:border-[#b8e0f6] rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer group text-center"
                   >
-                    <span className="text-lg group-hover:scale-110 transition-transform">{item.icon}</span>
-                    <span className="text-base font-bold text-zinc-300 group-hover:text-white">{item.label}</span>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EAF5FB] text-[#2884b8] group-hover:bg-[#329AD4] group-hover:text-white transition-colors">
+                      <Icon name={item.icon} className="w-4 h-4" />
+                    </span>
+                    <span className="text-[11px] font-semibold text-zinc-600 group-hover:text-[#1b5b80]">{item.label}</span>
                   </button>
                 ))}
               </div>
@@ -1849,36 +1894,41 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
 
           {/* TAB 2: INSPECTOR & FULL STYLING */}
           {leftTab === "style" && (
-            <div className="p-4 space-y-5 overflow-y-auto flex-1 text-base">
+            <div className="p-4 space-y-5 overflow-y-auto flex-1 text-xs">
               {selectedBlock ? (
                 <>
-                  <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-                    <span className="text-base font-bold text-[#e74b2d] uppercase tracking-wider">
-                      Editing: {selectedBlock.type} Block
+                  <div className="flex items-center justify-between gap-2 rounded-xl bg-[#EAF5FB] ring-1 ring-[#b8e0f6] px-3 py-2">
+                    <span className="flex items-center gap-2 min-w-0">
+                      <BuilderIcon name="sliders" className="w-3.5 h-3.5 text-[#2884b8] shrink-0" />
+                      <span className="text-xs font-semibold text-[#1b5b80] truncate">
+                        Editing: <span className="font-mono">{selectedBlock.type}</span> block
+                      </span>
                     </span>
-                    <button onClick={() => deleteBlock(selectedBlock.id)} className="text-base text-red-400 hover:text-red-300 font-bold">
-                      Delete Section
+                    <button
+                      onClick={() => deleteBlock(selectedBlock.id)}
+                      className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50 cursor-pointer shrink-0"
+                    >
+                      <Icon name="trash" className="w-3.5 h-3.5" />
+                      Delete
                     </button>
                   </div>
 
                   {/* GRID CONTAINER COLUMNS SWITCHER & EDITING */}
                   {selectedBlock.type === "customContainer" && (
                     <div className="space-y-4">
-                      <span className="text-base font-bold text-sky-400 uppercase tracking-wider block">
-                        Grid Columns Layout Switcher
-                      </span>
+                      <span className={sectionTitle}>Grid columns layout</span>
 
                       <div>
-                        <label className="text-base text-zinc-400 block mb-1.5">Number of Columns</label>
-                        <div className="grid grid-cols-4 gap-1.5">
+                        <label className={labelClass}>Number of Columns</label>
+                        <div className="grid grid-cols-4 gap-1 rounded-xl bg-zinc-100/80 p-1">
                           {[1, 2, 3, 4].map((num) => (
                             <button
                               key={num}
                               onClick={() => setContainerColumnsCount(num)}
-                              className={`py-2 rounded-xl font-bold text-base border transition-all ${
+                              className={`py-1.5 rounded-lg font-semibold text-xs transition-all cursor-pointer ${
                                 (selectedBlock.props.columnsCount || 2) === num
-                                  ? "bg-[#e74b2d] text-white border-[#e74b2d]"
-                                  : "bg-white/5 text-zinc-400 border-zinc-700 hover:text-white"
+                                  ? "bg-white text-[#2884b8] shadow-xs"
+                                  : "text-zinc-500 hover:text-zinc-800"
                               }`}
                             >
                               {num} Col{num > 1 ? "s" : ""}
@@ -1889,69 +1939,71 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
 
                       {/* Edit Each Column Item */}
                       <div className="space-y-3 pt-2">
-                        <span className="text-base font-bold text-zinc-400 uppercase tracking-wider block">
-                          Edit Column Contents
-                        </span>
+                        <span className={sectionTitle}>Edit column contents</span>
 
                         {(selectedBlock.props.columns || []).map((col: ColumnItem, idx: number) => (
-                          <div key={col.id || idx} className="bg-white/5 border border-zinc-700/80 rounded-2xl p-3 space-y-2.5">
-                            <span className="font-bold text-sky-400 text-base">Column {idx + 1} Settings</span>
+                          <div key={col.id || idx} className="bg-zinc-50/70 border border-zinc-200 rounded-xl p-3 space-y-2.5">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#2884b8]">
+                              <span className="flex h-5 w-5 items-center justify-center rounded-md bg-[#EAF5FB] text-[10px] font-bold">{idx + 1}</span>
+                              Column {idx + 1} settings
+                            </span>
 
                             <div>
-                              <label className="text-base text-zinc-400 block mb-1">Column Heading</label>
+                              <label className={labelClass}>Column Heading</label>
                               <input
                                 type="text"
                                 value={col.heading || ""}
                                 onChange={(e) => updateSelectedColumn(idx, "heading", e.target.value)}
-                                className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2.5 py-1 text-base text-white"
+                                className={fieldInput}
                               />
                             </div>
 
                             <div>
-                              <label className="text-base text-zinc-400 block mb-1">Column Paragraph</label>
+                              <label className={labelClass}>Column Paragraph</label>
                               <textarea
                                 rows={2}
                                 value={col.text || ""}
                                 onChange={(e) => updateSelectedColumn(idx, "text", e.target.value)}
-                                className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2.5 py-1 text-base text-white resize-none"
+                                className={cx(fieldInput, "resize-none")}
                               />
                             </div>
 
                             <div>
-                              <label className="text-base text-zinc-400 block mb-1">Column Image</label>
+                              <label className={labelClass}>Column Image</label>
                               <div className="flex items-center gap-2">
                                 <input
                                   type="text"
                                   value={col.imgUrl || ""}
                                   onChange={(e) => updateSelectedColumn(idx, "imgUrl", e.target.value)}
-                                  className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2.5 py-1 text-base text-white font-mono"
+                                  className={cx(fieldInput, "font-mono")}
                                 />
                                 <button
                                   onClick={() => openMediaPicker("colProp", "imgUrl", idx)}
-                                  className="px-2.5 py-1 bg-[#e74b2d] text-white text-base font-bold rounded-xl shrink-0"
+                                  className={uploadBtn}
                                 >
-                                  Upload 🖼️
+                                  <Icon name="image" className="w-3.5 h-3.5" />
+                                  Media
                                 </button>
                               </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-2">
                               <div>
-                                <label className="text-base text-zinc-400 block mb-1">Button Label</label>
+                                <label className={labelClass}>Button Label</label>
                                 <input
                                   type="text"
                                   value={col.btnText || ""}
                                   onChange={(e) => updateSelectedColumn(idx, "btnText", e.target.value)}
-                                  className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2 py-1 text-base text-white"
+                                  className={fieldInput}
                                 />
                               </div>
                               <div>
-                                <label className="text-base text-zinc-400 block mb-1">Button URL</label>
+                                <label className={labelClass}>Button URL</label>
                                 <input
                                   type="text"
                                   value={col.btnUrl || ""}
                                   onChange={(e) => updateSelectedColumn(idx, "btnUrl", e.target.value)}
-                                  className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2 py-1 text-base text-white"
+                                  className={fieldInput}
                                 />
                               </div>
                             </div>
@@ -1964,44 +2016,43 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                   {/* PRESET SECTION PROPERTIES */}
                   {selectedBlock.type !== "customContainer" && (
                     <div className="space-y-3">
-                      <span className="text-base font-bold text-zinc-400 uppercase tracking-wider block">
-                        Content & Text Parameters
-                      </span>
+                      <span className={sectionTitle}>Content & text</span>
 
                       {selectedBlock.type === "marketingHero" && (
                         <>
                           <div>
-                            <label className="text-base text-zinc-400 block mb-1">Badge Pill Text</label>
+                            <label className={labelClass}>Badge Pill Text</label>
                             <input
                               type="text"
                               value={selectedBlock.props.badgeText || ""}
                               onChange={(e) => updateSelectedProp("badgeText", e.target.value)}
-                              className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white"
+                              className={fieldInput}
                             />
                           </div>
                           <div>
-                            <label className="text-base text-zinc-400 block mb-1">Headline Title</label>
+                            <label className={labelClass}>Headline Title</label>
                             <textarea
                               rows={2}
                               value={selectedBlock.props.title || ""}
                               onChange={(e) => updateSelectedProp("title", e.target.value)}
-                              className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white resize-none"
+                              className={cx(fieldInput, "resize-none")}
                             />
                           </div>
                           <div>
-                            <label className="text-base text-zinc-400 block mb-1">Hero Image</label>
+                            <label className={labelClass}>Hero Image</label>
                             <div className="flex items-center gap-2">
                               <input
                                 type="text"
                                 value={selectedBlock.props.heroImg || ""}
                                 onChange={(e) => updateSelectedProp("heroImg", e.target.value)}
-                                className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white font-mono"
+                                className={cx(fieldInput, "font-mono")}
                               />
                               <button
                                 onClick={() => openMediaPicker("prop", "heroImg")}
-                                className="px-3 py-1.5 bg-[#e74b2d] text-white text-base font-bold rounded-xl shrink-0"
+                                className={uploadBtn}
                               >
-                                Upload 🖼️
+                                <Icon name="image" className="w-3.5 h-3.5" />
+                                Media
                               </button>
                             </div>
                           </div>
@@ -2011,28 +2062,29 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                       {selectedBlock.type === "splitFeature" && (
                         <>
                           <div>
-                            <label className="text-base text-zinc-400 block mb-1">Section Title</label>
+                            <label className={labelClass}>Section Title</label>
                             <input
                               type="text"
                               value={selectedBlock.props.title || ""}
                               onChange={(e) => updateSelectedProp("title", e.target.value)}
-                              className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white"
+                              className={fieldInput}
                             />
                           </div>
                           <div>
-                            <label className="text-base text-zinc-400 block mb-1">Showcase Image</label>
+                            <label className={labelClass}>Showcase Image</label>
                             <div className="flex items-center gap-2">
                               <input
                                 type="text"
                                 value={selectedBlock.props.imgUrl || ""}
                                 onChange={(e) => updateSelectedProp("imgUrl", e.target.value)}
-                                className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white font-mono"
+                                className={cx(fieldInput, "font-mono")}
                               />
                               <button
                                 onClick={() => openMediaPicker("prop", "imgUrl")}
-                                className="px-3 py-1.5 bg-[#e74b2d] text-white text-base font-bold rounded-xl shrink-0"
+                                className={uploadBtn}
                               >
-                                Upload 🖼️
+                                <Icon name="image" className="w-3.5 h-3.5" />
+                                Media
                               </button>
                             </div>
                           </div>
@@ -2041,19 +2093,20 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
 
                       {selectedBlock.type === "image" && (
                         <div>
-                          <label className="text-base text-zinc-400 block mb-1">Image URL / File</label>
+                          <label className={labelClass}>Image URL / File</label>
                           <div className="flex items-center gap-2">
                             <input
                               type="text"
                               value={selectedBlock.props.url || ""}
                               onChange={(e) => updateSelectedProp("url", e.target.value)}
-                              className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white font-mono"
+                              className={cx(fieldInput, "font-mono")}
                             />
                             <button
                               onClick={() => openMediaPicker("prop", "url")}
-                              className="px-3 py-1.5 bg-[#e74b2d] text-white text-base font-bold rounded-xl shrink-0"
+                              className={uploadBtn}
                             >
-                              Upload 🖼️
+                              <Icon name="image" className="w-3.5 h-3.5" />
+                              Media
                             </button>
                           </div>
                         </div>
@@ -2061,24 +2114,24 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
 
                       {selectedBlock.type === "text" && (
                         <div>
-                          <label className="text-base text-zinc-400 block mb-1">Paragraph Text</label>
+                          <label className={labelClass}>Paragraph Text</label>
                           <textarea
                             rows={4}
                             value={selectedBlock.props.content || ""}
                             onChange={(e) => updateSelectedProp("content", e.target.value)}
-                            className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-1.5 text-base text-white resize-none"
+                            className={cx(fieldInput, "resize-none")}
                           />
                         </div>
                       )}
 
                       {selectedBlock.type === "html" && (
                         <div>
-                          <label className="text-base text-zinc-400 block mb-1">Raw HTML / SVG Code</label>
+                          <label className={labelClass}>Raw HTML / SVG Code</label>
                           <textarea
                             rows={6}
                             value={selectedBlock.props.code || ""}
                             onChange={(e) => updateSelectedProp("code", e.target.value)}
-                            className="w-full bg-[#14151a] border border-zinc-700 rounded-xl p-3 text-base text-sky-300 font-mono resize-none"
+                            className="w-full rounded-lg border border-zinc-800 bg-zinc-900 p-3 text-xs text-sky-200 font-mono resize-none focus:outline-none focus:border-[#329AD4] focus:ring-4 focus:ring-[#329AD4]/10"
                           />
                         </div>
                       )}
@@ -2090,17 +2143,15 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                   )}
 
                   {/* CONTAINER & PAGE WIDTH SETTINGS */}
-                  <div className="space-y-3 pt-3 border-t border-zinc-800">
-                    <span className="text-base font-bold text-sky-400 uppercase tracking-wider block">
-                      Container Width & Layout Size
-                    </span>
+                  <div className="space-y-3 pt-4 border-t border-zinc-100">
+                    <span className={sectionTitle}>Container width & layout</span>
 
                     <div>
-                      <label className="text-base text-zinc-400 block mb-1">Container Width</label>
+                      <label className={labelClass}>Container Width</label>
                       <select
                         value={selectedBlock.styles.containerWidth || "7xl"}
                         onChange={(e) => updateSelectedStyle("containerWidth", e.target.value as any)}
-                        className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2.5 py-1.5 text-base text-white"
+                        className={cx(fieldInput, "cursor-pointer")}
                       >
                         <option value="full">Full Width (100% Edge-to-Edge)</option>
                         <option value="7xl">Boxed Extra Wide (1280px / 7xl)</option>
@@ -2110,59 +2161,58 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                     </div>
 
                     <div>
-                      <label className="text-base text-zinc-400 block mb-1">Section Background Image</label>
+                      <label className={labelClass}>Section Background Image</label>
                       <div className="flex items-center gap-2">
                         <input
                           type="text"
                           value={selectedBlock.styles.bgImage || ""}
                           onChange={(e) => updateSelectedStyle("bgImage", e.target.value)}
                           placeholder="/banners/marketing-banner.png"
-                          className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2.5 py-1 text-base text-white font-mono"
+                          className={cx(fieldInput, "font-mono")}
                         />
                         <button
                           onClick={() => openMediaPicker("style", "bgImage")}
-                          className="px-3 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl shrink-0 cursor-pointer"
+                          className={uploadBtn}
                         >
-                          Upload 🖼️
+                          <Icon name="image" className="w-3.5 h-3.5" />
+                          Media
                         </button>
                       </div>
                     </div>
                   </div>
 
                   {/* COLOR & SPACING STYLES */}
-                  <div className="space-y-3 pt-3 border-t border-zinc-800">
-                    <span className="text-base font-bold text-zinc-400 uppercase tracking-wider block">
-                      Section Styling & Spacing
-                    </span>
+                  <div className="space-y-3 pt-4 border-t border-zinc-100">
+                    <span className={sectionTitle}>Section styling & spacing</span>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-base text-zinc-400 block mb-1">Background Color</label>
+                        <label className={labelClass}>Background Color</label>
                         <input
                           type="color"
                           value={selectedBlock.styles.bgColor === "transparent" ? "#ffffff" : selectedBlock.styles.bgColor}
                           onChange={(e) => updateSelectedStyle("bgColor", e.target.value)}
-                          className="w-full h-8 bg-transparent rounded-lg cursor-pointer border border-zinc-700"
+                          className="w-full h-8 bg-white rounded-lg cursor-pointer border border-zinc-200 p-0.5"
                         />
                       </div>
 
                       <div>
-                        <label className="text-base text-zinc-400 block mb-1">Text Color</label>
+                        <label className={labelClass}>Text Color</label>
                         <input
                           type="color"
                           value={selectedBlock.styles.textColor || "#18181b"}
                           onChange={(e) => updateSelectedStyle("textColor", e.target.value)}
-                          className="w-full h-8 bg-transparent rounded-lg cursor-pointer border border-zinc-700"
+                          className="w-full h-8 bg-white rounded-lg cursor-pointer border border-zinc-200 p-0.5"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-base text-zinc-400 block mb-1">Text alignment</label>
+                      <label className={labelClass}>Text alignment</label>
                       <select
                         value={selectedBlock.styles.textAlign || "left"}
                         onChange={(e) => updateSelectedStyle("textAlign", e.target.value as "left" | "center" | "right")}
-                        className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2.5 py-1.5 text-base text-white"
+                        className={cx(fieldInput, "cursor-pointer")}
                       >
                         <option value="left">Left</option>
                         <option value="center">Center</option>
@@ -2171,31 +2221,34 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-base text-zinc-400 block mb-1">Padding Top (px)</label>
+                        <label className={labelClass}>Padding Top (px)</label>
                         <input
                           type="number"
                           value={selectedBlock.styles.paddingTop}
                           onChange={(e) => updateSelectedStyle("paddingTop", Number(e.target.value))}
-                          className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2.5 py-1 text-base text-white"
+                          className={fieldInput}
                         />
                       </div>
 
                       <div>
-                        <label className="text-base text-zinc-400 block mb-1">Padding Bottom (px)</label>
+                        <label className={labelClass}>Padding Bottom (px)</label>
                         <input
                           type="number"
                           value={selectedBlock.styles.paddingBottom}
                           onChange={(e) => updateSelectedStyle("paddingBottom", Number(e.target.value))}
-                          className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-2.5 py-1 text-base text-white"
+                          className={fieldInput}
                         />
                       </div>
                     </div>
                   </div>
                 </>
               ) : (
-                <div className="py-20 text-center space-y-2">
-                  <p className="text-zinc-500 text-base">No section selected.</p>
-                  <p className="text-zinc-600 text-base">
+                <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF5FB] text-[#329AD4]">
+                    <BuilderIcon name="sliders" className="w-6 h-6" />
+                  </span>
+                  <p className="mt-3 text-sm font-semibold text-zinc-800">No section selected</p>
+                  <p className="mt-1 text-xs text-zinc-500">
                     Click any section on the canvas to inspect and customize its settings.
                   </p>
                 </div>
@@ -2207,42 +2260,42 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
           {leftTab === "settings" && (
             <div className="p-4 space-y-4 overflow-y-auto flex-1">
               <div>
-                <label className="text-base font-bold text-zinc-300 block mb-1">Page Title</label>
+                <label className={labelClass}>Page Title</label>
                 <input
                   type="text"
                   value={pageTitle}
                   onChange={(e) => setPageTitle(e.target.value)}
-                  className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-2 text-base text-white"
+                  className={fieldInput}
                 />
               </div>
 
               <div>
-                <label className="text-base font-bold text-zinc-300 block mb-1">URL Slug</label>
+                <label className={labelClass}>URL Slug</label>
                 <input
                   type="text"
                   value={pageSlug}
                   onChange={(e) => setPageSlug(e.target.value)}
-                  className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-2 text-base font-mono text-white"
+                  className={cx(fieldInput, "font-mono")}
                 />
               </div>
 
               <div>
-                <label className="text-base font-bold text-zinc-300 block mb-1">Meta Title</label>
+                <label className={labelClass}>Meta Title</label>
                 <input
                   type="text"
                   value={metaTitle}
                   onChange={(e) => setMetaTitle(e.target.value)}
-                  className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-2 text-base text-white"
+                  className={fieldInput}
                 />
               </div>
 
               <div>
-                <label className="text-base font-bold text-zinc-300 block mb-1">Meta Description</label>
+                <label className={labelClass}>Meta Description</label>
                 <textarea
                   rows={3}
                   value={metaDescription}
                   onChange={(e) => setMetaDescription(e.target.value)}
-                  className="w-full bg-[#14151a] border border-zinc-700 rounded-xl px-3 py-2 text-base text-white resize-none"
+                  className={cx(fieldInput, "resize-none")}
                 />
               </div>
             </div>
@@ -2250,19 +2303,32 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
         </aside>
 
         {/* ── CENTER LIVE CANVAS ───────────────────────────────── */}
-        <main className="flex-1 bg-[#14151a] p-6 overflow-y-auto flex justify-center items-start">
-          <div className={`transition-all duration-300 bg-white rounded-3xl shadow-2xl overflow-hidden min-h-[600px] border border-zinc-200 text-zinc-900 ${viewportWidth}`}>
-            <div className="bg-[#18181b] text-white px-6 py-3 flex items-center justify-between text-base border-b border-zinc-800">
-              <span className="font-bold tracking-wider">PRINTGRAPHY LIVE CANVAS</span>
-              <span className="text-base text-zinc-400 font-mono">/pages/{pageSlug || "slug"}</span>
+        <main className="flex-1 rounded-2xl border border-[#dbeefb] bg-[#f6fafd] [background-image:radial-gradient(#cfe4f3_1px,transparent_1px)] [background-size:18px_18px] p-6 overflow-y-auto flex justify-center items-start">
+          <div className={`transition-all duration-300 bg-white rounded-2xl shadow-xl shadow-[#1b5b80]/10 overflow-hidden min-h-[600px] border border-zinc-200/80 text-zinc-900 ${viewportWidth}`}>
+            <div className="bg-zinc-50/90 px-4 py-2.5 flex items-center gap-3 text-xs border-b border-zinc-200/80">
+              <span className="flex items-center gap-1.5 shrink-0">
+                <span className="h-2.5 w-2.5 rounded-full bg-zinc-300" />
+                <span className="h-2.5 w-2.5 rounded-full bg-zinc-300" />
+                <span className="h-2.5 w-2.5 rounded-full bg-zinc-300" />
+              </span>
+              <span className="flex-1 min-w-0 truncate rounded-lg bg-white border border-zinc-200 px-3 py-1 text-center font-mono text-[11px] text-zinc-500">
+                /pages/{pageSlug || "slug"}
+              </span>
+              <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-[#EAF5FB] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#2884b8] shrink-0">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#329AD4]" />
+                Live canvas
+              </span>
             </div>
 
             <div className="space-y-4 min-h-[500px]">
               {blocks.length === 0 ? (
-                <div className="py-24 text-center border-2 border-dashed border-zinc-300 rounded-3xl space-y-3 m-6">
-                  <p className="text-zinc-500 font-bold text-base">Canvas is empty.</p>
-                  <p className="text-zinc-400 text-base max-w-sm mx-auto">
-                    Click "+ Add Section" from the left panel to start building your page.
+                <div className="py-20 px-6 text-center border-2 border-dashed border-[#b8e0f6] bg-[#f0f8fd]/60 rounded-2xl m-6 flex flex-col items-center">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EAF5FB] text-[#329AD4]">
+                    <Icon name="layers" className="w-7 h-7" />
+                  </span>
+                  <p className="mt-4 text-sm font-semibold text-zinc-900">Canvas is empty</p>
+                  <p className="mt-1 text-sm text-zinc-500 max-w-sm mx-auto">
+                    Click &quot;Add&quot; in the left panel to start building your page.
                   </p>
                 </div>
               ) : (
@@ -2293,8 +2359,8 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                         setLeftTab("style");
                       }}
                       className={`relative group transition-all cursor-pointer ${
-                        isSelected ? "ring-4 ring-[#e74b2d] ring-offset-2 z-30" : "hover:ring-2 hover:ring-sky-300"
-                      } ${isDragging ? "opacity-30" : ""} ${isDragOver ? "border-t-4 border-[#e74b2d]" : ""}`}
+                        isSelected ? "ring-2 ring-[#329AD4] ring-offset-2 ring-offset-white z-30" : "hover:ring-2 hover:ring-[#b8e0f6]"
+                      } ${isDragging ? "opacity-30" : ""} ${isDragOver ? "border-t-4 border-[#329AD4]" : ""}`}
                       style={{
                         backgroundColor: st.bgColor,
                         backgroundImage: st.bgImage ? `url('${st.bgImage}')` : undefined,
@@ -2308,28 +2374,32 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                       }}
                     >
                       {/* Floating Control Bar */}
-                      <div className="absolute top-3 right-3 z-40 opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-900/90 text-white p-1 rounded-xl flex items-center gap-1 shadow-lg text-base">
-                        <span className="px-2 py-0.5 font-mono text-base text-sky-400 font-bold uppercase">
+                      <div className="absolute top-3 right-3 z-40 opacity-0 group-hover:opacity-100 transition-opacity bg-white/95 backdrop-blur border border-zinc-200 text-zinc-500 p-1 rounded-xl flex items-center gap-0.5 shadow-lg shadow-zinc-900/10 text-xs">
+                        <span className="px-2 py-0.5 mr-0.5 rounded-md bg-[#EAF5FB] font-mono text-[10px] text-[#2884b8] font-semibold uppercase">
                           {block.type}
                         </span>
                         <button
                           onClick={(e) => { e.stopPropagation(); moveBlock(index, "up"); }}
                           disabled={index === 0}
-                          className="w-6 h-6 hover:bg-white/20 rounded flex items-center justify-center disabled:opacity-30"
-                        >▲</button>
+                          title="Move up"
+                          className="w-7 h-7 hover:bg-[#EAF5FB] hover:text-[#2884b8] rounded-lg flex items-center justify-center disabled:opacity-30 cursor-pointer"
+                        ><BuilderIcon name="arrowUp" className="w-3.5 h-3.5" /></button>
                         <button
                           onClick={(e) => { e.stopPropagation(); moveBlock(index, "down"); }}
                           disabled={index === blocks.length - 1}
-                          className="w-6 h-6 hover:bg-white/20 rounded flex items-center justify-center disabled:opacity-30"
-                        >▼</button>
+                          title="Move down"
+                          className="w-7 h-7 hover:bg-[#EAF5FB] hover:text-[#2884b8] rounded-lg flex items-center justify-center disabled:opacity-30 cursor-pointer"
+                        ><BuilderIcon name="arrowDown" className="w-3.5 h-3.5" /></button>
                         <button
                           onClick={(e) => { e.stopPropagation(); duplicateBlock(index); }}
-                          className="w-6 h-6 hover:bg-white/20 rounded flex items-center justify-center"
-                        >📋</button>
+                          title="Duplicate"
+                          className="w-7 h-7 hover:bg-[#EAF5FB] hover:text-[#2884b8] rounded-lg flex items-center justify-center cursor-pointer"
+                        ><BuilderIcon name="copy" className="w-3.5 h-3.5" /></button>
                         <button
                           onClick={(e) => { e.stopPropagation(); deleteBlock(block.id); }}
-                          className="w-6 h-6 hover:bg-red-500/80 rounded flex items-center justify-center text-red-300"
-                        >✕</button>
+                          title="Delete"
+                          className="w-7 h-7 hover:bg-rose-50 hover:text-rose-600 rounded-lg flex items-center justify-center cursor-pointer"
+                        ><Icon name="trash" className="w-3.5 h-3.5" /></button>
                       </div>
 
                       {/* Canvas Render Block */}
@@ -2362,7 +2432,7 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                                   </div>
                                   {col.btnText && (
                                     <div>
-                                      <span className="inline-block px-4 py-2 bg-[#e74b2d] text-white text-base font-bold rounded-lg shadow-xs">
+                                      <span className="inline-block px-4 py-2 bg-[#329AD4] text-white text-base font-bold rounded-lg shadow-xs">
                                         {col.btnText}
                                       </span>
                                     </div>
@@ -2376,14 +2446,14 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                         {block.type === "marketingHero" && (
                           <div className={`${containerClass} grid gap-8 items-center text-left py-6 ${viewportMode === "desktop" ? "grid-cols-2" : "grid-cols-1"}`}>
                             <div className="space-y-4">
-                              <span className="px-3 py-1 rounded-full bg-[#fff1eb] border border-[#e74b2d]/30 text-[#e74b2d] text-base font-bold">
+                              <span className="px-3 py-1 rounded-full bg-[#EAF5FB] border border-[#329AD4]/30 text-[#329AD4] text-base font-bold">
                                 {block.props.badgeText}
                               </span>
                               <h1 className="text-2xl sm:text-4xl font-extrabold text-zinc-900 leading-tight">{block.props.title}</h1>
-                              <p className="text-[#e74b2d] font-bold text-base sm:text-base">{block.props.subtitle}</p>
+                              <p className="text-[#329AD4] font-bold text-base sm:text-base">{block.props.subtitle}</p>
                               <p className="text-zinc-600 text-base sm:text-base">{block.props.body}</p>
                               <div className={`flex gap-3 pt-2 ${viewportMode === "mobile" ? "flex-col" : "flex-row"}`}>
-                                <span className="px-5 py-2.5 bg-[#e74b2d] text-white text-base font-bold rounded-md shadow-md">
+                                <span className="px-5 py-2.5 bg-[#329AD4] text-white text-base font-bold rounded-md shadow-md">
                                   {block.props.btn1Text}
                                 </span>
                                 <span className="px-5 py-2.5 bg-[#1c1d22] text-white text-base font-bold rounded-md shadow-md">
@@ -2400,21 +2470,21 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                         {block.type === "splitFeature" && (
                           <div className={`${containerClass} grid gap-8 items-center text-left py-6 ${viewportMode === "desktop" ? "grid-cols-2" : "grid-cols-1"}`}>
                             <div className={`space-y-4 ${viewportMode === "desktop" && block.props.imagePosition === "left" ? "order-2" : "order-1"}`}>
-                              <span className="px-3 py-1 rounded-full bg-[#fff1eb] border border-[#e74b2d]/30 text-[#e74b2d] text-base font-bold">
+                              <span className="px-3 py-1 rounded-full bg-[#EAF5FB] border border-[#329AD4]/30 text-[#329AD4] text-base font-bold">
                                 {block.props.badgeText}
                               </span>
                               <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900">{block.props.title}</h2>
-                              <p className="text-[#e74b2d] font-bold text-base">{block.props.tagline}</p>
+                              <p className="text-[#329AD4] font-bold text-base">{block.props.tagline}</p>
                               <p className="text-zinc-600 text-base sm:text-base">{block.props.body}</p>
                               <ul className="space-y-2">
                                 {(block.props.features || []).map((f: string, i: number) => (
                                   <li key={i} className="flex items-center gap-2 text-base font-bold text-zinc-800">
-                                    <span className="text-[#e74b2d]">✓</span> {f}
+                                    <span className="text-[#329AD4]">✓</span> {f}
                                   </li>
                                 ))}
                               </ul>
                               {block.props.btnText && (
-                                <span className="inline-block px-5 py-2.5 bg-[#e74b2d] text-white text-base font-bold rounded-md shadow-md">
+                                <span className="inline-block px-5 py-2.5 bg-[#329AD4] text-white text-base font-bold rounded-md shadow-md">
                                   {block.props.btnText}
                                 </span>
                               )}
@@ -2456,53 +2526,73 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
 
       {/* ── WORDPRESS MEDIA LIBRARY MODAL ────────────────────────────────────── */}
       {showMediaModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#1e1e24] border border-zinc-700 rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden text-white">
-            <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-lg">🖼️</span>
-                <h3 className="font-extrabold text-base text-white">WordPress Media Library & Image Upload</h3>
+        <div className="fixed inset-0 z-50 bg-zinc-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-zinc-200/70 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden text-zinc-900">
+            <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8]">
+                  <Icon name="image" className="w-4 h-4" />
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold text-zinc-900">Media Library</h3>
+                  <p className="text-xs text-zinc-500">Pick an existing image or upload a new one</p>
+                </div>
               </div>
               <button
                 onClick={() => setShowMediaModal(false)}
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-zinc-300 hover:text-white text-base"
+                aria-label="Close"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-[#EAF5FB] hover:text-[#2884b8] transition-colors cursor-pointer"
               >
-                ✕
+                <Icon name="close" className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="flex border-b border-zinc-800 bg-[#14151a] px-6">
-              <button
-                onClick={() => setMediaTab("library")}
-                className={`py-3 text-base font-bold border-b-2 px-4 transition-all ${
-                  mediaTab === "library"
-                    ? "border-[#e74b2d] text-[#e74b2d] bg-white/5"
-                    : "border-transparent text-zinc-400 hover:text-white"
-                }`}
-              >
-                Media Library ({uploadedImages.length + SYSTEM_PRESET_IMAGES.length})
-              </button>
-              <button
-                onClick={() => setMediaTab("upload")}
-                className={`py-3 text-base font-bold border-b-2 px-4 transition-all ${
-                  mediaTab === "upload"
-                    ? "border-[#e74b2d] text-[#e74b2d] bg-white/5"
-                    : "border-transparent text-zinc-400 hover:text-white"
-                }`}
-              >
-                ↑ Upload New Image File
-              </button>
+            <div className="px-5 pt-3 pb-3 border-b border-zinc-100">
+              <div className="inline-flex gap-1 rounded-xl bg-zinc-100/80 p-1">
+                <button
+                  onClick={() => setMediaTab("library")}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                    mediaTab === "library"
+                      ? "bg-white text-[#2884b8] shadow-xs"
+                      : "text-zinc-500 hover:text-zinc-800"
+                  }`}
+                >
+                  <Icon name="grid" className="w-3.5 h-3.5" />
+                  Media Library
+                  <span className={`rounded-full px-1.5 text-[10px] ${mediaTab === "library" ? "bg-[#EAF5FB] text-[#2884b8]" : "bg-zinc-200 text-zinc-600"}`}>
+                    {uploadedImages.length + SYSTEM_PRESET_IMAGES.length}
+                  </span>
+                </button>
+                <button
+                  onClick={() => setMediaTab("upload")}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                    mediaTab === "upload"
+                      ? "bg-white text-[#2884b8] shadow-xs"
+                      : "text-zinc-500 hover:text-zinc-800"
+                  }`}
+                >
+                  <Icon name="upload" className="w-3.5 h-3.5" />
+                  Upload New Image
+                </button>
+              </div>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1 min-h-[350px]">
+            <div className="p-5 overflow-y-auto flex-1 min-h-[350px] bg-zinc-50/40">
               {mediaTab === "upload" && (
-                <div className="flex flex-col items-center justify-center h-full py-12 border-2 border-dashed border-zinc-700 rounded-2xl bg-white/5 text-center space-y-4">
-                  <span className="text-4xl animate-bounce">📤</span>
+                <div className="flex flex-col items-center justify-center h-full py-12 border-2 border-dashed border-[#b8e0f6] rounded-2xl bg-[#f0f8fd] text-center space-y-4">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#329AD4] shadow-xs">
+                    <Icon name="upload" className="w-7 h-7" />
+                  </span>
                   <div>
-                    <h4 className="font-bold text-base text-white">Upload image file to /public/uploads</h4>
-                    <p className="text-base text-zinc-400 mt-1">Supports PNG, JPG, WEBP, SVG graphics up to 10MB</p>
+                    <h4 className="text-sm font-semibold text-zinc-900">Upload image file to /public/uploads</h4>
+                    <p className="text-xs text-zinc-500 mt-1">Supports PNG, JPG, WEBP, SVG graphics up to 10MB</p>
                   </div>
-                  <label className="px-6 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl cursor-pointer shadow-lg transition-all inline-block">
+                  <label className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-semibold rounded-xl cursor-pointer shadow-sm shadow-[#329AD4]/25 transition-all">
+                    {uploading ? (
+                      <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                    ) : (
+                      <Icon name="upload" className="w-4 h-4" strokeWidth={2.2} />
+                    )}
                     {uploading ? "Uploading Image..." : "Select File From Device"}
                     <input
                       type="file"
@@ -2516,25 +2606,30 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
               )}
 
               {mediaTab === "library" && (
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {uploadedImages.length > 0 && (
-                    <div className="space-y-2">
-                      <span className="text-base font-bold text-sky-400 uppercase tracking-wider block">
-                        Server Uploaded Files (/public/uploads)
+                    <div className="space-y-2.5">
+                      <span className={sectionTitle}>
+                        Server uploaded files (/public/uploads)
                       </span>
                       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
                         {uploadedImages.map((img, i) => (
                           <div
                             key={i}
                             onClick={() => setSelectedMediaUrl(img.url)}
-                            className={`relative group rounded-xl overflow-hidden border-2 cursor-pointer transition-all aspect-square bg-zinc-900 ${
+                            className={`relative group rounded-xl overflow-hidden border cursor-pointer transition-all aspect-square bg-white ${
                               selectedMediaUrl === img.url
-                                ? "border-[#e74b2d] ring-4 ring-[#e74b2d]/40 scale-95"
-                                : "border-zinc-700 hover:border-zinc-400"
+                                ? "border-[#329AD4] ring-4 ring-[#329AD4]/20"
+                                : "border-zinc-200 hover:border-[#b8e0f6] hover:shadow-md"
                             }`}
                           >
                             <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
-                            <div className="absolute inset-x-0 bottom-0 bg-black/80 p-1 text-base text-zinc-300 font-mono truncate text-center">
+                            {selectedMediaUrl === img.url && (
+                              <span className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#329AD4] text-white shadow">
+                                <Icon name="check" className="w-3 h-3" strokeWidth={3} />
+                              </span>
+                            )}
+                            <div className="absolute inset-x-0 bottom-0 bg-white/90 backdrop-blur px-1.5 py-1 text-[10px] text-zinc-600 font-mono truncate text-center border-t border-zinc-100">
                               {img.name}
                             </div>
                           </div>
@@ -2543,23 +2638,28 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
                     </div>
                   )}
 
-                  <div className="space-y-2 pt-2">
-                    <span className="text-base font-bold text-zinc-400 uppercase tracking-wider block">
-                      System Theme & Banner Assets
+                  <div className="space-y-2.5">
+                    <span className={sectionTitle}>
+                      System theme & banner assets
                     </span>
                     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
                       {SYSTEM_PRESET_IMAGES.map((img, i) => (
                         <div
                           key={i}
                           onClick={() => setSelectedMediaUrl(img.url)}
-                          className={`relative group rounded-xl overflow-hidden border-2 cursor-pointer transition-all aspect-square bg-zinc-900 ${
+                          className={`relative group rounded-xl overflow-hidden border cursor-pointer transition-all aspect-square bg-white ${
                             selectedMediaUrl === img.url
-                              ? "border-[#e74b2d] ring-4 ring-[#e74b2d]/40 scale-95"
-                              : "border-zinc-700 hover:border-zinc-400"
+                              ? "border-[#329AD4] ring-4 ring-[#329AD4]/20"
+                              : "border-zinc-200 hover:border-[#b8e0f6] hover:shadow-md"
                           }`}
                         >
                           <img src={img.url} alt={img.label} className="w-full h-full object-cover" />
-                          <div className="absolute inset-x-0 bottom-0 bg-black/80 p-1 text-base text-zinc-300 font-sans truncate text-center">
+                          {selectedMediaUrl === img.url && (
+                            <span className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#329AD4] text-white shadow">
+                              <Icon name="check" className="w-3 h-3" strokeWidth={3} />
+                            </span>
+                          )}
+                          <div className="absolute inset-x-0 bottom-0 bg-white/90 backdrop-blur px-1.5 py-1 text-[10px] text-zinc-600 font-sans truncate text-center border-t border-zinc-100">
                             {img.label}
                           </div>
                         </div>
@@ -2570,24 +2670,25 @@ export default function ElementorPageBuilder({ params }: { params: Promise<{ id:
               )}
             </div>
 
-            <div className="px-6 py-4 border-t border-zinc-800 bg-[#14151a] flex items-center justify-between">
+            <div className="px-5 py-3.5 border-t border-zinc-100 bg-white flex items-center justify-between">
               <div className="min-w-0 pr-4">
-                <span className="text-base text-zinc-400 block truncate">
-                  Selected URL: <span className="text-white font-mono">{selectedMediaUrl || "None"}</span>
+                <span className="text-xs text-zinc-500 block truncate">
+                  Selected: <span className="text-zinc-800 font-mono">{selectedMediaUrl || "None"}</span>
                 </span>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => setShowMediaModal(false)}
-                  className="px-4 py-2 rounded-xl text-base font-bold text-zinc-400 hover:text-white bg-white/5"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold text-zinc-700 bg-white border border-zinc-200 hover:border-[#329AD4] hover:text-[#2884b8] transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={applySelectedMedia}
                   disabled={!selectedMediaUrl}
-                  className="px-6 py-2 rounded-xl text-base font-bold bg-[#e74b2d] hover:bg-[#c93e23] text-white disabled:opacity-50 shadow-lg cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-[#329AD4] hover:bg-[#2884b8] text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-[#329AD4]/25 cursor-pointer transition-all"
                 >
+                  <Icon name="check" className="w-4 h-4" strokeWidth={2.2} />
                   Insert Into Section
                 </button>
               </div>

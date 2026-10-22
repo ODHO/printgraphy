@@ -31,8 +31,8 @@ export default function MarketingHero() {
 
         {/* Main Headline */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.15] tracking-tight mx-auto">
-          The Brand And The <span className="text-[#e74b2d]">Digital</span>{" "}
-          <span className="text-[#e74b2d]">Presence</span> Behind The Product.
+          The Brand And The <span className="text-[#329AD4]">Digital</span>{" "}
+          <span className="text-[#329AD4]">Presence</span> Behind The Product.
         </h1>
 
         {/* Subtitle Paragraph */}
@@ -44,7 +44,7 @@ export default function MarketingHero() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 max-w-md mx-auto sm:max-w-none">
           <Link
             href="/quote"
-            className="w-full sm:w-auto px-8 py-3.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-md text-base sm:text-base shadow-lg shadow-[#e74b2d]/30 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] text-center cursor-pointer"
+            className="w-full sm:w-auto px-8 py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold rounded-md text-base sm:text-base shadow-lg shadow-[#329AD4]/30 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] text-center cursor-pointer"
           >
             Start A Project
           </Link>

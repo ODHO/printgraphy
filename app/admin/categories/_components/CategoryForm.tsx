@@ -30,6 +30,16 @@ import ThreeDCardPreview from "@/components/ThreeDCardPreview";
 import CanvasGuideLinesOverlay from "@/components/CanvasGuideLinesOverlay";
 import MockupPrintAreaEditor from "@/components/admin/MockupPrintAreaEditor";
 import AdminMediaLibraryModal from "@/components/admin/AdminMediaLibraryModal";
+import { Badge, Card, CardHeader, Icon, Notice, PageHeader, buttonClass, cx, inputClass, labelClass } from "@/components/admin/ui";
+
+/* Local field tokens (same look as `inputClass`, but without fixed width/padding for dense rows). */
+const fieldCore =
+  "rounded-xl border border-zinc-200 bg-white text-sm text-zinc-900 placeholder-zinc-400 shadow-xs transition focus:outline-none focus:border-[#329AD4] focus:ring-4 focus:ring-[#329AD4]/10 disabled:bg-zinc-50 disabled:text-zinc-500";
+const fieldSm = cx(fieldCore, "px-2.5 py-1.5");
+const fieldMd = cx(fieldCore, "px-3 py-2");
+/* Dashed "add" tile button */
+const addTileClass =
+  "inline-flex items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-[#b8e0f6] bg-[#f0f8fd]/60 px-3 py-1.5 text-xs font-semibold text-[#2884b8] transition-all hover:border-[#329AD4] hover:bg-[#EAF5FB] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
 export interface FormCategoryVariationValue {
   _id?: string;
@@ -167,8 +177,8 @@ const PRESET_OPTIONS: Record<
     sides_count: 3,
     sides_names: ["Outside Front/Back", "Inside Spread", "Flap Panel"],
     guide_lines: [
-      { id: "fold-1", name: "Left Panel Fold", orientation: "vertical", position: 33.33, unit: "percent", lineType: "fold", color: "#e74b2d" },
-      { id: "fold-2", name: "Right Panel Fold", orientation: "vertical", position: 66.66, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "fold-1", name: "Left Panel Fold", orientation: "vertical", position: 33.33, unit: "percent", lineType: "fold", color: "#329AD4" },
+      { id: "fold-2", name: "Right Panel Fold", orientation: "vertical", position: 66.66, unit: "percent", lineType: "fold", color: "#329AD4" },
     ],
     bg: "#ffffff",
   },
@@ -185,9 +195,9 @@ const PRESET_OPTIONS: Record<
     sides_count: 4,
     sides_names: ["Front Panel", "Right Side", "Back Panel", "Left Side"],
     guide_lines: [
-      { id: "box-1", name: "Left Side Fold", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#e74b2d" },
-      { id: "box-2", name: "Center Spine Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#e74b2d" },
-      { id: "box-3", name: "Right Side Fold", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "box-1", name: "Left Side Fold", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#329AD4" },
+      { id: "box-2", name: "Center Spine Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#329AD4" },
+      { id: "box-3", name: "Right Side Fold", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#329AD4" },
       { id: "box-top", name: "Top Lid Fold", orientation: "horizontal", position: 25, unit: "percent", lineType: "score", color: "#d97706" },
       { id: "box-bottom", name: "Bottom Tuck Fold", orientation: "horizontal", position: 75, unit: "percent", lineType: "score", color: "#d97706" },
     ],
@@ -402,7 +412,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
     }
     return [
       { id: "1", text: "Product Title / Header", x: 15, y: 30, fontSize: 22, color: "#ffffff", fontWeight: "bold", placementId: "front" },
-      { id: "2", text: "Subtitle / Custom Text", x: 15, y: 50, fontSize: 13, color: "#f88768", fontWeight: "normal", placementId: "front" },
+      { id: "2", text: "Subtitle / Custom Text", x: 15, y: 50, fontSize: 13, color: "#55b2e7", fontWeight: "normal", placementId: "front" },
       { id: "3", text: "www.yourbrand.com", x: 15, y: 75, fontSize: 10, color: "#e4e4e7", fontWeight: "normal", placementId: "front" },
     ];
   });
@@ -679,7 +689,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
         position: orientation === "vertical" ? 33.33 : 50,
         unit: "percent",
         lineType: "fold",
-        color: "#e74b2d",
+        color: "#329AD4",
       },
     ]);
   };
@@ -785,7 +795,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
     setSidesCount(2);
     setSidesNames(["Front Cover", "Back Cover"]);
     setGuideLines([
-      { id: "half_1", name: "Center Spine Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "half_1", name: "Center Spine Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#329AD4" },
     ]);
   };
 
@@ -1096,61 +1106,45 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
         : "Print";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-5xl pb-16">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-5xl">
       {/* Header Bar */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">
-            {mode === "create" ? "New Product Category" : `Edit Category: ${form.name || "Category"}`}
-          </h1>
-          <p className="text-zinc-500 text-base mt-0.5">
-            {familyPicked
-              ? `Configuring ${familyLabel} category — settings match this product family only.`
-              : "First choose a product family. Configuration screens adapt to your selection."}
-          </p>
-        </div>
-        {familyPicked && (
-          <div className="flex items-center gap-3">
+      <PageHeader
+        icon="grid"
+        back={{ href: "/admin/categories", label: "Back to categories" }}
+        title={mode === "create" ? "New Product Category" : `Edit Category: ${form.name || "Category"}`}
+        description={
+          familyPicked
+            ? `Configuring ${familyLabel} category — settings match this product family only.`
+            : "First choose a product family. Configuration screens adapt to your selection."
+        }
+        actions={
+          familyPicked ? (
             <button
               type="button"
               onClick={() => setShowPreviewModal(true)}
-              className="px-4 py-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-[#e74b2d] text-base font-bold rounded-xl transition-all shadow-xs flex items-center gap-2 cursor-pointer"
+              className={buttonClass("soft")}
             >
+              <Icon name="eye" className="w-4 h-4" />
               See Canvas Preview
             </button>
-            <button
-              type="button"
-              onClick={() => router.push("/admin/categories")}
-              className="px-4 py-2 text-base font-bold text-zinc-600 border border-zinc-200 rounded-xl hover:bg-white transition-all cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 disabled:opacity-60 cursor-pointer"
-            >
-              {saving ? "Saving..." : mode === "create" ? "Create Category" : "Save Changes"}
-            </button>
-          </div>
-        )}
-      </div>
+          ) : undefined
+        }
+      />
 
       {error && (
-        <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 font-bold text-base">
+        <Notice tone="red" title="Could not save category">
           {error}
-        </div>
+        </Notice>
       )}
 
       {!familyPicked ? (
-        <div className="bg-white border border-zinc-200/80 rounded-3xl p-8 space-y-6 shadow-sm">
-          <div>
-            <h2 className="text-xl font-bold text-zinc-900">What are you creating?</h2>
-            <p className="text-base text-zinc-500 mt-1">
-              Pick one family first. You only see the settings that apply to that type — Print, Packaging, or Clothing &amp; Bags stay separate.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader
+            icon="layers"
+            title="What are you creating?"
+            subtitle="Pick one family first. You only see the settings that apply to that type — Print, Packaging, or Clothing & Bags stay separate."
+          />
+          <div className="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             {(
               [
                 {
@@ -1174,29 +1168,33 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 key={opt.id}
                 type="button"
                 onClick={() => pickFamily(opt.id)}
-                className="text-left p-6 rounded-3xl border-2 border-zinc-200 hover:border-[#e74b2d] hover:bg-sky-50/50 transition-all cursor-pointer group"
+                className="group text-left p-5 rounded-2xl border border-zinc-200 bg-white hover:border-[#329AD4] hover:bg-[#f0f8fd] hover:-translate-y-0.5 hover:shadow-md hover:shadow-[#329AD4]/10 transition-all cursor-pointer"
               >
-                <span className="text-lg font-bold text-zinc-900 group-hover:text-[#e74b2d] block">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8] group-hover:bg-[#329AD4] group-hover:text-white transition-colors">
+                  <Icon name={opt.id === "flat" ? "services" : opt.id === "dieline" ? "orders" : "tag"} className="w-5 h-5" />
+                </span>
+                <span className="mt-4 text-sm font-semibold text-zinc-900 group-hover:text-[#2884b8] block">
                   {opt.title}
                 </span>
-                <span className="text-sm text-zinc-500 mt-2 block leading-relaxed">{opt.desc}</span>
+                <span className="text-xs text-zinc-500 mt-1.5 block leading-relaxed">{opt.desc}</span>
               </button>
             ))}
           </div>
-        </div>
+        </Card>
       ) : (
         <>
       {/* Family badge */}
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-50 border border-sky-100 text-[#e74b2d] text-sm font-bold">
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge tone="brand" dot>
           Family: {familyLabel}
-        </span>
+        </Badge>
         {mode === "create" && (
           <button
             type="button"
             onClick={() => setFamilyPicked(false)}
-            className="text-sm font-bold text-zinc-500 hover:text-[#e74b2d] cursor-pointer"
+            className={buttonClass("ghost", "sm")}
           >
+            <Icon name="refresh" className="w-3.5 h-3.5" />
             Change family
           </button>
         )}
@@ -1208,8 +1206,9 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 setFamilyPicked(false);
               }
             }}
-            className="text-sm font-bold text-zinc-500 hover:text-[#e74b2d] cursor-pointer"
+            className={buttonClass("ghost", "sm")}
           >
+            <Icon name="refresh" className="w-3.5 h-3.5" />
             Change family
           </button>
         )}
@@ -1217,16 +1216,16 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
 
       {/* Preset Selector Card — hide for clothing mockup */}
       {canvasType !== "mockup" && (
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-3 shadow-sm">
-        <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Quick Preset Setup</h2>
-        <div className="p-4 bg-[#fbfaf7] border border-sky-100 rounded-2xl space-y-2">
-          <label className="text-base font-bold text-zinc-700 block">
+      <Card>
+        <CardHeader icon="sparkle" title="Quick Preset Setup" subtitle="Optional — prefill canvas dimensions and sides from a standard preset" />
+        <div className="p-5 sm:p-6">
+          <label className={labelClass}>
             Select Standard Dimensions & Dieline Preset (Optional)
           </label>
           <select
             onChange={(e) => applyPreset(e.target.value)}
             defaultValue=""
-            className="w-full bg-white border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-800 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer"
+            className={cx(inputClass, "cursor-pointer font-medium")}
           >
             <option value="" disabled>
               -- Select standard preset to prefill canvas dimensions & sides --
@@ -1238,16 +1237,16 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             ))}
           </select>
         </div>
-      </div>
+      </Card>
       )}
 
       {/* Category Info Card */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-sm">
-        <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Category Information</h2>
-
+      <Card>
+        <CardHeader icon="pages" title="Category Information" subtitle="Name, pricing and storefront imagery" />
+        <div className="p-5 sm:p-6 space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">Category Name *</label>
+            <label className={labelClass}>Category Name <span className="text-rose-500">*</span></label>
             <input
               required
               type="text"
@@ -1260,38 +1259,38 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   slug: prev.slug ? prev.slug : generateSlug(name),
                 }));
               }}
-              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+              className={inputClass}
               placeholder="e.g., Packaging Boxes, Business Cards, Flyers"
             />
           </div>
 
           <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">URL Slug *</label>
+            <label className={labelClass}>URL Slug <span className="text-rose-500">*</span></label>
             <input
               required
               type="text"
               value={form.slug}
               onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
-              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+              className={cx(inputClass, "font-mono")}
               placeholder="packaging-boxes"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-base font-bold text-zinc-700 block mb-1">Description</label>
+          <label className={labelClass}>Description</label>
           <textarea
             rows={3}
             value={form.description}
             onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-            className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] resize-none"
+            className={cx(inputClass, "resize-none")}
             placeholder="Brief category description for storefront browsing..."
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">Base Price per Unit ($) *</label>
+            <label className={labelClass}>Base Price per Unit ($) <span className="text-rose-500">*</span></label>
             <input
               type="number"
               step="0.001"
@@ -1299,42 +1298,43 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               required
               value={form.price || ""}
               onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+              className={cx(inputClass, "font-semibold")}
               placeholder="0.15"
             />
-            <p className="text-base text-zinc-400 mt-1">Base price per unit. Will multiply by quantity and add paid variations.</p>
+            <p className="mt-1 text-xs text-zinc-400">Base price per unit. Will multiply by quantity and add paid variations.</p>
           </div>
 
           <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">Unit Price Tag *</label>
+            <label className={labelClass}>Unit Price Tag <span className="text-rose-500">*</span></label>
             <input
               type="text"
               required
               value={form.unitPrice || ""}
               onChange={(e) => setForm((prev) => ({ ...prev, unitPrice: e.target.value }))}
-              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+              className={cx(inputClass, "font-semibold")}
               placeholder="e.g., $0.15 each"
             />
-            <p className="text-base text-zinc-400 mt-1">Label shown below price (e.g. &quot;$0.15 each&quot;)</p>
+            <p className="mt-1 text-xs text-zinc-400">Label shown below price (e.g. &quot;$0.15 each&quot;)</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start pt-4 border-t border-zinc-100">
           <div>
-            <label className="text-base font-bold text-zinc-700 block mb-1">Category Cover Image</label>
-            <p className="text-base text-zinc-500 mb-2">
+            <label className={labelClass}>Category Cover Image</label>
+            <p className="text-xs text-zinc-500 mb-2">
               Shown on the Clothing &amp; Bags grid cards (not the category page banner)
             </p>
-            <div className="flex gap-3 items-center">
+            <div className="flex gap-2 items-center">
               <input
                 type="text"
                 value={form.image}
                 onChange={(e) => setForm((prev) => ({ ...prev, image: e.target.value }))}
                 placeholder="https://... or /custom-category.png"
-                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                className={inputClass}
               />
-              <label className="px-3.5 py-2 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold cursor-pointer shrink-0 shadow-sm">
-                {uploadingImage ? "Uploading..." : "↑ Upload"}
+              <label className={cx(buttonClass("primary"), "shrink-0")}>
+                <Icon name="upload" className="w-4 h-4" />
+                {uploadingImage ? "Uploading..." : "Upload"}
                 <input
                   type="file"
                   accept="image/*"
@@ -1349,30 +1349,35 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               </label>
             </div>
             {form.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={mediaSrc(form.image) || form.image}
-                alt=""
-                className="mt-2 w-full max-w-xs h-28 rounded-2xl object-cover border border-zinc-200"
-              />
+              <div className="group relative mt-3 w-full max-w-xs h-32 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={mediaSrc(form.image) || form.image}
+                  alt=""
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-zinc-900/60 via-zinc-900/0 to-transparent p-2.5 opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="text-[11px] font-semibold text-white">Cover preview</span>
+                </div>
+              </div>
             ) : null}
           </div>
 
           {canvasType === "mockup" && (
             <div>
-              <label className="text-base font-bold text-zinc-700 block mb-1">
+              <label className={labelClass}>
                 Category page banner
               </label>
-              <p className="text-base text-zinc-500 mb-2">
+              <p className="text-xs text-zinc-500 mb-2">
                 Wide hero on /clothing-bags/your-category — separate from the cover card
               </p>
-              <div className="flex gap-3 items-center">
+              <div className="flex gap-2 items-center">
                 <input
                   type="text"
                   value={bannerImage}
                   onChange={(e) => setBannerImage(e.target.value)}
                   placeholder="https://... banner image"
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                  className={inputClass}
                 />
                 <button
                   type="button"
@@ -1383,12 +1388,14 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       currentUrl: bannerImage,
                     })
                   }
-                  className="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-base font-bold cursor-pointer shrink-0"
+                  className={cx(buttonClass("secondary"), "shrink-0")}
                 >
+                  <Icon name="image" className="w-4 h-4" />
                   Library
                 </button>
-                <label className="px-3.5 py-2 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold cursor-pointer shrink-0 shadow-sm">
-                  {uploadingBanner ? "…" : "↑ Upload"}
+                <label className={cx(buttonClass("primary"), "shrink-0")}>
+                  <Icon name="upload" className="w-4 h-4" />
+                  {uploadingBanner ? "…" : "Upload"}
                   <input
                     type="file"
                     accept="image/*"
@@ -1403,47 +1410,47 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 </label>
               </div>
               {bannerImage ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={mediaSrc(bannerImage) || bannerImage}
-                  alt=""
-                  className="mt-2 w-full h-28 rounded-2xl object-cover border border-zinc-200"
-                />
+                <div className="group relative mt-3 w-full h-32 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={mediaSrc(bannerImage) || bannerImage}
+                    alt=""
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-zinc-900/60 via-zinc-900/0 to-transparent p-2.5 opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="text-[11px] font-semibold text-white">Banner preview</span>
+                  </div>
+                </div>
               ) : null}
             </div>
           )}
         </div>
-      </div>
+        </div>
+      </Card>
 
       {/* FULL CANVAS CONFIGURATION SECTION: Dimensions, Sides (Single/Double/3+ Multi), Dieline Fold Lines */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-6 shadow-sm">
-        <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-          <div>
-            <h2 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-              <svg className="w-5 h-5 text-[#e74b2d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 4v16M15 4v16" />
-              </svg>
-              Canvas Type & Configuration
-            </h2>
-            <p className="text-base text-zinc-500 mt-0.5">
-              Choose flat print, packaging dieline, or product mockup (t-shirt / handbag) — existing flows stay unchanged.
-            </p>
-          </div>
-          <span className="text-base font-mono font-bold text-[#e74b2d] bg-sky-50 border border-sky-100 px-3 py-1 rounded-xl">
-            Aspect Ratio: {formAspect.toFixed(2)} : 1
-          </span>
-        </div>
-
+      <div className="space-y-6">
         {/* Canvas type locked by family picker — keep value in sync */}
         <input type="hidden" value={canvasType} readOnly />
 
         {canvasType === "mockup" ? (
-          <div className="space-y-5 pt-2 border-t border-zinc-100">
+          <>
+          <Card>
+            <CardHeader
+              icon="tag"
+              title="Canvas Type & Configuration"
+              subtitle="Product mockup (t-shirt / handbag) — print sides, mockup photo and print area."
+              action={
+                <span className="shrink-0 rounded-lg border border-[#dbeefb] bg-[#f0f8fd] px-2.5 py-1 font-mono text-[11px] font-semibold text-[#2884b8]">
+                  Aspect {formAspect.toFixed(2)} : 1
+                </span>
+              }
+            />
+            <div className="p-5 sm:p-6 space-y-6">
             {/* Front / Back toggles */}
             <div>
-              <h3 className="text-base font-bold text-zinc-900">Print sides</h3>
-              <p className="text-sm text-zinc-500 mt-0.5">
+              <h3 className="text-sm font-semibold text-zinc-900">Print sides</h3>
+              <p className="text-xs text-zinc-500 mt-0.5">
                 Turn on Front and/or Back. Each side has its own mockup, print area, and text/logo layers.
               </p>
               <div className="mt-3 flex flex-wrap gap-3">
@@ -1457,21 +1464,19 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     if (!next) setEditSide("back");
                     else if (!enableBack) setEditSide("front");
                   }}
-                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border-2 font-bold text-sm cursor-pointer transition-all ${
+                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border font-semibold text-sm cursor-pointer transition-all ${
                     enableFront
-                      ? "border-[#e74b2d] bg-sky-50 text-[#e74b2d]"
-                      : "border-zinc-200 bg-white text-zinc-500"
+                      ? "border-[#329AD4] bg-[#f0f8fd] text-[#2884b8] ring-4 ring-[#329AD4]/10"
+                      : "border-zinc-200 bg-white text-zinc-500 hover:border-[#b8e0f6]"
                   }`}
                 >
                   <span
                     className={`w-10 h-6 rounded-full relative transition-colors ${
-                      enableFront ? "bg-[#e74b2d]" : "bg-zinc-300"
+                      enableFront ? "bg-[#329AD4]" : "bg-zinc-300"
                     }`}
                   >
                     <span
-                      className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
-                        enableFront ? "left-4.5 right-0.5 left-auto translate-x-4" : "left-0.5"
-                      }`}
+                      className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"
                       style={{ left: enableFront ? "18px" : "2px" }}
                     />
                   </span>
@@ -1487,15 +1492,15 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     if (next) setEditSide("back");
                     else setEditSide("front");
                   }}
-                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border-2 font-bold text-sm cursor-pointer transition-all ${
+                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border font-semibold text-sm cursor-pointer transition-all ${
                     enableBack
-                      ? "border-[#e74b2d] bg-sky-50 text-[#e74b2d]"
-                      : "border-zinc-200 bg-white text-zinc-500"
+                      ? "border-[#329AD4] bg-[#f0f8fd] text-[#2884b8] ring-4 ring-[#329AD4]/10"
+                      : "border-zinc-200 bg-white text-zinc-500 hover:border-[#b8e0f6]"
                   }`}
                 >
                   <span
                     className={`w-10 h-6 rounded-full relative transition-colors ${
-                      enableBack ? "bg-[#e74b2d]" : "bg-zinc-300"
+                      enableBack ? "bg-[#329AD4]" : "bg-zinc-300"
                     }`}
                   >
                     <span
@@ -1507,14 +1512,14 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 </button>
               </div>
               {enableBack && (
-                <p className="mt-2 text-sm text-[#e74b2d] font-medium">
+                <p className="mt-3 rounded-lg bg-[#f0f8fd] border border-[#dbeefb] px-3 py-2 text-xs text-[#1b5b80] font-medium">
                   Back is on — switch to the Back tab below to set mockup, print area, and layers for the back.
                 </p>
               )}
             </div>
 
             {/* Side editor tabs */}
-            <div className="flex flex-wrap gap-1 p-1 bg-[#fbfaf7] rounded-full border border-zinc-200 w-fit">
+            <div className="inline-flex flex-wrap gap-1 rounded-xl bg-zinc-100/80 p-1 w-fit">
               {enableFront && (
                 <button
                   type="button"
@@ -1522,8 +1527,8 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     setEditSide("front");
                     setActiveLayerId(null);
                   }}
-                  className={`px-4 py-1.5 text-sm font-bold rounded-full cursor-pointer ${
-                    editSide === "front" ? "bg-[#e74b2d] text-white" : "text-zinc-600"
+                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                    editSide === "front" ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
                   }`}
                 >
                   Edit Front
@@ -1536,8 +1541,8 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     setEditSide("back");
                     setActiveLayerId(null);
                   }}
-                  className={`px-4 py-1.5 text-sm font-bold rounded-full cursor-pointer ${
-                    editSide === "back" ? "bg-[#e74b2d] text-white" : "text-zinc-600"
+                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                    editSide === "back" ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
                   }`}
                 >
                   Edit Back
@@ -1546,8 +1551,8 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             </div>
 
             <div>
-              <h3 className="text-base font-bold text-zinc-900 capitalize">{editSide} mockup image</h3>
-              <p className="text-base text-zinc-500 mt-0.5">
+              <h3 className="text-sm font-semibold text-zinc-900 capitalize">{editSide} mockup image</h3>
+              <p className="text-xs text-zinc-500 mt-0.5">
                 Product photo for the {editSide}. Then drag the print area and add text or logos on this side.
               </p>
             </div>
@@ -1582,7 +1587,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   }
                 }}
                 placeholder={`https://... or pick ${editSide} photo from library`}
-                className="flex-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                className={cx(fieldCore, "flex-1 px-3.5 py-2.5")}
               />
               <button
                 type="button"
@@ -1594,45 +1599,46 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     side: editSide,
                   })
                 }
-                className="px-4 py-2 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold cursor-pointer shrink-0 shadow-sm"
+                className={cx(buttonClass("primary"), "shrink-0")}
               >
-                ↑ Upload {editSide === "front" ? "Front" : "Back"}
+                <Icon name="upload" className="w-4 h-4" />
+                Upload {editSide === "front" ? "Front" : "Back"}
               </button>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <label className="text-xs font-bold text-zinc-500 block mb-1">Print area width</label>
+                <label className={labelClass}>Print area width</label>
                 <div className="flex gap-1">
                   <input
                     type="number"
                     value={form.canvas_width}
                     onChange={(e) => setForm((prev) => ({ ...prev, canvas_width: e.target.value }))}
-                    className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm font-bold"
+                    className={cx(fieldSm, "w-full font-medium")}
                   />
-                  <span className="self-center text-xs text-zinc-400 font-bold">{form.unit}</span>
+                  <span className="self-center text-xs text-zinc-400 font-semibold">{form.unit}</span>
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold text-zinc-500 block mb-1">Print area height</label>
+                <label className={labelClass}>Print area height</label>
                 <div className="flex gap-1">
                   <input
                     type="number"
                     value={form.canvas_height}
                     onChange={(e) => setForm((prev) => ({ ...prev, canvas_height: e.target.value }))}
-                    className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm font-bold"
+                    className={cx(fieldSm, "w-full font-medium")}
                   />
-                  <span className="self-center text-xs text-zinc-400 font-bold">{form.unit}</span>
+                  <span className="self-center text-xs text-zinc-400 font-semibold">{form.unit}</span>
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold text-zinc-500 block mb-1">Unit</label>
+                <label className={labelClass}>Unit</label>
                 <select
                   value={form.unit}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, unit: e.target.value as CanvasUnit }))
                   }
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm font-bold cursor-pointer"
+                  className={cx(fieldSm, "w-full cursor-pointer")}
                 >
                   <option value="mm">mm</option>
                   <option value="cm">cm</option>
@@ -1644,7 +1650,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 <button
                   type="button"
                   onClick={addTextLayer}
-                  className="flex-1 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white text-sm font-bold rounded-xl cursor-pointer"
+                  className={cx(addTileClass, "flex-1")}
                 >
                   + Add Text
                 </button>
@@ -1658,7 +1664,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       side: editSide,
                     })
                   }
-                  className="flex-1 px-3 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] disabled:opacity-60 text-white text-sm font-bold rounded-xl cursor-pointer"
+                  className={cx(addTileClass, "flex-1")}
                 >
                   {uploadingLayerImage ? "…" : "+ Logo"}
                 </button>
@@ -1740,14 +1746,16 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 setActiveLayerId(asText.id);
               }}
             />
+            </div>
+          </Card>
 
             {/* Apparel colors */}
-            <div className="space-y-3 pt-4 border-t border-zinc-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900">Garment Colors</h3>
-                  <p className="text-sm text-zinc-500">Swatches customers pick on the product page.</p>
-                </div>
+            <Card>
+              <CardHeader
+                icon="sparkle"
+                title="Garment Colors"
+                subtitle="Swatches customers pick on the product page."
+                action={
                 <button
                   type="button"
                   onClick={() =>
@@ -1756,18 +1764,19 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       {
                         id: `color_${Date.now()}`,
                         name: "New Color",
-                        hex: "#e74b2d",
+                        hex: "#329AD4",
                       },
                     ])
                   }
-                  className="px-3 py-1.5 text-sm font-bold rounded-xl bg-zinc-900 text-white cursor-pointer"
+                  className={addTileClass}
                 >
                   + Color
                 </button>
-              </div>
-              <div className="space-y-2">
+                }
+              />
+              <div className="p-5 sm:p-6 space-y-2">
                 {apparelColors.map((color, idx) => (
-                  <div key={color.id} className="flex flex-wrap items-center gap-2 bg-[#fbfaf7] border border-zinc-200 rounded-2xl p-2.5">
+                  <div key={color.id} className="flex flex-wrap items-center gap-2 bg-zinc-50/60 border border-zinc-200/70 rounded-xl p-3">
                     <input
                       type="color"
                       value={color.hex}
@@ -1786,7 +1795,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           prev.map((c, i) => (i === idx ? { ...c, name: e.target.value } : c))
                         )
                       }
-                      className="flex-1 min-w-[100px] bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm font-bold"
+                      className={cx(fieldSm, "flex-1 min-w-[100px] font-medium")}
                       placeholder="Color name"
                     />
                     <div className="flex flex-[2] min-w-[200px] items-center gap-1.5">
@@ -1806,7 +1815,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                             prev.map((c, i) => (i === idx ? { ...c, mockupImage: e.target.value } : c))
                           )
                         }
-                        className="flex-1 min-w-0 bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm"
+                        className={cx(fieldSm, "flex-1 min-w-0")}
                         placeholder="Color mockup URL (optional)"
                       />
                       <button
@@ -1819,43 +1828,45 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                             currentUrl: color.mockupImage || "",
                           })
                         }
-                        className="shrink-0 px-2.5 py-1.5 text-xs font-bold rounded-xl bg-[#e74b2d] text-white hover:bg-[#c93e23] cursor-pointer"
+                        className={cx(buttonClass("soft", "sm"), "shrink-0")}
                       >
-                        {uploadingColorIdx === idx ? "…" : "↑ Library"}
+                        {uploadingColorIdx === idx ? "…" : "Library"}
                       </button>
                     </div>
                     <button
                       type="button"
                       onClick={() => setApparelColors((prev) => prev.filter((_, i) => i !== idx))}
-                      className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg cursor-pointer"
+                      aria-label="Remove color"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
                     >
-                      ✕
+                      <Icon name="trash" className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
 
             {/* Apparel sizes */}
-            <div className="space-y-3 pt-4 border-t border-zinc-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900">Sizes</h3>
-                  <p className="text-sm text-zinc-500">Size chart for the quantity matrix.</p>
-                </div>
+            <Card>
+              <CardHeader
+                icon="products"
+                title="Sizes"
+                subtitle="Size chart for the quantity matrix."
+                action={
                 <button
                   type="button"
                   onClick={() =>
                     setApparelSizes((prev) => [...prev, { id: `size_${Date.now()}`, name: "Custom" }])
                   }
-                  className="px-3 py-1.5 text-sm font-bold rounded-xl bg-zinc-900 text-white cursor-pointer"
+                  className={addTileClass}
                 >
                   + Size
                 </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
+                }
+              />
+              <div className="p-5 sm:p-6 flex flex-wrap gap-2">
                 {apparelSizes.map((size, idx) => (
-                  <div key={size.id} className="flex items-center gap-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-2 py-1">
+                  <div key={size.id} className="flex items-center gap-1 bg-white border border-zinc-200 rounded-lg pl-2.5 pr-1 py-1 shadow-xs transition focus-within:border-[#329AD4] focus-within:ring-4 focus-within:ring-[#329AD4]/10">
                     <input
                       type="text"
                       value={size.name}
@@ -1864,27 +1875,28 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           prev.map((s, i) => (i === idx ? { ...s, name: e.target.value } : s))
                         )
                       }
-                      className="w-16 bg-transparent text-sm font-bold text-center focus:outline-none"
+                      className="w-16 bg-transparent text-sm font-semibold text-zinc-800 text-center focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setApparelSizes((prev) => prev.filter((_, i) => i !== idx))}
-                      className="text-red-400 text-xs cursor-pointer"
+                      aria-label="Remove size"
+                      className="inline-flex h-5 w-5 items-center justify-center rounded-md text-zinc-400 hover:bg-rose-50 hover:text-rose-600 text-[10px] cursor-pointer"
                     >
-                      ✕
+                      <Icon name="close" className="w-3 h-3" strokeWidth={2.4} />
                     </button>
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
 
             {/* Decoration methods */}
-            <div className="space-y-3 pt-4 border-t border-zinc-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900">Decoration Methods</h3>
-                  <p className="text-sm text-zinc-500">How the design is applied to the garment.</p>
-                </div>
+            <Card>
+              <CardHeader
+                icon="layers"
+                title="Decoration Methods"
+                subtitle="How the design is applied to the garment."
+                action={
                 <button
                   type="button"
                   onClick={() =>
@@ -1893,14 +1905,15 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       { id: `deco_${Date.now()}`, name: "New Method", description: "", priceAddOn: 0 },
                     ])
                   }
-                  className="px-3 py-1.5 text-sm font-bold rounded-xl bg-zinc-900 text-white cursor-pointer"
+                  className={addTileClass}
                 >
                   + Method
                 </button>
-              </div>
-              <div className="space-y-2">
+                }
+              />
+              <div className="p-5 sm:p-6 space-y-2">
                 {decorationMethods.map((method, idx) => (
-                  <div key={method.id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-[#fbfaf7] border border-zinc-200 rounded-2xl p-2.5">
+                  <div key={method.id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center bg-zinc-50/60 border border-zinc-200/70 rounded-xl p-3">
                     <input
                       type="text"
                       value={method.name}
@@ -1909,7 +1922,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           prev.map((m, i) => (i === idx ? { ...m, name: e.target.value } : m))
                         )
                       }
-                      className="sm:col-span-3 bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm font-bold"
+                      className={cx(fieldSm, "sm:col-span-3 font-medium")}
                       placeholder="Method name"
                     />
                     <input
@@ -1920,7 +1933,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           prev.map((m, i) => (i === idx ? { ...m, description: e.target.value } : m))
                         )
                       }
-                      className="sm:col-span-6 bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm"
+                      className={cx(fieldSm, "sm:col-span-6")}
                       placeholder="Short description"
                     />
                     <input
@@ -1935,31 +1948,43 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           )
                         )
                       }
-                      className="sm:col-span-2 bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm font-mono"
+                      className={cx(fieldSm, "sm:col-span-2 font-mono")}
                       placeholder="+$"
                       title="Price add-on"
                     />
                     <button
                       type="button"
                       onClick={() => setDecorationMethods((prev) => prev.filter((_, i) => i !== idx))}
-                      className="sm:col-span-1 p-1.5 text-red-500 hover:bg-red-50 rounded-lg cursor-pointer"
+                      aria-label="Remove method"
+                      className="sm:col-span-1 inline-flex h-8 w-8 items-center justify-center justify-self-end rounded-lg text-zinc-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
                     >
-                      ✕
+                      <Icon name="trash" className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
+            </Card>
+          </>
         ) : (
           <>
+        <Card>
+          <CardHeader
+            icon="grid"
+            title="Canvas Type & Configuration"
+            subtitle="Flat print or packaging dieline — dimensions, bleed, safe area and live preview."
+            action={
+                <span className="shrink-0 rounded-lg border border-[#dbeefb] bg-[#f0f8fd] px-2.5 py-1 font-mono text-[11px] font-semibold text-[#2884b8]">
+                  Aspect {formAspect.toFixed(2)} : 1
+                </span>
+            }
+          />
         {/* Dimension Inputs + Live Visualizer Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="p-5 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Dimension Controls (7 cols) */}
           <div className="lg:col-span-7 space-y-4">
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Canvas Width *</label>
+                <label className={labelClass}>Canvas Width *</label>
                 <input
                   required
                   type="number"
@@ -1978,12 +2003,12 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       };
                     });
                   }}
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                  className={cx(inputClass, "font-mono font-semibold")}
                 />
               </div>
 
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Canvas Height *</label>
+                <label className={labelClass}>Canvas Height *</label>
                 <input
                   required
                   type="number"
@@ -2002,16 +2027,16 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       };
                     });
                   }}
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                  className={cx(inputClass, "font-mono font-semibold")}
                 />
               </div>
 
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Measurement Unit</label>
+                <label className={labelClass}>Measurement Unit</label>
                 <select
                   value={form.unit}
                   onChange={(e) => setForm((prev) => ({ ...prev, unit: asCanvasUnit(e.target.value) }))}
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
+                  className={cx(inputClass, "cursor-pointer")}
                 >
                   <option value="mm">mm</option>
                   <option value="cm">cm</option>
@@ -2023,11 +2048,11 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
 
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Orientation</label>
+                <label className={labelClass}>Orientation</label>
                 <select
                   value={form.orientation}
                   onChange={(e) => setForm((prev) => ({ ...prev, orientation: e.target.value as any }))}
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
+                  className={cx(inputClass, "cursor-pointer")}
                 >
                   <option value="landscape">Landscape</option>
                   <option value="portrait">Portrait</option>
@@ -2035,7 +2060,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               </div>
 
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Bleed Margin</label>
+                <label className={labelClass}>Bleed Margin</label>
                 <div className="flex gap-1.5">
                   <input
                     type="number"
@@ -2043,12 +2068,12 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     step="any"
                     value={form.bleed}
                     onChange={(e) => setForm((prev) => ({ ...prev, bleed: e.target.value }))}
-                    className="min-w-0 flex-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                    className={cx(fieldCore, "min-w-0 flex-1 px-3 py-2.5 font-mono")}
                   />
                   <select
                     value={form.bleedUnit}
                     onChange={(e) => setForm((prev) => ({ ...prev, bleedUnit: asCanvasUnit(e.target.value, prev.unit) }))}
-                    className="w-[4.5rem] bg-[#fbfaf7] border border-zinc-200 rounded-xl px-2 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                    className={cx(fieldCore, "w-[4.5rem] px-2 py-2.5 cursor-pointer")}
                   >
                     <option value="in">in</option>
                     <option value="mm">mm</option>
@@ -2059,7 +2084,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               </div>
 
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Safe Area Margin</label>
+                <label className={labelClass}>Safe Area Margin</label>
                 <div className="flex gap-1.5">
                   <input
                     type="number"
@@ -2067,12 +2092,12 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     step="any"
                     value={form.safe_area}
                     onChange={(e) => setForm((prev) => ({ ...prev, safe_area: e.target.value }))}
-                    className="min-w-0 flex-1 bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                    className={cx(fieldCore, "min-w-0 flex-1 px-3 py-2.5 font-mono")}
                   />
                   <select
                     value={form.safeAreaUnit}
                     onChange={(e) => setForm((prev) => ({ ...prev, safeAreaUnit: asCanvasUnit(e.target.value, prev.unit) }))}
-                    className="w-[4.5rem] bg-[#fbfaf7] border border-zinc-200 rounded-xl px-2 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                    className={cx(fieldCore, "w-[4.5rem] px-2 py-2.5 cursor-pointer")}
                   >
                     <option value="in">in</option>
                     <option value="mm">mm</option>
@@ -2083,27 +2108,27 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               </div>
             </div>
 
-            <div className="flex items-center gap-3 pt-2">
-              <label className="text-base font-bold text-zinc-700">Default Canvas Color:</label>
+            <div className="flex items-center gap-3 rounded-xl border border-zinc-200/70 bg-zinc-50/60 px-3.5 py-2.5">
+              <label className="text-xs font-semibold text-zinc-700">Default Canvas Color</label>
               <input
                 type="color"
                 value={form.background_color}
                 onChange={(e) => setForm((prev) => ({ ...prev, background_color: e.target.value }))}
-                className="w-9 h-9 rounded-xl border border-zinc-200 cursor-pointer bg-transparent"
+                className="w-9 h-9 rounded-lg border border-zinc-200 cursor-pointer bg-white p-0.5"
               />
-              <span className="text-base font-mono font-bold text-zinc-500">{form.background_color}</span>
+              <span className="text-xs font-mono font-semibold text-zinc-500">{form.background_color}</span>
             </div>
           </div>
 
           {/* Interactive Live Canvas & Dielines Visualizer Box (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center p-5 bg-[#18181b] rounded-3xl border border-zinc-800 text-white min-h-[260px] shadow-lg relative overflow-hidden">
+          <div className="lg:col-span-5 flex flex-col items-center justify-center p-5 bg-[#18181b] rounded-2xl border border-zinc-800 text-white min-h-[260px] shadow-lg relative overflow-hidden">
             <div className="w-full flex items-center justify-between mb-3 text-xs uppercase tracking-wider font-bold text-zinc-400 px-1">
               <div className="flex items-center gap-1.5 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setPreviewMode("2d")}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    previewMode === "2d" ? "bg-[#e74b2d] text-white shadow" : "text-zinc-400 hover:text-white"
+                    previewMode === "2d" ? "bg-[#329AD4] text-white shadow" : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   2D Dieline View
@@ -2112,13 +2137,13 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   type="button"
                   onClick={() => setPreviewMode("3d")}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    previewMode === "3d" ? "bg-[#e74b2d] text-white shadow" : "text-zinc-400 hover:text-white"
+                    previewMode === "3d" ? "bg-[#329AD4] text-white shadow" : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   3D Box Model
                 </button>
               </div>
-              <span className="text-[#f88768] font-mono">{form.canvas_width} × {form.canvas_height} {form.unit}</span>
+              <span className="text-[#55b2e7] font-mono">{form.canvas_width} × {form.canvas_height} {form.unit}</span>
             </div>
 
             {previewMode === "3d" ? (
@@ -2167,7 +2192,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                               x: 50,
                               y: 46,
                               fontSize: 16,
-                              color: "#f88768",
+                              color: "#55b2e7",
                               fontWeight: "bold",
                               textAlign: "center",
                             },
@@ -2293,83 +2318,84 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             </div>
           </div>
         </div>
+        </Card>
 
         {/* CANVAS SIDES CONFIGURATION (Single / Double / 3+ Multi-Sides) */}
-        <div className="pt-4 border-t border-zinc-100 space-y-4">
-          <div>
-            <h3 className="text-base font-bold text-zinc-900">Canvas Sides & Panel Configuration</h3>
-            <p className="text-base text-zinc-500 mt-0.5">
-              Select single side, double side (Front & Back), or multi-panel 3/4/6 sides for packaging box nets, tri-folds, and multi-surface items.
-            </p>
-          </div>
+        <Card>
+          <CardHeader
+            icon="layers"
+            title="Canvas Sides & Panel Configuration"
+            subtitle="Single side, double side (Front & Back), or multi-panel 3/4/6 sides for box nets, tri-folds, and multi-surface items."
+          />
+        <div className="p-5 sm:p-6 space-y-4">
 
           {/* Mode Selector Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div
               onClick={() => handleSideModeChange("single")}
-              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+              className={`p-4 rounded-xl border cursor-pointer transition-all ${
                 sideMode === "single"
-                  ? "border-[#e74b2d] bg-sky-50/60 ring-2 ring-[#e74b2d]/20"
-                  : "border-zinc-200 hover:border-zinc-300 bg-white"
+                  ? "border-[#329AD4] bg-[#f0f8fd] ring-4 ring-[#329AD4]/10"
+                  : "border-zinc-200 hover:border-[#b8e0f6] hover:bg-zinc-50/60 bg-white"
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-base font-bold text-zinc-900">Single Side (1-Sided)</span>
+                <span className="text-sm font-semibold text-zinc-900">Single Side (1-Sided)</span>
                 <input
                   type="radio"
                   name="sideMode"
                   checked={sideMode === "single"}
                   onChange={() => handleSideModeChange("single")}
-                  className="text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
+                  className="w-4 h-4 accent-[#329AD4] cursor-pointer"
                 />
               </div>
-              <p className="text-sm text-zinc-500">
+              <p className="text-xs text-zinc-500">
                 1 surface canvas only. Ideal for posters, stickers, mugs, banners, single-sided cards.
               </p>
             </div>
 
             <div
               onClick={() => handleSideModeChange("double")}
-              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+              className={`p-4 rounded-xl border cursor-pointer transition-all ${
                 sideMode === "double"
-                  ? "border-[#e74b2d] bg-sky-50/60 ring-2 ring-[#e74b2d]/20"
-                  : "border-zinc-200 hover:border-zinc-300 bg-white"
+                  ? "border-[#329AD4] bg-[#f0f8fd] ring-4 ring-[#329AD4]/10"
+                  : "border-zinc-200 hover:border-[#b8e0f6] hover:bg-zinc-50/60 bg-white"
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-base font-bold text-zinc-900">Double Sides (2-Sided)</span>
+                <span className="text-sm font-semibold text-zinc-900">Double Sides (2-Sided)</span>
                 <input
                   type="radio"
                   name="sideMode"
                   checked={sideMode === "double"}
                   onChange={() => handleSideModeChange("double")}
-                  className="text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
+                  className="w-4 h-4 accent-[#329AD4] cursor-pointer"
                 />
               </div>
-              <p className="text-sm text-zinc-500">
+              <p className="text-xs text-zinc-500">
                 2 canvas views (Front & Back). Ideal for standard business cards, flyers, t-shirts, postcards.
               </p>
             </div>
 
             <div
               onClick={() => handleSideModeChange("multi")}
-              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+              className={`p-4 rounded-xl border cursor-pointer transition-all ${
                 sideMode === "multi"
-                  ? "border-[#e74b2d] bg-sky-50/60 ring-2 ring-[#e74b2d]/20"
-                  : "border-zinc-200 hover:border-zinc-300 bg-white"
+                  ? "border-[#329AD4] bg-[#f0f8fd] ring-4 ring-[#329AD4]/10"
+                  : "border-zinc-200 hover:border-[#b8e0f6] hover:bg-zinc-50/60 bg-white"
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-base font-bold text-zinc-900">Multi-Sides (3+ Panels)</span>
+                <span className="text-sm font-semibold text-zinc-900">Multi-Sides (3+ Panels)</span>
                 <input
                   type="radio"
                   name="sideMode"
                   checked={sideMode === "multi"}
                   onChange={() => handleSideModeChange("multi")}
-                  className="text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
+                  className="w-4 h-4 accent-[#329AD4] cursor-pointer"
                 />
               </div>
-              <p className="text-sm text-zinc-500">
+              <p className="text-xs text-zinc-500">
                 3, 4, 6 or N sides/panels. Ideal for packaging boxes, tri-fold brochures, product cartons.
               </p>
             </div>
@@ -2377,9 +2403,9 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
 
           {/* Panel Names Inputs if Double or Multi */}
           {sideMode !== "single" && (
-            <div className="p-4 bg-[#fbfaf7] border border-zinc-200 rounded-2xl space-y-3">
+            <div className="p-4 bg-zinc-50/60 border border-zinc-200/70 rounded-xl space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <label className="text-base font-bold text-zinc-800">
+                <label className="text-sm font-semibold text-zinc-800">
                   Total Sides Count:
                 </label>
                 <div className="flex items-center gap-2">
@@ -2387,7 +2413,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     type="button"
                     onClick={() => handleSidesCountChange(sidesCount - 1)}
                     disabled={sideMode === "double" ? sidesCount <= 2 : sidesCount <= 3}
-                    className="w-8 h-8 rounded-lg border border-zinc-300 bg-white font-bold hover:bg-zinc-100 disabled:opacity-40 cursor-pointer"
+                    className="w-8 h-8 rounded-lg border border-zinc-200 bg-white font-semibold text-zinc-600 shadow-xs hover:border-[#329AD4] hover:text-[#2884b8] disabled:opacity-40 cursor-pointer"
                   >
                     -
                   </button>
@@ -2397,12 +2423,12 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     max={12}
                     value={sidesCount}
                     onChange={(e) => handleSidesCountChange(Number(e.target.value))}
-                    className="w-16 bg-white border border-zinc-200 rounded-lg px-2 py-1 text-center font-mono font-bold text-zinc-900"
+                    className={cx(fieldCore, "w-16 px-2 py-1.5 text-center font-mono font-semibold")}
                   />
                   <button
                     type="button"
                     onClick={() => handleSidesCountChange(sidesCount + 1)}
-                    className="w-8 h-8 rounded-lg border border-zinc-300 bg-white font-bold hover:bg-zinc-100 cursor-pointer"
+                    className="w-8 h-8 rounded-lg border border-zinc-200 bg-white font-semibold text-zinc-600 shadow-xs hover:border-[#329AD4] hover:text-[#2884b8] cursor-pointer"
                   >
                     +
                   </button>
@@ -2412,7 +2438,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
                 {Array.from({ length: sidesCount }).map((_, sideIdx) => (
                   <div key={`side-name-${sideIdx}`}>
-                    <label className="text-xs font-bold text-zinc-500 block mb-1">
+                    <label className={labelClass}>
                       Side {sideIdx + 1} Name:
                     </label>
                     <input
@@ -2427,7 +2453,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         });
                       }}
                       placeholder={`e.g., Side ${sideIdx + 1}`}
-                      className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-base font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                      className={inputClass}
                     />
                   </div>
                 ))}
@@ -2435,51 +2461,50 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             </div>
           )}
         </div>
+        </Card>
 
         {/* CANVAS FOLD & GUIDE LINES BUILDER */}
-        <div className="pt-4 border-t border-zinc-100 space-y-4">
+        <Card>
+          <CardHeader
+            icon="filter"
+            title="Canvas Fold Lines & Dieline Guides"
+            subtitle="Vertical or horizontal fold lines, score lines, and segment dielines for brochures or packaging boxes."
+          />
+        <div className="p-5 sm:p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-base font-bold text-zinc-900 flex items-center gap-1.5">
-                <span>Canvas Fold Lines & Dieline Guides</span>
-              </h3>
-              <p className="text-base text-zinc-500 mt-0.5">
-                Add vertical or horizontal fold lines, score lines, and segment dielines for brochures or packaging boxes.
-              </p>
-            </div>
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={applyTriFoldPreset}
-                className="px-2.5 py-1 text-xs font-bold rounded-lg border border-sky-200 bg-sky-50 text-[#e74b2d] hover:bg-sky-100 cursor-pointer"
+                className={buttonClass("soft", "sm")}
               >
                 + Tri-Fold Lines
               </button>
               <button
                 type="button"
                 onClick={applyHalfFoldPreset}
-                className="px-2.5 py-1 text-xs font-bold rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 cursor-pointer"
+                className={buttonClass("soft", "sm")}
               >
                 + Half-Fold Line
               </button>
               <button
                 type="button"
                 onClick={applyBoxNetPreset}
-                className="px-2.5 py-1 text-xs font-bold rounded-lg border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 cursor-pointer"
+                className={buttonClass("soft", "sm")}
               >
                 + Box Net Dieline
               </button>
               <button
                 type="button"
                 onClick={() => addGuideLine("vertical")}
-                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 cursor-pointer"
+                className={addTileClass}
               >
                 + Add Vertical Line
               </button>
               <button
                 type="button"
                 onClick={() => addGuideLine("horizontal")}
-                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-zinc-800 text-white hover:bg-zinc-700 cursor-pointer"
+                className={addTileClass}
               >
                 + Add Horizontal Line
               </button>
@@ -2487,8 +2512,8 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
           </div>
 
           {guideLines.length === 0 ? (
-            <div className="py-6 text-center border-2 border-dashed border-zinc-200 rounded-2xl bg-[#fbfaf7]">
-              <p className="text-base text-zinc-400 font-medium">No canvas fold lines or dieline guides added.</p>
+            <div className="py-8 text-center border-2 border-dashed border-[#dbeefb] rounded-2xl bg-[#f0f8fd]/50">
+              <p className="text-sm text-zinc-500 font-medium">No canvas fold lines or dieline guides added.</p>
               <p className="text-xs text-zinc-400 mt-1">
                 Click &quot;+ Add Vertical Line&quot; or select one of the fold presets above.
               </p>
@@ -2498,25 +2523,25 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
               {guideLines.map((line) => (
                 <div
                   key={line.id}
-                  className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-[#fbfaf7] border border-zinc-200 rounded-2xl p-3"
+                  className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-zinc-50/60 border border-zinc-200/70 rounded-xl p-3.5"
                 >
                   <div className="sm:col-span-3">
-                    <label className="text-xs font-bold text-zinc-400 block mb-0.5">Line Name</label>
+                    <label className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400 mb-1">Line Name</label>
                     <input
                       type="text"
                       value={line.name}
                       onChange={(e) => updateGuideLine(line.id, "name", e.target.value)}
                       placeholder="e.g. Spine Fold"
-                      className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                      className={cx(fieldSm, "w-full font-medium")}
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-xs font-bold text-zinc-400 block mb-0.5">Orientation</label>
+                    <label className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400 mb-1">Orientation</label>
                     <select
                       value={line.orientation}
                       onChange={(e) => updateGuideLine(line.id, "orientation", e.target.value)}
-                      className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1 text-base font-bold text-zinc-900 cursor-pointer"
+                      className={cx(fieldSm, "w-full cursor-pointer")}
                     >
                       <option value="vertical">Vertical</option>
                       <option value="horizontal">Horizontal</option>
@@ -2525,21 +2550,21 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
 
                   <div className="sm:col-span-3 flex gap-1.5">
                     <div className="flex-1">
-                      <label className="text-xs font-bold text-zinc-400 block mb-0.5">Position</label>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400 mb-1">Position</label>
                       <input
                         type="number"
                         step="any"
                         value={line.position}
                         onChange={(e) => updateGuideLine(line.id, "position", Number(e.target.value))}
-                        className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                        className={cx(fieldSm, "w-full font-mono")}
                       />
                     </div>
                     <div className="w-20">
-                      <label className="text-xs font-bold text-zinc-400 block mb-0.5">Unit</label>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400 mb-1">Unit</label>
                       <select
                         value={line.unit || "percent"}
                         onChange={(e) => updateGuideLine(line.id, "unit", e.target.value)}
-                        className="w-full bg-white border border-zinc-200 rounded-xl px-1.5 py-1 text-base font-bold text-zinc-900 cursor-pointer"
+                        className={cx(fieldCore, "w-full px-1.5 py-1.5 cursor-pointer")}
                       >
                         <option value="percent">%</option>
                         <option value="mm">mm</option>
@@ -2551,11 +2576,11 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-xs font-bold text-zinc-400 block mb-0.5">Line Type</label>
+                    <label className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400 mb-1">Line Type</label>
                     <select
                       value={line.lineType || "fold"}
                       onChange={(e) => updateGuideLine(line.id, "lineType", e.target.value)}
-                      className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1 text-base font-bold text-zinc-900 cursor-pointer"
+                      className={cx(fieldSm, "w-full cursor-pointer")}
                     >
                       <option value="fold">Fold Line (Dashed)</option>
                       <option value="score">Score Line (Dotted)</option>
@@ -2568,19 +2593,19 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     <div className="flex items-center gap-1.5">
                       <input
                         type="color"
-                        value={line.color || "#e74b2d"}
+                        value={line.color || "#329AD4"}
                         onChange={(e) => updateGuideLine(line.id, "color", e.target.value)}
-                        className="w-7 h-7 rounded-lg border border-zinc-200 cursor-pointer bg-transparent"
+                        className="w-8 h-8 rounded-lg border border-zinc-200 cursor-pointer bg-white p-0.5"
                         title="Pick Line Color"
                       />
                     </div>
                     <button
                       type="button"
                       onClick={() => removeGuideLine(line.id)}
-                      className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
                       title="Remove line"
                     >
-                      ✕
+                      <Icon name="trash" className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -2588,66 +2613,62 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             </div>
           )}
         </div>
+        </Card>
           </>
         )}
 
         {/* CATEGORY DEFAULT LAYERS & LOGO CANVAS EDITOR — skip for mockup (handled in mockup editor above) */}
         {canvasType !== "mockup" && (
-        <div className="pt-6 border-t border-zinc-100 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#e74b2d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Category Canvas Default Layers & Logo Editor
-              </h3>
-              <p className="text-base text-zinc-500 mt-0.5">
-                Customize default text layers, logo text, logo position, and default layout for templates created in this category.
-              </p>
-            </div>
+        <Card>
+          <CardHeader
+            icon="edit"
+            title="Default Layers & Logo Editor"
+            subtitle="Default text layers, logo text and position for templates created in this category."
+            action={
             <button
               type="button"
               onClick={addTextLayer}
-              className="px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-sm rounded-xl transition-all shadow-sm cursor-pointer shrink-0"
+              className={cx(addTileClass, "shrink-0")}
             >
               + Add Text Layer
             </button>
-          </div>
+            }
+          />
+        <div className="p-5 sm:p-6 space-y-5">
 
           {/* Logo Setup Card */}
-          <div className="p-4 bg-[#fbfaf7] border border-zinc-200 rounded-2xl space-y-3">
-            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block">Default Logo Placeholder Settings</span>
+          <div className="p-4 bg-zinc-50/60 border border-zinc-200/70 rounded-xl space-y-3">
+            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wide block">Default Logo Placeholder Settings</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="text-xs font-bold text-zinc-700 block mb-1">Logo Text</label>
+                <label className={labelClass}>Logo Text</label>
                 <input
                   type="text"
                   value={logoText}
                   onChange={(e) => setLogoText(e.target.value)}
                   placeholder="e.g. LOGO or BRAND"
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-zinc-700 block mb-1">Logo Size (px)</label>
+                <label className={labelClass}>Logo Size (px)</label>
                 <input
                   type="number"
                   min={10}
                   max={100}
                   value={logoSize}
                   onChange={(e) => setLogoSize(Number(e.target.value))}
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-zinc-700 block mb-1">Logo Position</label>
+                <label className={labelClass}>Logo Position</label>
                 <select
                   value={logoPosition}
                   onChange={(e) => setLogoPosition(e.target.value as any)}
-                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-bold text-zinc-900 cursor-pointer focus:outline-none focus:border-[#e74b2d]"
+                  className={cx(inputClass, "cursor-pointer")}
                 >
                   <option value="top-right">Top Right</option>
                   <option value="top-left">Top Left</option>
@@ -2661,11 +2682,11 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
           {/* Text Layers Management List */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Category Text Layers ({textLayers.length})</span>
+              <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wide">Category Text Layers ({textLayers.length})</span>
             </div>
 
             {textLayers.length === 0 ? (
-              <div className="py-6 text-center border-2 border-dashed border-zinc-200 rounded-2xl bg-[#fbfaf7]">
+              <div className="py-8 text-center border-2 border-dashed border-[#dbeefb] rounded-2xl bg-[#f0f8fd]/50">
                 <p className="text-sm text-zinc-400 font-medium">No default text layers added for this category.</p>
                 <p className="text-xs text-zinc-400 mt-1">Click &quot;+ Add Text Layer&quot; to add customized layers for this category.</p>
               </div>
@@ -2675,18 +2696,18 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   <div
                     key={layer.id}
                     onClick={() => setActiveLayerId(layer.id)}
-                    className={`p-4 rounded-2xl border transition-all ${
+                    className={`p-4 rounded-xl border transition-all ${
                       activeLayerId === layer.id
-                        ? "border-[#e74b2d] bg-sky-50/50 ring-2 ring-[#e74b2d]/20"
-                        : "border-zinc-200 bg-[#fbfaf7] hover:bg-white"
+                        ? "border-[#329AD4] bg-[#f0f8fd] ring-4 ring-[#329AD4]/10"
+                        : "border-zinc-200/70 bg-zinc-50/60 hover:border-[#b8e0f6] hover:bg-white"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3 mb-3">
                       <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-[#e74b2d] text-white text-xs font-bold flex items-center justify-center">
+                        <span className="w-6 h-6 rounded-lg bg-[#EAF5FB] text-[#2884b8] text-xs font-semibold flex items-center justify-center">
                           {idx + 1}
                         </span>
-                        <span className="text-sm font-bold text-zinc-900">Layer {idx + 1}</span>
+                        <span className="text-sm font-semibold text-zinc-900">Layer {idx + 1}</span>
                       </div>
                       <button
                         type="button"
@@ -2694,43 +2715,43 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           e.stopPropagation();
                           removeTextLayer(layer.id);
                         }}
-                        className="w-7 h-7 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 flex items-center justify-center transition-colors cursor-pointer text-sm font-bold"
+                        className="w-8 h-8 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer"
                         title="Delete layer"
                       >
-                        ✕
+                        <Icon name="trash" className="w-4 h-4" />
                       </button>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                       <div className="sm:col-span-4">
-                        <label className="text-xs font-bold text-zinc-500 block mb-1">Layer Text</label>
+                        <label className={labelClass}>Layer Text</label>
                         <input
                           type="text"
                           value={layer.text}
                           onChange={(e) => updateTextLayer(layer.id, "text", e.target.value)}
                           placeholder="Text layer content..."
-                          className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                          className={cx(fieldSm, "w-full")}
                         />
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label className="text-xs font-bold text-zinc-500 block mb-1">Font Size (px)</label>
+                        <label className={labelClass}>Font Size (px)</label>
                         <input
                           type="number"
                           min={8}
                           max={72}
                           value={layer.fontSize}
                           onChange={(e) => updateTextLayer(layer.id, "fontSize", Number(e.target.value))}
-                          className="w-full bg-white border border-zinc-200 rounded-xl px-2.5 py-1.5 text-sm font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                          className={cx(fieldSm, "w-full")}
                         />
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label className="text-xs font-bold text-zinc-500 block mb-1">Font Weight</label>
+                        <label className={labelClass}>Font Weight</label>
                         <select
                           value={layer.fontWeight || "normal"}
                           onChange={(e) => updateTextLayer(layer.id, "fontWeight", e.target.value)}
-                          className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1.5 text-sm font-semibold text-zinc-900 cursor-pointer focus:outline-none focus:border-[#e74b2d]"
+                          className={cx(fieldSm, "w-full cursor-pointer")}
                         >
                           <option value="normal">Normal</option>
                           <option value="bold">Bold</option>
@@ -2738,7 +2759,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label className="text-xs font-bold text-zinc-500 block mb-1">Color</label>
+                        <label className={labelClass}>Color</label>
                         <div className="flex items-center gap-2">
                           <input
                             type="color"
@@ -2746,31 +2767,31 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                             onChange={(e) => updateTextLayer(layer.id, "color", e.target.value)}
                             className="w-8 h-8 rounded-lg border border-zinc-200 cursor-pointer bg-transparent shrink-0"
                           />
-                          <span className="text-xs font-mono font-bold text-zinc-600 truncate">{layer.color}</span>
+                          <span className="text-xs font-mono font-semibold text-zinc-600 truncate">{layer.color}</span>
                         </div>
                       </div>
 
                       <div className="sm:col-span-2 flex gap-2">
                         <div className="flex-1">
-                          <label className="text-xs font-bold text-zinc-500 block mb-1">X Pos (%)</label>
+                          <label className={labelClass}>X Pos (%)</label>
                           <input
                             type="number"
                             min={0}
                             max={95}
                             value={layer.x}
                             onChange={(e) => updateTextLayer(layer.id, "x", Number(e.target.value))}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1.5 text-sm font-mono font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                            className={cx(fieldSm, "w-full font-mono")}
                           />
                         </div>
                         <div className="flex-1">
-                          <label className="text-xs font-bold text-zinc-500 block mb-1">Y Pos (%)</label>
+                          <label className={labelClass}>Y Pos (%)</label>
                           <input
                             type="number"
                             min={0}
                             max={95}
                             value={layer.y}
                             onChange={(e) => updateTextLayer(layer.id, "y", Number(e.target.value))}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-2 py-1.5 text-sm font-mono font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                            className={cx(fieldSm, "w-full font-mono")}
                           />
                         </div>
                       </div>
@@ -2781,17 +2802,16 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             )}
           </div>
         </div>
+        </Card>
         )}
 
         {/* Dynamic Sizes Configuration Section */}
-        <div className="pt-4 border-t border-zinc-100 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-base font-bold text-zinc-900">Custom Dimensions / Print Sizes</h3>
-              <p className="text-base text-zinc-500 mt-0.5">
-                Leave empty if category has 1 standard size. Add sizes if this category is offered in multiple physical dimensions.
-              </p>
-            </div>
+        <Card>
+          <CardHeader
+            icon="products"
+            title="Custom Dimensions / Print Sizes"
+            subtitle="Leave empty if category has 1 standard size. Add sizes if this category is offered in multiple physical dimensions."
+            action={
             <button
               type="button"
               onClick={() =>
@@ -2810,18 +2830,20 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   },
                 ])
               }
-              className="px-3 py-1.5 text-base font-bold rounded-xl bg-zinc-900 text-white cursor-pointer shrink-0"
+              className={cx(addTileClass, "shrink-0")}
             >
-              Add size
+              + Add size
             </button>
-          </div>
+            }
+          />
+        <div className="p-5 sm:p-6 space-y-3">
 
           {printSizes.length === 0 ? (
-            <p className="text-base text-zinc-400">This product uses the default canvas width and height specified above.</p>
+            <p className="text-sm text-zinc-400">This product uses the default canvas width and height specified above.</p>
           ) : (
             <div className="space-y-3">
               {printSizes.map((size, index) => (
-                <div key={`${size.name}-${index}`} className="rounded-2xl border border-zinc-200 bg-[#fbfaf7] p-3 space-y-2">
+                <div key={`${size.name}-${index}`} className="rounded-xl border border-zinc-200/70 bg-zinc-50/60 p-3.5 space-y-2.5">
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
                     <input
                       value={size.name}
@@ -2829,7 +2851,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, name: e.target.value } : row)))
                       }
                       placeholder="Size name"
-                      className="sm:col-span-4 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                      className={cx(fieldMd, "sm:col-span-4 font-medium")}
                     />
                     <input
                       type="number"
@@ -2839,7 +2861,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       onChange={(e) =>
                         setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, width: Number(e.target.value) } : row)))
                       }
-                      className="sm:col-span-2 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                      className={cx(fieldMd, "sm:col-span-2 font-mono")}
                     />
                     <input
                       type="number"
@@ -2849,14 +2871,14 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       onChange={(e) =>
                         setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, height: Number(e.target.value) } : row)))
                       }
-                      className="sm:col-span-2 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                      className={cx(fieldMd, "sm:col-span-2 font-mono")}
                     />
                     <select
                       value={size.unit}
                       onChange={(e) =>
                         setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, unit: asCanvasUnit(e.target.value, row.unit) } : row)))
                       }
-                      className="sm:col-span-2 bg-white border border-zinc-200 rounded-xl px-2 py-2 text-base font-bold text-zinc-900"
+                      className={cx(fieldCore, "sm:col-span-2 px-2 py-2 cursor-pointer")}
                     >
                       <option value="in">inches</option>
                       <option value="mm">mm</option>
@@ -2866,13 +2888,13 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     <button
                       type="button"
                       onClick={() => setPrintSizes((prev) => prev.filter((_, i) => i !== index))}
-                      className="sm:col-span-2 text-base font-bold text-red-600 hover:text-red-700 cursor-pointer"
+                      className={cx(buttonClass("danger", "sm"), "sm:col-span-2 self-center")}
                     >
                       Remove
                     </button>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <label className="text-base font-bold text-zinc-500">
+                    <label className="text-xs font-semibold text-zinc-600">
                       Bleed
                       <input
                         type="number"
@@ -2882,17 +2904,17 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         onChange={(e) =>
                           setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, bleed: Number(e.target.value) } : row)))
                         }
-                        className="mt-1 w-full bg-white border border-zinc-200 rounded-lg px-2 py-1.5 text-base font-mono text-zinc-900"
+                        className={cx(fieldSm, "mt-1 w-full font-mono")}
                       />
                     </label>
-                    <label className="text-base font-bold text-zinc-500">
+                    <label className="text-xs font-semibold text-zinc-600">
                       Bleed unit
                       <select
                         value={size.bleedUnit}
                         onChange={(e) =>
                           setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, bleedUnit: asCanvasUnit(e.target.value, row.unit) } : row)))
                         }
-                        className="mt-1 w-full bg-white border border-zinc-200 rounded-lg px-2 py-1.5 text-base font-bold text-zinc-900"
+                        className={cx(fieldSm, "mt-1 w-full cursor-pointer")}
                       >
                         <option value="in">in</option>
                         <option value="mm">mm</option>
@@ -2900,7 +2922,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         <option value="px">px</option>
                       </select>
                     </label>
-                    <label className="text-base font-bold text-zinc-500">
+                    <label className="text-xs font-semibold text-zinc-600">
                       Safe area
                       <input
                         type="number"
@@ -2910,17 +2932,17 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                         onChange={(e) =>
                           setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, safeArea: Number(e.target.value) } : row)))
                         }
-                        className="mt-1 w-full bg-white border border-zinc-200 rounded-lg px-2 py-1.5 text-base font-mono text-zinc-900"
+                        className={cx(fieldSm, "mt-1 w-full font-mono")}
                       />
                     </label>
-                    <label className="text-base font-bold text-zinc-500">
+                    <label className="text-xs font-semibold text-zinc-600">
                       Safe unit
                       <select
                         value={size.safeAreaUnit}
                         onChange={(e) =>
                           setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, safeAreaUnit: asCanvasUnit(e.target.value, row.unit) } : row)))
                         }
-                        className="mt-1 w-full bg-white border border-zinc-200 rounded-lg px-2 py-1.5 text-base font-bold text-zinc-900"
+                        className={cx(fieldSm, "mt-1 w-full cursor-pointer")}
                       >
                         <option value="in">in</option>
                         <option value="mm">mm</option>
@@ -2935,62 +2957,62 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       setPrintSizes((prev) => prev.map((row, i) => (i === index ? { ...row, note: e.target.value } : row)))
                     }
                     placeholder="Optional note"
-                    className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-700 focus:outline-none focus:border-[#e74b2d]"
+                    className={inputClass}
                   />
                 </div>
               ))}
             </div>
           )}
         </div>
+        </Card>
       </div>
       {/* Product Variations Card (Vistaprint style) */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-6 shadow-sm">
-        <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
-          <div>
-            <h2 className="text-base font-bold text-zinc-900">
-              Category Default Variations & Options
-            </h2>
-            <p className="text-base text-zinc-500 mt-0.5">
-              Configure default variation groups (e.g. Paper Stock, Finish, Corner Style) and options for products in this category.
-            </p>
-          </div>
+      <Card>
+        <CardHeader
+          icon="tag"
+          title="Category Default Variations & Options"
+          subtitle="Default variation groups (e.g. Paper Stock, Finish, Corner Style) and options for products in this category."
+          action={
           <button
             type="button"
             onClick={addVariation}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-sm"
+            className={cx(buttonClass("primary", "sm"), "shrink-0")}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-            </svg>
+            <Icon name="plus" className="w-3.5 h-3.5" strokeWidth={2.4} />
             Add Variation Group
           </button>
-        </div>
+          }
+        />
+        <div className="p-5 sm:p-6 space-y-5">
 
         {variations.length === 0 ? (
-          <div className="text-center py-8 bg-[#fbfaf7] border-2 border-dashed border-zinc-200 rounded-2xl">
-            <p className="text-base font-medium text-zinc-500 mb-2">
+          <div className="text-center py-10 bg-[#f0f8fd]/50 border-2 border-dashed border-[#dbeefb] rounded-2xl">
+            <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#329AD4] shadow-xs">
+              <Icon name="tag" className="w-5 h-5" />
+            </span>
+            <p className="text-sm font-medium text-zinc-600 mb-2">
               No category variations configured yet.
             </p>
             <button
               type="button"
               onClick={addVariation}
-              className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer"
+              className="text-sm font-semibold text-[#2884b8] hover:text-[#1b5b80] hover:underline cursor-pointer"
             >
               + Click here to add default variation (e.g. Paper Stock, Corners)
             </button>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-5">
             {variations.map((v, varIdx) => (
               <div
                 key={v._id || `cat-var-${varIdx}`}
-                className="border border-zinc-200/80 rounded-2xl p-5 bg-[#fafcfd] space-y-4"
+                className="border border-zinc-200/70 rounded-2xl p-4 sm:p-5 bg-[#f0f8fd]/40 space-y-4"
               >
                 {/* Variation Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-zinc-200/60 shadow-2sm">
+                <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 bg-white p-4 rounded-xl border border-zinc-200/70 shadow-xs">
                   <div className="flex-1 w-full sm:w-auto">
-                    <label className="text-base font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                      Variation Group Name *
+                    <label className={labelClass}>
+                      Variation Group Name <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -2998,17 +3020,17 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                       value={v.name}
                       onChange={(e) => updateVariationField(varIdx, "name", e.target.value)}
                       placeholder="e.g. Paper Stock, Corner Style"
-                      className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-3 py-1.5 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                      className={cx(fieldMd, "w-full font-semibold")}
                     />
                   </div>
 
-                  <div className="flex items-center gap-4 self-end sm:self-center">
-                    <label className="flex items-center gap-2 text-base font-bold text-zinc-700 cursor-pointer">
+                  <div className="flex items-center gap-2 self-end">
+                    <label className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 cursor-pointer hover:border-[#b8e0f6] transition-colors">
                       <input
                         type="checkbox"
                         checked={v.required}
                         onChange={(e) => updateVariationField(varIdx, "required", e.target.checked)}
-                        className="rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] w-4 h-4 cursor-pointer"
+                        className="rounded border-zinc-300 accent-[#329AD4] w-4 h-4 cursor-pointer"
                       />
                       Required Selection
                     </label>
@@ -3016,17 +3038,10 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     <button
                       type="button"
                       onClick={() => removeVariation(varIdx)}
-                      className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
                       title="Delete variation group"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
+                      <Icon name="trash" className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -3034,13 +3049,13 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                 {/* Values List */}
                 <div className="space-y-3 pt-1">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-base font-bold text-zinc-700 uppercase tracking-wider">
+                    <h3 className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wide">
                       Option Values for &ldquo;{v.name || "Variation"}&rdquo;
                     </h3>
                     <button
                       type="button"
                       onClick={() => addVariationValue(varIdx)}
-                      className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer"
+                      className={addTileClass}
                     >
                       + Add Option Value
                     </button>
@@ -3054,12 +3069,12 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     return (
                       <div
                         key={val._id || `cat-val-${varIdx}-${valIdx}`}
-                        className="bg-white border border-zinc-200 rounded-xl p-3.5 space-y-3 shadow-2sm"
+                        className="bg-white border border-zinc-200/70 rounded-xl p-4 space-y-3 shadow-xs"
                       >
                         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
                           {/* Name */}
                           <div className="sm:col-span-5">
-                            <label className="text-base font-bold text-zinc-500 block mb-1">
+                            <label className={labelClass}>
                               Option Name *
                             </label>
                             <input
@@ -3068,24 +3083,24 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                               value={val.name}
                               onChange={(e) => updateVariationValue(varIdx, valIdx, "name", e.target.value)}
                               placeholder="e.g. Standard Matte (14 pt)"
-                              className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-3 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                              className={cx(fieldMd, "w-full")}
                             />
                           </div>
 
                           {/* Price */}
                           <div className="sm:col-span-3">
                             <div className="flex items-center justify-between mb-1">
-                              <label className="text-base font-bold text-zinc-500">Price (USD)</label>
+                              <label className="text-xs font-semibold text-zinc-600">Price (USD)</label>
                               <span
-                                className={`text-base font-extrabold px-1.5 py-0.5 rounded-full ${
-                                  isFree ? "bg-emerald-100 text-emerald-700" : "bg-blue-50 text-blue-700"
+                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ring-1 ring-inset ${
+                                  isFree ? "bg-emerald-50 text-emerald-700 ring-emerald-600/15" : "bg-[#EAF5FB] text-[#2884b8] ring-[#329AD4]/20"
                                 }`}
                               >
                                 {isFree ? "FREE ($0)" : `+$${parseFloat(val.price || "0").toFixed(2)}`}
                               </span>
                             </div>
                             <div className="relative">
-                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 text-base font-bold">
+                              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm font-semibold">
                                 $
                               </span>
                               <input
@@ -3097,7 +3112,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                                   updateVariationValue(varIdx, valIdx, "price", e.target.value)
                                 }
                                 placeholder="0 (Free)"
-                                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg pl-6 pr-3 py-1.5 text-base font-mono font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                                className={cx(fieldCore, "w-full pl-7 pr-3 py-2 font-mono font-semibold")}
                               />
                             </div>
                           </div>
@@ -3105,9 +3120,10 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                           {/* Image */}
                           <div className="sm:col-span-3">
                             <div className="flex items-center justify-between mb-1">
-                              <label className="text-base font-bold text-zinc-500">Image</label>
-                              <label className="text-base font-bold text-[#e74b2d] hover:underline cursor-pointer">
-                                {isUploadingThis ? "Uploading..." : "↑ Upload"}
+                              <label className="text-xs font-semibold text-zinc-600">Image</label>
+                              <label className="inline-flex items-center gap-1 text-xs font-semibold text-[#2884b8] hover:text-[#1b5b80] cursor-pointer">
+                                <Icon name="upload" className="w-3.5 h-3.5" />
+                                {isUploadingThis ? "Uploading..." : "Upload"}
                                 <input
                                   type="file"
                                   accept="image/*"
@@ -3129,29 +3145,27 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                                   updateVariationValue(varIdx, valIdx, "image", e.target.value)
                                 }
                                 placeholder="Image URL / S3"
-                                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-2.5 py-1.5 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                                className={cx(fieldMd, "w-full")}
                               />
                               {val.image && (
                                 <img
                                   src={val.image}
                                   alt="Preview"
-                                  className="w-7 h-7 rounded-md object-cover border border-zinc-200 shadow-2sm flex-shrink-0 bg-white"
+                                  className="w-9 h-9 rounded-lg object-cover border border-zinc-200 shadow-xs flex-shrink-0 bg-white"
                                 />
                               )}
                             </div>
                           </div>
 
                           {/* Remove */}
-                          <div className="sm:col-span-1 flex items-center justify-center pt-5">
+                          <div className="sm:col-span-1 flex items-center justify-end sm:justify-center sm:pt-6">
                             <button
                               type="button"
                               onClick={() => removeVariationValue(varIdx, valIdx)}
-                              className="text-zinc-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
                               title="Remove option"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                              </svg>
+                              <Icon name="trash" className="w-4 h-4" />
                             </button>
                           </div>
                         </div>
@@ -3165,7 +3179,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                               updateVariationValue(varIdx, valIdx, "description", e.target.value)
                             }
                             placeholder="Optional description (e.g., Smooth coated paper with subtle sheen)"
-                            className="w-full bg-[#fbfaf7] border border-zinc-100 rounded-lg px-3 py-1 text-base text-zinc-600 focus:outline-none focus:border-[#e74b2d]"
+                            className="w-full rounded-lg border border-zinc-100 bg-zinc-50/60 px-3 py-1.5 text-sm text-zinc-600 placeholder-zinc-400 transition focus:outline-none focus:bg-white focus:border-[#329AD4] focus:ring-4 focus:ring-[#329AD4]/10"
                           />
                         </div>
                       </div>
@@ -3176,6 +3190,37 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             ))}
           </div>
         )}
+        </div>
+      </Card>
+
+      {/* Sticky action bar */}
+      <div className="sticky bottom-0 z-30 rounded-2xl border border-zinc-200/70 bg-white/85 backdrop-blur-md px-4 sm:px-5 py-3 shadow-[0_-6px_20px_-12px_rgba(27,91,128,0.25)]">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-zinc-500">
+            <span className="font-semibold text-zinc-700">{familyLabel}</span> category · {mode === "create" ? "review the settings, then create the category." : "changes are applied once you save."}
+          </p>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => router.push("/admin/categories")}
+              className={buttonClass("secondary")}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className={buttonClass("primary")}
+            >
+              {saving ? (
+                <span className="inline-block h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+              ) : (
+                <Icon name="check" className="w-4 h-4" strokeWidth={2.2} />
+              )}
+              {saving ? "Saving..." : mode === "create" ? "Create Category" : "Save Changes"}
+            </button>
+          </div>
+        </div>
       </div>
 
       </>
@@ -3188,7 +3233,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-zinc-800/80 flex items-center justify-between bg-[#181c28]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#e74b2d]/20 border border-[#e74b2d]/40 flex items-center justify-center text-[#f88768]">
+                <div className="w-10 h-10 rounded-xl bg-[#329AD4]/20 border border-[#329AD4]/40 flex items-center justify-center text-[#55b2e7]">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -3214,7 +3259,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     type="button"
                     onClick={() => setModalTab("3d")}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      modalTab === "3d" ? "bg-[#e74b2d] text-white shadow" : "text-zinc-400 hover:text-white"
+                      modalTab === "3d" ? "bg-[#329AD4] text-white shadow" : "text-zinc-400 hover:text-white"
                     }`}
                   >
                     3D Box View
@@ -3223,7 +3268,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                     type="button"
                     onClick={() => setModalTab("2d")}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      modalTab === "2d" ? "bg-[#e74b2d] text-white shadow" : "text-zinc-400 hover:text-white"
+                      modalTab === "2d" ? "bg-[#329AD4] text-white shadow" : "text-zinc-400 hover:text-white"
                     }`}
                   >
                     2D Canvas Dieline
@@ -3236,7 +3281,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                   className="w-9 h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer text-base font-bold"
                   title="Close preview"
                 >
-                  ✕
+                  <Icon name="close" className="w-4 h-4" strokeWidth={2.2} />
                 </button>
               </div>
             </div>
@@ -3289,7 +3334,7 @@ export default function CategoryForm({ mode, categoryId, initialData }: Category
                                 x: 50,
                                 y: 46,
                                 fontSize: 16,
-                                color: "#f88768",
+                                color: "#55b2e7",
                                 fontWeight: "bold",
                                 textAlign: "center",
                               },

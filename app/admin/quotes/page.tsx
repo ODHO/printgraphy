@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { Avatar, Badge, Button, Card, cx, EmptyState, Field, Icon, IconButton, inputClass, PageHeader, Pagination as Pager, SkeletonRows, statusTone, table, Tabs, Toolbar, type Tone } from "@/components/admin/ui";
 
 interface Quote {
   _id: string;
@@ -91,153 +92,158 @@ export default function AdminQuotesPage() {
 
   return (
     <div className="space-y-6 max-w-7xl">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Custom Quotes Oversight</h1>
-          <p className="text-zinc-500 text-base mt-0.5">
-            {pagination ? `${pagination.total} total custom quote requests` : "Loading..."}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        icon="quotes"
+        title="Custom Quotes Oversight"
+        description={<span className="tabular-nums">{pagination ? `${pagination.total} total custom quote requests` : "Loading..."}</span>}
+      />
 
-      {/* Status Filter */}
-      <div className="max-w-xs">
-        <select
-          value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="w-full bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
-        >
-          <option value="">All Statuses</option>
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>{s.replace("_", " ")}</option>
-          ))}
-        </select>
-      </div>
+      <Card className="overflow-hidden">
+        <Toolbar>
+          <Tabs
+            value={statusFilter}
+            onChange={(value) => { setStatusFilter(value); setPage(1); }}
+            items={[{ value: "", label: "All Statuses" }, ...STATUSES.map((s) => ({ value: s, label: <span className="capitalize">{s.replace("_", " ")}</span> }))]}
+          />
+          {pagination && !loading && (
+            <p className="text-xs text-zinc-500 tabular-nums shrink-0">
+              Page {pagination.page} of {Math.max(pagination.pages, 1)}
+            </p>
+          )}
+        </Toolbar>
 
-      {/* Quotes Table */}
-      <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
-          <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
-          </div>
+          <SkeletonRows rows={6} />
         ) : quotes.length === 0 ? (
-          <div className="py-16 text-center text-zinc-400 text-base">
-            No quote requests found.
-          </div>
+          <EmptyState icon="quotes" title="No quote requests found." description={statusFilter ? "Try a different status filter." : undefined} />
         ) : (
-          <table className="w-full text-base">
-            <thead>
-              <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
-                <th className="text-left px-5 py-3.5 font-bold">Ref Number</th>
-                <th className="text-left px-5 py-3.5 font-bold">Contact</th>
-                <th className="text-left px-5 py-3.5 font-bold">Category</th>
-                <th className="text-left px-5 py-3.5 font-bold">Qty</th>
-                <th className="text-left px-5 py-3.5 font-bold">Status</th>
-                <th className="text-left px-5 py-3.5 font-bold">Quoted Price</th>
-                <th className="text-right px-5 py-3.5 font-bold">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {quotes.map((q) => (
-                <tr key={q._id} className="hover:bg-sky-50/40 transition-colors">
-                  <td className="px-5 py-3.5 font-mono font-bold text-zinc-900">{q.referenceNumber}</td>
-                  <td className="px-5 py-3.5">
-                    <p className="font-bold text-zinc-900">{q.contactName}</p>
-                    <p className="text-zinc-400 text-base">{q.email}</p>
-                  </td>
-                  <td className="px-5 py-3.5 text-zinc-700 font-semibold">{q.category}</td>
-                  <td className="px-5 py-3.5 text-zinc-900 font-mono font-bold">{q.quantity.toLocaleString()}</td>
-                  <td className="px-5 py-3.5">
-                    <span className={`px-2.5 py-1 rounded-full text-base font-bold uppercase ${
-                      q.status === "approved" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                      q.status === "quoted" ? "bg-sky-50 text-sky-700 border border-sky-200" :
-                      q.status === "under_review" ? "bg-amber-50 text-amber-700 border border-amber-200" :
-                      "bg-zinc-100 text-zinc-600 border border-zinc-200"
-                    }`}>
-                      {q.status.replace("_", " ")}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5 font-bold text-zinc-900 font-mono">
-                    {q.quotedPrice ? `$${q.quotedPrice.toFixed(2)}` : "—"}
-                  </td>
-                  <td className="px-5 py-3.5 text-right">
-                    <button
-                      onClick={() => openQuoteModal(q)}
-                      className="px-3 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-base rounded-xl shadow-xs transition-all cursor-pointer"
-                    >
-                      Review / Quote
-                    </button>
-                  </td>
+          <div className={table.wrap}>
+            <table className={table.table}>
+              <thead className={table.thead}>
+                <tr>
+                  <th className={table.th}>Ref Number</th>
+                  <th className={table.th}>Contact</th>
+                  <th className={table.th}>Category</th>
+                  <th className={cx(table.th, "text-right")}>Qty</th>
+                  <th className={table.th}>Status</th>
+                  <th className={cx(table.th, "text-right")}>Quoted Price</th>
+                  <th className={cx(table.th, "text-right")}>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className={table.tbody}>
+                {quotes.map((q) => (
+                  <tr key={q._id} className={table.tr}>
+                    <td className={table.td}>
+                      <span className="inline-flex rounded-md bg-zinc-100 px-2 py-0.5 font-mono text-xs font-semibold text-zinc-700 whitespace-nowrap">{q.referenceNumber}</span>
+                    </td>
+                    <td className={table.td}>
+                      <div className="flex items-center gap-3 min-w-[12rem]">
+                        <Avatar name={q.contactName || q.email || "?"} size="sm" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-zinc-900 truncate">{q.contactName}</p>
+                          <p className="text-xs text-zinc-500 truncate">{q.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className={cx(table.td, "whitespace-nowrap")}>{q.category}</td>
+                    <td className={cx(table.td, "text-right font-semibold text-zinc-900 tabular-nums")}>{q.quantity.toLocaleString()}</td>
+                    <td className={table.td}>
+                      <Badge tone={quoteTone(q.status)} dot>{q.status.replace("_", " ")}</Badge>
+                    </td>
+                    <td className={cx(table.td, "text-right whitespace-nowrap tabular-nums", q.quotedPrice ? "font-semibold text-zinc-900" : "text-zinc-400")}>
+                      {q.quotedPrice ? `$${q.quotedPrice.toFixed(2)}` : "—"}
+                    </td>
+                    <td className={cx(table.td, "text-right")}>
+                      <Button size="sm" variant="soft" icon="edit" onClick={() => openQuoteModal(q)} className="whitespace-nowrap">
+                        Review / Quote
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </div>
+        {pagination && !loading && (
+          <Pager page={page} pages={pagination.pages} total={pagination.total} limit={20} onPage={setPage} />
+        )}
+      </Card>
 
       {/* Quote Review Modal */}
       {activeQuote && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white border border-zinc-200/80 rounded-3xl w-full max-w-lg p-6 space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-              <h2 className="text-base font-bold text-zinc-900">
-                Review Quote <span className="font-mono text-[#e74b2d]">{activeQuote.referenceNumber}</span>
-              </h2>
-              <button onClick={() => setActiveQuote(null)} className="text-zinc-400 hover:text-zinc-800 cursor-pointer">✕</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-zinc-100">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8]">
+                  <Icon name="quotes" className="w-4 h-4" />
+                </span>
+                <h2 className="text-sm font-semibold text-zinc-900 truncate">
+                  Review Quote <span className="font-mono text-[#329AD4]">{activeQuote.referenceNumber}</span>
+                </h2>
+              </div>
+              <IconButton icon="close" label="Close" onClick={() => setActiveQuote(null)} />
             </div>
 
-            <div className="bg-[#fbfaf7] p-4 rounded-2xl border border-sky-100 space-y-2 text-base text-zinc-700">
-              <p><strong>Customer:</strong> {activeQuote.contactName} ({activeQuote.email})</p>
-              <p><strong>Company:</strong> {activeQuote.companyName || "N/A"}</p>
-              <p><strong>Category & Qty:</strong> {activeQuote.category} × {activeQuote.quantity.toLocaleString()}</p>
-              <p><strong>Timeline:</strong> {activeQuote.targetTimeline || "N/A"}</p>
-              <div className="mt-2 pt-2 border-t border-zinc-200">
-                <p className="text-zinc-500 font-bold mb-1">Description:</p>
-                <p className="text-zinc-900 whitespace-pre-wrap">{activeQuote.description}</p>
-              </div>
-            </div>
+            <form onSubmit={handleUpdateQuote} className="flex flex-col min-h-0">
+              <div className="space-y-5 px-5 sm:px-6 py-5 overflow-y-auto">
+                <div className="rounded-xl border border-[#dbeefb] bg-[#f0f8fd] p-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar name={activeQuote.contactName || activeQuote.email || "?"} />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-zinc-900 truncate">{activeQuote.contactName}</p>
+                      <p className="text-xs text-zinc-500 truncate">{activeQuote.email}</p>
+                    </div>
+                    <Badge tone={quoteTone(activeQuote.status)} dot className="ml-auto">{activeQuote.status.replace("_", " ")}</Badge>
+                  </div>
+                  <dl className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                    <div>
+                      <dt className="text-xs text-zinc-500">Company</dt>
+                      <dd className="font-medium text-zinc-900">{activeQuote.companyName || "N/A"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs text-zinc-500">Category & Qty</dt>
+                      <dd className="font-medium text-zinc-900">{activeQuote.category} × <span className="tabular-nums">{activeQuote.quantity.toLocaleString()}</span></dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs text-zinc-500">Timeline</dt>
+                      <dd className="font-medium text-zinc-900">{activeQuote.targetTimeline || "N/A"}</dd>
+                    </div>
+                  </dl>
+                  <div className="mt-4 pt-3 border-t border-[#dbeefb]">
+                    <p className="text-xs font-semibold text-[#1b5b80] mb-1">Description</p>
+                    <p className="text-sm text-zinc-800 whitespace-pre-wrap">{activeQuote.description}</p>
+                  </div>
+                </div>
 
-            <form onSubmit={handleUpdateQuote} className="space-y-4">
-              <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Status</label>
-                <select
-                  value={editStatus}
-                  onChange={(e) => setEditStatus(e.target.value)}
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
-                >
-                  {STATUSES.map((s) => (
-                    <option key={s} value={s}>{s.replace("_", " ")}</option>
-                  ))}
-                </select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Status">
+                    <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)} className={cx(inputClass, "cursor-pointer capitalize")}>
+                      {STATUSES.map((s) => (
+                        <option key={s} value={s}>{s.replace("_", " ")}</option>
+                      ))}
+                    </select>
+                  </Field>
+
+                  <Field label="Quote Price (USD)">
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-zinc-400">$</span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={editPrice}
+                        onChange={(e) => setEditPrice(e.target.value)}
+                        placeholder="Enter custom quoted total..."
+                        className={cx(inputClass, "pl-7 tabular-nums")}
+                      />
+                    </div>
+                  </Field>
+                </div>
               </div>
 
-              <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Quote Price (USD)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={editPrice}
-                  onChange={(e) => setEditPrice(e.target.value)}
-                  placeholder="Enter custom quoted total..."
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveQuote(null)}
-                  className="flex-1 py-2.5 text-base text-zinc-600 font-bold border border-zinc-200 rounded-xl hover:bg-zinc-50 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
-                >
-                  {saving ? "Saving..." : "Update Quote"}
-                </button>
+              <div className="flex justify-end gap-2 px-5 sm:px-6 py-4 border-t border-zinc-100 bg-zinc-50/60">
+                <Button variant="secondary" onClick={() => setActiveQuote(null)}>Cancel</Button>
+                <Button type="submit" disabled={saving} icon="check">{saving ? "Saving..." : "Update Quote"}</Button>
               </div>
             </form>
           </div>
@@ -245,4 +251,19 @@ export default function AdminQuotesPage() {
       )}
     </div>
   );
+}
+
+function quoteTone(status: string): Tone {
+  switch (status) {
+    case "approved":
+      return "green";
+    case "quoted":
+      return "brand";
+    case "under_review":
+      return "amber";
+    case "declined":
+      return "red";
+    default:
+      return statusTone(status);
+  }
 }

@@ -134,7 +134,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
         {isSpecificCategory && (
           <button
             onClick={() => onSelectCategory("all")}
-            className="text-xs font-bold text-[#e74b2d] hover:underline cursor-pointer flex items-center gap-1"
+            className="text-xs font-bold text-[#329AD4] hover:underline cursor-pointer flex items-center gap-1"
             title="Browse all product categories"
           >
             <span>← All Categories</span>
@@ -153,7 +153,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
             placeholder="Filter sizes & formats..."
             value={categorySearch}
             onChange={(e) => setCategorySearch(e.target.value)}
-            className="w-full bg-zinc-50 border border-zinc-200/80 rounded-xl pl-8 pr-7 py-1.5 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] transition-all"
+            className="w-full bg-zinc-50 border border-zinc-200/80 rounded-xl pl-8 pr-7 py-1.5 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#329AD4] transition-all"
           />
           {categorySearch && (
             <button
@@ -174,7 +174,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
             onClick={() => onSelectCategory("all")}
             className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-left cursor-pointer ${
               selectedCategory === "all"
-                ? "bg-[#e74b2d] text-white shadow-md shadow-[#e74b2d]/25"
+                ? "bg-[#329AD4] text-white shadow-md shadow-[#329AD4]/25"
                 : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900"
             }`}
           >
@@ -205,7 +205,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                 onClick={() => onSelectCategory(cat.name)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all text-left cursor-pointer ${
                   isSelected
-                    ? "bg-[#e74b2d] text-white font-bold shadow-md shadow-[#e74b2d]/25"
+                    ? "bg-[#329AD4] text-white font-bold shadow-md shadow-[#329AD4]/25"
                     : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 font-medium"
                 }`}
               >
@@ -217,7 +217,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                       className="w-6 h-6 rounded-lg object-cover shrink-0 border border-white/20 bg-white"
                     />
                   ) : (
-                    <span className={`w-2 h-2 rounded-full shrink-0 transition-colors ${isSelected ? "bg-white" : "bg-zinc-300 group-hover:bg-[#e74b2d]"}`} />
+                    <span className={`w-2 h-2 rounded-full shrink-0 transition-colors ${isSelected ? "bg-white" : "bg-zinc-300 group-hover:bg-[#329AD4]"}`} />
                   )}
                   <span className="truncate text-xs font-semibold">{cat.name}</span>
                 </div>
@@ -227,7 +227,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                     <svg
                       className={`w-3.5 h-3.5 transition-transform duration-300 ${
                         isExpanded
-                          ? "rotate-90 " + (isSelected ? "text-white" : "text-[#e74b2d]")
+                          ? "rotate-90 " + (isSelected ? "text-white" : "text-[#329AD4]")
                           : "rotate-0 " + (isSelected ? "text-white/60" : "text-zinc-400")
                       }`}
                       fill="none"
@@ -254,7 +254,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="ml-3 pl-2.5 border-l-2 border-[#e74b2d]/40 space-y-2 py-1 bg-slate-50/80 rounded-r-xl pr-2">
+                    <div className="ml-3 pl-2.5 border-l-2 border-[#329AD4]/40 space-y-2 py-1 bg-slate-50/80 rounded-r-xl pr-2">
                       {cat.variations!.map((vGroup) => (
                         <div key={vGroup.name} className="space-y-1">
                           <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
@@ -267,7 +267,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                                 <Link
                                   key={val.name}
                                   href={`/browsedesigns?category=${encodeURIComponent(cat.name)}&specs=${encodeURIComponent(specsObj)}`}
-                                  className="text-zinc-700 hover:text-white px-2 py-0.5 rounded-lg text-[11px] font-bold border transition-all inline-flex items-center gap-1 bg-white hover:bg-[#e74b2d] border-zinc-200 hover:border-[#e74b2d] shadow-2xs group/val cursor-pointer"
+                                  className="text-zinc-700 hover:text-white px-2 py-0.5 rounded-lg text-[11px] font-bold border transition-all inline-flex items-center gap-1 bg-white hover:bg-[#329AD4] border-zinc-200 hover:border-[#329AD4] shadow-2xs group/val cursor-pointer"
                                   title={`Design ${cat.name} with ${vGroup.name}: ${val.name}`}
                                 >
                                   <span>{val.name}</span>
@@ -310,7 +310,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
                 <Link
                   key={`${item.categoryName}-${item.optionName}-${idx}`}
                   href={`/browsedesigns?category=${encodeURIComponent(item.categoryName)}&specs=${encodeURIComponent(specsObj)}`}
-                  className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-[#e74b2d] hover:text-white text-zinc-700 font-semibold text-xs transition-all flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-[#329AD4] hover:text-white text-zinc-700 font-semibold text-xs transition-all flex items-center gap-1 cursor-pointer"
                 >
                   <span className="text-zinc-400">•</span>
                   <span>{item.optionName}</span>
@@ -325,7 +325,7 @@ function CategorySidebar({ categories, selectedCategory, onSelectCategory }: Cat
               <Link
                 key={finish}
                 href="/browsedesigns"
-                className="hover:text-[#e74b2d] transition-colors flex items-center gap-1.5 py-0.5 font-medium"
+                className="hover:text-[#329AD4] transition-colors flex items-center gap-1.5 py-0.5 font-medium"
               >
                 <span className="text-zinc-300">•</span>
                 <span>{finish}</span>
@@ -351,7 +351,7 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
     <button
       type="button"
       onClick={() => onOpen(t)}
-      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#e74b2d] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between text-left cursor-pointer"
+      className="group bg-white rounded-3xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-2xl hover:border-[#329AD4] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between text-left cursor-pointer"
     >
       {/* Mini Studio Presentation Frame */}
       <div className="relative w-full aspect-[4/3] bg-gradient-to-b from-[#141622] to-[#0c0d14] p-3.5 flex items-center justify-center overflow-hidden">
@@ -396,8 +396,8 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
         </div>
 
         {/* Hover Action Layer */}
-        <div className="absolute inset-0 bg-[#e74b2d]/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
-          <span className="bg-white text-[#e74b2d] text-xs font-black px-4 py-2 rounded-full shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5">
+        <div className="absolute inset-0 bg-[#329AD4]/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-20">
+          <span className="bg-white text-[#329AD4] text-xs font-black px-4 py-2 rounded-full shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5">
             <span>Customize Design</span>
             <span>→</span>
           </span>
@@ -407,7 +407,7 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
       {/* Card Info Footer */}
       <div className="p-3.5 bg-white flex items-center justify-between gap-2 border-t border-zinc-100">
         <div className="min-w-0">
-          <h4 className="font-extrabold text-sm text-zinc-900 truncate group-hover:text-[#e74b2d] transition-colors">
+          <h4 className="font-extrabold text-sm text-zinc-900 truncate group-hover:text-[#329AD4] transition-colors">
             {t.title}
           </h4>
           <p className="text-xs text-zinc-400 font-medium mt-0.5 flex items-center gap-1">
@@ -415,7 +415,7 @@ function TemplateCardShowcase({ template: t, onOpen }: { template: any; onOpen: 
             {cfg.orientation && <span className="capitalize">• {cfg.orientation}</span>}
           </p>
         </div>
-        <span className="w-7 h-7 rounded-full bg-zinc-100 group-hover:bg-[#e74b2d] group-hover:text-white flex items-center justify-center text-xs font-bold text-zinc-600 transition-all shrink-0">
+        <span className="w-7 h-7 rounded-full bg-zinc-100 group-hover:bg-[#329AD4] group-hover:text-white flex items-center justify-center text-xs font-bold text-zinc-600 transition-all shrink-0">
           →
         </span>
       </div>
@@ -444,7 +444,7 @@ function HeroBanner() {
               <span className="text-emerald-500 font-bold">✓</span> 16pt & 18pt Premium Stocks
             </span>
             <span className="flex items-center gap-1.5 text-zinc-700">
-              <span className="text-[#e74b2d] font-bold">✓</span> Real-Time 3D Studio Preview
+              <span className="text-[#329AD4] font-bold">✓</span> Real-Time 3D Studio Preview
             </span>
             <span className="flex items-center gap-1.5 text-zinc-700">
               <span className="text-amber-500 font-bold">✓</span> 24h Express Turnaround
@@ -455,7 +455,7 @@ function HeroBanner() {
           <div className="flex flex-wrap items-center gap-3 pt-3">
             <Link
               href="/customize"
-              className="px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm sm:text-base font-bold rounded-xl shadow-md shadow-[#e74b2d]/25 transition-all duration-200 cursor-pointer flex items-center gap-2"
+              className="px-6 py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm sm:text-base font-bold rounded-xl shadow-md shadow-[#329AD4]/25 transition-all duration-200 cursor-pointer flex items-center gap-2"
             >
               <span>Design in 3D Studio</span>
               <span>→</span>
@@ -468,7 +468,7 @@ function HeroBanner() {
             </Link>
             <Link
               href="/dashboard"
-              className="text-sm font-bold text-zinc-600 hover:text-[#e74b2d] transition-colors duration-200 ml-1"
+              className="text-sm font-bold text-zinc-600 hover:text-[#329AD4] transition-colors duration-200 ml-1"
             >
               Reorders
             </Link>
@@ -518,25 +518,25 @@ function CategoryCardArtwork({ title, subtitle }: { title: string; subtitle?: st
         <span className="text-[10px] font-extrabold tracking-wider uppercase px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/15">
           PRINT READY
         </span>
-        <span className="w-2 h-2 rounded-full bg-[#e74b2d] shadow-sm shadow-[#e74b2d]" />
+        <span className="w-2 h-2 rounded-full bg-[#329AD4] shadow-sm shadow-[#329AD4]" />
       </div>
 
       {/* Floating Center Card Representation */}
       <div className="relative z-10 my-auto flex items-center justify-center py-2">
         <div className="w-[72%] aspect-[1.7/1] rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 border border-white/20 shadow-2xl p-2.5 flex flex-col justify-between transform -rotate-3 group-hover:rotate-0 group-hover:scale-105 transition-all duration-300">
           <div className="flex items-center justify-between">
-            <span className="text-[9px] font-black tracking-widest text-[#e74b2d]">PRINTGRAPHY</span>
+            <span className="text-[9px] font-black tracking-widest text-[#329AD4]">PRINTGRAPHY</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
           </div>
           <div className="text-[11px] font-extrabold text-white truncate">{title}</div>
-          <div className="h-0.5 w-1/2 bg-gradient-to-r from-[#e74b2d] to-transparent rounded-full" />
+          <div className="h-0.5 w-1/2 bg-gradient-to-r from-[#329AD4] to-transparent rounded-full" />
         </div>
       </div>
 
       {/* Bottom Subtitle / Format indicator */}
       <div className="relative z-10 flex items-center justify-between text-[11px] text-zinc-400 font-medium">
         <span className="truncate max-w-[120px]">{subtitle || "Custom Dimensions"}</span>
-        <span className="text-[#e74b2d] font-bold">Studio Ready →</span>
+        <span className="text-[#329AD4] font-bold">Studio Ready →</span>
       </div>
     </div>
   );
@@ -560,7 +560,7 @@ function CategoryCard({ id, slug, title, subtitle, price, unitPrice, image }: Ca
   const hasImage = Boolean(image && !imageError && image !== "/placeholder.jpg");
 
   return (
-    <div className="bg-white rounded-3xl border border-zinc-200/80 p-5 flex flex-col justify-between group hover:shadow-xl hover:border-[#e74b2d]/50 hover:-translate-y-1 transition-all duration-300">
+    <div className="bg-white rounded-3xl border border-zinc-200/80 p-5 flex flex-col justify-between group hover:shadow-xl hover:border-[#329AD4]/50 hover:-translate-y-1 transition-all duration-300">
       <div>
         {/* Product Image or Stylized Artwork */}
         <Link href={targetHref} className="block relative w-full aspect-[16/10] rounded-2xl overflow-hidden mb-4 bg-slate-100 border border-zinc-100 shadow-2xs">
@@ -578,7 +578,7 @@ function CategoryCard({ id, slug, title, subtitle, price, unitPrice, image }: Ca
 
         {/* Title */}
         <h3 className="text-base font-extrabold text-zinc-900 leading-snug line-clamp-1">
-          <Link href={targetHref} className="hover:text-[#e74b2d] transition-colors">
+          <Link href={targetHref} className="hover:text-[#329AD4] transition-colors">
             {title}
           </Link>
         </h3>
@@ -598,7 +598,7 @@ function CategoryCard({ id, slug, title, subtitle, price, unitPrice, image }: Ca
 
         <Link
           href={targetHref}
-          className="px-4 py-2 bg-zinc-900 hover:bg-[#e74b2d] text-white text-xs font-bold rounded-xl transition-all duration-200 flex items-center gap-1.5 shadow-2xs group/btn cursor-pointer"
+          className="px-4 py-2 bg-zinc-900 hover:bg-[#329AD4] text-white text-xs font-bold rounded-xl transition-all duration-200 flex items-center gap-1.5 shadow-2xs group/btn cursor-pointer"
         >
           <span>Shop Standard</span>
           <span className="transform group-hover/btn:translate-x-0.5 transition-transform">→</span>
@@ -632,13 +632,13 @@ function ShapeCardArtwork({ title }: { title: string }) {
           <span className="text-[10px] font-extrabold text-white mt-0.5">85 × 55 mm</span>
         </div>
       ) : isSquare ? (
-        <div className="relative w-20 h-20 rounded-xl bg-gradient-to-br from-zinc-800 via-zinc-900 to-black border-2 border-[#e74b2d]/50 shadow-2xl flex flex-col items-center justify-between p-2 transform group-hover:scale-105 transition-all duration-300">
+        <div className="relative w-20 h-20 rounded-xl bg-gradient-to-br from-zinc-800 via-zinc-900 to-black border-2 border-[#329AD4]/50 shadow-2xl flex flex-col items-center justify-between p-2 transform group-hover:scale-105 transition-all duration-300">
           <div className="flex items-center justify-between w-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#e74b2d]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#329AD4]" />
             <span className="text-[8px] font-extrabold tracking-wider text-zinc-400">1:1</span>
           </div>
           <span className="text-[10px] font-extrabold text-white">65 × 65 mm</span>
-          <div className="h-0.5 w-full bg-[#e74b2d]/40 rounded-full" />
+          <div className="h-0.5 w-full bg-[#329AD4]/40 rounded-full" />
         </div>
       ) : isRounded ? (
         <div className="relative w-26 h-16 rounded-2xl bg-gradient-to-br from-zinc-800 via-zinc-900 to-black border-2 border-sky-400/50 shadow-2xl flex flex-col items-center justify-between p-2 transform group-hover:scale-105 transition-all duration-300">
@@ -689,7 +689,7 @@ function ShapeCard({ id, slug, title, price, unitPrice, rating, count, image }: 
   return (
     <Link
       href={targetHref}
-      className="bg-white rounded-3xl border border-zinc-200/80 p-4 shadow-xs hover:shadow-xl hover:border-[#e74b2d]/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+      className="bg-white rounded-3xl border border-zinc-200/80 p-4 shadow-xs hover:shadow-xl hover:border-[#329AD4]/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
     >
       <div>
         {/* Shape Graphic */}
@@ -708,7 +708,7 @@ function ShapeCard({ id, slug, title, price, unitPrice, rating, count, image }: 
 
         {/* Content */}
         <div className="space-y-1">
-          <h3 className="text-sm font-extrabold text-zinc-900 leading-snug line-clamp-1 group-hover:text-[#e74b2d] transition-colors">
+          <h3 className="text-sm font-extrabold text-zinc-900 leading-snug line-clamp-1 group-hover:text-[#329AD4] transition-colors">
             {title}
           </h3>
 
@@ -723,7 +723,7 @@ function ShapeCard({ id, slug, title, price, unitPrice, rating, count, image }: 
           <div className="text-sm font-black text-zinc-900">{price}</div>
           <div className="text-[11px] text-zinc-400 font-medium">{unitPrice}</div>
         </div>
-        <span className="w-7 h-7 rounded-full bg-zinc-100 group-hover:bg-[#e74b2d] group-hover:text-white flex items-center justify-center text-zinc-600 font-bold text-xs transition-all shadow-2xs">
+        <span className="w-7 h-7 rounded-full bg-zinc-100 group-hover:bg-[#329AD4] group-hover:text-white flex items-center justify-center text-zinc-600 font-bold text-xs transition-all shadow-2xs">
           →
         </span>
       </div>
@@ -933,7 +933,7 @@ function BusinessCardsContent() {
                       <h2 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
                         {selectedCategory === "all" ? "All Product Templates" : `${selectedCategory} Templates`}
                       </h2>
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#e74b2d]/10 text-[#e74b2d] border border-[#e74b2d]/20">
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#329AD4]/10 text-[#329AD4] border border-[#329AD4]/20">
                         {templatesLoading ? "Loading..." : `${templates.length} Designs`}
                       </span>
                     </div>
@@ -946,7 +946,7 @@ function BusinessCardsContent() {
 
                   <Link
                     href={selectedCategory === "all" ? "/browsedesigns" : `/browsedesigns?category=${encodeURIComponent(selectedCategory)}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-all shrink-0 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-all shrink-0 cursor-pointer"
                   >
                     <span>Open in Studio</span>
                     <span>→</span>
@@ -965,7 +965,7 @@ function BusinessCardsContent() {
                     <p className="text-xs text-zinc-500 mt-1 mb-4">You can start with a blank canvas configured for this category in our 2D/3D Studio.</p>
                     <Link
                       href={`/browsedesigns?category=${encodeURIComponent(selectedCategory)}`}
-                      className="inline-block px-5 py-2.5 bg-[#e74b2d] text-white text-xs font-bold rounded-xl shadow-xs hover:bg-[#c93e23] transition-all cursor-pointer"
+                      className="inline-block px-5 py-2.5 bg-[#329AD4] text-white text-xs font-bold rounded-xl shadow-xs hover:bg-[#2884b8] transition-all cursor-pointer"
                     >
                       Design {selectedCategory} from Scratch
                     </Link>
@@ -1002,7 +1002,7 @@ function BusinessCardsContent() {
                   {isSpecificCategory && (
                     <button
                       onClick={() => handleSelectCategory("all")}
-                      className="text-xs sm:text-sm font-bold text-[#e74b2d] hover:underline cursor-pointer self-start sm:self-auto"
+                      className="text-xs sm:text-sm font-bold text-[#329AD4] hover:underline cursor-pointer self-start sm:self-auto"
                     >
                       Browse All Categories →
                     </button>
@@ -1117,7 +1117,7 @@ function BusinessCardsContent() {
                 <button
                   type="button"
                   onClick={() => router.push(`/customize?templateId=${previewTemplate._id}`)}
-                  className="cursor-pointer rounded-xl bg-[#e74b2d] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#c93e23] transition-colors shadow-xs"
+                  className="cursor-pointer rounded-xl bg-[#329AD4] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#2884b8] transition-colors shadow-xs"
                 >
                   Use Now
                 </button>
@@ -1145,7 +1145,7 @@ export default function BusinessCardsPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-sky-200 border-t-[#329AD4] rounded-full animate-spin" />
       </div>
     }>
       <BusinessCardsContent />

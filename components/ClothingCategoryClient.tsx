@@ -94,14 +94,14 @@ export default function ClothingCategoryClient({
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      <div className="w-full bg-[#fbfaf7] border-b border-zinc-100 py-6">
+      <div className="w-full bg-[#ffffff] border-b border-zinc-100 py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 mb-2">
-            <Link href="/" className="hover:text-[#e74b2d]">
+            <Link href="/" className="hover:text-[#329AD4]">
               Home
             </Link>
             <span>›</span>
-            <Link href="/clothing-bags" className="hover:text-[#e74b2d]">
+            <Link href="/clothing-bags" className="hover:text-[#329AD4]">
               Clothing & Bags
             </Link>
             <span>›</span>
@@ -119,7 +119,7 @@ export default function ClothingCategoryClient({
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 max-w-5xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
           {/* Framed cover — same language as design page */}
-          <div className="rounded-3xl border border-zinc-200 bg-[#fbfaf7] aspect-square relative overflow-hidden shadow-sm">
+          <div className="rounded-3xl border border-zinc-200 bg-[#ffffff] aspect-square relative overflow-hidden shadow-sm">
             {displaySrc ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -163,7 +163,7 @@ export default function ClothingCategoryClient({
                       onClick={() => setSelectedColorId(c.id)}
                       className={`w-10 h-10 rounded-full border-2 transition-all cursor-pointer ${
                         selectedColorId === c.id
-                          ? "border-[#e74b2d] ring-2 ring-[#e74b2d]/30 scale-110"
+                          ? "border-[#329AD4] ring-2 ring-[#329AD4]/30 scale-110"
                           : "border-zinc-200 hover:border-zinc-400"
                       }`}
                       style={{ backgroundColor: c.hex }}
@@ -197,7 +197,7 @@ export default function ClothingCategoryClient({
                         }
                         className={`w-full text-left flex items-center gap-3 p-3 rounded-2xl border-2 transition-all cursor-pointer ${
                           active
-                            ? "border-[#e74b2d] bg-sky-50/60"
+                            ? "border-[#329AD4] bg-sky-50/60"
                             : "border-zinc-200 hover:border-zinc-300"
                         }`}
                       >
@@ -232,7 +232,7 @@ export default function ClothingCategoryClient({
 
             <Link
               href={designHref}
-              className="inline-flex w-full sm:w-auto justify-center px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-xl shadow-md shadow-[#e74b2d]/25 transition-colors"
+              className="inline-flex w-full sm:w-auto justify-center px-6 py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold rounded-xl shadow-md shadow-[#329AD4]/25 transition-colors"
             >
               Start designing
             </Link>
@@ -249,9 +249,9 @@ export default function ClothingCategoryClient({
                   <Link
                     key={p._id}
                     href={`/clothing-bags/design?category=${encodeURIComponent(category.slug || category._id)}&productId=${p._id}`}
-                    className="group rounded-3xl border border-zinc-200 overflow-hidden hover:border-[#e74b2d]/40 hover:shadow-md transition-all bg-white"
+                    className="group rounded-3xl border border-zinc-200 overflow-hidden hover:border-[#329AD4]/40 hover:shadow-md transition-all bg-white"
                   >
-                    <div className="aspect-square bg-[#fbfaf7] relative">
+                    <div className="aspect-square bg-[#ffffff] relative">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={pImg}

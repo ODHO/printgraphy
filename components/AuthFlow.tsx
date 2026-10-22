@@ -401,7 +401,7 @@ export default function AuthFlow({
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     required
-                    className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#e74b2d] focus:outline-none transition-colors bg-transparent"
+                    className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#329AD4] focus:outline-none transition-colors bg-transparent"
                   />
                 </div>
                 <div className="relative">
@@ -411,7 +411,7 @@ export default function AuthFlow({
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     required
-                    className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#e74b2d] focus:outline-none transition-colors bg-transparent"
+                    className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#329AD4] focus:outline-none transition-colors bg-transparent"
                   />
                 </div>
               </div>
@@ -424,7 +424,7 @@ export default function AuthFlow({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#e74b2d] focus:outline-none transition-colors bg-transparent"
+                  className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#329AD4] focus:outline-none transition-colors bg-transparent"
                 />
               </div>
 
@@ -436,7 +436,7 @@ export default function AuthFlow({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full border-b border-zinc-300 py-3 pl-1 pr-10 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#e74b2d] focus:outline-none transition-colors bg-transparent"
+                  className="w-full border-b border-zinc-300 py-3 pl-1 pr-10 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#329AD4] focus:outline-none transition-colors bg-transparent"
                 />
                 <button
                   type="button"
@@ -467,7 +467,7 @@ export default function AuthFlow({
                 </p>
                 <Link
                   href="/pages/terms"
-                  className="text-xs sm:text-[13px] text-[#e74b2d] hover:underline font-normal inline-block mt-0.5"
+                  className="text-xs sm:text-[13px] text-[#329AD4] hover:underline font-normal inline-block mt-0.5"
                 >
                   Printgraphi General Terms and Conditions
                 </Link>
@@ -481,14 +481,14 @@ export default function AuthFlow({
                     setError("");
                     setMode("signin");
                   }}
-                  className="w-full py-4 px-6 bg-white hover:bg-zinc-50 border border-zinc-200/80 rounded-2xl text-base sm:text-[17px] font-semibold text-[#e74b2d] shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all cursor-pointer text-center"
+                  className="w-full py-4 px-6 bg-white hover:bg-zinc-50 border border-zinc-200/80 rounded-2xl text-base sm:text-[17px] font-semibold text-[#329AD4] shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all cursor-pointer text-center"
                 >
                   Sign In
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full py-4 px-6 bg-[#e74b2d] hover:bg-[#c93e23] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
+                  className="w-full py-4 px-6 bg-[#329AD4] hover:bg-[#2884b8] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
                 >
                   {isPending ? (
                     <span className="flex items-center justify-center gap-2">
@@ -535,7 +535,7 @@ export default function AuthFlow({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#e74b2d] focus:outline-none transition-colors bg-transparent"
+                  className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#329AD4] focus:outline-none transition-colors bg-transparent"
                 />
               </div>
 
@@ -547,7 +547,7 @@ export default function AuthFlow({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full border-b border-zinc-300 py-3 pl-1 pr-10 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#e74b2d] focus:outline-none transition-colors bg-transparent"
+                  className="w-full border-b border-zinc-300 py-3 pl-1 pr-10 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#329AD4] focus:outline-none transition-colors bg-transparent"
                 />
                 <button
                   type="button"
@@ -566,7 +566,7 @@ export default function AuthFlow({
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border-zinc-300 text-[#e74b2d] focus:ring-[#e74b2d] cursor-pointer"
+                    className="w-4 h-4 rounded border-zinc-300 text-[#329AD4] focus:ring-[#329AD4] cursor-pointer"
                   />
                   <span className="text-[#292929] underline underline-offset-2">Remember me</span>
                 </label>
@@ -577,7 +577,7 @@ export default function AuthFlow({
                     setForgotInput(email);
                     setMode("forgot");
                   }}
-                  className="text-[#e74b2d] hover:underline font-normal cursor-pointer"
+                  className="text-[#329AD4] hover:underline font-normal cursor-pointer"
                 >
                   Forgot password ?
                 </button>
@@ -590,7 +590,7 @@ export default function AuthFlow({
                 </p>
                 <Link
                   href="/pages/terms"
-                  className="text-xs sm:text-[13px] text-[#e74b2d] hover:underline font-normal inline-block mt-0.5"
+                  className="text-xs sm:text-[13px] text-[#329AD4] hover:underline font-normal inline-block mt-0.5"
                 >
                   Printgraphi General Terms and Conditions
                 </Link>
@@ -601,7 +601,7 @@ export default function AuthFlow({
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full py-4 px-6 bg-white hover:bg-zinc-50 border border-zinc-200/80 rounded-2xl text-base sm:text-[17px] font-semibold text-[#e74b2d] shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all cursor-pointer text-center"
+                  className="w-full py-4 px-6 bg-white hover:bg-zinc-50 border border-zinc-200/80 rounded-2xl text-base sm:text-[17px] font-semibold text-[#329AD4] shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all cursor-pointer text-center"
                 >
                   {isPending ? (
                     <span className="flex items-center justify-center gap-2">
@@ -617,7 +617,7 @@ export default function AuthFlow({
                     setError("");
                     setMode("signup");
                   }}
-                  className="w-full py-4 px-6 bg-[#e74b2d] hover:bg-[#c93e23] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
+                  className="w-full py-4 px-6 bg-[#329AD4] hover:bg-[#2884b8] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
                 >
                   Make an Account
                 </button>
@@ -636,7 +636,7 @@ export default function AuthFlow({
             </h1>
             <p className="mt-2 text-sm sm:text-base text-[#71717A] leading-relaxed">
               Now enter your 4 digit code we&apos;ve sent you on the<br />
-              email <span className="text-[#e74b2d] underline font-medium">{email || "abc123@gmail.com"}</span>
+              email <span className="text-[#329AD4] underline font-medium">{email || "abc123@gmail.com"}</span>
             </p>
 
             <form onSubmit={handleOtpVerify}>
@@ -655,7 +655,7 @@ export default function AuthFlow({
                     onChange={(e) => handleOtpChange(idx, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(idx, e)}
                     onPaste={handleOtpPaste}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#ffebe3] border border-zinc-400 text-center text-2xl font-bold text-[#292929] focus:outline-none focus:ring-2 focus:ring-[#e74b2d] focus:border-[#e74b2d] focus:bg-white transition-all shadow-inner"
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#dbeefb] border border-zinc-400 text-center text-2xl font-bold text-[#292929] focus:outline-none focus:ring-2 focus:ring-[#329AD4] focus:border-[#329AD4] focus:bg-white transition-all shadow-inner"
                   />
                 ))}
               </div>
@@ -663,7 +663,7 @@ export default function AuthFlow({
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full py-4 px-6 bg-[#e74b2d] hover:bg-[#c93e23] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
+                className="w-full py-4 px-6 bg-[#329AD4] hover:bg-[#2884b8] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
               >
                 {isPending ? (
                   <span className="flex items-center justify-center gap-2">
@@ -710,14 +710,14 @@ export default function AuthFlow({
                   value={forgotInput}
                   onChange={(e) => setForgotInput(e.target.value)}
                   required
-                  className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#e74b2d] focus:outline-none transition-colors bg-transparent"
+                  className="w-full border-b border-zinc-300 py-3 px-1 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#329AD4] focus:outline-none transition-colors bg-transparent"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full mt-8 py-4 px-6 bg-[#e74b2d] hover:bg-[#c93e23] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
+                className="w-full mt-8 py-4 px-6 bg-[#329AD4] hover:bg-[#2884b8] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
               >
                 {isPending ? (
                   <span className="flex items-center justify-center gap-2">
@@ -761,7 +761,7 @@ export default function AuthFlow({
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
-                  className="w-full border-b border-zinc-300 py-3 pl-1 pr-10 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#e74b2d] focus:outline-none transition-colors bg-transparent"
+                  className="w-full border-b border-zinc-300 py-3 pl-1 pr-10 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#329AD4] focus:outline-none transition-colors bg-transparent"
                 />
                 <button
                   type="button"
@@ -780,7 +780,7 @@ export default function AuthFlow({
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full border-b border-zinc-300 py-3 pl-1 pr-10 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#e74b2d] focus:outline-none transition-colors bg-transparent"
+                  className="w-full border-b border-zinc-300 py-3 pl-1 pr-10 text-[15px] sm:text-base text-[#292929] placeholder:text-[#71717A] focus:border-[#329AD4] focus:outline-none transition-colors bg-transparent"
                 />
                 <button
                   type="button"
@@ -795,7 +795,7 @@ export default function AuthFlow({
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full mt-8 py-4 px-6 bg-[#e74b2d] hover:bg-[#c93e23] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
+                className="w-full mt-8 py-4 px-6 bg-[#329AD4] hover:bg-[#2884b8] text-white rounded-2xl text-base sm:text-[17px] font-semibold shadow-[0_6px_20px_rgba(33,150,210,0.35)] transition-all cursor-pointer text-center"
               >
                 {isPending ? (
                   <span className="flex items-center justify-center gap-2">

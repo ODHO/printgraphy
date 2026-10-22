@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { DEFAULT_EMAIL_SETTINGS, type EmailEvent, type EmailSettingsContent } from "@/lib/emailSettings";
 import EmailBodyEditor from "@/components/admin/EmailBodyEditor";
+import { Badge, Button, Card, CardHeader, cx, Field, inputClass, labelClass, LoadingState, Notice, PageHeader, type IconName } from "@/components/admin/ui";
 
 type PublicSettings = Omit<EmailSettingsContent, "smtp"> & {
   smtp: EmailSettingsContent["smtp"] & { hasPassword?: boolean };
@@ -14,7 +15,7 @@ const EVENTS: { id: EmailEvent; label: string; hint: string }[] = [
   { id: "review", label: "Reviews", hint: "{{userName}} {{rating}} {{title}} {{comment}} {{productId}}" },
 ];
 
-const fieldClass = "w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]";
+const EVENT_ICONS: Record<EmailEvent, IconName> = { order: "orders", quote: "quotes", review: "star" };
 
 export default function AdminEmailPage() {
   const [settings, setSettings] = useState<PublicSettings>({
@@ -64,79 +65,99 @@ export default function AdminEmailPage() {
     setMessage(data.message || "Test finished.");
   };
 
-  if (loading) return <p className="text-base text-zinc-500">Loading email settings...</p>;
+  if (loading) return <LoadingState label="Loading email settings..." />;
+
+  const setSmtp = (patch: Partial<PublicSettings["smtp"]>) => setSettings((prev) => ({ ...prev, smtp: { ...prev.smtp, ...patch } }));
 
   return (
-    <div className="space-y-5 max-w-3xl">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Email</h1>
-          <p className="mt-1 text-base text-zinc-500">Set SMTP, the admin inbox, and which notices are sent.</p>
-        </div>
-        <div className="flex gap-2">
-          <button type="button" onClick={sendTest} className="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-base font-bold text-zinc-700 cursor-pointer">Send test</button>
-          <button type="button" onClick={save} disabled={saving} className="rounded-xl bg-[#e74b2d] px-4 py-2.5 text-base font-bold text-white cursor-pointer disabled:opacity-60">{saving ? "Saving..." : "Save"}</button>
-        </div>
-      </div>
-      {message && <p className="text-base font-bold text-[#e74b2d]">{message}</p>}
+    <div className="space-y-6 max-w-3xl">
+      <PageHeader
+        icon="mail"
+        title="Email"
+        description="Set SMTP, the admin inbox, and which notices are sent."
+        actions={
+          <>
+            <Button variant="secondary" icon="mail" onClick={sendTest}>Send test</Button>
+            <Button icon="check" onClick={save} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
+          </>
+        }
+      />
+      {message && <Notice tone={message === "Email settings saved." ? "green" : "brand"}>{message}</Notice>}
 
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 space-y-3">
-        <h2 className="text-base font-bold text-zinc-900">SMTP</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <label className="text-base font-bold text-zinc-700">Host
-            <input className={`${fieldClass} mt-1 font-normal`} value={settings.smtp.host} onChange={(e) => setSettings((prev) => ({ ...prev, smtp: { ...prev.smtp, host: e.target.value } }))} placeholder="smtp.hostinger.com" />
-          </label>
-          <label className="text-base font-bold text-zinc-700">Port
-            <input type="number" className={`${fieldClass} mt-1 font-normal`} value={settings.smtp.port} onChange={(e) => setSettings((prev) => ({ ...prev, smtp: { ...prev.smtp, port: Number(e.target.value) } }))} />
-          </label>
-          <label className="text-base font-bold text-zinc-700">Username
-            <input className={`${fieldClass} mt-1 font-normal`} value={settings.smtp.user} onChange={(e) => setSettings((prev) => ({ ...prev, smtp: { ...prev.smtp, user: e.target.value } }))} />
-          </label>
-          <label className="text-base font-bold text-zinc-700">Password {settings.smtp.hasPassword ? "(saved)" : ""}
-            <input type="password" className={`${fieldClass} mt-1 font-normal`} value={settings.smtp.pass} onChange={(e) => setSettings((prev) => ({ ...prev, smtp: { ...prev.smtp, pass: e.target.value } }))} placeholder={settings.smtp.hasPassword ? "Leave blank to keep the saved password" : ""} />
-          </label>
-          <label className="text-base font-bold text-zinc-700">From name
-            <input className={`${fieldClass} mt-1 font-normal`} value={settings.smtp.fromName} onChange={(e) => setSettings((prev) => ({ ...prev, smtp: { ...prev.smtp, fromName: e.target.value } }))} />
-          </label>
-          <label className="text-base font-bold text-zinc-700">Admin inbox
-            <input type="email" className={`${fieldClass} mt-1 font-normal`} value={settings.adminEmail} onChange={(e) => setSettings((prev) => ({ ...prev, adminEmail: e.target.value }))} placeholder="admin@printgraphi.com" />
-          </label>
+      <Card className="overflow-hidden">
+        <CardHeader icon="settings" title="SMTP" subtitle="Outgoing mail server and sender details" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 sm:p-6">
+          <Field label="Host">
+            <input className={inputClass} value={settings.smtp.host} onChange={(e) => setSmtp({ host: e.target.value })} placeholder="smtp.hostinger.com" />
+          </Field>
+          <Field label="Port">
+            <input type="number" className={cx(inputClass, "tabular-nums")} value={settings.smtp.port} onChange={(e) => setSmtp({ port: Number(e.target.value) })} />
+          </Field>
+          <Field label="Username">
+            <input className={inputClass} value={settings.smtp.user} onChange={(e) => setSmtp({ user: e.target.value })} />
+          </Field>
+          <Field
+            label={
+              <span className="inline-flex items-center gap-1.5">
+                Password {settings.smtp.hasPassword ? <Badge tone="green" className="!py-0 text-[10px]">saved</Badge> : ""}
+              </span>
+            }
+          >
+            <input type="password" className={inputClass} value={settings.smtp.pass} onChange={(e) => setSmtp({ pass: e.target.value })} placeholder={settings.smtp.hasPassword ? "Leave blank to keep the saved password" : ""} />
+          </Field>
+          <Field label="From name">
+            <input className={inputClass} value={settings.smtp.fromName} onChange={(e) => setSmtp({ fromName: e.target.value })} />
+          </Field>
+          <Field label="Admin inbox">
+            <input type="email" className={inputClass} value={settings.adminEmail} onChange={(e) => setSettings((prev) => ({ ...prev, adminEmail: e.target.value }))} placeholder="admin@printgraphi.com" />
+          </Field>
         </div>
-      </section>
+      </Card>
 
       {EVENTS.map((event) => {
         const template = settings.templates[event.id];
         return (
-          <section key={event.id} className="rounded-2xl border border-zinc-200 bg-white p-5 space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-base font-bold text-zinc-900">{event.label}</h2>
-              <button
-                type="button"
-                onClick={() => setSettings((prev) => ({
-                  ...prev,
-                  templates: { ...prev.templates, [event.id]: { ...prev.templates[event.id], active: !template.active } },
-                }))}
-                className={`rounded-full px-3 py-1 text-base font-bold cursor-pointer ${template.active ? "bg-emerald-50 text-emerald-700" : "bg-zinc-100 text-zinc-500"}`}
-              >
-                {template.active ? "Active" : "Inactive"}
-              </button>
+          <Card key={event.id} className="overflow-hidden">
+            <CardHeader
+              icon={EVENT_ICONS[event.id]}
+              title={event.label}
+              subtitle={template.active ? "This notice is being sent" : "This notice is turned off"}
+              action={
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={template.active}
+                  onClick={() => setSettings((prev) => ({
+                    ...prev,
+                    templates: { ...prev.templates, [event.id]: { ...prev.templates[event.id], active: !template.active } },
+                  }))}
+                  className="inline-flex shrink-0 items-center gap-2 rounded-full cursor-pointer text-xs font-semibold"
+                >
+                  <span className={cx("relative inline-flex h-5 w-9 items-center rounded-full transition-colors", template.active ? "bg-emerald-500" : "bg-zinc-300")}>
+                    <span className={cx("inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform", template.active ? "translate-x-[18px]" : "translate-x-0.5")} />
+                  </span>
+                  <span className={template.active ? "text-emerald-700" : "text-zinc-500"}>{template.active ? "Active" : "Inactive"}</span>
+                </button>
+              }
+            />
+            <div className="space-y-4 p-5 sm:p-6">
+              <Field label="Subject">
+                <input className={inputClass} value={template.subject} onChange={(e) => setSettings((prev) => ({ ...prev, templates: { ...prev.templates, [event.id]: { ...prev.templates[event.id], subject: e.target.value } } }))} />
+              </Field>
+              <div>
+                <p className={labelClass}>Message</p>
+                <p className="-mt-0.5 mb-2 text-xs text-zinc-500">Write it the way the email should look. Click a blue field to drop in live details.</p>
+                <EmailBodyEditor
+                  value={template.body}
+                  placeholders={event.hint.split(" ")}
+                  onChange={(body) => setSettings((prev) => ({
+                    ...prev,
+                    templates: { ...prev.templates, [event.id]: { ...prev.templates[event.id], body } },
+                  }))}
+                />
+              </div>
             </div>
-            <label className="text-base font-bold text-zinc-700 block">Subject
-              <input className={`${fieldClass} mt-1 font-normal`} value={template.subject} onChange={(e) => setSettings((prev) => ({ ...prev, templates: { ...prev.templates, [event.id]: { ...prev.templates[event.id], subject: e.target.value } } }))} />
-            </label>
-            <div>
-              <p className="text-base font-bold text-zinc-700">Message</p>
-              <p className="mt-1 text-base text-zinc-500">Write it the way the email should look. Click a blue field to drop in live details.</p>
-              <EmailBodyEditor
-                value={template.body}
-                placeholders={event.hint.split(" ")}
-                onChange={(body) => setSettings((prev) => ({
-                  ...prev,
-                  templates: { ...prev.templates, [event.id]: { ...prev.templates[event.id], body } },
-                }))}
-              />
-            </div>
-          </section>
+          </Card>
         );
       })}
     </div>

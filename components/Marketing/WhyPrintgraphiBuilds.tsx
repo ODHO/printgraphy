@@ -4,7 +4,7 @@ import ellipseRightImg from "@/public/ellipse-right.png";
 
 export default function WhyPrintgraphiBuilds() {
   return (
-    <section className="relative w-full py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#fff1eb] overflow-hidden">
+    <section className="relative w-full py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#EAF5FB] overflow-hidden">
       {/* Top Right Corner Background Blush Ball Image */}
       <div className="absolute top-0 right-0 pointer-events-none z-0 w-full max-w-[600px] h-full overflow-hidden flex justify-end">
         <Image
@@ -22,7 +22,7 @@ export default function WhyPrintgraphiBuilds() {
           <div className="lg:col-span-6 space-y-6">
             {/* Top Pill Badge */}
             <div className="inline-block">
-              <span className="px-4 py-1.5 rounded-full bg-[#fff1eb] border border-[#e74b2d]/30 text-[#e74b2d] text-base font-bold tracking-wide shadow-2xs">
+              <span className="px-4 py-1.5 rounded-full bg-[#EAF5FB] border border-[#329AD4]/30 text-[#329AD4] text-base font-bold tracking-wide shadow-2xs">
                 Why Printgraphy builds this too
               </span>
             </div>
@@ -39,7 +39,7 @@ export default function WhyPrintgraphiBuilds() {
 
             {/* Sub-tagline in Blue Italic */}
             <div className="pt-2">
-              <p className="text-[#e74b2d] font-bold text-base sm:text-lg italic tracking-tight">
+              <p className="text-[#329AD4] font-bold text-base sm:text-lg italic tracking-tight">
                 One brand system. One operating layer. Every stage in sync.
               </p>
             </div>

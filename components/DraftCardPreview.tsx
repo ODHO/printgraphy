@@ -92,7 +92,7 @@ export default function DraftCardPreview({ design, className = "" }: DraftCardPr
               {logoImage ? (
                 <img src={mediaSrc(logoImage) || logoImage} alt="" className="w-5 h-5 object-contain" />
               ) : logoText ? (
-                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#e74b2d] text-white leading-none shadow-xs">
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#329AD4] text-white leading-none shadow-xs">
                   {logoText}
                 </span>
               ) : cardData.company ? (
@@ -134,7 +134,7 @@ export default function DraftCardPreview({ design, className = "" }: DraftCardPr
                           top: `${obj.y}%`,
                           width: `${obj.width}%`,
                           height: `${obj.height}%`,
-                          backgroundColor: obj.fill || "#e74b2d",
+                          backgroundColor: obj.fill || "#329AD4",
                           borderRadius: obj.shapeType === "circle" ? "9999px" : "2px",
                         }}
                       />

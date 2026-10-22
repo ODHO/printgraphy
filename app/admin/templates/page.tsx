@@ -5,6 +5,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ThreeDCardPreview from "@/components/ThreeDCardPreview";
 import { calculateFitDimensions } from "@/lib/canvasUtils";
+import {
+  Badge,
+  ButtonLink,
+  Card,
+  EmptyState,
+  Icon,
+  IconButton,
+  PageHeader,
+  Pagination as PaginationBar,
+  SearchInput,
+  StatTile,
+  Tabs,
+  Toolbar,
+  cx,
+  inputClass,
+} from "@/components/admin/ui";
 
 interface Template {
   _id: string;
@@ -135,280 +151,263 @@ export default function AdminTemplatesPage() {
     }
   };
 
+  const publishedOnPage = templates.filter((t) => t.status === "PUBLISHED").length;
+
   return (
     <div className="space-y-6 max-w-7xl">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Templates Management</h1>
-          <p className="text-zinc-500 text-base mt-0.5">
-            {pagination ? `${pagination.total} total product templates across all categories` : "Loading..."}
-          </p>
-        </div>
-        <Link
-          href="/admin/templates/new"
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 w-fit"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          New Template
-        </Link>
+      <PageHeader
+        icon="templates"
+        title="Templates Management"
+        description={pagination ? `${pagination.total} total product templates across all categories` : "Loading..."}
+        actions={<ButtonLink href="/admin/templates/new" icon="plus">New Template</ButtonLink>}
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatTile label="Total templates" icon="templates" tone="brand" loading={!pagination} value={<span className="tabular-nums">{pagination?.total ?? 0}</span>} />
+        <StatTile label="Categories" icon="grid" tone="violet" value={<span className="tabular-nums">{categories.length}</span>} />
+        <StatTile label="Published on this page" icon="check" tone="green" loading={loading} value={<span className="tabular-nums">{publishedOnPage}</span>} />
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        {/* Search Bar */}
-        <div className="relative flex-1 max-w-md">
-          <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search templates..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-xs"
+      <Card className="overflow-hidden">
+        {/* Search & Filters */}
+        <Toolbar className="lg:flex-row lg:flex-wrap">
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto lg:flex-1">
+            <SearchInput
+              value={search}
+              onChange={(value) => { setSearch(value); setPage(1); }}
+              placeholder="Search templates…"
+              className="sm:max-w-sm"
+            />
+            <div className="grid grid-cols-2 gap-3 sm:flex">
+              <select
+                value={filterCategory}
+                onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }}
+                aria-label="Filter by category"
+                className={cx(inputClass, "cursor-pointer sm:w-44")}
+              >
+                <option value="">All Categories</option>
+                {categories.map((c) => (
+                  <option key={c._id} value={c._id}>{c.name}</option>
+                ))}
+              </select>
+              <select
+                value={filterPaid}
+                onChange={(e) => { setFilterPaid(e.target.value); setPage(1); }}
+                aria-label="Filter by price"
+                className={cx(inputClass, "cursor-pointer sm:w-40")}
+              >
+                <option value="">All Prices</option>
+                <option value="false">Free Templates</option>
+                <option value="true">Paid Templates</option>
+              </select>
+            </div>
+          </div>
+          <Tabs
+            value={filterStatus}
+            onChange={(value) => { setFilterStatus(value); setPage(1); }}
+            items={[
+              { value: "", label: "All" },
+              { value: "PUBLISHED", label: "Published" },
+              { value: "DRAFT", label: "Drafts" },
+              { value: "ARCHIVED", label: "Archived" },
+            ]}
           />
-        </div>
+        </Toolbar>
 
-        {/* Category Filter */}
-        <select
-          value={filterCategory}
-          onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
-        >
-          <option value="">All Categories</option>
-          {categories.map((c) => (
-            <option key={c._id} value={c._id}>{c.name}</option>
-          ))}
-        </select>
-
-        {/* Status Filter */}
-        <select
-          value={filterStatus}
-          onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
-        >
-          <option value="">All Statuses</option>
-          <option value="PUBLISHED">Published Only</option>
-          <option value="DRAFT">Drafts Only</option>
-          <option value="ARCHIVED">Archived</option>
-        </select>
-
-        {/* Pricing Filter */}
-        <select
-          value={filterPaid}
-          onChange={(e) => { setFilterPaid(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
-        >
-          <option value="">All Prices</option>
-          <option value="false">Free Templates</option>
-          <option value="true">Paid Templates</option>
-        </select>
-      </div>
-
-      {/* Main Templates Table */}
-      <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
-          <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
+          <div className="grid grid-cols-1 gap-5 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3 2xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="overflow-hidden rounded-2xl border border-zinc-100">
+                <div className="aspect-[4/3] animate-pulse bg-zinc-100" />
+                <div className="space-y-2.5 p-4">
+                  <div className="h-4 w-2/3 animate-pulse rounded-md bg-zinc-100" />
+                  <div className="h-3 w-1/2 animate-pulse rounded-md bg-zinc-100" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : templates.length === 0 ? (
-          <div className="py-16 text-center space-y-2">
-            <p className="text-zinc-400 text-base">No templates found matching your criteria.</p>
-            <Link href="/admin/templates/new" className="text-[#e74b2d] text-base font-bold hover:underline inline-block">
-              Create your first template →
-            </Link>
-          </div>
+          <EmptyState
+            icon="templates"
+            title="No templates found"
+            description="No templates found matching your criteria."
+            action={<ButtonLink href="/admin/templates/new" icon="plus" variant="soft">Create your first template</ButtonLink>}
+          />
         ) : (
           <>
-            <table className="w-full text-base">
-              <thead>
-                <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
-                  <th className="text-left px-5 py-3.5 font-bold">Template Title</th>
-                  <th className="text-left px-5 py-3.5 font-bold hidden md:table-cell">Category</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Pricing</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Status</th>
-                  <th className="text-right px-5 py-3.5 font-bold">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {templates.map((t) => (
-                  <tr key={t._id} className="hover:bg-sky-50/40 transition-colors">
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-8 rounded-lg overflow-hidden bg-zinc-900 shrink-0 border border-zinc-200 flex items-center justify-center">
-                          {t.thumbnail ? (
-                            <img src={t.thumbnail} alt={t.title} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="text-base text-zinc-400 font-bold">CANVAS</div>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-bold text-zinc-900">{t.title}</p>
-                          {t.description && (
-                            <p className="text-zinc-400 text-base truncate max-w-[220px]">{t.description}</p>
-                          )}
-                        </div>
-                      </div>
-                    </td>
+            <div className="grid grid-cols-1 gap-5 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3 2xl:grid-cols-4">
+              {templates.map((t) => (
+                <article
+                  key={t._id}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-[#b8e0f6] hover:shadow-lg hover:shadow-[#329AD4]/10"
+                >
+                  {/* Thumbnail */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPreviewTemplate(t);
+                      setPreviewSide("front");
+                      setPreview3D(false);
+                    }}
+                    className="relative block aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-[#1b5b80] to-[#0f1117] cursor-pointer"
+                    aria-label={`Preview ${t.title}`}
+                  >
+                    {t.thumbnail ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={t.thumbnail}
+                        alt={t.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                      />
+                    ) : (
+                      <span className="flex h-full w-full flex-col items-center justify-center gap-2 text-white/50">
+                        <Icon name="templates" className="w-8 h-8" />
+                        <span className="text-[11px] font-semibold tracking-widest">CANVAS</span>
+                      </span>
+                    )}
 
-                    <td className="px-5 py-3.5 hidden md:table-cell">
+                    <span className="absolute inset-0 flex items-center justify-center bg-zinc-950/0 opacity-0 transition-all group-hover:bg-zinc-950/35 group-hover:opacity-100">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 shadow-md">
+                        <Icon name="eye" className="w-3.5 h-3.5" />
+                        Preview
+                      </span>
+                    </span>
+
+                    <span className="absolute left-3 top-3">
+                      <Badge tone={t.status === "PUBLISHED" ? "green" : t.status === "ARCHIVED" ? "red" : "amber"} dot className="shadow-sm uppercase tracking-wide text-[10px]">
+                        {t.status || "DRAFT"}
+                      </Badge>
+                    </span>
+                    <span className="absolute right-3 top-3">
+                      {t.isPaid ? (
+                        <Badge tone="amber" className="shadow-sm tabular-nums">PAID ${t.price}</Badge>
+                      ) : (
+                        <Badge tone="green" className="shadow-sm">FREE</Badge>
+                      )}
+                    </span>
+                  </button>
+
+                  {/* Body */}
+                  <div className="flex flex-1 flex-col gap-3 p-4">
+                    <div className="min-w-0">
+                      <Link
+                        href={`/admin/templates/${t._id}/edit`}
+                        className="block truncate text-sm font-semibold text-zinc-900 transition-colors hover:text-[#2884b8]"
+                      >
+                        {t.title}
+                      </Link>
+                      {t.description && <p className="mt-0.5 truncate text-xs text-zinc-500">{t.description}</p>}
+                    </div>
+
+                    <div>
                       {t.categoryId?._id ? (
                         <Link
                           href={`/admin/categories/${t.categoryId._id}/templates`}
-                          className="px-2.5 py-1 bg-sky-50 hover:bg-sky-100 text-sky-800 font-semibold rounded-md text-base transition-colors"
+                          className="inline-flex max-w-full items-center gap-1 truncate rounded-md bg-[#EAF5FB] px-2 py-0.5 text-xs font-medium text-[#2884b8] transition-colors hover:bg-[#dbeefb]"
                         >
-                          {t.categoryId.name}
+                          <Icon name="grid" className="w-3 h-3 shrink-0" />
+                          <span className="truncate">{t.categoryId.name}</span>
                         </Link>
                       ) : (
-                        <span className="px-2.5 py-1 bg-zinc-100 text-zinc-700 font-semibold rounded-md text-base">
+                        <span className="inline-flex max-w-full truncate rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
                           {t.category}
                         </span>
                       )}
-                    </td>
+                    </div>
 
-                    <td className="px-5 py-3.5">
-                      {t.isPaid ? (
-                        <span className="px-2.5 py-1 rounded-full text-base font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                          PAID ${t.price}
-                        </span>
-                      ) : (
-                        <span className="px-2.5 py-1 rounded-full text-base font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          FREE
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="px-5 py-3.5">
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-base font-extrabold uppercase tracking-wider ${
-                          t.status === "PUBLISHED"
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : t.status === "ARCHIVED"
-                            ? "bg-red-50 text-red-700 border border-red-200"
-                            : "bg-amber-50 text-amber-700 border border-amber-200"
-                        }`}
-                      >
-                        {t.status || "DRAFT"}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
+                    <div className="mt-auto flex items-center justify-between gap-2 border-t border-zinc-100 pt-3">
+                      <ButtonLink href={`/admin/templates/${t._id}/edit`} size="sm" variant="soft" icon="edit">
+                        Edit
+                      </ButtonLink>
+                      <div className="flex items-center gap-0.5">
+                        <IconButton
+                          icon="eye"
+                          label="Preview"
                           onClick={() => {
                             setPreviewTemplate(t);
                             setPreviewSide("front");
                             setPreview3D(false);
                           }}
-                          className="px-2.5 py-1.5 rounded-xl border border-zinc-200 text-zinc-700 font-bold hover:bg-zinc-50 transition-all text-base cursor-pointer"
-                        >
-                          Preview
-                        </button>
-
-                        <button
+                        />
+                        <IconButton
+                          icon="layers"
+                          label="Duplicate"
                           onClick={() => handleDuplicate(t._id)}
                           disabled={actionLoading === t._id}
-                          className="px-2.5 py-1.5 rounded-xl border border-zinc-200 text-zinc-700 font-bold hover:bg-zinc-50 transition-all text-base cursor-pointer disabled:opacity-50"
-                        >
-                          Duplicate
-                        </button>
-
-                        <Link
-                          href={`/admin/templates/${t._id}/edit`}
-                          className="px-3 py-1.5 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold transition-all text-base"
-                        >
-                          Edit
-                        </Link>
-
-                        <button
+                        />
+                        <IconButton
+                          icon="trash"
+                          label="Delete template"
+                          tone="danger"
                           onClick={() => handleDelete(t._id, t.title)}
                           disabled={deleting === t._id}
-                          className="p-1.5 rounded-xl text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-all text-base cursor-pointer"
-                          title="Delete template"
-                        >
-                          ✕
-                        </button>
+                        />
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
 
             {/* Pagination */}
-            {pagination && pagination.pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#fff7f3]/30">
-                <p className="text-base text-zinc-500 font-medium">
-                  Showing {(page - 1) * pagination.limit + 1}–{Math.min(page * pagination.limit, pagination.total)} of {pagination.total}
-                </p>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer"
-                  >
-                    Previous
-                  </button>
-                  <span className="text-base font-mono font-bold text-zinc-800 px-2">{page} / {pagination.pages}</span>
-                  <button
-                    onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
-                    disabled={page === pagination.pages}
-                    className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+            {pagination && (
+              <PaginationBar
+                page={page}
+                pages={pagination.pages}
+                total={pagination.total}
+                limit={pagination.limit}
+                onPage={(next) => setPage(Math.min(pagination.pages, Math.max(1, next)))}
+              />
             )}
           </>
         )}
-      </div>
+      </Card>
 
       {/* ── CLEAN PREVIEW MODAL ────────────────────────────────────── */}
       {previewTemplate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/75 backdrop-blur-sm p-4">
-          <div className="bg-[#12141c] border border-zinc-800 rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col">
-            <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between text-white">
-              <div>
-                <h2 className="text-base font-bold">{previewTemplate.title}</h2>
-                <p className="text-base text-zinc-400">
-                  {previewTemplate.category}
-                </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-sm p-3 sm:p-4">
+          <div className="flex max-h-[95vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div className="flex flex-col gap-3 border-b border-zinc-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8]">
+                  <Icon name="templates" className="w-[18px] h-[18px]" />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="truncate text-sm font-semibold text-zinc-900">{previewTemplate.title}</h2>
+                  <p className="truncate text-xs text-zinc-500">{previewTemplate.category}</p>
+                </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="inline-flex p-1 bg-zinc-900 rounded-xl border border-zinc-800 text-base font-bold">
+              <div className="flex items-center justify-between gap-3 sm:justify-end">
+                <div className="inline-flex gap-1 rounded-xl bg-zinc-100/80 p-1 text-xs font-semibold">
                   <button
+                    type="button"
                     onClick={() => setPreview3D(false)}
-                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                      !preview3D ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
-                    }`}
+                    className={cx(
+                      "rounded-lg px-3 py-1.5 transition-all cursor-pointer",
+                      !preview3D ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
+                    )}
                   >
                     2D View
                   </button>
                   <button
+                    type="button"
                     onClick={() => setPreview3D(true)}
-                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                      preview3D ? "bg-emerald-600 text-white" : "text-zinc-400 hover:text-white"
-                    }`}
+                    className={cx(
+                      "inline-flex items-center gap-1 rounded-lg px-3 py-1.5 transition-all cursor-pointer",
+                      preview3D ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
+                    )}
                   >
-                    ✨ 3D Realistic
+                    <Icon name="sparkle" className="w-3.5 h-3.5" />
+                    3D Realistic
                   </button>
                 </div>
 
-                <button
-                  onClick={() => setPreviewTemplate(null)}
-                  className="w-8 h-8 rounded-full hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer"
-                >
-                  ✕
-                </button>
+                <IconButton icon="close" label="Close preview" onClick={() => setPreviewTemplate(null)} />
               </div>
             </div>
 
-            <div className="p-8 flex items-center justify-center bg-[#090a0f] min-h-[420px]">
+            <div className="flex min-h-[320px] flex-1 items-center justify-center overflow-auto bg-[radial-gradient(circle_at_center,#1b5b80_0%,#0b0d14_75%)] p-4 sm:min-h-[420px] sm:p-8">
               {preview3D ? (
                 <div className="w-full h-[400px]">
                   <ThreeDCardPreview
@@ -452,7 +451,7 @@ export default function AdminTemplatesPage() {
                           <div
                             className="w-full h-full"
                             style={{
-                              backgroundColor: obj.fill || "#e74b2d",
+                              backgroundColor: obj.fill || "#329AD4",
                               border: obj.stroke && obj.strokeWidth ? `${obj.strokeWidth}px solid ${obj.stroke}` : "none",
                               borderRadius:
                                 obj.shapeType === "circle"
@@ -479,6 +478,7 @@ export default function AdminTemplatesPage() {
                           </div>
                         )}
                         {obj.type === "image" && obj.src && (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img src={obj.src} alt="" className="w-full h-full object-contain" />
                         )}
                       </div>
@@ -488,26 +488,23 @@ export default function AdminTemplatesPage() {
               )}
             </div>
 
-            <div className="px-6 py-3 border-t border-zinc-800 bg-[#161821] flex items-center justify-between text-base text-zinc-400">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-3 border-t border-zinc-100 bg-zinc-50/70 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <label className="flex items-center gap-2 text-xs font-semibold text-zinc-600">
                 <span>Status:</span>
                 <select
                   value={previewTemplate.status}
                   onChange={(e) => handleStatusChange(previewTemplate._id, e.target.value as any)}
-                  className="bg-zinc-800 text-white font-bold px-2 py-0.5 rounded border border-zinc-700"
+                  className={cx(inputClass, "w-auto py-1.5 text-xs font-semibold cursor-pointer")}
                 >
                   <option value="DRAFT">DRAFT</option>
                   <option value="PUBLISHED">PUBLISHED</option>
                   <option value="ARCHIVED">ARCHIVED</option>
                 </select>
-              </div>
+              </label>
 
-              <Link
-                href={`/admin/templates/${previewTemplate._id}/edit`}
-                className="px-4 py-1.5 rounded-xl bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold transition-all"
-              >
-                Open in Canvas Editor →
-              </Link>
+              <ButtonLink href={`/admin/templates/${previewTemplate._id}/edit`} icon="edit">
+                Open in Canvas Editor
+              </ButtonLink>
             </div>
           </div>
         </div>

@@ -101,7 +101,7 @@ export default async function ClothingBagsCategoryPage({
           <div className="mt-6">
             <Link
               href={designHref}
-              className="inline-flex px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-xl shadow-lg transition-colors"
+              className="inline-flex px-6 py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold rounded-xl shadow-lg transition-colors"
             >
               Start designing
             </Link>
@@ -111,7 +111,7 @@ export default async function ClothingBagsCategoryPage({
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Cover image product card (not the page banner) */}
-        <div className="rounded-3xl border border-zinc-200 overflow-hidden mb-10 grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-[#fff1eb] via-white to-white shadow-sm">
+        <div className="rounded-3xl border border-zinc-200 overflow-hidden mb-10 grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-[#EAF5FB] via-white to-white shadow-sm">
           <div className="relative min-h-[280px] lg:min-h-[400px] bg-white">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -122,7 +122,7 @@ export default async function ClothingBagsCategoryPage({
           </div>
           <div className="p-6 sm:p-10 flex flex-col justify-center space-y-5">
             <div>
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#e74b2d] mb-2">
+              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#329AD4] mb-2">
                 Customize
               </p>
               <h2 className="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
@@ -162,7 +162,7 @@ export default async function ClothingBagsCategoryPage({
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 href={designHref}
-                className="inline-flex px-6 py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold rounded-xl transition-colors shadow-md shadow-[#e74b2d]/25"
+                className="inline-flex px-6 py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold rounded-xl transition-colors shadow-md shadow-[#329AD4]/25"
               >
                 Start designing
               </Link>
@@ -188,7 +188,7 @@ export default async function ClothingBagsCategoryPage({
                     href={`/clothing-bags/design?category=${encodeURIComponent(cat.slug || String(cat._id))}&productId=${p._id}`}
                     className="group rounded-3xl overflow-hidden border border-zinc-200 hover:shadow-lg transition-all bg-white"
                   >
-                    <div className="aspect-[4/3] relative overflow-hidden bg-[#fbfaf7]">
+                    <div className="aspect-[4/3] relative overflow-hidden bg-[#ffffff]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={pImg}

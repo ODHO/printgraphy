@@ -12,11 +12,11 @@ export default function Hero({ hero }: { hero: HomepageContent["hero"] }) {
   const offerNote = hero.highlight || "Code: SAVEVP • Ends Nov. 8";
 
   return (
-    <section className="bg-[#f3e8dc] px-3 pb-3 sm:px-5 sm:pb-5 lg:px-7 lg:pb-7">
-      <div className="grid min-h-[520px] overflow-hidden rounded-b-[2rem] bg-[#f3e8dc] lg:grid-cols-2 lg:rounded-b-[2.5rem]">
+    <section className="bg-[#EAF5FB] px-3 pb-3 sm:px-5 sm:pb-5 lg:px-7 lg:pb-7">
+      <div className="grid min-h-[520px] overflow-hidden rounded-b-[2rem] bg-[#EAF5FB] lg:grid-cols-2 lg:rounded-b-[2.5rem]">
         <div className="flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 xl:px-20">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-[#e74b2d] px-3 py-1 text-[11px] font-bold tracking-[0.08em] text-white">
+            <span className="rounded-full bg-[#329AD4] px-3 py-1 text-[11px] font-bold tracking-[0.08em] text-white">
               {badge}
             </span>
             <span className="text-sm text-zinc-600">{offerNote}</span>
@@ -30,13 +30,13 @@ export default function Hero({ hero }: { hero: HomepageContent["hero"] }) {
           <div className="mt-8 flex flex-wrap items-center gap-5">
             <Link
               href={hero.primaryHref || "/browsedesigns"}
-              className="rounded-full bg-[#1e1d1b] px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e74b2d]"
+              className="rounded-full bg-[#329AD4] px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#2884b8]"
             >
               {hero.primaryLabel}
             </Link>
             <Link
               href={hero.secondaryHref || "/browsedesigns"}
-              className="text-sm font-semibold text-[#1e1d1b] underline decoration-[#e74b2d] decoration-2 underline-offset-4 hover:text-[#e74b2d]"
+              className="text-sm font-semibold text-[#1e1d1b] underline decoration-[#329AD4] decoration-2 underline-offset-4 hover:text-[#329AD4]"
             >
               {hero.secondaryLabel}
             </Link>

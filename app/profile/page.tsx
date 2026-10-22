@@ -93,7 +93,7 @@ function MapPreview() {
         {/* River Waterway */}
         <path
           d="M -20 120 Q 140 80 260 140 T 520 130 T 820 90"
-          stroke="#ffd6c9"
+          stroke="#b8e0f6"
           strokeWidth="26"
           fill="none"
           strokeLinecap="round"
@@ -141,7 +141,7 @@ function MapPreview() {
 
       {/* Blue Location Pin Marker */}
       <div className="absolute right-[24%] sm:right-[28%] top-[40%] sm:top-[38%] -translate-x-1/2 -translate-y-full flex flex-col items-center pointer-events-none drop-shadow-[0_8px_16px_rgba(33,150,210,0.5)]">
-        <svg className="w-10 h-10 sm:w-12 sm:h-12 text-[#e74b2d]" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="w-10 h-10 sm:w-12 sm:h-12 text-[#329AD4]" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C7.58 0 4 3.58 4 8c0 5.25 7 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z" />
         </svg>
       </div>
@@ -535,7 +535,7 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-48 sm:w-52 md:w-56 mt-3.5 py-2.5 sm:py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white rounded-2xl font-semibold text-sm sm:text-base shadow-sm transition-all text-center cursor-pointer block"
+                      className="w-48 sm:w-52 md:w-56 mt-3.5 py-2.5 sm:py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white rounded-2xl font-semibold text-sm sm:text-base shadow-sm transition-all text-center cursor-pointer block"
                     >
                       Upload New
                     </button>
@@ -555,7 +555,7 @@ export default function ProfilePage() {
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           required
-                          className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 transition-all"
+                          className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 transition-all"
                         />
                       </div>
                       <div>
@@ -565,7 +565,7 @@ export default function ProfilePage() {
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           required
-                          className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 transition-all"
+                          className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 transition-all"
                         />
                       </div>
                     </div>
@@ -577,7 +577,7 @@ export default function ProfilePage() {
                         placeholder="Mobile*"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 transition-all"
+                        className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 transition-all"
                       />
                     </div>
 
@@ -586,7 +586,7 @@ export default function ProfilePage() {
                       <select
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
-                        className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 pr-12 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 transition-all appearance-none cursor-pointer"
+                        className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 pr-12 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 transition-all appearance-none cursor-pointer"
                       >
                         <option value="">City</option>
                         {CITIES.map((c) => (
@@ -613,7 +613,7 @@ export default function ProfilePage() {
                         placeholder="Email Address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 transition-all"
+                        className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 transition-all"
                       />
                     </div>
 
@@ -622,7 +622,7 @@ export default function ProfilePage() {
                       <button
                         type="submit"
                         disabled={isSaving}
-                        className="px-14 sm:px-16 py-3 sm:py-3.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-base rounded-full shadow-sm hover:shadow-md transition-all cursor-pointer disabled:opacity-60"
+                        className="px-14 sm:px-16 py-3 sm:py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-semibold text-base rounded-full shadow-sm hover:shadow-md transition-all cursor-pointer disabled:opacity-60"
                       >
                         {isSaving ? "Saving..." : "Save"}
                       </button>
@@ -674,7 +674,7 @@ export default function ProfilePage() {
                         <button
                           type="button"
                           onClick={() => handleOpenEditModal(addr)}
-                          className="px-8 sm:px-11 py-2.5 sm:py-3 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-base rounded-full shadow-sm transition-all cursor-pointer self-end"
+                          className="px-8 sm:px-11 py-2.5 sm:py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white font-semibold text-base rounded-full shadow-sm transition-all cursor-pointer self-end"
                         >
                           Edit
                         </button>
@@ -687,7 +687,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={handleOpenAddModal}
-                  className="w-full py-3.5 sm:py-4 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-base sm:text-lg rounded-full shadow-sm text-center transition-all cursor-pointer mt-6 sm:mt-8 block"
+                  className="w-full py-3.5 sm:py-4 bg-[#329AD4] hover:bg-[#2884b8] text-white font-semibold text-base sm:text-lg rounded-full shadow-sm text-center transition-all cursor-pointer mt-6 sm:mt-8 block"
                 >
                   Add new Address
                 </button>
@@ -729,7 +729,7 @@ export default function ProfilePage() {
                             onChange={(e) =>
                               setAddressForm({ ...addressForm, name: e.target.value })
                             }
-                            className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
+                            className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
                           />
                         </div>
 
@@ -746,7 +746,7 @@ export default function ProfilePage() {
                             onChange={(e) =>
                               setAddressForm({ ...addressForm, line1: e.target.value })
                             }
-                            className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
+                            className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
                           />
                         </div>
 
@@ -764,7 +764,7 @@ export default function ProfilePage() {
                               onChange={(e) =>
                                 setAddressForm({ ...addressForm, city: e.target.value })
                               }
-                              className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
+                              className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
                             />
                           </div>
                           <div>
@@ -779,7 +779,7 @@ export default function ProfilePage() {
                               onChange={(e) =>
                                 setAddressForm({ ...addressForm, state: e.target.value })
                               }
-                              className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
+                              className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
                             />
                           </div>
                         </div>
@@ -798,7 +798,7 @@ export default function ProfilePage() {
                               onChange={(e) =>
                                 setAddressForm({ ...addressForm, zip: e.target.value })
                               }
-                              className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
+                              className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
                             />
                           </div>
                           <div>
@@ -813,7 +813,7 @@ export default function ProfilePage() {
                               onChange={(e) =>
                                 setAddressForm({ ...addressForm, country: e.target.value })
                               }
-                              className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
+                              className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
                             />
                           </div>
                         </div>
@@ -830,7 +830,7 @@ export default function ProfilePage() {
                             onChange={(e) =>
                               setAddressForm({ ...addressForm, phone: e.target.value })
                             }
-                            className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20"
+                            className="w-full bg-white border border-zinc-300 rounded-2xl py-3 px-4 text-sm text-zinc-900 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
                           />
                         </div>
 
@@ -859,7 +859,7 @@ export default function ProfilePage() {
                             <button
                               type="submit"
                               disabled={addressSaving}
-                              className="px-6 py-2.5 rounded-full bg-[#e74b2d] hover:bg-[#c93e23] text-white text-sm font-semibold shadow-sm cursor-pointer disabled:opacity-60"
+                              className="px-6 py-2.5 rounded-full bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-semibold shadow-sm cursor-pointer disabled:opacity-60"
                             >
                               {addressSaving ? "Saving..." : "Save Address"}
                             </button>
@@ -901,7 +901,7 @@ export default function ProfilePage() {
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       required
-                      className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 transition-all"
+                      className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 transition-all"
                     />
                   </div>
 
@@ -912,7 +912,7 @@ export default function ProfilePage() {
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
-                      className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 transition-all"
+                      className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 transition-all"
                     />
                   </div>
 
@@ -923,7 +923,7 @@ export default function ProfilePage() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
-                      className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#e74b2d] focus:ring-2 focus:ring-[#e74b2d]/20 transition-all"
+                      className="w-full bg-white border border-zinc-300 rounded-3xl py-3 sm:py-3.5 px-6 text-base text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 transition-all"
                     />
                   </div>
 
@@ -931,7 +931,7 @@ export default function ProfilePage() {
                     <button
                       type="submit"
                       disabled={isChangingPass}
-                      className="px-14 sm:px-16 py-3.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-base rounded-full shadow-sm hover:shadow-md transition-all cursor-pointer disabled:opacity-60"
+                      className="px-14 sm:px-16 py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-semibold text-base rounded-full shadow-sm hover:shadow-md transition-all cursor-pointer disabled:opacity-60"
                     >
                       {isChangingPass ? "Updating..." : "Save Password"}
                     </button>

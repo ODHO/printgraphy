@@ -4,6 +4,7 @@ import ThreeDCardPreview from "@/components/ThreeDCardPreview";
 import TextStyleControls from "@/components/TextStyleControls";
 import { ADMIN_LAYOUT, textLayerDomStyle } from "@/lib/cardRender";
 import { ICanvasGuideLine, SideMode } from "@/models/Category";
+import { Badge, Card, CardHeader, Icon, Notice, PageHeader, buttonClass, cx, inputClass, labelClass } from "@/components/admin/ui";
 
 interface ApiCategoryVariation {
   name: string;
@@ -164,9 +165,9 @@ const PRODUCT_CANVAS_PRESETS: Record<
     sides_count: 4,
     sides_names: ["Front Panel", "Right Side", "Back Panel", "Left Side"],
     guide_lines: [
-      { id: "box_1", name: "Left Fold", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#e74b2d" },
-      { id: "box_2", name: "Center Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#e74b2d" },
-      { id: "box_3", name: "Right Fold", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "box_1", name: "Left Fold", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#329AD4" },
+      { id: "box_2", name: "Center Fold", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#329AD4" },
+      { id: "box_3", name: "Right Fold", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#329AD4" },
     ],
   },
   "product-boxes": {
@@ -182,9 +183,9 @@ const PRODUCT_CANVAS_PRESETS: Record<
     sides_count: 4,
     sides_names: ["Front Panel", "Right Panel", "Back Panel", "Left Panel"],
     guide_lines: [
-      { id: "pbox_1", name: "Panel Divider 1", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#e74b2d" },
-      { id: "pbox_2", name: "Panel Divider 2", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#e74b2d" },
-      { id: "pbox_3", name: "Panel Divider 3", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#e74b2d" },
+      { id: "pbox_1", name: "Panel Divider 1", orientation: "vertical", position: 25, unit: "percent", lineType: "fold", color: "#329AD4" },
+      { id: "pbox_2", name: "Panel Divider 2", orientation: "vertical", position: 50, unit: "percent", lineType: "fold", color: "#329AD4" },
+      { id: "pbox_3", name: "Panel Divider 3", orientation: "vertical", position: 75, unit: "percent", lineType: "fold", color: "#329AD4" },
     ],
   },
   "t-shirts": {
@@ -275,7 +276,7 @@ const PRODUCT_CANVAS_PRESETS: Record<
 
 const DEFAULT_LAYERS: TextLayer[] = [
   { id: "1", text: "Stephen", x: 10, y: 30, fontSize: 22, color: "#ffffff", fontWeight: "bold" },
-  { id: "2", text: "Manager", x: 10, y: 48, fontSize: 13, color: "#f88768", fontWeight: "normal" },
+  { id: "2", text: "Manager", x: 10, y: 48, fontSize: 13, color: "#55b2e7", fontWeight: "normal" },
   { id: "3", text: "+1 (555) 123-4567", x: 10, y: 76, fontSize: 10, color: "#e4e4e7", fontWeight: "normal" },
   { id: "4", text: "stephen@zyora.com", x: 42, y: 76, fontSize: 10, color: "#e4e4e7", fontWeight: "normal" },
   { id: "5", text: "Poissy 15 rue de la Boëtie", x: 68, y: 76, fontSize: 10, color: "#e4e4e7", fontWeight: "normal" },
@@ -618,284 +619,268 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">
-            {mode === "create" ? "New Product Template" : "Edit Template"}
-          </h1>
-          <p className="text-zinc-500 text-base mt-0.5">
-            {mode === "create" ? "Design a custom packaging box, T-shirt, mug, or card template according to category canvas" : "Update template design, category canvas dimensions, and fold line layout"}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => router.push("/admin/templates")}
-            className="px-4 py-2 text-base font-bold text-zinc-600 border border-zinc-200 rounded-xl hover:bg-white transition-all cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-5 py-2 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all shadow-md shadow-[#e74b2d]/20 disabled:opacity-60 cursor-pointer"
-          >
-            {saving ? "Saving..." : mode === "create" ? "Create Template" : "Save Changes"}
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        icon="templates"
+        back={{ href: "/admin/templates", label: "Back to templates" }}
+        title={mode === "create" ? "New Product Template" : "Edit Template"}
+        description={mode === "create" ? "Design a custom packaging box, T-shirt, mug, or card template according to category canvas" : "Update template design, category canvas dimensions, and fold line layout"}
+      />
 
       {error && (
-        <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-base font-bold">
+        <Notice tone="red" title="Could not save template">
           {error}
-        </div>
+        </Notice>
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
         {/* ── Left: Settings Panel (4 cols) ──────────────────── */}
-        <div className="xl:col-span-4 space-y-4">
+        <div className="xl:col-span-4 space-y-5">
 
           {/* Basic Info Box */}
-          <div className="bg-white border border-zinc-200/80 rounded-3xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Basic Info</h2>
+          <Card>
+            <CardHeader icon="pages" title="Basic Info" subtitle="Title, category and search tags" />
+            <div className="p-5 space-y-4">
+              <div>
+                <label className={labelClass}>Template Title <span className="text-rose-500">*</span></label>
+                <input
+                  required
+                  type="text"
+                  value={form.title}
+                  onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+                  placeholder="e.g., Custom Packaging Box Pro"
+                  className={inputClass}
+                />
+              </div>
 
-            <div>
-              <label className="text-base font-bold text-zinc-700 block mb-1">Template Title *</label>
-              <input
-                required
-                type="text"
-                value={form.title}
-                onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
-                placeholder="e.g., Custom Packaging Box Pro"
-                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-              />
+              <div>
+                <label className={labelClass}>Description</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+                  placeholder="Short description of this product template..."
+                  rows={2}
+                  className={cx(inputClass, "resize-none")}
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>Category <span className="text-rose-500">*</span></label>
+                <select
+                  required
+                  value={form.category}
+                  onChange={(e) => {
+                    const newCatName = e.target.value;
+                    const catObj = dbCategories.find((c) => c.name === newCatName || c.slug === newCatName || c._id === newCatName);
+                    if (catObj) {
+                      applyCategoryObject(catObj);
+                    } else {
+                      const slugKey = newCatName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                      const preset = PRODUCT_CANVAS_PRESETS[slugKey];
+                      setForm((prev) => ({
+                        ...prev,
+                        category: newCatName,
+                        canvas_config: preset
+                          ? {
+                              width: preset.width,
+                              height: preset.height,
+                              unit: preset.unit,
+                              orientation: preset.orientation,
+                              bleed: preset.bleed,
+                              bleedUnit: preset.unit,
+                              safe_area: preset.safe_area,
+                              safeAreaUnit: preset.unit,
+                              background_color: prev.templateData.bgColor,
+                              supports_back_side: preset.supports_back_side,
+                              side_mode: preset.side_mode,
+                              sides_count: preset.sides_count,
+                              sides_names: preset.sides_names,
+                              guide_lines: preset.guide_lines,
+                            }
+                          : prev.canvas_config,
+                      }));
+                    }
+                  }}
+                  className={cx(inputClass, "cursor-pointer font-medium")}
+                >
+                  {(dbCategories.length > 0 ? dbCategories.map((c) => c.name) : TEMPLATE_CATEGORIES).map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className={labelClass}>Tags <span className="font-normal text-zinc-400">(comma separated)</span></label>
+                <input
+                  type="text"
+                  value={form.tags}
+                  onChange={(e) => setForm((prev) => ({ ...prev, tags: e.target.value }))}
+                  placeholder="packaging, box, apparel, custom"
+                  className={inputClass}
+                />
+              </div>
             </div>
+          </Card>
 
-            <div>
-              <label className="text-base font-bold text-zinc-700 block mb-1">Description</label>
-              <textarea
-                value={form.description}
-                onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-                placeholder="Short description of this product template..."
-                rows={2}
-                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] resize-none"
-              />
-            </div>
+          {/* Canvas Dimensions & Product Size Specifications Box */}
+          <Card>
+            <CardHeader
+              icon="grid"
+              title="Canvas & Dieline Specs"
+              subtitle="Inherited from the category"
+              action={
+                <span className="inline-flex items-center rounded-full bg-[#EAF5FB] px-2.5 py-0.5 font-mono text-[11px] font-semibold uppercase text-[#2884b8] ring-1 ring-inset ring-[#329AD4]/20 whitespace-nowrap">
+                  {form.canvas_config.side_mode || "DOUBLE"} MODE
+                </span>
+              }
+            />
+            <div className="p-5 space-y-4">
+              {/* Category Canvas Summary Badge */}
+              <div className="p-3.5 bg-[#f0f8fd] border border-[#dbeefb] rounded-xl text-xs space-y-1.5">
+                <div className="flex justify-between gap-3 font-semibold text-zinc-800">
+                  <span>Canvas Size</span>
+                  <span className="font-mono text-[#2884b8]">{form.canvas_config.width} × {form.canvas_config.height} {form.canvas_config.unit}</span>
+                </div>
+                <div className="flex justify-between gap-3 text-zinc-500">
+                  <span>Bleed / Safe Area</span>
+                  <span className="font-mono">{form.canvas_config.bleed}{form.canvas_config.bleedUnit || form.canvas_config.unit} / {form.canvas_config.safe_area}{form.canvas_config.safeAreaUnit || form.canvas_config.unit}</span>
+                </div>
+                <div className="flex justify-between gap-3 text-zinc-500">
+                  <span className="shrink-0">Sides / Panels</span>
+                  <span className="font-semibold text-zinc-700 text-right">{sidesList.length} Panels ({sidesList.join(", ")})</span>
+                </div>
+                {form.canvas_config.guide_lines && form.canvas_config.guide_lines.length > 0 && (
+                  <div className="flex justify-between gap-3 text-zinc-500">
+                    <span>Fold Lines</span>
+                    <span className="font-semibold text-[#1b5b80]">{form.canvas_config.guide_lines.length} Lines configured</span>
+                  </div>
+                )}
+              </div>
 
-            <div>
-              <label className="text-base font-bold text-zinc-700 block mb-1">Category *</label>
-              <select
-                required
-                value={form.category}
-                onChange={(e) => {
-                  const newCatName = e.target.value;
-                  const catObj = dbCategories.find((c) => c.name === newCatName || c.slug === newCatName || c._id === newCatName);
-                  if (catObj) {
-                    applyCategoryObject(catObj);
-                  } else {
-                    const slugKey = newCatName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-                    const preset = PRODUCT_CANVAS_PRESETS[slugKey];
-                    setForm((prev) => ({
-                      ...prev,
-                      category: newCatName,
-                      canvas_config: preset
-                        ? {
+              {/* Quick Category Presets */}
+              <div>
+                <label className={labelClass}>Quick Product Preset</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(PRODUCT_CANVAS_PRESETS).map(([key, preset]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => {
+                        setForm((prev) => ({
+                          ...prev,
+                          canvas_config: {
+                            ...prev.canvas_config,
                             width: preset.width,
                             height: preset.height,
                             unit: preset.unit,
                             orientation: preset.orientation,
                             bleed: preset.bleed,
-                            bleedUnit: preset.unit,
                             safe_area: preset.safe_area,
-                            safeAreaUnit: preset.unit,
-                            background_color: prev.templateData.bgColor,
                             supports_back_side: preset.supports_back_side,
                             side_mode: preset.side_mode,
                             sides_count: preset.sides_count,
                             sides_names: preset.sides_names,
                             guide_lines: preset.guide_lines,
-                          }
-                        : prev.canvas_config,
-                    }));
-                  }
-                }}
-                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
-              >
-                {(dbCategories.length > 0 ? dbCategories.map((c) => c.name) : TEMPLATE_CATEGORIES).map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-base font-bold text-zinc-700 block mb-1">Tags (comma separated)</label>
-              <input
-                type="text"
-                value={form.tags}
-                onChange={(e) => setForm((prev) => ({ ...prev, tags: e.target.value }))}
-                placeholder="packaging, box, apparel, custom"
-                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-              />
-            </div>
-          </div>
-
-          {/* Canvas Dimensions & Product Size Specifications Box */}
-          <div className="bg-white border border-zinc-200/80 rounded-3xl p-5 space-y-4 shadow-xs">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">
-                Category Canvas & Dieline Specs
-              </h2>
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-50 text-[#e74b2d] uppercase font-mono">
-                {form.canvas_config.side_mode || "DOUBLE"} MODE
-              </span>
-            </div>
-
-            {/* Category Canvas Summary Badge */}
-            <div className="p-3 bg-[#fbfaf7] border border-sky-100 rounded-2xl text-xs space-y-1">
-              <div className="flex justify-between font-bold text-zinc-800">
-                <span>Canvas Size:</span>
-                <span className="font-mono text-[#e74b2d]">{form.canvas_config.width} × {form.canvas_config.height} {form.canvas_config.unit}</span>
-              </div>
-              <div className="flex justify-between text-zinc-500 font-medium">
-                <span>Bleed / Safe Area:</span>
-                <span>{form.canvas_config.bleed}{form.canvas_config.bleedUnit || form.canvas_config.unit} / {form.canvas_config.safe_area}{form.canvas_config.safeAreaUnit || form.canvas_config.unit}</span>
-              </div>
-              <div className="flex justify-between text-zinc-500 font-medium">
-                <span>Sides / Panels:</span>
-                <span className="font-bold text-zinc-700">{sidesList.length} Panels ({sidesList.join(", ")})</span>
-              </div>
-              {form.canvas_config.guide_lines && form.canvas_config.guide_lines.length > 0 && (
-                <div className="flex justify-between text-zinc-500 font-medium">
-                  <span>Fold Lines:</span>
-                  <span className="font-bold text-sky-700">{form.canvas_config.guide_lines.length} Lines configured</span>
+                          },
+                        }));
+                      }}
+                      className={`px-3 py-2 text-xs font-semibold rounded-xl border transition-all text-left cursor-pointer ${
+                        form.canvas_config.width === preset.width && form.canvas_config.height === preset.height
+                          ? "bg-[#329AD4] text-white border-[#329AD4] shadow-sm shadow-[#329AD4]/25"
+                          : "bg-white border-zinc-200 text-zinc-700 hover:border-[#b8e0f6] hover:bg-[#f0f8fd]"
+                      }`}
+                    >
+                      <span className="block truncate">{preset.name}</span>
+                      <span className="text-[10px] opacity-80 font-mono font-normal">
+                        {preset.width} × {preset.height} {preset.unit}
+                      </span>
+                    </button>
+                  ))}
                 </div>
-              )}
-            </div>
+              </div>
 
-            {/* Quick Category Presets */}
-            <div>
-              <label className="text-xs font-bold text-zinc-600 block mb-2">Quick Product Preset</label>
-              <div className="grid grid-cols-2 gap-1.5">
-                {Object.entries(PRODUCT_CANVAS_PRESETS).map(([key, preset]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => {
+              {/* Custom Canvas Dimensions Form Inputs */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelClass}>Width</label>
+                  <input
+                    type="number"
+                    min={1}
+                    step="any"
+                    value={form.canvas_config.width}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        canvas_config: { ...prev.canvas_config, width: Number(e.target.value) || 1 },
+                      }))
+                    }
+                    className={cx(inputClass, "font-mono")}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Height</label>
+                  <input
+                    type="number"
+                    min={1}
+                    step="any"
+                    value={form.canvas_config.height}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        canvas_config: { ...prev.canvas_config, height: Number(e.target.value) || 1 },
+                      }))
+                    }
+                    className={cx(inputClass, "font-mono")}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelClass}>Unit</label>
+                  <select
+                    value={form.canvas_config.unit}
+                    onChange={(e) =>
                       setForm((prev) => ({
                         ...prev,
                         canvas_config: {
                           ...prev.canvas_config,
-                          width: preset.width,
-                          height: preset.height,
-                          unit: preset.unit,
-                          orientation: preset.orientation,
-                          bleed: preset.bleed,
-                          safe_area: preset.safe_area,
-                          supports_back_side: preset.supports_back_side,
-                          side_mode: preset.side_mode,
-                          sides_count: preset.sides_count,
-                          sides_names: preset.sides_names,
-                          guide_lines: preset.guide_lines,
+                          unit: e.target.value as "mm" | "cm" | "in" | "px",
+                          bleedUnit: e.target.value as any,
+                          safeAreaUnit: e.target.value as any,
                         },
-                      }));
-                    }}
-                    className={`px-2.5 py-1.5 text-xs font-bold rounded-xl border transition-all text-left cursor-pointer ${
-                      form.canvas_config.width === preset.width && form.canvas_config.height === preset.height
-                        ? "bg-[#e74b2d] text-white border-[#e74b2d] shadow-xs"
-                        : "bg-zinc-50 border-zinc-200 text-zinc-700 hover:border-zinc-400"
-                    }`}
+                      }))
+                    }
+                    className={cx(inputClass, "cursor-pointer")}
                   >
-                    <span className="block truncate">{preset.name}</span>
-                    <span className="text-[10px] opacity-80 font-mono">
-                      {preset.width} × {preset.height} {preset.unit}
-                    </span>
-                  </button>
-                ))}
+                    <option value="mm">mm</option>
+                    <option value="cm">cm</option>
+                    <option value="in">in</option>
+                    <option value="px">px</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={labelClass}>Orientation</label>
+                  <select
+                    value={form.canvas_config.orientation}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        canvas_config: {
+                          ...prev.canvas_config,
+                          orientation: e.target.value as "landscape" | "portrait",
+                        },
+                      }))
+                    }
+                    className={cx(inputClass, "cursor-pointer")}
+                  >
+                    <option value="landscape">Landscape</option>
+                    <option value="portrait">Portrait</option>
+                  </select>
+                </div>
               </div>
             </div>
-
-            {/* Custom Canvas Dimensions Form Inputs */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-bold text-zinc-700 block mb-1">Width</label>
-                <input
-                  type="number"
-                  min={1}
-                  step="any"
-                  value={form.canvas_config.width}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      canvas_config: { ...prev.canvas_config, width: Number(e.target.value) || 1 },
-                    }))
-                  }
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-bold text-zinc-700 block mb-1">Height</label>
-                <input
-                  type="number"
-                  min={1}
-                  step="any"
-                  value={form.canvas_config.height}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      canvas_config: { ...prev.canvas_config, height: Number(e.target.value) || 1 },
-                    }))
-                  }
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-1.5 text-sm font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-bold text-zinc-700 block mb-1">Unit</label>
-                <select
-                  value={form.canvas_config.unit}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      canvas_config: {
-                        ...prev.canvas_config,
-                        unit: e.target.value as "mm" | "cm" | "in" | "px",
-                        bleedUnit: e.target.value as any,
-                        safeAreaUnit: e.target.value as any,
-                      },
-                    }))
-                  }
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-1.5 text-xs font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
-                >
-                  <option value="mm">mm</option>
-                  <option value="cm">cm</option>
-                  <option value="in">in</option>
-                  <option value="px">px</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-xs font-bold text-zinc-700 block mb-1">Orientation</label>
-                <select
-                  value={form.canvas_config.orientation}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      canvas_config: {
-                        ...prev.canvas_config,
-                        orientation: e.target.value as "landscape" | "portrait",
-                      },
-                    }))
-                  }
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-1.5 text-xs font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
-                >
-                  <option value="landscape">Landscape</option>
-                  <option value="portrait">Portrait</option>
-                </select>
-              </div>
-            </div>
-          </div>
+          </Card>
 
           {/* Template Variations & Spec Defaults Box */}
           {(() => {
@@ -905,305 +890,325 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
             if (!currentCat?.variations?.length) return null;
 
             return (
-              <div className="bg-white border border-zinc-200/80 rounded-3xl p-5 space-y-4 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-base font-bold text-[#e74b2d] uppercase tracking-wider">
-                    Template Variations & Defaults
-                  </h2>
-                  <span className="text-base text-zinc-400 font-medium">Pre-select specs</span>
+              <Card>
+                <CardHeader icon="layers" title="Variations & Defaults" subtitle="Pre-select specs for this template" />
+                <div className="p-5 space-y-4">
+                  {currentCat.variations.map((v) => (
+                    <div key={v.name}>
+                      <label className={labelClass}>
+                        {v.name}
+                      </label>
+                      <select
+                        value={selectedVariations[v.name] || v.values[0]?.name || ""}
+                        onChange={(e) =>
+                          setSelectedVariations((prev) => ({
+                            ...prev,
+                            [v.name]: e.target.value,
+                          }))
+                        }
+                        className={cx(inputClass, "cursor-pointer")}
+                      >
+                        {v.values.map((val) => (
+                          <option key={val.name} value={val.name}>
+                            {val.name} {val.price > 0 ? `(+$${val.price.toFixed(2)})` : "(Included)"}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
                 </div>
-
-                {currentCat.variations.map((v) => (
-                  <div key={v.name} className="space-y-1">
-                    <label className="text-base font-bold text-zinc-700 block mb-1">
-                      {v.name}
-                    </label>
-                    <select
-                      value={selectedVariations[v.name] || v.values[0]?.name || ""}
-                      onChange={(e) =>
-                        setSelectedVariations((prev) => ({
-                          ...prev,
-                          [v.name]: e.target.value,
-                        }))
-                      }
-                      className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer font-medium"
-                    >
-                      {v.values.map((val) => (
-                        <option key={val.name} value={val.name}>
-                          {val.name} {val.price > 0 ? `(+$${val.price.toFixed(2)})` : "(Included)"}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ))}
-              </div>
+              </Card>
             );
           })()}
 
           {/* Pricing & Status Box */}
-          <div className="bg-white border border-zinc-200/80 rounded-3xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Pricing & Status</h2>
-
-            <div>
-              <label className="text-base font-bold text-zinc-700 block mb-1">Price (USD)</label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 font-bold text-base">$</span>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={form.price}
-                  onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl pl-8 pr-4 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                />
-              </div>
-              <p className="text-base text-zinc-500 mt-1.5 font-medium">
-                {parseFloat(form.price || "0") > 0 ? (
-                  <span className="text-amber-600">📦 This is a <strong>paid</strong> template</span>
-                ) : (
-                  <span className="text-emerald-600">✓ This is a <strong>free</strong> template</span>
-                )}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between">
+          <Card>
+            <CardHeader icon="dollar" title="Pricing & Status" subtitle="Price and storefront visibility" />
+            <div className="p-5 space-y-4">
               <div>
-                <p className="text-base font-bold text-zinc-900">Active</p>
-                <p className="text-base text-zinc-400">Visible to customers on browse designs</p>
+                <label className={labelClass}>Price (USD)</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 font-semibold text-sm pointer-events-none">$</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.price}
+                    onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
+                    className={cx(inputClass, "pl-8")}
+                  />
+                </div>
+                <div className="mt-2">
+                  {parseFloat(form.price || "0") > 0 ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/15"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />This is a <strong className="font-semibold">paid</strong> template</span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/15"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />This is a <strong className="font-semibold">free</strong> template</span>
+                  )}
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setForm((prev) => ({ ...prev, isActive: !prev.isActive }))}
-                className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer ${form.isActive ? "bg-[#e74b2d]" : "bg-zinc-300"}`}
-              >
-                <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${form.isActive ? "left-5.5" : "left-0.5"}`} />
-              </button>
+
+              <div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-100 bg-zinc-50/60 px-4 py-3">
+                <div>
+                  <p className="text-sm font-semibold text-zinc-900">Active</p>
+                  <p className="text-xs text-zinc-500">Visible to customers on browse designs</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setForm((prev) => ({ ...prev, isActive: !prev.isActive }))}
+                  className={`w-10 h-5.5 shrink-0 rounded-full transition-colors relative cursor-pointer ${form.isActive ? "bg-[#329AD4]" : "bg-zinc-300"}`}
+                >
+                  <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${form.isActive ? "left-5.5" : "left-0.5"}`} />
+                </button>
+              </div>
             </div>
-          </div>
+          </Card>
 
           {/* Thumbnail Upload Box */}
-          <div className="bg-white border border-zinc-200/80 rounded-3xl p-5 space-y-3 shadow-xs">
-            <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Thumbnail</h2>
-            <div
-              onClick={() => thumbnailRef.current?.click()}
-              onDragOver={(e) => { e.preventDefault(); setThumbnailDragOver(true); }}
-              onDragLeave={() => setThumbnailDragOver(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setThumbnailDragOver(false);
-                const file = e.dataTransfer.files?.[0];
-                if (file) processThumbnailFile(file);
-              }}
-              className={`relative w-full aspect-[3/2] rounded-2xl border-2 border-dashed flex items-center justify-center cursor-pointer transition-all overflow-hidden bg-[#fbfaf7] ${
-                thumbnailDragOver ? "border-[#e74b2d] bg-sky-50" : "border-zinc-200 hover:border-[#e74b2d]"
-              }`}
-            >
-              {form.thumbnail ? (
-                <img src={form.thumbnail} alt="Thumbnail" className="absolute inset-0 w-full h-full object-cover rounded-2xl" />
-              ) : (
-                <div className="text-center">
-                  <svg className="w-7 h-7 text-zinc-400 mx-auto mb-1.5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                  </svg>
-                  <p className="text-base text-zinc-400 font-semibold">Click or drag to upload thumbnail</p>
-                </div>
-              )}
-            </div>
-            {form.thumbnail && (
-              <button
-                type="button"
-                onClick={() => setForm((prev) => ({ ...prev, thumbnail: "" }))}
-                className="text-base text-red-500 font-bold hover:underline cursor-pointer"
+          <Card>
+            <CardHeader
+              icon="image"
+              title="Thumbnail"
+              subtitle="Shown on the browse designs grid"
+              action={
+                form.thumbnail ? (
+                  <button
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, thumbnail: "" }))}
+                    className={buttonClass("danger", "sm")}
+                  >
+                    <Icon name="trash" className="w-3.5 h-3.5" />
+                    Remove
+                  </button>
+                ) : undefined
+              }
+            />
+            <div className="p-5">
+              <div
+                onClick={() => thumbnailRef.current?.click()}
+                onDragOver={(e) => { e.preventDefault(); setThumbnailDragOver(true); }}
+                onDragLeave={() => setThumbnailDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setThumbnailDragOver(false);
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) processThumbnailFile(file);
+                }}
+                className={`group relative w-full aspect-[3/2] rounded-xl border-2 border-dashed flex items-center justify-center cursor-pointer transition-all overflow-hidden ${
+                  thumbnailDragOver ? "border-[#329AD4] bg-[#EAF5FB]" : "border-[#b8e0f6] bg-[#f0f8fd]/60 hover:border-[#329AD4] hover:bg-[#f0f8fd]"
+                }`}
               >
-                Remove thumbnail
-              </button>
-            )}
-            <input ref={thumbnailRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) processThumbnailFile(f); }} />
-          </div>
+                {form.thumbnail ? (
+                  <>
+                    <img src={form.thumbnail} alt="Thumbnail" className="absolute inset-0 w-full h-full object-cover rounded-xl" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/45 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/95 px-3 py-1.5 text-xs font-semibold text-zinc-800 shadow">
+                        <Icon name="upload" className="w-3.5 h-3.5" />
+                        Replace image
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center px-4">
+                    <span className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#329AD4] shadow-xs">
+                      <Icon name="upload" className="w-5 h-5" />
+                    </span>
+                    <p className="text-sm font-semibold text-[#1b5b80]">Click or drag to upload thumbnail</p>
+                    <p className="text-xs text-zinc-400 mt-0.5">PNG, JPG or WEBP</p>
+                  </div>
+                )}
+              </div>
+              <input ref={thumbnailRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) processThumbnailFile(f); }} />
+            </div>
+          </Card>
 
           {/* Design Settings Box */}
-          <div className="bg-white border border-zinc-200/80 rounded-3xl p-5 space-y-4 shadow-xs">
-            <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Canvas Design</h2>
-
-            {/* Background Color */}
-            <div>
-              <label className="text-base font-bold text-zinc-700 block mb-2">Background Color</label>
-              <div className="flex flex-wrap gap-2">
-                {BG_PRESETS.map((c) => (
-                  <button
-                    key={c.value}
-                    type="button"
-                    onClick={() => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, bgColor: c.value } }))}
-                    title={c.label}
-                    className={`w-7 h-7 rounded-lg border-2 transition-all cursor-pointer ${form.templateData.bgColor === c.value ? "border-[#e74b2d] scale-110 shadow-sm" : "border-transparent hover:scale-105"}`}
-                    style={{ backgroundColor: c.value }}
-                  />
-                ))}
-                <div className="relative">
-                  <input
-                    type="color"
-                    value={form.templateData.bgColor}
-                    onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, bgColor: e.target.value } }))}
-                    className="w-7 h-7 rounded-lg cursor-pointer border-2 border-zinc-200 bg-transparent"
-                    title="Custom color"
-                  />
+          <Card>
+            <CardHeader icon="sparkle" title="Canvas Design" subtitle="Background and logo placeholder" />
+            <div className="p-5 space-y-4">
+              {/* Background Color */}
+              <div>
+                <label className={labelClass}>Background Color</label>
+                <div className="flex flex-wrap gap-2">
+                  {BG_PRESETS.map((c) => (
+                    <button
+                      key={c.value}
+                      type="button"
+                      onClick={() => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, bgColor: c.value } }))}
+                      title={c.label}
+                      className={`w-8 h-8 rounded-lg border-2 ring-1 ring-zinc-200 transition-all cursor-pointer ${form.templateData.bgColor === c.value ? "border-[#329AD4] scale-110 shadow-sm" : "border-white hover:scale-105"}`}
+                      style={{ backgroundColor: c.value }}
+                    />
+                  ))}
+                  <div className="relative">
+                    <input
+                      type="color"
+                      value={form.templateData.bgColor}
+                      onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, bgColor: e.target.value } }))}
+                      className="w-8 h-8 rounded-lg cursor-pointer border border-dashed border-[#b8e0f6] bg-white p-0.5"
+                      title="Custom color"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Logo Text & Position */}
-            <div className="grid grid-cols-2 gap-3">
+              {/* Logo Text & Position */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelClass}>Logo Text</label>
+                  <input
+                    type="text"
+                    maxLength={3}
+                    value={form.templateData.logoText}
+                    onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, logoText: e.target.value } }))}
+                    className={cx(inputClass, "font-semibold")}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Logo Position</label>
+                  <select
+                    value={form.templateData.logoPosition}
+                    onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, logoPosition: e.target.value as "top-right" | "top-left" | "center" | "bottom-right" } }))}
+                    className={cx(inputClass, "cursor-pointer")}
+                  >
+                    <option value="top-right">Top Right</option>
+                    <option value="top-left">Top Left</option>
+                    <option value="center">Center</option>
+                    <option value="bottom-right">Bottom Right</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Logo Size / Width Slider */}
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Logo Text</label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-semibold text-zinc-700 block">Logo Size / Width</label>
+                  <span className="text-xs font-mono font-semibold text-[#2884b8] bg-[#EAF5FB] px-2 py-0.5 rounded-md">{form.templateData.logoSize || 28}px</span>
+                </div>
                 <input
-                  type="text"
-                  maxLength={3}
-                  value={form.templateData.logoText}
-                  onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, logoText: e.target.value } }))}
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-bold text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
+                  type="range"
+                  min={16}
+                  max={120}
+                  value={form.templateData.logoSize || 28}
+                  onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, logoSize: Number(e.target.value) } }))}
+                  className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#329AD4]"
                 />
               </div>
-              <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Logo Position</label>
-                <select
-                  value={form.templateData.logoPosition}
-                  onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, logoPosition: e.target.value as "top-right" | "top-left" | "center" | "bottom-right" } }))}
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base font-semibold text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
-                >
-                  <option value="top-right">Top Right</option>
-                  <option value="top-left">Top Left</option>
-                  <option value="center">Center</option>
-                  <option value="bottom-right">Bottom Right</option>
-                </select>
-              </div>
             </div>
-
-            {/* Logo Size / Width Slider */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-base font-bold text-zinc-700 block">Logo Size / Width</label>
-                <span className="text-base font-mono font-bold text-[#e74b2d]">{form.templateData.logoSize || 28}px</span>
-              </div>
-              <input
-                type="range"
-                min={16}
-                max={120}
-                value={form.templateData.logoSize || 28}
-                onChange={(e) => setForm((prev) => ({ ...prev, templateData: { ...prev.templateData, logoSize: Number(e.target.value) } }))}
-                className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#e74b2d]"
-              />
-            </div>
-          </div>
+          </Card>
 
           {/* Active Text Layer Editor */}
           {activeLayer && (
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-5 space-y-3 shadow-xs">
-              <div className="flex items-center justify-between">
-                <h2 className="text-base font-bold text-zinc-500 uppercase tracking-wider">Edit Text Layer</h2>
-                <button
-                  type="button"
-                  onClick={() => deleteLayer(activeLayer.id)}
-                  className="text-base text-red-500 font-bold hover:underline cursor-pointer"
-                >
-                  Delete
-                </button>
-              </div>
-
-              <input
-                type="text"
-                value={activeLayer.text}
-                onChange={(e) => updateLayer(activeLayer.id, { text: e.target.value })}
-                className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                placeholder="Layer text"
+            <Card>
+              <CardHeader
+                icon="edit"
+                title="Edit Text Layer"
+                subtitle="Selected layer on the canvas"
+                action={
+                  <button
+                    type="button"
+                    onClick={() => deleteLayer(activeLayer.id)}
+                    className={buttonClass("danger", "sm")}
+                  >
+                    <Icon name="trash" className="w-3.5 h-3.5" />
+                    Delete
+                  </button>
+                }
               />
+              <div className="p-5 space-y-3">
+                <input
+                  type="text"
+                  value={activeLayer.text}
+                  onChange={(e) => updateLayer(activeLayer.id, { text: e.target.value })}
+                  className={inputClass}
+                  placeholder="Layer text"
+                />
 
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-base text-zinc-500 font-bold block mb-1">Font Size</label>
-                  <input
-                    type="number"
-                    min={8}
-                    max={60}
-                    value={activeLayer.fontSize}
-                    onChange={(e) => updateLayer(activeLayer.id, { fontSize: Number(e.target.value) })}
-                    className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-lg px-2 py-1.5 text-base text-zinc-900 focus:outline-none"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelClass}>Font Size</label>
+                    <input
+                      type="number"
+                      min={8}
+                      max={60}
+                      value={activeLayer.fontSize}
+                      onChange={(e) => updateLayer(activeLayer.id, { fontSize: Number(e.target.value) })}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Color</label>
+                    <input
+                      type="color"
+                      value={activeLayer.color}
+                      onChange={(e) => updateLayer(activeLayer.id, { color: e.target.value })}
+                      className="w-full h-[42px] rounded-xl cursor-pointer bg-white border border-zinc-200 p-1 shadow-xs"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-base text-zinc-500 font-bold block mb-1">Color</label>
-                  <input
-                    type="color"
-                    value={activeLayer.color}
-                    onChange={(e) => updateLayer(activeLayer.id, { color: e.target.value })}
-                    className="w-full h-[30px] rounded-lg cursor-pointer bg-[#fbfaf7] border border-zinc-200"
-                  />
-                </div>
+
+                <TextStyleControls
+                  layer={activeLayer}
+                  accent="#329AD4"
+                  onChange={(patch) => updateLayer(activeLayer.id, patch)}
+                />
               </div>
-
-              <TextStyleControls
-                layer={activeLayer}
-                accent="#e74b2d"
-                onChange={(patch) => updateLayer(activeLayer.id, patch)}
-              />
-            </div>
+            </Card>
           )}
 
           <button
             type="button"
             onClick={addLayer}
-            className="w-full py-2.5 rounded-2xl border border-dashed border-zinc-300 text-base font-bold text-zinc-600 hover:bg-white hover:border-[#e74b2d] transition-all cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-2xl border-2 border-dashed border-[#b8e0f6] bg-[#f0f8fd]/60 text-sm font-semibold text-[#2884b8] hover:bg-[#EAF5FB] hover:border-[#329AD4] transition-all cursor-pointer flex items-center justify-center gap-2"
           >
-            <svg className="w-3.5 h-3.5 text-[#e74b2d]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
+            <Icon name="plus" className="w-4 h-4" strokeWidth={2.4} />
             Add Text Layer
           </button>
         </div>
 
         {/* ── Right: Live Canvas & 3D Preview (8 cols) ──────────────── */}
         <div className="xl:col-span-8 space-y-4">
-          <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 sticky top-6 shadow-xs">
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-2">
-                  <span>Category Template Canvas & 3D Preview</span>
-                  <span className="font-mono text-xs text-[#e74b2d] bg-sky-50 px-2 py-0.5 rounded-md font-bold">
+          <Card className="sticky top-6">
+            <CardHeader
+              icon="eye"
+              title={
+                <span className="flex flex-wrap items-center gap-2">
+                  <span>Template Canvas & 3D Preview</span>
+                  <span className="font-mono text-[11px] text-[#2884b8] bg-[#EAF5FB] px-2 py-0.5 rounded-md font-semibold">
                     {canvasWidthNum} × {canvasHeightNum} {form.canvas_config.unit}
                   </span>
-                </h2>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  Template renders according to category fold lines, safe area, and realistic 3D perspective.
-                </p>
-              </div>
-
-              {/* View Mode Pills */}
-              <div className="inline-flex p-1 bg-zinc-100 rounded-xl">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("3d")}
-                  className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                    viewMode === "3d" ? "bg-zinc-900 text-white shadow-xs" : "text-zinc-600 hover:text-zinc-900"
-                  }`}
-                >
-                  ✨ 3D Realistic View
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("2d")}
-                  className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                    viewMode === "2d" ? "bg-[#e74b2d] text-white shadow-xs" : "text-zinc-600 hover:text-zinc-900"
-                  }`}
-                >
-                  ✏️ 2D Drag & Edit
-                </button>
-              </div>
-            </div>
+                </span>
+              }
+              subtitle="Template renders according to category fold lines, safe area, and realistic 3D perspective."
+              action={
+                /* View Mode Pills */
+                <div className="inline-flex shrink-0 p-1 bg-zinc-100/80 rounded-xl">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("3d")}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      viewMode === "3d" ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
+                    }`}
+                  >
+                    3D Realistic View
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("2d")}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      viewMode === "2d" ? "bg-white text-[#2884b8] shadow-xs" : "text-zinc-500 hover:text-zinc-800"
+                    }`}
+                  >
+                    2D Drag & Edit
+                  </button>
+                </div>
+              }
+            />
+            <div className="p-5 sm:p-6 space-y-4">
 
             {/* Sides / Panels Switcher Tabs */}
             {sidesList.length > 1 && (
-              <div className="flex items-center gap-2 p-1.5 bg-[#fbfaf7] border border-zinc-200/80 rounded-2xl overflow-x-auto">
-                <span className="text-xs font-bold text-zinc-400 px-2 uppercase tracking-wider">Panels:</span>
+              <div className="flex items-center gap-1.5 p-1.5 bg-zinc-50 border border-zinc-200/70 rounded-xl overflow-x-auto">
+                <span className="text-[11px] font-semibold text-zinc-400 px-2 uppercase tracking-wider">Panels</span>
                 {sidesList.map((sideName, idx) => (
                   <button
                     key={`panel-tab-${idx}`}
@@ -1213,10 +1218,10 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                       const s = idx === 0 ? "front" : "back";
                       setCardSide(s);
                     }}
-                    className={`px-3 py-1 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
                       activeSideIndex === idx
-                        ? "bg-[#e74b2d] text-white shadow-xs"
-                        : "bg-white text-zinc-600 border border-zinc-200 hover:border-zinc-300"
+                        ? "bg-[#329AD4] text-white shadow-sm shadow-[#329AD4]/25"
+                        : "bg-white text-zinc-600 border border-zinc-200 hover:border-[#b8e0f6] hover:text-[#2884b8]"
                     }`}
                   >
                     {sideName}
@@ -1313,12 +1318,12 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                             className="absolute top-0 bottom-0 pointer-events-none z-15 flex flex-col items-center"
                             style={{
                               left: `${pos}%`,
-                              borderLeft: `2px ${lineStyle} ${line.color || "#f88768"}`,
+                              borderLeft: `2px ${lineStyle} ${line.color || "#55b2e7"}`,
                             }}
                           >
                             <span
                               className="text-[9px] font-bold text-white px-1.5 py-0.5 rounded shadow z-20 mt-1.5 whitespace-nowrap opacity-90"
-                              style={{ backgroundColor: line.color || "#f88768" }}
+                              style={{ backgroundColor: line.color || "#55b2e7" }}
                             >
                               {line.name} ({pos.toFixed(1)}%)
                             </span>
@@ -1331,7 +1336,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                             className="absolute left-0 right-0 pointer-events-none z-15 flex items-center"
                             style={{
                               top: `${pos}%`,
-                              borderTop: `2px ${lineStyle} ${line.color || "#f88768"}`,
+                              borderTop: `2px ${lineStyle} ${line.color || "#55b2e7"}`,
                             }}
                           >
                             <span
@@ -1351,8 +1356,8 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                         key={idx}
                         className={`absolute pointer-events-none z-30 transition-all ${
                           line.type === "v"
-                            ? "top-0 bottom-0 w-[1.5px] bg-[#f88768] shadow-[0_0_8px_#f88768]"
-                            : "left-0 right-0 h-[1.5px] bg-[#f88768] shadow-[0_0_8px_#f88768]"
+                            ? "top-0 bottom-0 w-[1.5px] bg-[#55b2e7] shadow-[0_0_8px_#55b2e7]"
+                            : "left-0 right-0 h-[1.5px] bg-[#55b2e7] shadow-[0_0_8px_#55b2e7]"
                         }`}
                         style={
                           line.type === "v"
@@ -1375,7 +1380,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                           width: form.templateData.logoSize,
                           height: form.templateData.logoSize,
                           fontSize: form.templateData.logoSize * 0.4,
-                          backgroundColor: "#e74b2d",
+                          backgroundColor: "#329AD4",
                         }}
                       >
                         {form.templateData.logoText}
@@ -1388,7 +1393,7 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
                         key={layer.id}
                         onPointerDown={(e) => handlePointerDown(layer.id, e)}
                         className={`absolute cursor-move z-20 touch-none px-1 rounded ${
-                          activeLayerId === layer.id ? "outline outline-2 outline-[#e74b2d] outline-offset-1" : ""
+                          activeLayerId === layer.id ? "outline outline-2 outline-[#329AD4] outline-offset-1" : ""
                         }`}
                         style={{
                           ...textLayerDomStyle(layer, ADMIN_LAYOUT),
@@ -1405,26 +1410,58 @@ export default function TemplateForm({ initialData, mode, templateId }: Props) {
             </div>
 
             {/* Layer List */}
-            <div className="space-y-1.5">
-              <p className="text-base text-zinc-500 font-bold">Text Layers ({form.templateData.textLayers.length})</p>
-              {form.templateData.textLayers.map((layer) => (
-                <button
-                  key={layer.id}
-                  type="button"
-                  onClick={() => setActiveLayerId(layer.id)}
-                  className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-left transition-all cursor-pointer ${
-                    activeLayerId === layer.id ? "border-[#e74b2d] bg-sky-50" : "border-zinc-200 hover:bg-zinc-50"
-                  }`}
-                >
-                  <span
-                    className="w-3 h-3 rounded-sm shrink-0"
-                    style={{ backgroundColor: layer.color }}
-                  />
-                  <span className="text-base text-zinc-800 font-bold truncate flex-1">{layer.text}</span>
-                  <span className="text-base text-zinc-400 font-mono shrink-0">{layer.fontSize}px</span>
-                </button>
-              ))}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Text Layers</p>
+                <Badge tone="brand">{form.templateData.textLayers.length}</Badge>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {form.templateData.textLayers.map((layer) => (
+                  <button
+                    key={layer.id}
+                    type="button"
+                    onClick={() => setActiveLayerId(layer.id)}
+                    className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      activeLayerId === layer.id ? "border-[#329AD4] bg-[#f0f8fd] ring-2 ring-[#329AD4]/10" : "border-zinc-200 hover:border-[#b8e0f6] hover:bg-zinc-50"
+                    }`}
+                  >
+                    <span
+                      className="w-3.5 h-3.5 rounded-md shrink-0 ring-1 ring-zinc-200"
+                      style={{ backgroundColor: layer.color }}
+                    />
+                    <span className="text-sm text-zinc-800 font-medium truncate flex-1">{layer.text}</span>
+                    <span className="text-xs text-zinc-400 font-mono shrink-0">{layer.fontSize}px</span>
+                  </button>
+                ))}
+              </div>
             </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Sticky action bar */}
+      <div className="sticky bottom-0 z-30 -mx-1 rounded-2xl border border-zinc-200/70 bg-white/85 backdrop-blur-md px-4 sm:px-5 py-3 shadow-[0_-6px_20px_-12px_rgba(27,91,128,0.25)]">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-zinc-500">
+            {mode === "create" ? "Review the canvas preview, then create the template." : "Changes are applied once you save."}
+          </p>
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => router.push("/admin/templates")}
+              className={buttonClass("secondary")}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className={buttonClass("primary")}
+            >
+              {saving ? <span className="inline-block h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" /> : <Icon name="check" className="w-4 h-4" strokeWidth={2.2} />}
+              {saving ? "Saving..." : mode === "create" ? "Create Template" : "Save Changes"}
+            </button>
           </div>
         </div>
       </div>

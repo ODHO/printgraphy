@@ -4,6 +4,28 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import VendorSelect from "../_components/VendorSelect";
 import { useLiveRefresh } from "@/components/useMessageStream";
+import {
+  Avatar,
+  Badge,
+  Button,
+  ButtonLink,
+  Card,
+  EmptyState,
+  Icon,
+  IconButton,
+  PageHeader,
+  Pagination as PaginationBar,
+  SearchInput,
+  SkeletonRows,
+  StatTile,
+  Tabs,
+  Toolbar,
+  cx,
+  inputClass,
+  labelClass,
+  statusTone,
+  table,
+} from "@/components/admin/ui";
 
 interface Order {
   _id: string;
@@ -36,6 +58,18 @@ const FULFILLMENT_STATUSES = [
   "cancelled",
 ];
 
+const STATUS_TAB_LABELS: Record<string, string> = {
+  "": "All",
+  pending: "Pending",
+  assigned: "Assigned",
+  in_production: "In production",
+  shipped: "Shipped",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+};
+
+const selectClass = cx(inputClass, "cursor-pointer capitalize");
+
 function slaText(order: Order) {
   const age = Date.now() - new Date(order.createdAt).getTime();
   if (order.fulfillmentStatus === "pending" && age > 24 * 60 * 60 * 1000) return "Accept overdue";
@@ -48,9 +82,9 @@ function SlaBadge({ order }: { order: Order }) {
   const label = slaText(order);
   const risk = label.includes("overdue");
   return (
-    <span className={`block w-max px-2.5 py-1 rounded-full text-base font-bold ${risk ? "bg-red-50 text-red-700 border border-red-200" : "bg-zinc-100 text-zinc-600 border border-zinc-200"}`}>
+    <Badge tone={risk ? "red" : label === "Closed" ? "gray" : "green"} dot>
       {label}
-    </span>
+    </Badge>
   );
 }
 
@@ -144,226 +178,270 @@ export default function AdminOrdersPage() {
     setUpdating(false);
   };
 
+  // Derived from the page of orders already loaded — no extra requests.
+  const countWhere = (statuses: string[]) => orders.filter((order) => statuses.includes(order.fulfillmentStatus)).length;
+  const openCount = countWhere(["pending", "assigned", "in_production"]);
+  const shippedCount = countWhere(["shipped", "delivered"]);
+  const riskCount = orders.filter((order) => slaText(order).includes("overdue")).length;
+  const statsLoading = loading && !pagination;
+  const statusTabs = ["", ...FULFILLMENT_STATUSES].map((value) => ({
+    value,
+    label: STATUS_TAB_LABELS[value] ?? value.replace("_", " "),
+    // The API only returns the total for the active filter, so the count sits on the active tab.
+    count: value === statusFilter && pagination && !loading ? pagination.total : undefined,
+  }));
+
   return (
     <div className="space-y-6 max-w-7xl">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Order Queue & Oversight</h1>
-          <p className="text-zinc-500 text-base mt-0.5">
-            {pagination ? `${pagination.total} total orders` : "Loading orders..."}
-          </p>
-        </div>
+      <PageHeader
+        icon="orders"
+        title="Order Queue & Oversight"
+        description={pagination ? `${pagination.total} total orders` : "Loading orders..."}
+        actions={
+          <>
+            <ButtonLink href="/admin/vendors" variant="secondary" icon="vendors">
+              Vendors
+            </ButtonLink>
+            <Button icon="refresh" onClick={() => fetchOrders()} disabled={loading}>
+              Refresh
+            </Button>
+          </>
+        }
+      />
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <StatTile
+          label="Total orders"
+          icon="orders"
+          tone="brand"
+          loading={statsLoading}
+          value={<span className="tabular-nums">{pagination?.total ?? 0}</span>}
+          hint="Matching the current filters"
+        />
+        <StatTile
+          label="In progress"
+          icon="layers"
+          tone="violet"
+          loading={statsLoading}
+          value={<span className="tabular-nums">{openCount}</span>}
+          hint="Pending, assigned or in production on this page"
+        />
+        <StatTile
+          label="Shipped & delivered"
+          icon="truck"
+          tone="green"
+          loading={statsLoading}
+          value={<span className="tabular-nums">{shippedCount}</span>}
+          hint="On this page"
+        />
+        <StatTile
+          label="SLA at risk"
+          icon="clock"
+          tone={riskCount > 0 ? "red" : "amber"}
+          loading={statsLoading}
+          value={<span className="tabular-nums">{riskCount}</span>}
+          hint="Overdue on this page"
+        />
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1 max-w-md">
-          <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search order number..."
+      {/* Orders */}
+      <Card className="overflow-hidden">
+        <Toolbar>
+          <SearchInput
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full bg-white border border-zinc-200/80 rounded-xl pl-10 pr-4 py-2.5 text-base text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#e74b2d] shadow-xs"
+            onChange={(value) => { setSearch(value); setPage(1); }}
+            placeholder="Search order number..."
           />
+          <Tabs
+            value={statusFilter}
+            onChange={(value) => { setStatusFilter(value); setPage(1); }}
+            items={statusTabs}
+          />
+        </Toolbar>
+
+        {/* Secondary filters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 px-5 sm:px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
+          <label className="block">
+            <span className={labelClass}>Payment</span>
+            <select
+              value={paymentFilter}
+              onChange={(e) => { setPaymentFilter(e.target.value); setPage(1); }}
+              className={selectClass}
+            >
+              <option value="">All Payment Statuses</option>
+              <option value="paid">Paid</option>
+              <option value="pending">Pending</option>
+              <option value="failed">Failed</option>
+            </select>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Market</span>
+            <input
+              value={market}
+              onChange={(e) => { setMarket(e.target.value); setPage(1); }}
+              placeholder="Market / state"
+              className={inputClass}
+            />
+          </label>
+          <label className="block">
+            <span className={labelClass}>Category</span>
+            <input
+              value={category}
+              onChange={(e) => { setCategory(e.target.value); setPage(1); }}
+              placeholder="Category / product"
+              className={inputClass}
+            />
+          </label>
+          <label className="block">
+            <span className={labelClass}>SLA</span>
+            <select
+              value={sla}
+              onChange={(e) => { setSla(e.target.value); setPage(1); }}
+              className={selectClass}
+            >
+              <option value="">All SLA</option>
+              <option value="risk">SLA risk</option>
+            </select>
+          </label>
         </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
-        >
-          <option value="">All Fulfillment Statuses</option>
-          {FULFILLMENT_STATUSES.map((s) => (
-            <option key={s} value={s}>{s.replace("_", " ")}</option>
-          ))}
-        </select>
-
-        <input
-          value={market}
-          onChange={(e) => { setMarket(e.target.value); setPage(1); }}
-          placeholder="Market / state"
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 focus:outline-none focus:border-[#e74b2d] shadow-xs"
-        />
-        <input
-          value={category}
-          onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-          placeholder="Category / product"
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 focus:outline-none focus:border-[#e74b2d] shadow-xs"
-        />
-        <select
-          value={sla}
-          onChange={(e) => { setSla(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
-        >
-          <option value="">All SLA</option>
-          <option value="risk">SLA risk</option>
-        </select>
-
-        <select
-          value={paymentFilter}
-          onChange={(e) => { setPaymentFilter(e.target.value); setPage(1); }}
-          className="bg-white border border-zinc-200/80 rounded-xl px-4 py-2.5 text-base text-zinc-700 font-semibold focus:outline-none focus:border-[#e74b2d] cursor-pointer shadow-xs"
-        >
-          <option value="">All Payment Statuses</option>
-          <option value="paid">Paid</option>
-          <option value="pending">Pending</option>
-          <option value="failed">Failed</option>
-        </select>
-      </div>
-
-      {/* Orders Table */}
-      <div className="bg-white rounded-3xl border border-zinc-200/80 shadow-xs overflow-hidden">
         {loading ? (
-          <div className="py-16 text-center">
-            <div className="w-8 h-8 border-2 border-sky-200 border-t-[#e74b2d] rounded-full animate-spin mx-auto" />
-          </div>
+          <SkeletonRows rows={6} />
         ) : orders.length === 0 ? (
-          <div className="py-16 text-center text-zinc-400 text-base">
-            No orders found matching your filters.
-          </div>
+          <EmptyState icon="orders" title="No orders found" description="No orders found matching your filters." />
         ) : (
           <>
-            <table className="w-full text-base overflow-auto block">
-              <thead>
-                <tr className="border-b border-zinc-100 bg-[#fff7f3]/50 text-zinc-500">
-                  <th className="text-left px-5 py-3.5 font-bold">Order Ref</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Customer</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Vendor</th>
-                  <th className="text-left px-5 py-3.5 font-bold">SLA</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Items</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Payment</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Fulfillment</th>
-                  <th className="text-left px-5 py-3.5 font-bold">Total</th>
-                  <th className="text-right px-5 py-3.5 font-bold">Manage</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {orders.map((order) => (
-                  <tr key={order._id} className="hover:bg-sky-50/40 transition-colors">
-                    <td className="px-5 py-3.5 font-mono font-bold text-zinc-900">
-                      <Link href={`/admin/orders/${order._id}`} className="text-[#e74b2d] hover:underline">
-                        {order.orderNumber}
-                      </Link>
-                      <p className="text-base font-sans font-normal text-zinc-400">
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </p>
-                    </td>
-
-                    <td className="px-5 py-3.5">
-                      <p className="font-bold text-zinc-900">
-                        {order.userId ? `${order.userId.firstName} ${order.userId.lastName}` : order.shippingAddress.name}
-                      </p>
-                      <p className="text-zinc-400 text-base">{order.shippingAddress.city}, {order.shippingAddress.state}</p>
-                    </td>
-
-                    <td className="px-5 py-3.5 font-semibold text-zinc-800">
-                      {typeof order.vendorId === "object" && order.vendorId ? order.vendorId.name : "Unassigned"}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <SlaBadge order={order} />
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span className="text-zinc-700 font-semibold">
-                        {order.items.length} item(s)
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-3.5">
-                      <span className={`px-2.5 py-1 rounded-full text-base font-bold uppercase ${
-                        order.paymentStatus === "paid"
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                          : "bg-red-50 text-red-700 border border-red-200"
-                      }`}>
-                        {order.paymentStatus}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-3.5">
-                      <span className={`px-2.5 py-1 rounded-full text-base font-bold uppercase ${
-                        order.fulfillmentStatus === "delivered" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                        order.fulfillmentStatus === "shipped" ? "bg-sky-50 text-sky-700 border border-sky-200" :
-                        order.fulfillmentStatus === "in_production" ? "bg-amber-50 text-amber-700 border border-amber-200" :
-                        "bg-zinc-100 text-zinc-600 border border-zinc-200"
-                      }`}>
-                        {order.fulfillmentStatus.replace("_", " ")}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-3.5 font-bold text-zinc-900 font-mono">
-                      ${order.totalAmount.toFixed(2)}
-                    </td>
-
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="inline-flex items-center gap-2">
-                        <Link
-                          href={`/admin/orders/${order._id}`}
-                          className="px-3 py-1.5 border border-zinc-200 text-zinc-700 font-bold text-base rounded-xl hover:bg-white"
-                        >
-                          View
-                        </Link>
-                        <button
-                          onClick={() => openEditModal(order)}
-                          className="px-3 py-1.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-bold text-base rounded-xl shadow-xs transition-all cursor-pointer"
-                        >
-                          Edit Status
-                        </button>
-                      </div>
-                    </td>
+            <div className={table.wrap}>
+              <table className={table.table}>
+                <thead className={table.thead}>
+                  <tr>
+                    <th className={table.th}>Order Ref</th>
+                    <th className={table.th}>Customer</th>
+                    <th className={table.th}>Vendor</th>
+                    <th className={table.th}>SLA</th>
+                    <th className={table.th}>Items</th>
+                    <th className={table.th}>Payment</th>
+                    <th className={table.th}>Fulfillment</th>
+                    <th className={cx(table.th, "text-right")}>Total</th>
+                    <th className={cx(table.th, "text-right")}>Manage</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className={table.tbody}>
+                  {orders.map((order) => {
+                    const customerName = order.userId ? `${order.userId.firstName} ${order.userId.lastName}` : order.shippingAddress.name;
+                    const vendorName = typeof order.vendorId === "object" && order.vendorId ? order.vendorId.name : "";
+                    return (
+                      <tr key={order._id} className={table.tr}>
+                        <td className={cx(table.td, "whitespace-nowrap")}>
+                          <Link href={`/admin/orders/${order._id}`} className="font-mono text-sm font-semibold text-[#2884b8] hover:text-[#1b5b80] hover:underline">
+                            {order.orderNumber}
+                          </Link>
+                          <p className="mt-0.5 text-xs text-zinc-400">
+                            {new Date(order.createdAt).toLocaleDateString()}
+                          </p>
+                        </td>
 
-            {pagination && pagination.pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-3.5 border-t border-zinc-100 bg-[#fff7f3]/30">
-                <p className="text-base text-zinc-500 font-medium">
-                  Showing {(page - 1) * pagination.limit + 1}–{Math.min(page * pagination.limit, pagination.total)} of {pagination.total}
-                </p>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer"
-                  >
-                    Previous
-                  </button>
-                  <span className="text-base font-mono font-bold text-zinc-800 px-2">{page} / {pagination.pages}</span>
-                  <button
-                    onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
-                    disabled={page === pagination.pages}
-                    className="px-3 py-1.5 border border-zinc-200 rounded-xl text-base font-bold text-zinc-600 hover:bg-white disabled:opacity-40 cursor-pointer"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+                        <td className={table.td}>
+                          <div className="flex items-center gap-3 min-w-[180px]">
+                            <Avatar name={customerName || "?"} size="sm" />
+                            <div className="min-w-0">
+                              <p className="font-semibold text-zinc-900 truncate">{customerName}</p>
+                              <p className="text-xs text-zinc-400 truncate">{order.shippingAddress.city}, {order.shippingAddress.state}</p>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className={cx(table.td, "whitespace-nowrap")}>
+                          {vendorName ? (
+                            <span className="inline-flex items-center gap-1.5 font-medium text-zinc-800">
+                              <Icon name="vendors" className="w-3.5 h-3.5 text-[#329AD4]" />
+                              {vendorName}
+                            </span>
+                          ) : (
+                            <span className="text-zinc-400 italic">Unassigned</span>
+                          )}
+                        </td>
+                        <td className={table.td}>
+                          <SlaBadge order={order} />
+                        </td>
+                        <td className={cx(table.td, "whitespace-nowrap tabular-nums text-zinc-600")}>
+                          {order.items.length} item(s)
+                        </td>
+
+                        <td className={table.td}>
+                          <Badge tone={statusTone(order.paymentStatus)} dot>
+                            {order.paymentStatus}
+                          </Badge>
+                        </td>
+
+                        <td className={table.td}>
+                          <Badge tone={statusTone(order.fulfillmentStatus)}>
+                            {order.fulfillmentStatus.replace("_", " ")}
+                          </Badge>
+                        </td>
+
+                        <td className={cx(table.td, "text-right font-semibold text-zinc-900 tabular-nums whitespace-nowrap")}>
+                          ${order.totalAmount.toFixed(2)}
+                        </td>
+
+                        <td className={cx(table.td, "text-right")}>
+                          <div className="inline-flex items-center gap-1">
+                            <Link
+                              href={`/admin/orders/${order._id}`}
+                              aria-label="View order"
+                              title="View order"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-[#EAF5FB] hover:text-[#2884b8]"
+                            >
+                              <Icon name="eye" className="w-4 h-4" />
+                            </Link>
+                            <IconButton icon="edit" label="Edit Status" onClick={() => openEditModal(order)} />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {pagination && (
+              <PaginationBar
+                page={page}
+                pages={pagination.pages}
+                total={pagination.total}
+                limit={pagination.limit}
+                onPage={(next) => setPage(Math.min(pagination.pages, Math.max(1, next)))}
+              />
             )}
           </>
         )}
-      </div>
+      </Card>
 
       {/* Edit Order Modal */}
       {editingOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white border border-zinc-200/80 rounded-3xl w-full max-w-md p-6 space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-              <h2 className="text-base font-bold text-zinc-900">
-                Update Order <span className="font-mono text-[#e74b2d]">{editingOrder.orderNumber}</span>
-              </h2>
-              <button onClick={() => setEditingOrder(null)} className="text-zinc-400 hover:text-zinc-800 cursor-pointer">✕</button>
+          <div className="bg-white border border-zinc-200/80 rounded-2xl w-full max-w-md shadow-2xl max-h-[calc(100vh-2rem)] overflow-y-auto">
+            <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-zinc-100">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EAF5FB] text-[#2884b8]">
+                  <Icon name="edit" className="w-4 h-4" />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="text-sm font-semibold text-zinc-900">Update Order</h2>
+                  <p className="font-mono text-xs text-[#2884b8] truncate">{editingOrder.orderNumber}</p>
+                </div>
+              </div>
+              <IconButton icon="close" label="Close" onClick={() => setEditingOrder(null)} />
             </div>
 
-            <form onSubmit={handleSaveOrder} className="space-y-4">
+            <form onSubmit={handleSaveOrder} className="space-y-4 px-5 sm:px-6 py-5">
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Fulfillment Status</label>
+                <label className={labelClass}>Fulfillment Status</label>
                 <select
                   value={editForm.fulfillmentStatus}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, fulfillmentStatus: e.target.value }))}
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d] cursor-pointer"
+                  className={selectClass}
                 >
                   {FULFILLMENT_STATUSES.map((s) => (
                     <option key={s} value={s}>{s.replace("_", " ")}</option>
@@ -372,7 +450,7 @@ export default function AdminOrdersPage() {
               </div>
 
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Assigned vendor</label>
+                <label className={labelClass}>Assigned vendor</label>
                 <VendorSelect
                   vendors={vendors}
                   value={editForm.vendorId}
@@ -381,55 +459,52 @@ export default function AdminOrdersPage() {
               </div>
 
               <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Vendor payment</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={editForm.vendorPayment}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, vendorPayment: e.target.value }))}
-                  placeholder="Amount the vendor receives"
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                />
+                <label className={labelClass}>Vendor payment</label>
+                <div className="relative">
+                  <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-zinc-400">$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={editForm.vendorPayment}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, vendorPayment: e.target.value }))}
+                    placeholder="Amount the vendor receives"
+                    className={cx(inputClass, "pl-7 tabular-nums")}
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Carrier</label>
-                <input
-                  type="text"
-                  value={editForm.trackingCarrier}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, trackingCarrier: e.target.value }))}
-                  placeholder="e.g. UPS, FedEx, DHL"
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                />
-              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>Carrier</label>
+                  <input
+                    type="text"
+                    value={editForm.trackingCarrier}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, trackingCarrier: e.target.value }))}
+                    placeholder="e.g. UPS, FedEx, DHL"
+                    className={inputClass}
+                  />
+                </div>
 
-              <div>
-                <label className="text-base font-bold text-zinc-700 block mb-1">Tracking Number</label>
-                <input
-                  type="text"
-                  value={editForm.trackingNumber}
-                  onChange={(e) => setEditForm((prev) => ({ ...prev, trackingNumber: e.target.value }))}
-                  placeholder="e.g. 1Z9999999999999999"
-                  className="w-full bg-[#fbfaf7] border border-zinc-200 rounded-xl px-3.5 py-2 text-base font-mono text-zinc-900 focus:outline-none focus:border-[#e74b2d]"
-                />
+                <div>
+                  <label className={labelClass}>Tracking Number</label>
+                  <input
+                    type="text"
+                    value={editForm.trackingNumber}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, trackingNumber: e.target.value }))}
+                    placeholder="e.g. 1Z9999999999999999"
+                    className={cx(inputClass, "font-mono")}
+                  />
+                </div>
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingOrder(null)}
-                  className="flex-1 py-2.5 text-base text-zinc-600 font-bold border border-zinc-200 rounded-xl hover:bg-zinc-50 cursor-pointer"
-                >
+                <Button variant="secondary" className="flex-1" onClick={() => setEditingOrder(null)}>
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={updating}
-                  className="flex-1 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-base font-bold rounded-xl transition-all disabled:opacity-60 cursor-pointer"
-                >
+                </Button>
+                <Button type="submit" disabled={updating} className="flex-1" icon={updating ? undefined : "check"}>
                   {updating ? "Saving..." : "Save Changes"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

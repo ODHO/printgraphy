@@ -9,7 +9,7 @@ function SuccessContent() {
   const orderNumber = searchParams.get("order");
 
   return (
-    <div className="min-h-screen bg-[#fbfaf7] font-sans flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#ffffff] font-sans flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl border border-zinc-100 p-8 max-w-md w-full text-center space-y-6 shadow-xl shadow-zinc-900/5">
         <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto text-2xl">
           ✓
@@ -51,7 +51,7 @@ function SuccessContent() {
 export default function CheckoutSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#fbfaf7] flex items-center justify-center">
+      <div className="min-h-screen bg-[#ffffff] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
       </div>
     }>

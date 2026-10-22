@@ -46,5 +46,9 @@ export default async function VendorDashboardLayout({
     }
   }
 
-  return <>{children}</>;
+  return (
+    <div className="admin-shell min-h-screen bg-gradient-to-b from-[#f6fafd] to-white font-sans text-zinc-900">
+      {children}
+    </div>
+  );
 }

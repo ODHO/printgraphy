@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Printgraphi">
   <defs>
-    <linearGradient id="coral" x1="30" y1="20" x2="222" y2="236" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ff6a55"/>
-      <stop offset="1" stop-color="#ef3e2f"/>
+    <linearGradient id="brand" x1="30" y1="20" x2="222" y2="236" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#55b2e7"/>
+      <stop offset="1" stop-color="#2884b8"/>
     </linearGradient>
   </defs>
-  <rect width="256" height="256" rx="58" fill="url(#coral)"/>
-  <path fill="#fffaf2" d="M62 43h76c39 0 65 27 65 65s-26 65-65 65h-31v40H62V43Zm45 45v40h29c13 0 22-8 22-20s-9-20-22-20h-29Z"/>
+  <rect width="256" height="256" rx="58" fill="url(#brand)"/>
+  <path fill="#ffffff" d="M62 43h76c39 0 65 27 65 65s-26 65-65 65h-31v40H62V43Zm45 45v40h29c13 0 22-8 22-20s-9-20-22-20h-29Z"/>
   <path fill="#1d1c1a" d="m62 43 79 57v28l-79-56V43Z" opacity=".2"/>
 </svg>

@@ -309,7 +309,7 @@ export default function CustomerPaymentMethodsPage() {
               <button
                 type="button"
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs sm:text-sm font-semibold rounded-full shadow-sm transition-all cursor-pointer w-fit"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs sm:text-sm font-semibold rounded-full shadow-sm transition-all cursor-pointer w-fit"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -323,7 +323,7 @@ export default function CustomerPaymentMethodsPage() {
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-[#EAEAEA] text-zinc-900 placeholder:text-zinc-500 rounded-full px-5 py-2 sm:py-2.5 text-sm w-48 sm:w-56 focus:outline-none focus:ring-2 focus:ring-[#e74b2d]/30 transition-all border-none"
+                  className="bg-[#EAEAEA] text-zinc-900 placeholder:text-zinc-500 rounded-full px-5 py-2 sm:py-2.5 text-sm w-48 sm:w-56 focus:outline-none focus:ring-2 focus:ring-[#329AD4]/30 transition-all border-none"
                 />
               </div>
             </div>
@@ -367,7 +367,7 @@ export default function CustomerPaymentMethodsPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-zinc-900 w-24">Card Status :</span>
-                          <span className="text-[#e74b2d] font-semibold">
+                          <span className="text-[#329AD4] font-semibold">
                             {card.isDefault ? "Default Card" : "Completed"}
                           </span>
                         </div>
@@ -379,7 +379,7 @@ export default function CustomerPaymentMethodsPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-zinc-900 w-24">Expires :</span>
-                          <span className="text-[#e74b2d] font-bold">
+                          <span className="text-[#329AD4] font-bold">
                             {card.expMonth}/{card.expYear}
                           </span>
                         </div>
@@ -394,7 +394,7 @@ export default function CustomerPaymentMethodsPage() {
                           className={`px-6 sm:px-7 py-2 sm:py-2.5 font-semibold text-xs rounded-full shadow-sm transition-all inline-block text-center cursor-pointer ${
                             card.isDefault
                               ? "bg-emerald-600 text-white cursor-default"
-                              : "bg-[#e74b2d] hover:bg-[#c93e23] text-white"
+                              : "bg-[#329AD4] hover:bg-[#2884b8] text-white"
                           }`}
                         >
                           {card.isDefault ? "Default Method" : "Set As Default"}
@@ -493,7 +493,7 @@ export default function CustomerPaymentMethodsPage() {
                               onClick={() => {
                                 alert(`Billing Zip for card ending in ${card.last4}: ${card.billingZip || "99344"}`);
                               }}
-                              className="text-[11px] sm:text-xs text-zinc-500 hover:text-[#e74b2d] underline mt-0.5 cursor-pointer block text-left"
+                              className="text-[11px] sm:text-xs text-zinc-500 hover:text-[#329AD4] underline mt-0.5 cursor-pointer block text-left"
                             >
                               Billing Address Details
                             </button>
@@ -509,7 +509,7 @@ export default function CustomerPaymentMethodsPage() {
                         <button
                           type="button"
                           onClick={() => handleRemoveCard(card.id)}
-                          className="px-8 sm:px-10 py-2 sm:py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white font-semibold text-xs rounded-full shadow-sm transition-all cursor-pointer text-center"
+                          className="px-8 sm:px-10 py-2 sm:py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-semibold text-xs rounded-full shadow-sm transition-all cursor-pointer text-center"
                         >
                           Remove
                         </button>
@@ -561,7 +561,7 @@ export default function CustomerPaymentMethodsPage() {
                   placeholder="e.g. John Doe"
                   value={newCardName}
                   onChange={(e) => setNewCardName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#e74b2d]/30 focus:border-[#e74b2d]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#329AD4]/30 focus:border-[#329AD4]"
                 />
               </div>
 
@@ -573,7 +573,7 @@ export default function CustomerPaymentMethodsPage() {
                   placeholder="1234 5678 9012 3456"
                   value={newCardNumber}
                   onChange={(e) => handleCardNumberChange(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#e74b2d]/30 focus:border-[#e74b2d]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#329AD4]/30 focus:border-[#329AD4]"
                 />
               </div>
 
@@ -586,7 +586,7 @@ export default function CustomerPaymentMethodsPage() {
                     placeholder="MM/YY"
                     value={newCardExpiry}
                     onChange={(e) => handleExpiryChange(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#e74b2d]/30 focus:border-[#e74b2d]"
+                    className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#329AD4]/30 focus:border-[#329AD4]"
                   />
                 </div>
                 <div>
@@ -598,7 +598,7 @@ export default function CustomerPaymentMethodsPage() {
                     placeholder="•••"
                     value={newCardCvc}
                     onChange={(e) => setNewCardCvc(e.target.value.replace(/\D/g, ""))}
-                    className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#e74b2d]/30 focus:border-[#e74b2d]"
+                    className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#329AD4]/30 focus:border-[#329AD4]"
                   />
                 </div>
               </div>
@@ -610,7 +610,7 @@ export default function CustomerPaymentMethodsPage() {
                   placeholder="e.g. 99344"
                   value={newCardZip}
                   onChange={(e) => setNewCardZip(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#e74b2d]/30 focus:border-[#e74b2d]"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#329AD4]/30 focus:border-[#329AD4]"
                 />
               </div>
 
@@ -620,7 +620,7 @@ export default function CustomerPaymentMethodsPage() {
                   id="defaultCheck"
                   checked={newCardDefault}
                   onChange={(e) => setNewCardDefault(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#e74b2d] focus:ring-[#e74b2d] border-zinc-300"
+                  className="w-4 h-4 rounded text-[#329AD4] focus:ring-[#329AD4] border-zinc-300"
                 />
                 <label htmlFor="defaultCheck" className="text-xs text-zinc-600 select-none">
                   Set as default payment method
@@ -638,7 +638,7 @@ export default function CustomerPaymentMethodsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-7 py-2.5 bg-[#e74b2d] hover:bg-[#c93e23] text-white text-xs font-semibold rounded-full shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                  className="px-7 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-xs font-semibold rounded-full shadow-sm transition-all cursor-pointer disabled:opacity-50"
                 >
                   {submitting ? "Saving Card..." : "Save Card"}
                 </button>

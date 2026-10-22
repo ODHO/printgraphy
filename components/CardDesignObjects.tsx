@@ -37,7 +37,7 @@ export default function CardDesignObjects({
                 top: `${obj.y || 0}%`,
                 width: `${obj.width || 20}%`,
                 height: `${obj.height || 20}%`,
-                background: obj.fill || "#e74b2d",
+                background: obj.fill || "#329AD4",
                 opacity: obj.opacity ?? 1,
                 borderRadius: obj.shapeType === "circle" ? "9999px" : `${obj.borderRadius || 0}px`,
                 border: obj.stroke ? `${obj.strokeWidth || 1}px solid ${obj.stroke}` : undefined,
@@ -94,7 +94,7 @@ export default function CardDesignObjects({
                   }
                   onEditImage?.(obj.id);
                 }}
-                className="absolute z-[8] cursor-grab active:cursor-grabbing rounded-md hover:ring-2 hover:ring-[#e74b2d] bg-transparent p-0"
+                className="absolute z-[8] cursor-grab active:cursor-grabbing rounded-md hover:ring-2 hover:ring-[#329AD4] bg-transparent p-0"
                 style={frame}
               >
                 {image}
