@@ -481,7 +481,7 @@ const DEFAULT_BLOCK_PRESETS: Record<string, Omit<BuilderBlock, "id">> = {
     props: {
       heading: "Get In Touch With Our Print Specialists",
       email: "support@printgraphi.com",
-      phone: "+1 (800) 555-XPRINT",
+      phone: "+1 (800) 555-PRINTGRAPHY",
       address: "100 Luxury Print Ave, Suite 400, New York, NY",
     },
     styles: {

@@ -321,7 +321,7 @@ export default function CustomerDashboardPage() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {savedDesigns.map((d) => {
-                    const studioHref = `/browsedesigns?designId=${d._id}`;
+                    const studioHref = `/customize?designId=${d._id}`;
                     const draftCategory =
                       (d.designData as any)?.category || "Business Cards";
                     const isPurchased = Boolean((d.designData as any)?.isPurchased);

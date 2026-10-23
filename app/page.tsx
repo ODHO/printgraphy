@@ -18,11 +18,11 @@ export default async function Home() {
     <div className="flex-1 bg-[#ffffff]">
       <Hero hero={content.hero} />
       <CategoryCarousel />
-      <ShopByCollection collections={content.collections} />
+      {/* <ShopByCollection collections={content.collections} /> */}
       <TopSellers topSellers={content.topSellers} />
-      <GrowthSections tools={content.tools} newIn={content.newIn} />
+      {/* <GrowthSections tools={content.tools} newIn={content.newIn} /> */}
       <ComplimentaryLogoBanner banner={content.logoBanner} />
-      <MadeWithPrintgraphi madeWith={content.madeWith} />
+      {/* <MadeWithPrintgraphi madeWith={content.madeWith} /> */}
     </div>
   );
 }

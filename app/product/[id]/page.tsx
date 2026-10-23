@@ -7,20 +7,16 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
 
   return (
-    <div className="min-h-screen bg-[#ffffff] font-sans">
+    <div className="relative min-h-screen overflow-hidden bg-[#f7fbfe] font-sans text-[#1e1d1b]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] bg-[radial-gradient(ellipse_at_20%_0%,rgba(50,154,212,0.16),transparent_55%),radial-gradient(ellipse_at_90%_10%,rgba(85,178,231,0.12),transparent_50%),linear-gradient(180deg,#eef7fc_0%,#f7fbfe_55%,#f7fbfe_100%)]"
+      />
 
-      {/* Main Content Area */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-        {/* Section 1: Interactive Product Detail Section */}
+      <main className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-14 sm:space-y-20">
         <ProductDetailSection productId={id} />
-
-        {/* Section 2: Shop by collection Section */}
         <ProductPageCollection />
-
-        {/* Section 3: Product Card Features & card-design Showcase */}
         <ProductCardFeatures productId={id} />
-
-        {/* Section 4: User Reviews Section */}
         <ProductReviewsSection productId={id} />
       </main>
     </div>

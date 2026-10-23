@@ -37,14 +37,18 @@ const DEFAULT_STORY: Required<FeatureStory> = {
       body: "Our user-friendly design studio makes business card printing easier than ever. You can upload your own complete design, or you can pick from a wide range of templates, all tailored to specific industries, themes and uses. From there, it's quick and easy to add your own text, logo, images and more. To give you a better idea of what you're working with before you start designing, check out our guide to standard business card dimensions. Need more than 10,000? Send us a request.",
     },
   ],
-  images: ["/card-design.png"],
+  images: ["/catalog/stickers-labels-v2.png"],
   relatedTitle: "Explore Related Products",
 };
 
 function StoryImage({ src, alt, large }: { src: string; alt: string; large?: boolean }) {
   const local = src.startsWith("/") && !src.startsWith("/api/");
   return (
-    <div className={`relative w-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-md ${large ? "aspect-[4/5] sm:aspect-square" : "aspect-square"}`}>
+    <div
+      className={`relative w-full overflow-hidden rounded-[1.25rem] border border-[#d7e8f4] bg-[#eef7fc] ${
+        large ? "aspect-[4/5] sm:aspect-square" : "aspect-square"
+      }`}
+    >
       {local ? (
         <Image src={src} alt={alt} fill sizes={large ? "(max-width: 1024px) 100vw, 42vw" : "(max-width: 1024px) 50vw, 20vw"} className="object-cover" />
       ) : (
@@ -117,33 +121,50 @@ export default function ProductCardFeatures({ productId }: { productId?: string 
   const images = (content.images || []).map((src) => mediaSrc(src) || src).filter(Boolean);
 
   return (
-    <section className="border-t border-zinc-200 pt-10 pb-6">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        <div className="lg:col-span-7 flex flex-col gap-6">
+    <section className="relative overflow-hidden rounded-[1.75rem] border border-[#d7e8f4] bg-white/80 px-5 py-8 sm:px-8 sm:py-10 backdrop-blur-sm">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(50,154,212,0.18),transparent_70%)]"
+      />
+      <div className="relative grid grid-cols-1 lg:grid-cols-1 gap-8 lg:gap-12 items-start">
+        <div className="lg:col-span-1 flex flex-col gap-6">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#329AD4]">Product story</p>
           {content.title && (
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 leading-tight">
+            <h2 className="text-2xl sm:text-[1.85rem] font-black tracking-[-0.035em] text-[#1e1d1b] leading-[1.15]">
               {content.title}
             </h2>
           )}
           {bullets.length > 0 && (
-            <ul className="text-base sm:text-base text-zinc-700 flex flex-col gap-1.5 list-disc pl-4 font-normal">
+            <ul className="grid gap-2.5 sm:grid-cols-2">
               {bullets.map((item) => (
-                <li key={item}>{item}</li>
+                <li
+                  key={item}
+                  className="flex items-start gap-2.5 rounded-2xl border border-[#e7f1f8] bg-[#f7fbfe] px-3.5 py-3 text-sm text-zinc-700"
+                >
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#329AD4]" />
+                  <span>{item}</span>
+                </li>
               ))}
             </ul>
           )}
           {sections.map((section) => (
-            <div key={section.heading || section.body} className="flex flex-col gap-1.5">
-              {section.heading && <h3 className="text-base font-bold text-zinc-900">{section.heading}</h3>}
-              {section.body && <p className="text-base sm:text-base text-zinc-600 leading-relaxed">{section.body}</p>}
+            <div key={section.heading || section.body} className="flex flex-col gap-1.5 border-t border-[#e7f1f8] pt-5">
+              {section.heading && (
+                <h3 className="text-base font-bold text-[#1e1d1b]">{section.heading}</h3>
+              )}
+              {section.body && (
+                <p className="text-[15px] text-zinc-600 leading-relaxed">{section.body}</p>
+              )}
             </div>
           ))}
           {content.relatedTitle && (
-            <h3 className="text-xl font-extrabold text-zinc-900 pt-2">{content.relatedTitle}</h3>
+            <h3 className="text-xl font-black tracking-[-0.03em] text-[#1e1d1b] pt-2">
+              {content.relatedTitle}
+            </h3>
           )}
         </div>
         {images.length > 0 && (
-          <div className="lg:col-span-5 flex w-full flex-col gap-3">
+          <div className="col-span-1 flex w-full flex-col gap-3 grid grid-cols-4">
             <StoryImage src={images[0]} alt={content.title || "Category story"} large />
             {images.length > 1 && (
               <div className="grid grid-cols-2 gap-3">

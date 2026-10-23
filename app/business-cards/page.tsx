@@ -1064,20 +1064,76 @@ function BusinessCardsContent() {
       </div>
 
       {previewTemplate && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4" onClick={() => setPreviewTemplate(null)}>
-          <div className="w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl border border-zinc-200" onClick={(event) => event.stopPropagation()}>
-            <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-6 py-4">
-              <div className="min-w-0">
-                <h3 className="truncate text-base font-black text-zinc-900">{previewTemplate.title}</h3>
-                <p className="text-xs text-zinc-500">{previewTemplate.category}</p>
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-3 backdrop-blur-md sm:p-6" onClick={() => setPreviewTemplate(null)}>
+          <div
+            className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-zinc-800 bg-[#0b1220] shadow-[0_30px_80px_rgba(0,0,0,0.45)] lg:grid-cols-[260px_1fr]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <aside className="flex flex-col justify-between gap-6 border-b border-white/10 bg-[#0f172a] p-5 lg:border-b-0 lg:border-r lg:border-white/10 lg:p-6">
+              <div className="min-w-0 space-y-4">
+                <p className="text-[11px] font-bold tracking-[0.18em] text-[#064FE0] uppercase">3D Preview</p>
+                <div>
+                  <h3 className="text-xl font-extrabold leading-tight text-white">{previewTemplate.title}</h3>
+                  <p className="mt-1 text-sm text-zinc-400">{previewTemplate.category}</p>
+                </div>
+                <div className="inline-flex w-full rounded-xl bg-white/10 p-1 text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewSide("front")}
+                    className={`flex-1 cursor-pointer rounded-lg px-3 py-2 transition-all ${previewSide === "front" ? "bg-[#064FE0] text-white" : "text-zinc-300 hover:text-white"}`}
+                  >
+                    Front
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewSide("back")}
+                    className={`flex-1 cursor-pointer rounded-lg px-3 py-2 transition-all ${previewSide === "back" ? "bg-[#064FE0] text-white" : "text-zinc-300 hover:text-white"}`}
+                  >
+                    Back
+                  </button>
+                </div>
+                <p className="text-xs leading-relaxed text-zinc-400">
+                  Inspect the print face in studio lighting, then open the editor when you are ready.
+                </p>
               </div>
-              <div className="inline-flex rounded-xl bg-zinc-100 p-1 text-xs font-bold">
-                <button type="button" onClick={() => setPreviewSide("front")} className={`cursor-pointer rounded-lg px-3 py-1.5 transition-all ${previewSide === "front" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-900"}`}>Front</button>
-                <button type="button" onClick={() => setPreviewSide("back")} className={`cursor-pointer rounded-lg px-3 py-1.5 transition-all ${previewSide === "back" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-900"}`}>Back</button>
+              <div className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPreviewTemplate(null)}
+                  className="cursor-pointer rounded-xl border border-white/20 px-4 py-2.5 text-sm font-bold text-zinc-200 transition hover:bg-white/10"
+                >
+                  Cancel
+                </button>
+                {previewTemplate.isPaid && (previewTemplate.price || 0) > 0 && !purchasedTemplateIds.includes(String(previewTemplate._id)) ? (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const template = previewTemplate;
+                      if (!(await viewerIsSignedIn())) {
+                        router.push(registerHref(`/business-cards?templateId=${template._id}`, "paid"));
+                        return;
+                      }
+                      setPreviewTemplate(null);
+                      setPurchaseTemplate(template);
+                    }}
+                    className="cursor-pointer rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-amber-600"
+                  >
+                    Pay ${previewTemplate.price}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/customize?templateId=${previewTemplate._id}`)}
+                    className="cursor-pointer rounded-xl bg-[#064FE0] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0439A8]"
+                  >
+                    Use Now
+                  </button>
+                )}
               </div>
-            </div>
-            <div className="bg-[#111318] px-4 py-4">
-              <div className="relative h-[460px] overflow-hidden rounded-2xl">
+            </aside>
+            <div className="relative min-h-[460px] bg-[#0a0d14]">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(6,79,224,0.18),transparent_55%)]" />
+              <div className="relative h-[520px] sm:h-[560px]">
                 <ThreeDCardPreview
                   canvasConfig={previewTemplate.canvas_config}
                   frontDesign={previewTemplate.front_design}
@@ -1092,36 +1148,6 @@ function BusinessCardsContent() {
                   cornerRadius={0}
                 />
               </div>
-            </div>
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-zinc-100">
-              <button type="button" onClick={() => setPreviewTemplate(null)} className="cursor-pointer rounded-xl border border-zinc-200 px-4 py-2.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition-colors">
-                Cancel
-              </button>
-              {previewTemplate.isPaid && (previewTemplate.price || 0) > 0 && !purchasedTemplateIds.includes(String(previewTemplate._id)) ? (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const template = previewTemplate;
-                    if (!(await viewerIsSignedIn())) {
-                      router.push(registerHref(`/business-cards?templateId=${template._id}`, "paid"));
-                      return;
-                    }
-                    setPreviewTemplate(null);
-                    setPurchaseTemplate(template);
-                  }}
-                  className="cursor-pointer rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-bold text-white hover:bg-amber-600 transition-colors shadow-xs"
-                >
-                  Pay ${previewTemplate.price}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => router.push(`/customize?templateId=${previewTemplate._id}`)}
-                  className="cursor-pointer rounded-xl bg-[#329AD4] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#2884b8] transition-colors shadow-xs"
-                >
-                  Use Now
-                </button>
-              )}
             </div>
           </div>
         </div>

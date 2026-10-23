@@ -204,10 +204,10 @@ function MyAccountDropdown({
 const MENU_ITEMS = [
   { name: "Home", href: "/" },
   { name: "Deals", href: "/browsedesigns" },
-  { name: "Business Cards", href: "/business-cards" },
+  { name: "Business Cards", href: "/browsedesigns?category=business-cards" },
   { name: "Post Cards", href: "/browsedesigns?category=Postcards" },
   { name: "Signs & Banners", href: "/browsedesigns?category=Banners" },
-  { name: "Clothing & Bags", href: "/clothing-bags" },
+  // { name: "Clothing & Bags", href: "/clothing-bags" },
   { name: "Promotion Printing", href: "/browsedesigns?category=Promotion" },
   { name: "Booklets", href: "/browsedesigns?category=Booklets" },
   { name: "Books", href: "/browsedesigns?category=Books" },

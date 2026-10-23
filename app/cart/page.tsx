@@ -72,21 +72,21 @@ function ApparelCartDetails({ item }: { item: CartItem }) {
 
   return (
     <div className="flex gap-4">
-      <div className="w-24 h-24 rounded-2xl bg-[#ffffff] overflow-hidden shrink-0 border border-zinc-200 relative">
+      <div className="w-24 h-24 rounded-2xl bg-[#f7fbfe] overflow-hidden shrink-0 border border-[#d7e8f4] relative">
         {thumb ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={thumb} alt={item.name} className="w-full h-full object-contain p-1.5" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-zinc-300 text-xs">No img</div>
         )}
-        <span className="absolute top-1 left-1 text-[9px] font-bold uppercase tracking-wide bg-[#329AD4] text-white px-1.5 py-0.5 rounded">
+        <span className="absolute top-1.5 left-1.5 text-[9px] font-bold uppercase tracking-wide bg-[#329AD4] text-white px-1.5 py-0.5 rounded-md">
           Apparel
         </span>
       </div>
 
       <div className="flex-1 min-w-0 space-y-2">
         <div>
-          <p className="font-bold text-zinc-900 text-base truncate">{item.name}</p>
+          <p className="font-bold text-[#1e1d1b] text-base truncate">{item.name}</p>
           {specs.category && specs.category !== item.name && (
             <p className="text-sm text-zinc-500">{specs.category}</p>
           )}
@@ -96,7 +96,7 @@ function ApparelCartDetails({ item }: { item: CartItem }) {
           {chips.map((c) => (
             <span
               key={c.label}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-700 bg-zinc-100 border border-zinc-200 rounded-full px-2.5 py-1"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-700 bg-[#f0f8fd] border border-[#d7e8f4] rounded-lg px-2.5 py-1"
             >
               {c.swatch ? (
                 <span
@@ -126,7 +126,7 @@ function ApparelCartDetails({ item }: { item: CartItem }) {
                   key={src}
                   src={mediaSrc(src) || src}
                   alt=""
-                  className="w-10 h-10 rounded-lg object-contain bg-white border border-zinc-200"
+                  className="w-10 h-10 rounded-lg object-contain bg-white border border-[#d7e8f4]"
                 />
               ))}
             </div>
@@ -143,7 +143,6 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
 
-  // Coupon state
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
   const [couponMsg, setCouponMsg] = useState({ text: "", isError: false });
@@ -201,7 +200,7 @@ export default function CartPage() {
         setAppliedCoupon({ code: data.coupon.code, discountAmount: data.coupon.discountAmount });
         setCouponMsg({ text: data.message, isError: false });
       }
-    } catch (err) {
+    } catch {
       setCouponMsg({ text: "Error applying coupon.", isError: true });
     } finally {
       setValidatingCoupon(false);
@@ -216,41 +215,52 @@ export default function CartPage() {
   const total = subtotalAfterDiscount + shippingCost;
 
   return (
-    <div className="min-h-screen bg-[#ffffff] font-sans">
-      {/* Header */}
-      <div className="bg-white border-b border-zinc-200 sticky top-0 z-10">
-        <div className="container mx-auto px-4 sm:px-6 h-14 flex items-center gap-4">
+    <div className="relative min-h-screen overflow-hidden bg-[#f7fbfe] font-sans text-[#1e1d1b]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(ellipse_at_18%_0%,rgba(50,154,212,0.16),transparent_55%),radial-gradient(ellipse_at_92%_8%,rgba(85,178,231,0.1),transparent_48%)]"
+      />
+
+      <div className="relative border-b border-[#d7e8f4] bg-white/90 backdrop-blur-md sticky top-0 z-10">
+        <div className="container mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
           <Link href="/" className="inline-block">
-            <img src="/logo/logo.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
+            <img src="/logo/logo.png" alt="Printgraphy Logo" className="h-9 w-auto object-contain" />
           </Link>
-          <span className="text-zinc-300">/</span>
-          <h1 className="text-base font-semibold text-zinc-600">Your Cart</h1>
+          <span className="text-[#b8e0f6]">/</span>
+          <h1 className="text-sm font-semibold text-zinc-600">Your Cart</h1>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-8">
+      <div className="relative container mx-auto px-4 sm:px-6 py-8 sm:py-10">
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#b8e0f6] border-t-[#329AD4] rounded-full animate-spin" />
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-20 h-20 rounded-2xl bg-zinc-100 flex items-center justify-center mb-5">
-              <svg className="w-10 h-10 text-zinc-300" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+            <div className="w-20 h-20 rounded-[1.25rem] bg-white border border-[#d7e8f4] flex items-center justify-center mb-5">
+              <svg className="w-10 h-10 text-[#88c9ef]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-zinc-900 mb-2">Your cart is empty</h2>
-            <p className="text-zinc-500 text-base mb-6">Browse our products and find something you love.</p>
-            <Link href="/browsedesigns" className="px-6 py-2.5 bg-zinc-900 text-white text-base font-semibold rounded-xl hover:bg-zinc-700 transition-all">
+            <h2 className="text-xl font-black tracking-[-0.03em] text-[#1e1d1b] mb-2">Your cart is empty</h2>
+            <p className="text-zinc-500 text-sm mb-6 max-w-sm">Browse our products and find something you love.</p>
+            <Link
+              href="/browsedesigns"
+              className="px-6 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-2xl transition-all"
+            >
               Browse Designs
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Cart Items */}
             <div className="lg:col-span-7 space-y-3">
-              <h2 className="text-lg font-bold text-zinc-900 mb-4">{items.length} item{items.length !== 1 ? "s" : ""}</h2>
+              <div className="mb-2">
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#329AD4]">Shopping bag</p>
+                <h2 className="mt-1 text-xl font-black tracking-[-0.03em] text-[#1e1d1b]">
+                  {items.length} item{items.length !== 1 ? "s" : ""}
+                </h2>
+              </div>
 
               {items.map((item) => {
                 const isApparel = item.specs?.productFamily === "apparel";
@@ -262,7 +272,7 @@ export default function CartPage() {
                 return (
                   <div
                     key={item._id}
-                    className={`bg-white rounded-2xl border border-zinc-100 p-4 transition-opacity ${
+                    className={`bg-white/95 rounded-[1.25rem] border border-[#d7e8f4] p-4 sm:p-5 transition-opacity shadow-[0_12px_32px_-28px_rgba(32,90,130,0.45)] ${
                       updating === item._id ? "opacity-50" : ""
                     }`}
                   >
@@ -270,20 +280,20 @@ export default function CartPage() {
                       <ApparelCartDetails item={item} />
                     ) : (
                       <div className="flex gap-4">
-                        <div className="w-20 h-14 rounded-xl bg-zinc-100 overflow-hidden shrink-0 border border-zinc-200">
+                        <div className="w-24 h-16 rounded-2xl bg-[#f0f8fd] overflow-hidden shrink-0 border border-[#d7e8f4]">
                           {thumb ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={thumb} alt={item.name} className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-zinc-300 text-base">
+                            <div className="w-full h-full flex items-center justify-center text-zinc-300 text-xs">
                               No img
                             </div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-zinc-900 text-base truncate">{item.name}</p>
+                          <p className="font-bold text-[#1e1d1b] text-base truncate">{item.name}</p>
                           {visibleSpecs.length > 0 && (
-                            <p className="text-sm text-zinc-400 mt-0.5 line-clamp-2">
+                            <p className="text-sm text-zinc-500 mt-1 line-clamp-2 leading-relaxed">
                               {visibleSpecs.map(([key, value]) => `${key}: ${value}`).join(" · ")}
                             </p>
                           )}
@@ -291,24 +301,24 @@ export default function CartPage() {
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-50">
-                      <div className="flex items-center gap-2 bg-zinc-100 rounded-lg p-1">
+                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#e7f1f8]">
+                      <div className="flex items-center gap-1 bg-[#f0f8fd] rounded-xl p-1 border border-[#d7e8f4]">
                         <button
                           onClick={() => updateQty(item._id, item.quantity - 1)}
                           disabled={!!updating}
-                          className="w-7 h-7 rounded-md flex items-center justify-center text-zinc-600 hover:bg-white hover:shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-600 hover:bg-white transition-all cursor-pointer disabled:opacity-50"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
                           </svg>
                         </button>
-                        <span className="text-base font-bold text-zinc-900 min-w-8 px-1 text-center tabular-nums">
+                        <span className="text-sm font-bold text-[#1e1d1b] min-w-8 px-1 text-center tabular-nums">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() => updateQty(item._id, item.quantity + 1)}
                           disabled={!!updating}
-                          className="w-7 h-7 rounded-md flex items-center justify-center text-zinc-600 hover:bg-white hover:shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-600 hover:bg-white transition-all cursor-pointer disabled:opacity-50"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -317,13 +327,14 @@ export default function CartPage() {
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <span className="font-black text-zinc-900 text-base">
+                        <span className="font-black text-[#1e1d1b] text-base tracking-[-0.02em]">
                           ${(item.price * item.quantity).toFixed(2)}
                         </span>
                         <button
                           onClick={() => removeItem(item._id)}
                           disabled={!!updating}
-                          className="text-zinc-300 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50"
+                          className="text-zinc-300 hover:text-red-500 transition-colors cursor-pointer disabled:opacity-50"
+                          aria-label="Remove item"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path
@@ -340,68 +351,71 @@ export default function CartPage() {
               })}
             </div>
 
-            {/* Order Summary */}
             <div className="lg:col-span-5">
-              <div className="bg-white rounded-2xl border border-zinc-100 p-6 sticky top-20 space-y-4">
-                <h2 className="text-base font-bold text-zinc-900">Order Summary</h2>
+              <div className="bg-white/95 rounded-[1.5rem] border border-[#d7e8f4] p-6 sticky top-20 space-y-5 shadow-[0_20px_50px_-36px_rgba(32,90,130,0.5)] backdrop-blur-sm">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#329AD4]">Summary</p>
+                  <h2 className="mt-1 text-lg font-black tracking-[-0.03em] text-[#1e1d1b]">Order Summary</h2>
+                </div>
 
                 <div className="space-y-2.5">
-                  <div className="flex justify-between text-base text-zinc-600">
+                  <div className="flex justify-between text-sm text-zinc-600">
                     <span>Subtotal</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold text-[#1e1d1b]">${subtotal.toFixed(2)}</span>
                   </div>
 
                   {appliedCoupon && (
-                    <div className="flex justify-between text-base text-emerald-600 font-semibold">
+                    <div className="flex justify-between text-sm text-emerald-600 font-semibold">
                       <span>Promo Discount ({appliedCoupon.code})</span>
                       <span>-${discount.toFixed(2)}</span>
                     </div>
                   )}
 
-                  <div className="flex justify-between text-base text-zinc-600">
+                  <div className="flex justify-between text-sm text-zinc-600">
                     <span>Shipping</span>
                     {shippingCost === 0 ? (
                       <span className="font-semibold text-emerald-600">Free</span>
                     ) : (
-                      <span className="font-semibold">${shippingCost.toFixed(2)}</span>
+                      <span className="font-semibold text-[#1e1d1b]">${shippingCost.toFixed(2)}</span>
                     )}
                   </div>
 
                   {subtotal > 0 && subtotal < 50 && (
-                    <div className="text-base text-zinc-400 bg-zinc-50 rounded-lg px-3 py-2">
-                      Add <strong>${(50 - subtotal).toFixed(2)}</strong> more to get free shipping 🎉
+                    <div className="text-sm text-[#2172a0] bg-[#eef7fc] border border-[#d7e8f4] rounded-xl px-3 py-2.5">
+                      Add <strong>${(50 - subtotal).toFixed(2)}</strong> more to get free shipping
                     </div>
                   )}
 
-                  {/* Promo Code Form */}
-                  <form onSubmit={handleApplyCoupon} className="pt-2 border-t border-zinc-100 space-y-1.5">
-                    <label className="text-base font-bold text-zinc-700 block">Have a Promo Code?</label>
+                  <form onSubmit={handleApplyCoupon} className="pt-3 border-t border-[#e7f1f8] space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-[0.1em] text-zinc-500 block">
+                      Have a Promo Code?
+                    </label>
                     <div className="flex gap-2">
                       <input
                         type="text"
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
                         placeholder="ENTER CODE"
-                        className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-base font-mono font-bold uppercase text-zinc-900 focus:outline-none focus:border-[#329AD4]"
+                        className="flex-1 px-3 py-2.5 rounded-xl border border-[#d7e8f4] text-sm font-mono font-bold uppercase text-[#1e1d1b] focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20"
                       />
                       <button
                         type="submit"
                         disabled={validatingCoupon}
-                        className="px-4 py-2 bg-[#329AD4] hover:bg-[#2884b8] text-white text-base font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+                        className="px-4 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
                       >
                         {validatingCoupon ? "..." : "Apply"}
                       </button>
                     </div>
                     {couponMsg.text && (
-                      <p className={`text-base font-semibold ${couponMsg.isError ? "text-red-500" : "text-emerald-600"}`}>
+                      <p className={`text-sm font-semibold ${couponMsg.isError ? "text-red-500" : "text-emerald-600"}`}>
                         {couponMsg.text}
                       </p>
                     )}
                   </form>
 
-                  <div className="border-t border-zinc-100 pt-2.5 flex justify-between">
-                    <span className="text-base font-bold text-zinc-900">Total</span>
-                    <span className="text-base font-black text-zinc-900">${total.toFixed(2)}</span>
+                  <div className="border-t border-[#e7f1f8] pt-3 flex justify-between items-baseline">
+                    <span className="text-sm font-bold text-[#1e1d1b]">Total</span>
+                    <span className="text-2xl font-black tracking-[-0.03em] text-[#1e1d1b]">${total.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -413,25 +427,30 @@ export default function CartPage() {
                     }
                     router.push("/checkout");
                   }}
-                  className="w-full py-3 bg-zinc-900 hover:bg-zinc-700 text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-zinc-900/10"
+                  className="w-full py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-2xl transition-all cursor-pointer shadow-[0_10px_24px_-12px_rgba(50,154,212,0.9)]"
                 >
                   Proceed to Checkout →
                 </button>
 
-                <Link href="/browsedesigns" className="block text-center text-base text-zinc-400 hover:text-zinc-600 transition-colors">
+                <Link href="/browsedesigns" className="block text-center text-sm text-zinc-500 hover:text-[#329AD4] transition-colors font-medium">
                   ← Continue Shopping
                 </Link>
 
-                {/* Trust badges */}
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-100">
+                <div className="grid grid-cols-3 gap-2 pt-3 border-t border-[#e7f1f8]">
                   {[
-                    { icon: "🔒", label: "Secure Checkout" },
-                    { icon: "🔄", label: "Easy Returns" },
-                    { icon: "⚡", label: "Fast Printing" },
+                    { label: "Secure Checkout", icon: (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    )},
+                    { label: "Easy Returns", icon: (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    )},
+                    { label: "Fast Printing", icon: (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    )},
                   ].map((badge) => (
-                    <div key={badge.label} className="flex flex-col items-center gap-1 text-center">
-                      <span className="text-base">{badge.icon}</span>
-                      <span className="text-base text-zinc-400 font-medium leading-tight">{badge.label}</span>
+                    <div key={badge.label} className="flex flex-col items-center gap-1.5 text-center text-[#329AD4]">
+                      {badge.icon}
+                      <span className="text-[10px] text-zinc-500 font-semibold leading-tight">{badge.label}</span>
                     </div>
                   ))}
                 </div>

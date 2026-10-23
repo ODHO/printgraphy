@@ -1583,28 +1583,52 @@ export default function BusinessCardStudioFlow({
 
   const [downloadingProof, setDownloadingProof] = useState(false);
 
-  const buildCardScene = (side: "front" | "back"): CardScene => ({
-    side,
-    bgColor: side === "back" ? backBgColor : bgColor,
-    ...designBackdrop(bgMode === "color" ? null : side === "back" ? selectedTemplate?.back_design : selectedTemplate?.front_design),
-    ...userBackdrop(side),
-    textColor,
-    layout: STUDIO_LAYOUT,
-    previewWidth: fitDims.renderWidth,
-    previewHeight: fitDims.renderHeight,
-    cornerRadius: 12,
-    textLayers: side === "front" ? textLayers : backTextLayers,
-    objects: side === "front" ? placeObjects(selectedTemplate?.front_design?.objects, "front") : backDecor,
-    logoText: "",
-    logoImage: (side === "back" ? backHasArtwork : hasTemplateLogo) ? null : logoImage || "/placeholder.jpg",
-    logoPosition: side === "back" ? backLogoPosition : logoPosition,
-    logoX: side === "back" ? backLogoX : logoX,
-    logoY: side === "back" ? backLogoY : logoY,
-    logoSize,
-    website: cardData.website,
-    email: cardData.email,
-    name: cardData.name,
-  });
+  const buildCardScene = (side: "front" | "back"): CardScene => {
+    // Match live preview: strip template artwork (managed via imageLayers) and append user image layers.
+    const frontSceneObjects = [
+      ...placeObjects(
+        (selectedTemplate?.front_design?.objects || []).filter((obj: any) => !isArtworkImage(obj)),
+        "front"
+      ),
+      ...imageLayers.map(imageLayerToObject),
+    ];
+    const backSceneObjects = [
+      ...backDecor,
+      ...backImageLayers.map(imageLayerToObject),
+    ];
+    const sideImageLayers = side === "front" ? imageLayers : backImageLayers;
+    const hasSideArtwork =
+      side === "back"
+        ? backHasArtwork || backImageLayers.length > 0
+        : hasTemplateLogo || imageLayers.length > 0;
+    const realLogo =
+      logoImage && logoImage !== DEFAULT_IMAGE_LAYER_SRC && logoImage !== "/placeholder.jpg"
+        ? logoImage
+        : null;
+
+    return {
+      side,
+      bgColor: side === "back" ? backBgColor : bgColor,
+      ...designBackdrop(bgMode === "color" ? null : side === "back" ? selectedTemplate?.back_design : selectedTemplate?.front_design),
+      ...userBackdrop(side),
+      textColor,
+      layout: STUDIO_LAYOUT,
+      previewWidth: fitDims.renderWidth,
+      previewHeight: fitDims.renderHeight,
+      cornerRadius: 12,
+      textLayers: side === "front" ? textLayers : backTextLayers,
+      objects: side === "front" ? frontSceneObjects : backSceneObjects,
+      logoText: "",
+      logoImage: hasSideArtwork || sideImageLayers.length > 0 ? null : realLogo,
+      logoPosition: side === "back" ? backLogoPosition : logoPosition,
+      logoX: side === "back" ? backLogoX : logoX,
+      logoY: side === "back" ? backLogoY : logoY,
+      logoSize,
+      website: cardData.website,
+      email: cardData.email,
+      name: cardData.name,
+    };
+  };
 
   const handleDownloadProof = async (which: "current" | "both") => {
     setDownloadingProof(true);
@@ -1800,28 +1824,33 @@ export default function BusinessCardStudioFlow({
           STEP 0: BROWSE & SELECT TEMPLATE
       ───────────────────────────────────────────────────────────── */}
       {step === "browse" && (
-        <div className="container mx-auto px-4 sm:px-6 py-6 space-y-6 animate-in fade-in duration-300">
+        <div className="relative animate-in fade-in duration-300">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-[20rem] bg-[radial-gradient(ellipse_at_18%_0%,rgba(50,154,212,0.12),transparent_55%)]"
+          />
+          <div className="relative container mx-auto px-4 sm:px-6 py-6 space-y-6">
 
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <button
                 onClick={() => onClose ? onClose() : history.back()}
-                className="inline-flex items-center gap-1.5 text-base font-semibold text-zinc-600 hover:text-zinc-900 cursor-pointer mb-2"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-[#329AD4] cursor-pointer mb-2 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
                 Back
               </button>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900">
+              <h1 className="text-2xl sm:text-[1.85rem] font-black tracking-[-0.035em] text-[#1e1d1b]">
                 {searchParam
                   ? `Results for “${searchParam}”`
                   : categoryParam
                   ? `${categoryParam} Templates`
                   : "Browse Templates Studio"}
               </h1>
-              <p className="text-base text-zinc-500 mt-1">
+              <p className="text-[15px] text-zinc-500 mt-1.5 max-w-xl leading-relaxed">
                 {searchParam
                   ? "Templates and products that match your search."
                   : categoryParam
@@ -1830,12 +1859,13 @@ export default function BusinessCardStudioFlow({
               </p>
             </div>
 
-            <Link
-              href={productIdParam ? `/customize?productId=${productIdParam}` : "/customize"}
-              className="px-5 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-md text-center inline-flex items-center justify-center gap-2"
+            <button
+              type="button"
+              onClick={() => setStep("review")}
+              className="px-5 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-2xl transition-all cursor-pointer shadow-[0_10px_24px_-12px_rgba(50,154,212,0.9)] text-center inline-flex items-center justify-center gap-2"
             >
               Start from Scratch →
-            </Link>
+            </button>
           </div>
 
           {/* Unified Modern Filter Bar */}
@@ -2015,19 +2045,19 @@ export default function BusinessCardStudioFlow({
               ))}
             </div>
           ) : filteredTemplates.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-zinc-200/80 p-8">
-              <div className="w-16 h-16 rounded-2xl bg-zinc-100 flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-zinc-300" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+            <div className="flex flex-col items-center justify-center py-20 text-center bg-white/95 rounded-[1.5rem] border border-[#d7e8f4] p-8 shadow-[0_20px_50px_-36px_rgba(32,90,130,0.35)]">
+              <div className="w-16 h-16 rounded-2xl bg-[#f0f8fd] border border-[#d7e8f4] flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-[#88c9ef]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
               </div>
-              <p className="text-zinc-700 font-bold text-base">
+              <p className="text-[#1e1d1b] font-black tracking-[-0.02em] text-lg">
                 {templateSearch ? `No templates match “${templateSearch}”` : "No templates match these filters"}
               </p>
-              <p className="text-zinc-400 text-sm mt-1 max-w-sm">
+              <p className="text-zinc-500 text-sm mt-1.5 max-w-sm leading-relaxed">
                 Try searching for another keyword or reset your filters to see all available designs.
               </p>
-              <div className="flex items-center gap-3 mt-4">
+              <div className="flex items-center gap-3 mt-5 flex-wrap justify-center">
                 <button
                   type="button"
                   onClick={() => {
@@ -2035,17 +2065,17 @@ export default function BusinessCardStudioFlow({
                     setFilterPaid("");
                     setTemplateSearch("");
                   }}
-                  className="px-4 py-2 border border-zinc-200 text-zinc-700 text-sm font-semibold rounded-xl hover:bg-zinc-50 cursor-pointer transition-all"
+                  className="px-4 py-2.5 border border-[#d7e8f4] text-[#1e1d1b] text-sm font-semibold rounded-xl hover:bg-[#f7fbfe] cursor-pointer transition-all"
                 >
                   Clear All Filters
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setStep("review")}
-                  className="px-5 py-2 bg-[#329AD4] text-white text-sm font-bold rounded-xl cursor-pointer hover:bg-[#2884b8] transition-all shadow-sm"
+                <Link
+                  href="/customize"
+                  // onClick={() => setStep("review")}
+                  className="px-5 py-2.5 bg-[#329AD4] text-white text-sm font-bold rounded-xl cursor-pointer hover:bg-[#2884b8] transition-all shadow-[0_10px_24px_-12px_rgba(50,154,212,0.9)]"
                 >
                   Design from Scratch →
-                </button>
+                </Link>
               </div>
             </div>
           ) : (
@@ -2199,6 +2229,7 @@ export default function BusinessCardStudioFlow({
               })}
             </div>
           )}
+          </div>
         </div>
       )}
 
@@ -2206,14 +2237,18 @@ export default function BusinessCardStudioFlow({
           STEP 1: DESIGN & INTERACTIVE STUDIO
       ───────────────────────────────────────────────────────────── */}
       {step === "review" && (
-        <div className="container mx-auto px-4 sm:px-6 py-6 space-y-6 animate-in fade-in duration-300">
+        <div className="relative w-full flex-1 flex flex-col bg-[#f7fbfe] min-h-screen animate-in fade-in duration-300">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-[22rem] bg-[radial-gradient(ellipse_at_18%_0%,rgba(50,154,212,0.14),transparent_55%),radial-gradient(ellipse_at_90%_5%,rgba(85,178,231,0.1),transparent_45%)]"
+          />
 
-          {/* Top Bar Actions */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-zinc-200/80 shadow-xs">
-            <div className="flex items-center gap-3">
+          {/* Top Bar Actions — matches customize studio chrome */}
+          <header className="relative z-30 w-full bg-white/95 border-b border-[#d7e8f4] backdrop-blur-md px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <button
                 onClick={() => setStep("browse")}
-                className="inline-flex items-center gap-1.5 text-base font-semibold text-zinc-700 hover:text-zinc-900 cursor-pointer bg-zinc-100 px-3 py-1.5 rounded-lg"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-700 hover:text-[#1e1d1b] cursor-pointer bg-[#f0f8fd] hover:bg-[#eef7fc] border border-[#d7e8f4] px-3 py-1.5 rounded-xl transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -2222,16 +2257,22 @@ export default function BusinessCardStudioFlow({
               </button>
 
               {selectedTemplate && (
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-sky-50 border border-sky-200 rounded-full text-base text-sky-800">
-                  <span className="font-bold">Template:</span> {selectedTemplate.title}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#eef7fc] border border-[#d7e8f4] rounded-xl text-sm text-[#2172a0]">
+                  <span className="font-bold text-[#329AD4]">Template:</span> {selectedTemplate.title}
+                </div>
+              )}
+              {!selectedTemplate && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#eef7fc] border border-[#d7e8f4] rounded-xl text-sm text-[#2172a0]">
+                  <span className="font-bold text-[#329AD4]">Blank design</span>
+                  <span className="text-zinc-500">from scratch</span>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {saveToast && (
-                <span className="text-base font-semibold text-emerald-600 animate-in fade-in duration-200 flex items-center gap-1">
-                  ✓ {saveToast}{" "}
+                <span className="text-sm font-semibold text-emerald-600 animate-in fade-in duration-200 flex items-center gap-1">
+                  {saveToast}{" "}
                   <Link href="/dashboard" className="underline font-bold hover:text-emerald-700">
                     View in Dashboard →
                   </Link>
@@ -2240,42 +2281,43 @@ export default function BusinessCardStudioFlow({
               <button
                 onClick={handleSaveDraft}
                 disabled={savingDraft}
-                className="px-4 py-2 border border-zinc-300 hover:border-zinc-800 text-zinc-700 hover:text-zinc-900 text-base font-semibold rounded-xl bg-white transition-all cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 border border-[#d7e8f4] hover:border-[#329AD4] text-zinc-700 hover:text-[#329AD4] text-sm font-semibold rounded-xl bg-white transition-all cursor-pointer disabled:opacity-50"
               >
                 {savingDraft ? "Saving..." : "Save Draft"}
               </button>
               <button
                 onClick={() => setStep("preferences")}
-                className="px-5 py-2 bg-zinc-900 hover:bg-zinc-700 text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-sm"
+                className="px-5 py-2 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-xl transition-all cursor-pointer shadow-[0_8px_18px_-10px_rgba(50,154,212,0.9)]"
               >
                 Next: Choose Specs →
               </button>
             </div>
-          </div>
+          </header>
 
+          <div className="relative container mx-auto px-4 sm:px-6 py-6 space-y-6">
           {/* Main Grid: Left Card Canvas & Right Interactive Controls */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
 
             {/* Left Interactive Card Canvas */}
             <div className="lg:col-span-7 flex flex-col items-center gap-4 lg:sticky lg:top-4 lg:self-start lg:z-20 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
 
               {/* View Mode Selector & Quick Shape Switcher Bar */}
-              <div className="w-full flex items-center justify-between bg-white px-4 py-2 rounded-2xl border border-zinc-200 shadow-xs flex-wrap gap-2">
+              <div className="w-full flex items-center justify-between bg-white/95 px-3 sm:px-4 py-2.5 rounded-2xl border border-[#d7e8f4] shadow-[0_12px_32px_-28px_rgba(32,90,130,0.4)] flex-wrap gap-2 backdrop-blur-sm">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm font-bold text-zinc-700 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#329AD4]" />
+                  <span className="text-xs font-bold uppercase tracking-[0.12em] text-[#329AD4] flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#329AD4]" />
                     Preview
                   </span>
 
                   {/* Shape Switcher */}
-                  <div className="flex items-center bg-zinc-100 p-0.5 rounded-xl border border-zinc-200/80 gap-0.5">
+                  <div className="flex items-center bg-[#f0f8fd] p-0.5 rounded-xl border border-[#d7e8f4] gap-0.5">
                     {[
-                      { id: "box", label: "Box", icon: "📦" },
-                      { id: "card", label: "Card", icon: "💳" },
-                      { id: "rounded", label: "Rounded", icon: "🔲" },
-                      { id: "circle", label: "Circle", icon: "⭕" },
-                      { id: "oval", label: "Oval", icon: "🥚" },
-                      { id: "square", label: "Square", icon: "⬛" },
+                      { id: "box", label: "Box" },
+                      { id: "card", label: "Card" },
+                      { id: "rounded", label: "Rounded" },
+                      { id: "circle", label: "Circle" },
+                      { id: "oval", label: "Oval" },
+                      { id: "square", label: "Square" },
                     ].map((sh) => {
                       const isActive = effectiveShape === sh.id;
                       return (
@@ -2286,46 +2328,45 @@ export default function BusinessCardStudioFlow({
                             setPreviewShape(sh.id as any);
                             setActiveSideIndex(0);
                           }}
-                          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                             isActive
-                              ? "bg-[#329AD4] text-white shadow-xs font-bold"
-                              : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/60"
+                              ? "bg-[#329AD4] text-white font-bold"
+                              : "text-zinc-600 hover:text-[#1e1d1b] hover:bg-white"
                           }`}
                           title={`Test print on ${sh.label}`}
                         >
-                          <span className="text-xs leading-none">{sh.icon}</span>
-                          <span className="hidden sm:inline">{sh.label}</span>
+                          <span>{sh.label}</span>
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="inline-flex p-1 bg-zinc-100 rounded-xl">
+                <div className="inline-flex p-1 bg-[#f0f8fd] border border-[#d7e8f4] rounded-xl">
                   <button
                     onClick={() => setViewMode("3d")}
-                    className={`px-3.5 py-1.5 text-base font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${viewMode === "3d"
-                        ? "bg-zinc-900 text-white shadow-xs"
-                        : "text-zinc-600 hover:text-zinc-900"
+                    className={`px-3.5 py-1.5 text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${viewMode === "3d"
+                        ? "bg-[#1e1d1b] text-white"
+                        : "text-zinc-600 hover:text-[#1e1d1b]"
                       }`}
                   >
-                    <span>✨ 3D Realistic View</span>
+                    <span>3D Realistic View</span>
                   </button>
 
                   <button
                     onClick={() => setViewMode("2d")}
-                    className={`px-3.5 py-1.5 text-base font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${viewMode === "2d"
-                        ? "bg-[#329AD4] text-white shadow-xs"
-                        : "text-zinc-600 hover:text-zinc-900"
+                    className={`px-3.5 py-1.5 text-sm font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${viewMode === "2d"
+                        ? "bg-[#329AD4] text-white"
+                        : "text-zinc-600 hover:text-[#1e1d1b]"
                       }`}
                   >
-                    <span>✏️ 2D Drag & Edit</span>
+                    <span>2D Drag & Edit</span>
                   </button>
                 </div>
               </div>
 
               {/* Main Card Viewport Box */}
-              <div className="w-full bg-[#111318] rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center min-h-[460px] shadow-xl relative overflow-hidden border border-zinc-800">
+              <div className="w-full bg-[#111318] rounded-[1.5rem] p-4 sm:p-6 flex flex-col items-center justify-center min-h-[460px] relative overflow-hidden border border-[#1e293b] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.7)]">
 
                 {loadingTemplate && (
                   <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-30 rounded-3xl">
@@ -2735,16 +2776,16 @@ export default function BusinessCardStudioFlow({
 
               {/* Multi-side toggle pills (Front / Back / Side 3…) */}
               {sidesCount > 1 && (
-                <div className="flex flex-wrap justify-center gap-1 p-1 bg-white rounded-full border border-zinc-200 shadow-2xs max-w-full">
+                <div className="flex flex-wrap justify-center gap-1 p-1 bg-white rounded-2xl border border-[#d7e8f4] max-w-full">
                   {sideLabels.map((label, idx) => (
                     <button
                       key={`side-pill-${idx}`}
                       type="button"
                       onClick={() => selectSide(idx)}
-                      className={`px-4 py-1.5 text-base font-semibold rounded-full transition-all cursor-pointer ${
+                      className={`px-4 py-1.5 text-sm font-semibold rounded-xl transition-all cursor-pointer ${
                         activeSideIndex === idx
-                          ? "bg-[#329AD4] text-white shadow-xs"
-                          : "text-zinc-600 hover:text-zinc-900"
+                          ? "bg-[#329AD4] text-white shadow-[0_8px_18px_-10px_rgba(50,154,212,0.9)]"
+                          : "text-zinc-600 hover:text-[#1e1d1b] hover:bg-[#f0f8fd]"
                       }`}
                     >
                       {label}
@@ -2755,12 +2796,15 @@ export default function BusinessCardStudioFlow({
             </div>
 
             {/* Right Customization Panel */}
-            <div className="lg:col-span-5 space-y-5 bg-white p-6 sm:p-8 rounded-3xl border border-zinc-200/80 shadow-xs">
+            <div className="lg:col-span-5 space-y-5 bg-white/95 p-5 sm:p-7 rounded-[1.5rem] border border-[#d7e8f4] shadow-[0_20px_50px_-36px_rgba(32,90,130,0.45)] backdrop-blur-sm">
               <div>
-                <h2 className="text-xl font-extrabold text-zinc-900">
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#329AD4]">
+                  Design studio
+                </p>
+                <h2 className="mt-1 text-xl font-black tracking-[-0.03em] text-[#1e1d1b]">
                   Customization Studio
                 </h2>
-                <p className="text-base text-zinc-500 mt-1">
+                <p className="text-sm text-zinc-500 mt-1.5 leading-relaxed">
                   {editingExtra
                     ? `Editing ${sideLabels[activeSideIndex] || `Side ${activeSideIndex + 1}`}: drag text on the card, or edit it below.`
                     : editingBack
@@ -2768,7 +2812,7 @@ export default function BusinessCardStudioFlow({
                     : "Switch to 2D Drag & Edit to drag the logo. The size slider changes it in both views."}
                 </p>
                 {viewMode === "2d" && (
-                  <p className="text-base text-zinc-400 mt-1">
+                  <p className="text-xs text-zinc-400 mt-1.5">
                     Arrows move the selection (Shift moves farther). Ctrl+Z undo, Ctrl+Y redo, Ctrl+C copy, Ctrl+V paste.
                   </p>
                 )}
@@ -2852,9 +2896,9 @@ export default function BusinessCardStudioFlow({
               </div> */}
 
               {/* Layers Management */}
-              <div className="pt-3 border-t border-zinc-100 space-y-3">
+              <div className="pt-3 border-t border-[#e7f1f8] space-y-3">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <label className="text-base font-bold text-zinc-800">
+                  <label className="text-xs font-bold uppercase tracking-[0.12em] text-zinc-500">
                     {editingExtra
                       ? `${sideLabels[activeSideIndex] || "Side"} layers`
                       : editingBack
@@ -2865,14 +2909,14 @@ export default function BusinessCardStudioFlow({
                     <button
                       type="button"
                       onClick={handleAddTextLayer}
-                      className="text-base font-bold text-[#329AD4] hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-sm font-bold text-[#329AD4] hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       + Add Text
                     </button>
                     <button
                       type="button"
                       onClick={handleAddImageLayer}
-                      className="text-base font-bold text-zinc-700 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-sm font-bold text-zinc-700 hover:text-[#329AD4] hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       + Add Image
                     </button>
@@ -2899,9 +2943,9 @@ export default function BusinessCardStudioFlow({
                     <div
                       key={layer.id}
                       onClick={() => setActiveTextId(layer.id)}
-                      className={`px-2.5 py-1 rounded-lg text-base font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${activeTextId === layer.id
-                          ? "bg-[#329AD4] text-white border-[#329AD4]"
-                          : "bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-400"
+                      className={`px-2.5 py-1.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${activeTextId === layer.id
+                          ? "bg-[#329AD4] text-white border-[#329AD4] shadow-[0_8px_18px_-12px_rgba(50,154,212,0.9)]"
+                          : "bg-[#f7fbfe] border-[#d7e8f4] text-zinc-600 hover:border-[#88c9ef]"
                         }`}
                     >
                       <span>{layer.text.length > 14 ? layer.text.slice(0, 14) + "..." : layer.text}</span>
@@ -2929,10 +2973,10 @@ export default function BusinessCardStudioFlow({
                     <div
                       key={layer.id}
                       onClick={() => setActiveTextId(layer.id)}
-                      className={`px-2.5 py-1 rounded-lg text-base font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                      className={`px-2.5 py-1.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
                         activeTextId === layer.id
-                          ? "bg-[#329AD4] text-white border-[#329AD4]"
-                          : "bg-zinc-50 border-zinc-200 text-zinc-600 hover:border-zinc-400"
+                          ? "bg-[#329AD4] text-white border-[#329AD4] shadow-[0_8px_18px_-12px_rgba(50,154,212,0.9)]"
+                          : "bg-[#f7fbfe] border-[#d7e8f4] text-zinc-600 hover:border-[#88c9ef]"
                       }`}
                     >
                       <span className="inline-flex items-center gap-1">
@@ -2971,10 +3015,10 @@ export default function BusinessCardStudioFlow({
                     onDelete={() => deleteImageLayer(activeImageLayer.id)}
                   />
                 ) : activeLayer ? (
-                  <div className="bg-zinc-50 p-3.5 rounded-2xl border border-zinc-200/70 space-y-3">
+                  <div className="bg-[#f7fbfe] p-3.5 rounded-2xl border border-[#d7e8f4] space-y-3">
                     <div>
                       <div className="flex justify-between items-center mb-1">
-                        <label className="text-base font-bold text-zinc-700">Layer Text</label>
+                        <label className="text-sm font-bold text-zinc-700">Layer Text</label>
                         {requiredLayerIds.includes(activeLayer.id) ? (
                           <span className="text-base font-semibold text-zinc-400">Required</span>
                         ) : (
@@ -2991,13 +3035,13 @@ export default function BusinessCardStudioFlow({
                         type="text"
                         value={activeLayer.text}
                         onChange={(e) => updateActiveTextLayer({ text: e.target.value })}
-                        className="w-full px-3 py-1.5 bg-white rounded-xl border border-zinc-300 text-base focus:border-[#329AD4] focus:outline-none"
+                        className="w-full px-3 py-2 bg-white rounded-xl border border-[#d7e8f4] text-sm focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 focus:outline-none"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 items-center">
                       <div>
-                        <label className="text-base font-bold text-zinc-700 block mb-1">
+                        <label className="text-sm font-bold text-zinc-700 block mb-1">
                           Font Size ({activeLayer.fontSize}px)
                         </label>
                         <input
@@ -3291,7 +3335,7 @@ export default function BusinessCardStudioFlow({
                   type="button"
                   disabled={downloadingProof}
                   onClick={() => handleDownloadProof("current")}
-                  className="w-full py-2.5 border border-zinc-300 hover:border-zinc-800 text-zinc-800 text-base font-semibold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer bg-zinc-50 hover:bg-white disabled:opacity-50"
+                  className="w-full py-2.5 border border-[#d7e8f4] hover:border-[#329AD4] text-[#1e1d1b] text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer bg-[#f7fbfe] hover:bg-white disabled:opacity-50"
                 >
                   {downloadingProof ? "Preparing image..." : `Download ${cardData.side === "back" ? "back" : "front"} PNG`}
                 </button>
@@ -3299,7 +3343,7 @@ export default function BusinessCardStudioFlow({
                   type="button"
                   disabled={downloadingProof}
                   onClick={() => handleDownloadProof("both")}
-                  className="w-full py-2 text-base font-semibold text-[#329AD4] hover:underline cursor-pointer disabled:opacity-50"
+                  className="w-full py-2 text-sm font-semibold text-[#329AD4] hover:underline cursor-pointer disabled:opacity-50"
                 >
                   Download front and back
                 </button>
@@ -3307,6 +3351,7 @@ export default function BusinessCardStudioFlow({
 
             </div>
 
+          </div>
           </div>
         </div>
       )}
@@ -3457,33 +3502,81 @@ export default function BusinessCardStudioFlow({
       )}
 
       {previewTemplate && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4" onClick={() => setPreviewTemplate(null)}>
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-3 backdrop-blur-md sm:p-6" onClick={() => setPreviewTemplate(null)}>
           <div
-            className="w-full max-w-3xl rounded-3xl bg-white shadow-2xl overflow-hidden"
+            className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-zinc-800 bg-[#0b1220] shadow-[0_30px_80px_rgba(0,0,0,0.45)] lg:grid-cols-[260px_1fr]"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4">
-              <div className="min-w-0">
-                <h3 className="truncate text-base font-black text-zinc-900">{previewTemplate.title}</h3>
-                <p className="text-base text-zinc-500">{previewTemplate.category}</p>
-              </div>
-              {previewResolved.sidesCount > 1 && (
-                <div className="inline-flex flex-wrap justify-end gap-1 rounded-xl bg-zinc-100 p-1 text-base font-bold max-w-[60%]">
-                  {previewResolved.sidesNames.map((label, idx) => (
-                    <button
-                      key={`preview-side-${idx}`}
-                      type="button"
-                      onClick={() => setPreviewSideIndex(idx)}
-                      className={`rounded-lg px-3 py-1.5 cursor-pointer ${previewSideIndex === idx ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500"}`}
-                    >
-                      {label}
-                    </button>
-                  ))}
+            <aside className="flex flex-col justify-between gap-6 border-b border-white/10 bg-[#0f172a] p-5 lg:border-b-0 lg:border-r lg:border-white/10 lg:p-6">
+              <div className="min-w-0 space-y-4">
+                <p className="text-[11px] font-bold tracking-[0.18em] text-[#064FE0] uppercase">3D Preview</p>
+                <div>
+                  <h3 className="text-xl font-extrabold leading-tight text-white">{previewTemplate.title}</h3>
+                  <p className="mt-1 text-sm text-zinc-400">{previewTemplate.category}</p>
                 </div>
-              )}
-            </div>
-            <div className="bg-[#111318] px-4 py-4">
-              <div className="relative h-[460px] overflow-hidden rounded-2xl">
+                {previewResolved.sidesCount > 1 && (
+                  <div className="flex max-h-40 flex-wrap gap-1 overflow-y-auto rounded-xl bg-white/10 p-1">
+                    {previewResolved.sidesNames.map((label, idx) => (
+                      <button
+                        key={`preview-side-${idx}`}
+                        type="button"
+                        onClick={() => setPreviewSideIndex(idx)}
+                        className={`cursor-pointer rounded-lg px-3 py-2 text-xs font-bold transition-all ${
+                          previewSideIndex === idx ? "bg-[#064FE0] text-white" : "text-zinc-300 hover:text-white"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs leading-relaxed text-zinc-400">
+                  Inspect the print face in studio lighting, then open the editor when you are ready.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPreviewTemplate(null)}
+                  className="cursor-pointer rounded-xl border border-white/20 px-4 py-2.5 text-sm font-bold text-zinc-200 transition hover:bg-white/10"
+                >
+                  Cancel
+                </button>
+                {previewTemplate.isPaid && (previewTemplate.price || 0) > 0 && !purchasedTemplateIds.includes(previewTemplate._id) ? (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const template = previewTemplate;
+                      if (!(await viewerIsSignedIn())) {
+                        router.push(registerHref(`/browsedesigns?templateId=${template._id}`, "paid"));
+                        return;
+                      }
+                      setPreviewTemplate(null);
+                      setPurchaseModalTemplate(template);
+                      setIsPurchaseModalOpen(true);
+                    }}
+                    className="cursor-pointer rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-amber-600"
+                  >
+                    Pay ${previewTemplate.price}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id = previewTemplate._id;
+                      setPreviewTemplate(null);
+                      router.push(`/customize?templateId=${id}`);
+                    }}
+                    className="cursor-pointer rounded-xl bg-[#064FE0] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0439A8]"
+                  >
+                    Use Now
+                  </button>
+                )}
+              </div>
+            </aside>
+            <div className="relative min-h-[460px] bg-[#0a0d14]">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(6,79,224,0.18),transparent_55%)]" />
+              <div className="relative h-[520px] sm:h-[560px]">
                 <ThreeDCardPreview
                   categoryName={previewTemplate?.category || categoryParam || ""}
                   name={previewTemplate?.title || ""}
@@ -3512,45 +3605,6 @@ export default function BusinessCardStudioFlow({
                   cornerRadius={0}
                 />
               </div>
-            </div>
-            <div className="flex items-center justify-end gap-3 px-5 py-4">
-              <button
-                type="button"
-                onClick={() => setPreviewTemplate(null)}
-                className="rounded-xl border border-zinc-200 px-4 py-2.5 text-base font-bold text-zinc-700 cursor-pointer hover:bg-zinc-50"
-              >
-                Cancel
-              </button>
-              {previewTemplate.isPaid && (previewTemplate.price || 0) > 0 && !purchasedTemplateIds.includes(previewTemplate._id) ? (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const template = previewTemplate;
-                    if (!(await viewerIsSignedIn())) {
-                      router.push(registerHref(`/browsedesigns?templateId=${template._id}`, "paid"));
-                      return;
-                    }
-                    setPreviewTemplate(null);
-                    setPurchaseModalTemplate(template);
-                    setIsPurchaseModalOpen(true);
-                  }}
-                  className="rounded-xl bg-amber-500 px-4 py-2.5 text-base font-bold text-white cursor-pointer hover:bg-amber-600"
-                >
-                  Pay ${previewTemplate.price}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const id = previewTemplate._id;
-                    setPreviewTemplate(null);
-                    router.push(`/customize?templateId=${id}`);
-                  }}
-                  className="rounded-xl bg-[#329AD4] px-4 py-2.5 text-base font-bold text-white cursor-pointer hover:bg-[#2884b8]"
-                >
-                  Use Now
-                </button>
-              )}
             </div>
           </div>
         </div>

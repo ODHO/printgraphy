@@ -90,12 +90,12 @@ function CheckoutForm({
         }}
       />
       {error && (
-        <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-base">{error}</div>
+        <div className="px-4 py-3 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-sm">{error}</div>
       )}
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-700 text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-zinc-900/10 disabled:opacity-60 flex items-center justify-center gap-2"
+        className="w-full py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-2xl transition-all cursor-pointer shadow-[0_10px_24px_-12px_rgba(50,154,212,0.9)] disabled:opacity-60 flex items-center justify-center gap-2"
       >
         {loading ? (
           <>
@@ -151,17 +151,17 @@ function MockCheckoutForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="p-4 bg-sky-50 rounded-2xl border border-sky-200 text-base text-sky-800 space-y-1">
-        <p className="font-bold text-sky-900">💳 Instant Payment & Test Mode Active</p>
+      <div className="p-4 bg-[#eef7fc] rounded-2xl border border-[#d7e8f4] text-sm text-[#164967] space-y-1">
+        <p className="font-bold text-[#1e1d1b]">Instant Payment & Test Mode Active</p>
         <p>Click below to complete your print order and generate a live order tracking reference.</p>
       </div>
       {error && (
-        <div className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-base">{error}</div>
+        <div className="px-4 py-3 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-sm">{error}</div>
       )}
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-700 text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-zinc-900/10 disabled:opacity-60 flex items-center justify-center gap-2"
+        className="w-full py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-2xl transition-all cursor-pointer shadow-[0_10px_24px_-12px_rgba(50,154,212,0.9)] disabled:opacity-60 flex items-center justify-center gap-2"
       >
         {loading ? (
           <>
@@ -273,14 +273,14 @@ export default function CheckoutPage() {
 
   const field = (label: string, key: keyof ShippingAddr, placeholder = "", half = false) => (
     <div className={half ? "col-span-1" : "col-span-2"}>
-      <label className="text-base font-semibold text-zinc-600 block mb-1.5">{label}</label>
+      <label className="text-xs font-bold uppercase tracking-[0.1em] text-zinc-500 block mb-1.5">{label}</label>
       <input
         type="text"
         required={key !== "line2" && key !== "phone"}
         value={addr[key]}
         onChange={(e) => setAddr((prev) => ({ ...prev, [key]: e.target.value }))}
         placeholder={placeholder}
-        className="w-full bg-white border border-zinc-200 rounded-xl px-4 py-2.5 text-base text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 transition-all"
+        className="w-full bg-white border border-[#d7e8f4] rounded-xl px-4 py-2.5 text-sm text-[#1e1d1b] placeholder-zinc-400 focus:outline-none focus:border-[#329AD4] focus:ring-2 focus:ring-[#329AD4]/20 transition-all"
       />
     </div>
   );
@@ -288,77 +288,86 @@ export default function CheckoutPage() {
   const isMockPayment = isMock || !clientSecret || clientSecret.includes("mock") || !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.startsWith("pk_test_51...");
 
   return (
-    <div className="min-h-screen bg-[#ffffff] font-sans">
-      {/* Header */}
-      <div className="bg-white border-b border-zinc-200">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-4">
+    <div className="relative min-h-screen overflow-hidden bg-[#f7fbfe] font-sans text-[#1e1d1b]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(ellipse_at_18%_0%,rgba(50,154,212,0.16),transparent_55%),radial-gradient(ellipse_at_92%_8%,rgba(85,178,231,0.1),transparent_48%)]"
+      />
+
+      <div className="relative border-b border-[#d7e8f4] bg-white/90 backdrop-blur-md">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
           <Link href="/" className="inline-block">
-            <img src="/logo/logo.png" alt="Printgraphy Logo" className="h-10 w-auto mx-auto object-contain" />
+            <img src="/logo/logo.png" alt="Printgraphy Logo" className="h-9 w-auto object-contain" />
           </Link>
-          <span className="text-zinc-300">/</span>
-          <h1 className="text-base font-semibold text-zinc-600">Checkout</h1>
+          <span className="text-[#b8e0f6]">/</span>
+          <h1 className="text-sm font-semibold text-zinc-600">Checkout</h1>
         </div>
       </div>
 
-      {/* Progress */}
-      <div className="bg-white border-b border-zinc-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-base font-semibold">
+      <div className="relative border-b border-[#e7f1f8] bg-white/70 backdrop-blur-sm">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center gap-3 text-sm font-semibold">
           {[
-            { key: "address", label: "Shipping" },
-            { key: "payment", label: "Payment" },
-          ].map((s, i) => (
-            <div key={s.key} className="flex items-center gap-2">
-              {i > 0 && <span className="text-zinc-300">›</span>}
-              <span className={step === s.key || (s.key === "address" && step === "payment") ? "text-zinc-900" : "text-zinc-400"}>
-                {s.label}
-              </span>
-            </div>
-          ))}
+            { key: "address", label: "1 · Shipping" },
+            { key: "payment", label: "2 · Payment" },
+          ].map((s, i) => {
+            const active = step === s.key;
+            const done = s.key === "address" && step === "payment";
+            return (
+              <div key={s.key} className="flex items-center gap-3">
+                {i > 0 && <span className="h-px w-8 bg-[#d7e8f4]" />}
+                <span
+                  className={`inline-flex items-center rounded-xl px-3 py-1.5 ${
+                    active || done
+                      ? "bg-[#eef7fc] text-[#329AD4] border border-[#d7e8f4]"
+                      : "text-zinc-400"
+                  }`}
+                >
+                  {s.label}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-          {/* Left — Form */}
           <div className="lg:col-span-7 space-y-6">
-
-            {/* ── STEP 1: Address ── */}
             {step === "address" && (
-              <div className="bg-white rounded-2xl border border-zinc-100 p-6">
-                <h2 className="text-base font-bold text-zinc-900 mb-5">Shipping Address</h2>
+              <div className="bg-white/95 rounded-[1.5rem] border border-[#d7e8f4] p-5 sm:p-7 shadow-[0_20px_50px_-36px_rgba(32,90,130,0.45)]">
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#329AD4]">Delivery</p>
+                <h2 className="mt-1 text-xl font-black tracking-[-0.03em] text-[#1e1d1b] mb-5">Shipping Address</h2>
 
-                {/* Saved Addresses */}
                 {savedAddresses.length > 0 && (
                   <div className="mb-5 space-y-2">
-                    <p className="text-base font-semibold text-zinc-500 uppercase tracking-wide">Saved Addresses</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-zinc-500">Saved Addresses</p>
                     <div className="grid gap-2">
                       {savedAddresses.map((a) => (
                         <button
                           key={a._id}
                           type="button"
                           onClick={() => setAddr({ name: a.name, line1: a.line1, line2: a.line2 ?? "", city: a.city, state: a.state, zip: a.zip, country: a.country, phone: "" })}
-                          className={`text-left p-3 rounded-xl border text-base transition-all cursor-pointer ${
+                          className={`text-left p-3.5 rounded-2xl border text-sm transition-all cursor-pointer ${
                             addr.line1 === a.line1 && addr.zip === a.zip
-                              ? "border-zinc-900 bg-zinc-50"
-                              : "border-zinc-200 hover:border-zinc-300"
+                              ? "border-[#329AD4] bg-[#eef7fc] shadow-[0_0_0_3px_rgba(50,154,212,0.12)]"
+                              : "border-[#d7e8f4] hover:border-[#88c9ef] bg-white"
                           }`}
                         >
-                          <p className="font-semibold text-zinc-900">{a.name} — {a.label}</p>
-                          <p className="text-zinc-500 text-base mt-0.5">{a.line1}, {a.city}, {a.state} {a.zip}</p>
+                          <p className="font-semibold text-[#1e1d1b]">{a.name} — {a.label}</p>
+                          <p className="text-zinc-500 text-sm mt-0.5">{a.line1}, {a.city}, {a.state} {a.zip}</p>
                         </button>
                       ))}
                     </div>
                     <div className="flex items-center gap-2 py-2">
-                      <div className="flex-1 border-t border-zinc-100" />
-                      <span className="text-base text-zinc-400">or enter a new address</span>
-                      <div className="flex-1 border-t border-zinc-100" />
+                      <div className="flex-1 border-t border-[#e7f1f8]" />
+                      <span className="text-xs text-zinc-400">or enter a new address</span>
+                      <div className="flex-1 border-t border-[#e7f1f8]" />
                     </div>
                   </div>
                 )}
 
                 {initError && (
-                  <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-base">{initError}</div>
+                  <div className="mb-4 px-4 py-3 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-sm">{initError}</div>
                 )}
 
                 <form onSubmit={handleAddressSubmit} className="space-y-4">
@@ -374,14 +383,14 @@ export default function CheckoutPage() {
                   </div>
 
                   <label className="flex items-center gap-2.5 cursor-pointer">
-                    <input type="checkbox" checked={saveAddr} onChange={(e) => setSaveAddr(e.target.checked)} className="w-4 h-4 rounded border-zinc-300 accent-zinc-900" />
-                    <span className="text-base text-zinc-600">Save this address for future orders</span>
+                    <input type="checkbox" checked={saveAddr} onChange={(e) => setSaveAddr(e.target.checked)} className="w-4 h-4 rounded border-[#d7e8f4] accent-[#329AD4]" />
+                    <span className="text-sm text-zinc-600">Save this address for future orders</span>
                   </label>
 
                   <button
                     type="submit"
                     disabled={creatingIntent}
-                    className="w-full py-3 bg-zinc-900 hover:bg-zinc-700 text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-zinc-900/10 disabled:opacity-60 flex items-center justify-center gap-2"
+                    className="w-full py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-2xl transition-all cursor-pointer shadow-[0_10px_24px_-12px_rgba(50,154,212,0.9)] disabled:opacity-60 flex items-center justify-center gap-2"
                   >
                     {creatingIntent ? (
                       <>
@@ -394,20 +403,21 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* ── STEP 2: Payment ── */}
             {step === "payment" && clientSecret && (
-              <div className="bg-white rounded-2xl border border-zinc-100 p-6">
+              <div className="bg-white/95 rounded-[1.5rem] border border-[#d7e8f4] p-5 sm:p-7 shadow-[0_20px_50px_-36px_rgba(32,90,130,0.45)]">
                 <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-base font-bold text-zinc-900">Payment</h2>
-                  <button onClick={() => setStep("address")} className="text-base text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#329AD4]">Secure pay</p>
+                    <h2 className="mt-1 text-xl font-black tracking-[-0.03em] text-[#1e1d1b]">Payment</h2>
+                  </div>
+                  <button onClick={() => setStep("address")} className="text-sm font-semibold text-[#329AD4] hover:text-[#2884b8] transition-colors cursor-pointer">
                     ← Edit Address
                   </button>
                 </div>
 
-                {/* Address summary */}
-                <div className="mb-5 p-3 rounded-xl bg-zinc-50 border border-zinc-100 text-base">
-                  <p className="font-semibold text-zinc-900">{addr.name}</p>
-                  <p className="text-zinc-500 text-base mt-0.5">{addr.line1}{addr.line2 ? `, ${addr.line2}` : ""}, {addr.city}, {addr.state} {addr.zip}</p>
+                <div className="mb-5 p-3.5 rounded-2xl bg-[#f7fbfe] border border-[#d7e8f4] text-sm">
+                  <p className="font-semibold text-[#1e1d1b]">{addr.name}</p>
+                  <p className="text-zinc-500 mt-0.5">{addr.line1}{addr.line2 ? `, ${addr.line2}` : ""}, {addr.city}, {addr.state} {addr.zip}</p>
                 </div>
 
                 {isMockPayment ? (
@@ -419,7 +429,7 @@ export default function CheckoutPage() {
                 ) : (
                   <Elements
                     stripe={stripePromise}
-                    options={{ clientSecret, appearance: { theme: "stripe", variables: { borderRadius: "12px", colorPrimary: "#18181b", fontFamily: "system-ui, sans-serif" } } }}
+                    options={{ clientSecret, appearance: { theme: "stripe", variables: { borderRadius: "14px", colorPrimary: "#329AD4", fontFamily: "system-ui, sans-serif" } } }}
                   >
                     <CheckoutForm
                       paymentIntentId={paymentIntentId}
@@ -429,69 +439,69 @@ export default function CheckoutPage() {
                   </Elements>
                 )}
 
-                {/* Security note */}
-                <p className="text-base text-zinc-400 text-center mt-4 flex items-center justify-center gap-1.5">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                <p className="text-xs text-zinc-400 text-center mt-4 flex items-center justify-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                   Secured & Encrypted Checkout.
                 </p>
               </div>
             )}
           </div>
 
-          {/* Right — Order Summary */}
           <div className="lg:col-span-5">
-            <div className="bg-white rounded-2xl border border-zinc-100 p-6 sticky top-20 space-y-4">
-              <h3 className="text-base font-bold text-zinc-900">Order Summary</h3>
+            <div className="bg-white/95 rounded-[1.5rem] border border-[#d7e8f4] p-6 sticky top-20 space-y-4 shadow-[0_20px_50px_-36px_rgba(32,90,130,0.5)] backdrop-blur-sm">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#329AD4]">Summary</p>
+                <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-[#1e1d1b]">Order Summary</h3>
+              </div>
 
-              {/* Dynamic Cart Items List */}
               {loadingCart ? (
-                <div className="py-3 text-center text-base text-zinc-400">Loading order items...</div>
+                <div className="py-3 text-center text-sm text-zinc-400">Loading order items...</div>
               ) : cartItems.length === 0 ? (
-                <div className="py-2 text-base text-zinc-400">Your cart is empty.</div>
+                <div className="py-2 text-sm text-zinc-400">Your cart is empty.</div>
               ) : (
-                <div className="space-y-3 pb-3 border-b border-zinc-100 max-h-56 overflow-y-auto">
+                <div className="space-y-3 pb-3 border-b border-[#e7f1f8] max-h-56 overflow-y-auto">
                   {cartItems.map((item, idx) => (
-                    <div key={item._id || idx} className="flex items-center gap-3 text-base">
-                      <div className="w-12 h-10 rounded-lg bg-zinc-100 border border-zinc-200 overflow-hidden shrink-0">
+                    <div key={item._id || idx} className="flex items-center gap-3 text-sm">
+                      <div className="w-12 h-10 rounded-xl bg-[#f0f8fd] border border-[#d7e8f4] overflow-hidden shrink-0">
                         {item.thumbnail ? (
                           <img src={item.thumbnail} alt={item.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-base text-zinc-300">Item</div>
+                          <div className="w-full h-full flex items-center justify-center text-xs text-zinc-300">Item</div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-zinc-900 truncate">{item.name}</p>
-                        <p className="text-zinc-400 text-base">Qty: {item.quantity}</p>
+                        <p className="font-bold text-[#1e1d1b] truncate">{item.name}</p>
+                        <p className="text-zinc-400 text-xs">Qty: {item.quantity}</p>
                       </div>
-                      <span className="font-bold text-zinc-900">${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</span>
+                      <span className="font-bold text-[#1e1d1b]">${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
               )}
 
-              <div className="space-y-2 text-base text-zinc-600">
+              <div className="space-y-2 text-sm text-zinc-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-semibold">${(subtotal || 0).toFixed(2)}</span>
+                  <span className="font-semibold text-[#1e1d1b]">${(subtotal || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
                   {shippingCost === 0
                     ? <span className="font-semibold text-emerald-600">Free</span>
-                    : <span className="font-semibold">${(shippingCost || 0).toFixed(2)}</span>
+                    : <span className="font-semibold text-[#1e1d1b]">${(shippingCost || 0).toFixed(2)}</span>
                   }
                 </div>
-                <div className="border-t border-zinc-100 pt-2 flex justify-between">
-                  <span className="font-bold text-zinc-900">Total</span>
-                  <span className="font-black text-zinc-900">${(totalAmount || 0).toFixed(2)}</span>
+                <div className="border-t border-[#e7f1f8] pt-2.5 flex justify-between items-baseline">
+                  <span className="font-bold text-[#1e1d1b]">Total</span>
+                  <span className="text-2xl font-black tracking-[-0.03em] text-[#1e1d1b]">${(totalAmount || 0).toFixed(2)}</span>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-zinc-100 space-y-2">
-                <p className="text-base text-zinc-400 font-semibold uppercase tracking-wide">Accepted Payments</p>
-                <div className="flex gap-2">
+              <div className="pt-2 border-t border-[#e7f1f8] space-y-2">
+                <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-[0.12em]">Accepted Payments</p>
+                <div className="flex flex-wrap gap-2">
                   {["Visa", "MC", "AmEx", "Apple Pay"].map((p) => (
-                    <span key={p} className="px-2 py-1 rounded-md bg-zinc-100 text-base font-bold text-zinc-500">{p}</span>
+                    <span key={p} className="px-2.5 py-1 rounded-lg bg-[#f0f8fd] border border-[#d7e8f4] text-xs font-bold text-[#2172a0]">{p}</span>
                   ))}
                 </div>
               </div>

@@ -45,13 +45,13 @@ const SIDEBAR_SECTIONS: { title: string; items: NavItem[] }[] = [
       { label: "Payments", href: "/admin/wallet", icon: "wallet", matchPrefix: true },
     ],
   },
-  {
-    title: "Content",
-    items: [
-      { label: "Banners", href: "/admin/website/home", icon: "banners", matchPrefix: true },
-      { label: "Settings", href: "/admin/header-menu", icon: "settings", matchPrefix: true },
-    ],
-  },
+  // {
+  //   title: "Content",
+  //   items: [
+  //     { label: "Banners", href: "/admin/website/home", icon: "banners", matchPrefix: true },
+  //     { label: "Settings", href: "/admin/header-menu", icon: "settings", matchPrefix: true },
+  //   ],
+  // },
 ];
 
 export default function AdminSidebar() {

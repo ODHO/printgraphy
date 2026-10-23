@@ -32,5 +32,5 @@ export async function generateOrderNumber(): Promise<string> {
   const { default: Order } = await import("@/models/Order");
   const count = await Order.countDocuments();
   const seq = String(count + 1).padStart(5, "0");
-  return `XP-${year}-${seq}`;
+  return `PG-${year}-${seq}`;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useTransition, useCallback } from "react";
+import { Suspense, useEffect, useState, useRef, useTransition, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import CustomerSidebar from "@/components/CustomerSidebar";
@@ -149,7 +149,15 @@ function MapPreview() {
   );
 }
 
-export default function ProfilePage() {
+function ProfilePageFallback() {
+  return (
+    <div className="min-h-screen bg-[#ffffff] flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-sky-200 border-t-[#329AD4] rounded-full animate-spin" />
+    </div>
+  );
+}
+
+function ProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -943,5 +951,13 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProfilePageWithSuspense() {
+  return (
+    <Suspense fallback={<ProfilePageFallback />}>
+      <ProfilePage />
+    </Suspense>
   );
 }

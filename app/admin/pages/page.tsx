@@ -255,7 +255,7 @@ export default function AdminPagesPage() {
           <p>Have questions? Reach out to our support team directly:</p>
           <ul>
             <li><strong>Email:</strong> support@printgraphi.com</li>
-            <li><strong>Phone:</strong> +1 (800) 555-XPRINT</li>
+            <li><strong>Phone:</strong> +1 (800) 555-PRINTGRAPHY</li>
           </ul>
         </div>
       `;

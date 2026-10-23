@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 1. Generate temp password & create Vendor User account
-  const tempPass = `XP-Vendor-${Math.floor(100000 + Math.random() * 900000)}`;
+  const tempPass = `PG-Vendor-${Math.floor(100000 + Math.random() * 900000)}`;
   const hashedPassword = await bcrypt.hash(tempPass, 10);
 
   let vendorUser = await User.findOne({ email });

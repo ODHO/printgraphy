@@ -404,6 +404,9 @@ export default function BusinessCardsCustomizeFlow({
   const [purchaseModalTemplate, setPurchaseModalTemplate] = useState<any>(null);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
+  /** Size popup: pick catalog category first when none is known, then show sizes. */
+  const [sizeModalView, setSizeModalView] = useState<"catalog" | "sizes">("catalog");
+  const autoOpenedSizeModalRef = useRef(false);
   const [customWidth, setCustomWidth] = useState<number>(105);
   const [customHeight, setCustomHeight] = useState<number>(60);
   const [customUnit, setCustomUnit] = useState<CanvasUnit>("mm");
@@ -489,8 +492,11 @@ export default function BusinessCardsCustomizeFlow({
   useEffect(() => {
     if (!selectedCategory && selectedTemplate?.category && categories.length > 0) {
       const matchedCat = categories.find(
-        (c) => c.name.toLowerCase() === selectedTemplate.category.toLowerCase() || c.slug === selectedTemplate.category.toLowerCase()
+        (c) =>
+          c.name.toLowerCase() === selectedTemplate.category.toLowerCase() ||
+          c.slug === selectedTemplate.category.toLowerCase()
       );
+      // Only attach category for print-size lists — do not overwrite the template canvas.
       if (matchedCat) setSelectedCategory(matchedCat);
     }
   }, [selectedTemplate, categories, selectedCategory]);
@@ -724,6 +730,48 @@ export default function BusinessCardsCustomizeFlow({
     });
     setIsSizeModalOpen(false);
   };
+
+  const syncCustomSizeFields = () => {
+    setCustomWidth(Number(activeCanvasConfig.width) || 105);
+    setCustomHeight(Number(activeCanvasConfig.height) || 60);
+    setCustomUnit(asCanvasUnit(activeCanvasConfig.unit, "mm"));
+    setCustomBleed(Number(activeCanvasConfig.bleed) || 3);
+    setCustomSafeArea(Number(activeCanvasConfig.safe_area) || 3);
+  };
+
+  const openSizeModal = (opts?: { forceCatalog?: boolean }) => {
+    syncCustomSizeFields();
+    const hasCategory = Boolean(selectedCategory || selectedTemplate?.category);
+    setSizeModalView(opts?.forceCatalog || !hasCategory ? "catalog" : "sizes");
+    setIsSizeModalOpen(true);
+  };
+
+  const pickCategoryInModal = (cat: PrintCategory) => {
+    applyCategory(cat);
+    if (cat.variations && cat.variations.length > 0) {
+      setDbVariations(cat.variations);
+      setSelectedVariations((prev) => {
+        const next = { ...prev };
+        cat.variations!.forEach((group) => {
+          if (!next[group.name] && group.values[0]?.name) next[group.name] = group.values[0].name;
+        });
+        return next;
+      });
+    }
+    setCategorySearchQuery("");
+    setSizeModalView("sizes");
+  };
+
+  // Bare /customize (no template/design/category): open size popup on catalog first.
+  useEffect(() => {
+    if (autoOpenedSizeModalRef.current) return;
+    if (templateId || designId || categoryParam) return;
+    if (categories.length === 0) return;
+    if (selectedCategory || selectedTemplate) return;
+    autoOpenedSizeModalRef.current = true;
+    setSizeModalView("catalog");
+    setIsSizeModalOpen(true);
+  }, [categories, templateId, designId, categoryParam, selectedCategory, selectedTemplate]);
 
   const isMockupProduct =
     asCanvasType(
@@ -1194,35 +1242,56 @@ export default function BusinessCardsCustomizeFlow({
     setBackTextLayers((prev) => applyEmployeeToLayers(prev, employee, sheetFields));
   };
 
-  const buildCardScene = (side: "front" | "back"): CardScene => ({
-    side,
-    bgColor: side === "back" ? cardData.backBgColor : cardData.bgColor,
-    ...designBackdrop((side === "back" ? cardData.backBgMode : cardData.bgMode) === "color" ? null : side === "back" ? selectedTemplate?.back_design : selectedTemplate?.front_design),
-    ...sideBackdrop(side),
-    textColor: cardData.textColor,
-    layout: CUSTOMIZE_LAYOUT,
-    previewWidth: fitDims.renderWidth,
-    previewHeight: fitDims.renderHeight,
-    cornerRadius: cornerRadiusForFinish(cardData.corners, 16),
-    textLayers: side === "front" ? textLayers : backTextLayers,
-    objects: side === "front"
-      ? withImageOverrides(selectedTemplate?.front_design?.objects, imageOverrides)
-      : backDecor,
-    logoText: "",
-    logoImage: (side === "back" ? backHasArtwork : hasTemplateLogo) ? null : cardData.logoImage || LOGO_PLACEHOLDER,
-    logoPosition: side === "back" ? cardData.backLogoPosition : cardData.logoPosition,
-    logoX: side === "back" ? cardData.backLogoX : cardData.logoX,
-    logoY: side === "back" ? cardData.backLogoY : cardData.logoY,
-    logoSize: cardData.logoSize,
-    uploadedImage: null,
-    imageOpacity: cardData.imageOpacity,
-    rotation: cardData.rotation,
-    fitMode: cardData.fitMode,
-    safeInset: fitDims.safeAreaPx,
-    website: cardData.website,
-    email: cardData.email,
-    name: cardData.name,
-  });
+  const buildCardScene = (side: "front" | "back"): CardScene => {
+    // Match live preview: strip template artwork (managed via imageLayers) and append user image layers.
+    const frontSceneObjects = [
+      ...frontObjects,
+      ...imageLayers.map(imageLayerToObject),
+    ];
+    const backSceneObjects = [
+      ...backDecor,
+      ...backImageLayers.map(imageLayerToObject),
+    ];
+    const sideImageLayers = side === "front" ? imageLayers : backImageLayers;
+    const hasSideArtwork =
+      side === "back"
+        ? backHasArtwork || backImageLayers.length > 0
+        : hasTemplateLogo || imageLayers.length > 0;
+    const realLogo =
+      cardData.logoImage &&
+      cardData.logoImage !== LOGO_PLACEHOLDER &&
+      cardData.logoImage !== DEFAULT_IMAGE_LAYER_SRC
+        ? cardData.logoImage
+        : null;
+
+    return {
+      side,
+      bgColor: side === "back" ? cardData.backBgColor : cardData.bgColor,
+      ...designBackdrop((side === "back" ? cardData.backBgMode : cardData.bgMode) === "color" ? null : side === "back" ? selectedTemplate?.back_design : selectedTemplate?.front_design),
+      ...sideBackdrop(side),
+      textColor: cardData.textColor,
+      layout: CUSTOMIZE_LAYOUT,
+      previewWidth: fitDims.renderWidth,
+      previewHeight: fitDims.renderHeight,
+      cornerRadius: cornerRadiusForFinish(cardData.corners, 16),
+      textLayers: side === "front" ? textLayers : backTextLayers,
+      objects: side === "front" ? frontSceneObjects : backSceneObjects,
+      logoText: "",
+      logoImage: hasSideArtwork || sideImageLayers.length > 0 ? null : realLogo,
+      logoPosition: side === "back" ? cardData.backLogoPosition : cardData.logoPosition,
+      logoX: side === "back" ? cardData.backLogoX : cardData.logoX,
+      logoY: side === "back" ? cardData.backLogoY : cardData.logoY,
+      logoSize: cardData.logoSize,
+      uploadedImage: null,
+      imageOpacity: cardData.imageOpacity,
+      rotation: cardData.rotation,
+      fitMode: cardData.fitMode,
+      safeInset: fitDims.safeAreaPx,
+      website: cardData.website,
+      email: cardData.email,
+      name: cardData.name,
+    };
+  };
 
   const baseUnitPricePerCard = basePrice;
   let variationExtraPerCard = 0;
@@ -2887,7 +2956,7 @@ export default function BusinessCardsCustomizeFlow({
               <div className="flex items-center gap-1 shrink-0">
                 <button
                   type="button"
-                  onClick={() => setIsSizeModalOpen(true)}
+                  onClick={() => openSizeModal()}
                   className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-zinc-200 bg-white hover:border-[#329AD4] text-zinc-700 transition-colors shadow-2xs cursor-pointer group whitespace-nowrap shrink-0"
                   title="Select product size and dimensions"
                 >
@@ -3081,7 +3150,7 @@ export default function BusinessCardsCustomizeFlow({
                 {/* 0. Size / Dimensions Icon */}
                 <button
                   type="button"
-                  onClick={() => setIsSizeModalOpen(true)}
+                  onClick={() => openSizeModal()}
                   className="w-9 h-9 rounded-lg text-zinc-600 hover:bg-sky-50 hover:text-[#329AD4] flex items-center justify-center transition-colors cursor-pointer"
                   title="Select Size & Dimensions"
                 >
@@ -3244,7 +3313,7 @@ export default function BusinessCardsCustomizeFlow({
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <button
                         type="button"
-                        onClick={() => setIsSizeModalOpen(true)}
+                        onClick={() => openSizeModal()}
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 border border-zinc-200 text-[11px] font-semibold text-zinc-700 hover:border-[#329AD4] hover:text-[#329AD4] hover:shadow-xs transition-all shadow-2xs cursor-pointer group"
                         title="Change product dimensions"
                       >
@@ -3653,7 +3722,7 @@ export default function BusinessCardsCustomizeFlow({
                     <span className="mx-1">•</span>
                     <button
                       type="button"
-                      onClick={() => setIsSizeModalOpen(true)}
+                      onClick={() => openSizeModal()}
                       className="font-semibold text-[#329AD4] hover:underline cursor-pointer"
                       title="Change product size"
                     >
@@ -3809,7 +3878,7 @@ export default function BusinessCardsCustomizeFlow({
                       <span>Size / Dimensions:</span>
                       <button
                         type="button"
-                        onClick={() => setIsSizeModalOpen(true)}
+                        onClick={() => openSizeModal()}
                         className="font-bold text-[#329AD4] hover:underline cursor-pointer"
                       >
                         {currentSizeName} ({activeCanvasConfig.width} × {activeCanvasConfig.height} {activeCanvasConfig.unit || "mm"})
@@ -3836,22 +3905,27 @@ export default function BusinessCardsCustomizeFlow({
           STEP 2: YOUR PREFERENCES
       ───────────────────────────────────────────────────────────── */}
           {step === "preferences" && (
-            <div className="container mx-auto px-4 sm:px-6 py-6 space-y-6 animate-in fade-in duration-300 flex-1">
+            <div className="relative flex-1 animate-in fade-in duration-300">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(ellipse_at_15%_0%,rgba(50,154,212,0.14),transparent_55%),radial-gradient(ellipse_at_90%_5%,rgba(85,178,231,0.1),transparent_45%)]"
+              />
+              <div className="relative container mx-auto px-4 sm:px-6 py-6 pb-36 space-y-6">
 
               <button
                 onClick={() => setStep("review")}
-                className="inline-flex items-center gap-1.5 text-base font-semibold text-zinc-700 hover:text-zinc-900 cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-[#329AD4] cursor-pointer transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
-                <span>Back</span>
+                <span>Back to design</span>
               </button>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
 
                 <div className="lg:col-span-6 flex flex-col items-center gap-4">
-                  <div className="w-full bg-[#f4f4f4] rounded-3xl p-6 sm:p-10 flex flex-col items-center justify-center min-h-[380px]">
+                  <div className="w-full rounded-[1.5rem] border border-[#d7e8f4] bg-white/80 p-6 sm:p-10 flex flex-col items-center justify-center min-h-[380px] shadow-[0_20px_50px_-36px_rgba(32,90,130,0.45)] backdrop-blur-sm">
                     <ScaledCardStage width={fitDimsSummary.renderWidth} height={fitDimsSummary.renderHeight}>
                       <div
                         style={{
@@ -3980,15 +4054,15 @@ export default function BusinessCardsCustomizeFlow({
                   </div>
 
                   {sidesCount > 1 && (
-                    <div className="flex flex-wrap justify-center gap-1 p-1 bg-white rounded-full border border-zinc-200 shadow-2xs max-w-full">
+                    <div className="flex flex-wrap justify-center gap-1 p-1 bg-white rounded-2xl border border-[#d7e8f4] max-w-full">
                       {sideLabels.map((label, idx) => (
                         <button
                           key={`summary-side-${idx}`}
                           type="button"
                           onClick={() => selectSide(idx)}
-                          className={`px-5 py-1.5 text-base font-semibold rounded-full transition-all cursor-pointer ${activeSideIndex === idx
-                              ? "bg-[#329AD4] text-white shadow-xs"
-                              : "text-zinc-600 hover:text-zinc-900"
+                          className={`px-5 py-2 text-sm font-semibold rounded-xl transition-all cursor-pointer ${activeSideIndex === idx
+                              ? "bg-[#329AD4] text-white shadow-[0_8px_18px_-10px_rgba(50,154,212,0.9)]"
+                              : "text-zinc-600 hover:text-[#1e1d1b] hover:bg-[#f0f8fd]"
                             }`}
                         >
                           {label}
@@ -3998,12 +4072,15 @@ export default function BusinessCardsCustomizeFlow({
                   )}
                 </div>
 
-                <div className="lg:col-span-6 bg-white p-6 sm:p-8 rounded-3xl border border-zinc-200/80 shadow-xs space-y-6">
+                <div className="lg:col-span-6 bg-white/95 p-5 sm:p-7 rounded-[1.5rem] border border-[#d7e8f4] shadow-[0_20px_50px_-36px_rgba(32,90,130,0.45)] space-y-6 backdrop-blur-sm">
                   <div>
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#329AD4]">
+                      Step 2 · Options
+                    </p>
+                    <h1 className="mt-1.5 text-2xl sm:text-[1.85rem] font-black tracking-[-0.035em] text-[#1e1d1b]">
                       Your Preferences
                     </h1>
-                    <p className="text-base sm:text-base text-zinc-500 mt-2 leading-relaxed">
+                    <p className="text-[15px] text-zinc-500 mt-2 leading-relaxed">
                       Set how many cards to print, or upload an employee sheet so each card uses that person&apos;s details.
                     </p>
                   </div>
@@ -4025,20 +4102,20 @@ export default function BusinessCardsCustomizeFlow({
                         const selectedValName = selectedVariations[groupName] || (vGroup.values[0]?.name ?? "");
 
                         return (
-                          <div key={vGroup._id || groupName} className="bg-[#ffffff] rounded-2xl p-4 border border-zinc-200/60">
+                          <div key={vGroup._id || groupName} className="rounded-2xl p-4 border border-[#d7e8f4] bg-[#f7fbfe]/70">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-[#329AD4] text-white flex items-center justify-center">
+                              <div className="w-9 h-9 rounded-xl bg-[#329AD4] text-white flex items-center justify-center shrink-0">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
                                 </svg>
                               </div>
-                              <div>
-                                <span className="text-base font-bold text-zinc-900 block">Select {groupName}</span>
-                                <span className="text-base text-[#329AD4] font-extrabold">{selectedValName}</span>
+                              <div className="min-w-0">
+                                <span className="text-sm font-bold text-[#1e1d1b] block">Select {groupName}</span>
+                                <span className="text-sm text-[#329AD4] font-bold truncate block">{selectedValName}</span>
                               </div>
                             </div>
 
-                            <div className="mt-4 pt-3 border-t border-zinc-200/80 space-y-3">
+                            <div className="mt-4 pt-3 border-t border-[#e7f1f8] space-y-2.5">
                               {vGroup.values.map((val) => {
                                 const isSelected = selectedValName === val.name;
                                 const priceText = !val.price || val.price === 0 ? "Free" : `+$${val.price.toFixed(2)}`;
@@ -4054,23 +4131,23 @@ export default function BusinessCardsCustomizeFlow({
                                         setCardData((prev) => ({ ...prev, thickness: val.name }));
                                       }
                                     }}
-                                    className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${isSelected
-                                        ? "border-[#329AD4] bg-sky-50/40 shadow-2xs ring-1 ring-[#329AD4]/30"
-                                        : "border-zinc-200 hover:border-zinc-300 bg-white"
+                                    className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all ${isSelected
+                                        ? "border-[#329AD4] bg-white shadow-[0_0_0_3px_rgba(50,154,212,0.15)]"
+                                        : "border-[#d7e8f4] hover:border-[#88c9ef] bg-white"
                                       }`}
                                   >
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3 min-w-0">
                                       {val.image && (
-                                        <img src={mediaSrc(val.image)} alt={val.name} className="w-10 h-10 object-cover rounded-lg border border-zinc-200" />
+                                        <img src={mediaSrc(val.image)} alt={val.name} className="w-10 h-10 object-cover rounded-xl border border-[#d7e8f4] shrink-0" />
                                       )}
-                                      <div>
-                                        <p className="text-base font-bold text-zinc-900">{val.name}</p>
+                                      <div className="min-w-0">
+                                        <p className="text-sm font-bold text-[#1e1d1b]">{val.name}</p>
                                         {val.description && (
-                                          <p className="text-base text-zinc-500">{val.description}</p>
+                                          <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2">{val.description}</p>
                                         )}
                                       </div>
                                     </div>
-                                    <span className={`text-base font-extrabold ${val.price ? "text-zinc-700" : "text-emerald-700 font-bold"}`}>
+                                    <span className={`text-sm font-bold shrink-0 ml-3 ${val.price ? "text-zinc-700" : "text-emerald-700"}`}>
                                       {priceText}
                                     </span>
                                   </div>
@@ -4082,114 +4159,72 @@ export default function BusinessCardsCustomizeFlow({
                       })
                     ) : (
                       <>
-                        <div className="bg-[#ffffff] rounded-2xl p-4 border border-zinc-200/60">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#329AD4] text-white flex items-center justify-center">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
-                              </svg>
-                            </div>
-                            <div>
-                              <span className="text-base font-bold text-zinc-900 block">Select Thickness</span>
-                              <span className="text-base text-zinc-500 font-medium">{cardData.thickness}</span>
-                            </div>
-                          </div>
-                          <div className="mt-4 pt-3 border-t border-zinc-200/80 space-y-3">
-                            {[
+                        {[
+                          {
+                            title: "Select Thickness",
+                            value: cardData.thickness,
+                            key: "thickness" as const,
+                            items: [
                               { name: "Standard", desc: "A traditional business card paper.", extra: "Free" },
                               { name: "Standard Border", desc: "A traditional business card paper.", extra: "Free" },
                               { name: "Corner Border", desc: "A traditional business card paper.", extra: "Free" },
-                            ].map((item) => (
-                              <label
-                                key={item.name}
-                                onClick={() => setCardData((prev) => ({ ...prev, thickness: item.name }))}
-                                className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${cardData.thickness === item.name
-                                    ? "border-[#329AD4] bg-sky-50/40"
-                                    : "border-zinc-200 hover:border-zinc-300 bg-white"
-                                  }`}
-                              >
-                                <div>
-                                  <p className="text-base font-bold text-zinc-900">{item.name}</p>
-                                  <p className="text-base text-zinc-500">{item.desc}</p>
-                                </div>
-                                <span className="text-base font-semibold text-zinc-600">{item.extra}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="bg-[#ffffff] rounded-2xl p-4 border border-zinc-200/60">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#329AD4] text-white flex items-center justify-center">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                              </svg>
-                            </div>
-                            <div>
-                              <span className="text-base font-bold text-zinc-900 block">Select Texture</span>
-                              <span className="text-base text-zinc-500 font-medium">{cardData.texture}</span>
-                            </div>
-                          </div>
-                          <div className="mt-4 pt-3 border-t border-zinc-200/80 space-y-3">
-                            {[
+                            ],
+                          },
+                          {
+                            title: "Select Texture",
+                            value: cardData.texture,
+                            key: "texture" as const,
+                            items: [
                               { name: "Smooth / Matte", desc: "Soft-touch silky feel with a low-glare surface.", extra: "Free" },
                               { name: "Linen", desc: "Woven fabric texture for a luxury tactile impression.", extra: "+ $ 5.00" },
                               { name: "Uncoated / Natural", desc: "Absorbent textured paper, great for writing notes.", extra: "+ $ 3.00" },
                               { name: "High Gloss UV", desc: "Vibrant UV reflective coating that makes colors pop.", extra: "+ $ 4.00" },
-                            ].map((item) => (
-                              <label
-                                key={item.name}
-                                onClick={() => setCardData((prev) => ({ ...prev, texture: item.name }))}
-                                className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${cardData.texture === item.name
-                                    ? "border-[#329AD4] bg-sky-50/40"
-                                    : "border-zinc-200 hover:border-zinc-300 bg-white"
-                                  }`}
-                              >
-                                <div>
-                                  <p className="text-base font-bold text-zinc-900">{item.name}</p>
-                                  <p className="text-base text-zinc-500">{item.desc}</p>
-                                </div>
-                                <span className="text-base font-semibold text-zinc-600">{item.extra}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="bg-[#ffffff] rounded-2xl p-4 border border-zinc-200/60">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#329AD4] text-white flex items-center justify-center">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
-                              </svg>
-                            </div>
-                            <div>
-                              <span className="text-base font-bold text-zinc-900 block">Select Corners</span>
-                              <span className="text-base text-zinc-500 font-medium">{cardData.corners}</span>
-                            </div>
-                          </div>
-                          <div className="mt-4 pt-3 border-t border-zinc-200/80 space-y-3">
-                            {[
+                            ],
+                          },
+                          {
+                            title: "Select Corners",
+                            value: cardData.corners,
+                            key: "corners" as const,
+                            items: [
                               { name: "Standard Corners", desc: "Clean 90° traditional straight edge corners.", extra: "Free" },
                               { name: "Rounded Corners", desc: "Smooth 1/4 inch rounded corners for a modern look.", extra: "+ $ 7.00" },
                               { name: "Corner Border / Clipped", desc: "Stylish diagonal clipped corner design.", extra: "+ $ 8.00" },
-                            ].map((item) => (
-                              <label
-                                key={item.name}
-                                onClick={() => setCardData((prev) => ({ ...prev, corners: item.name }))}
-                                className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${cardData.corners === item.name
-                                    ? "border-[#329AD4] bg-sky-50/40"
-                                    : "border-zinc-200 hover:border-zinc-300 bg-white"
+                            ],
+                          },
+                        ].map((group) => (
+                          <div key={group.key} className="rounded-2xl p-4 border border-[#d7e8f4] bg-[#f7fbfe]/70">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-xl bg-[#329AD4] text-white flex items-center justify-center shrink-0">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                                </svg>
+                              </div>
+                              <div>
+                                <span className="text-sm font-bold text-[#1e1d1b] block">{group.title}</span>
+                                <span className="text-sm text-zinc-500 font-medium">{group.value}</span>
+                              </div>
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-[#e7f1f8] space-y-2.5">
+                              {group.items.map((item) => (
+                                <label
+                                  key={item.name}
+                                  onClick={() => setCardData((prev) => ({ ...prev, [group.key]: item.name }))}
+                                  className={`flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all ${
+                                    group.value === item.name
+                                      ? "border-[#329AD4] bg-white shadow-[0_0_0_3px_rgba(50,154,212,0.15)]"
+                                      : "border-[#d7e8f4] hover:border-[#88c9ef] bg-white"
                                   }`}
-                              >
-                                <div>
-                                  <p className="text-base font-bold text-zinc-900">{item.name}</p>
-                                  <p className="text-base text-zinc-500">{item.desc}</p>
-                                </div>
-                                <span className="text-base font-semibold text-zinc-600">{item.extra}</span>
-                              </label>
-                            ))}
+                                >
+                                  <div>
+                                    <p className="text-sm font-bold text-[#1e1d1b]">{item.name}</p>
+                                    <p className="text-xs text-zinc-500 mt-0.5">{item.desc}</p>
+                                  </div>
+                                  <span className="text-sm font-semibold text-zinc-600 shrink-0 ml-3">{item.extra}</span>
+                                </label>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        ))}
                       </>
                     )}
                   </div>
@@ -4197,30 +4232,31 @@ export default function BusinessCardsCustomizeFlow({
                 </div>
 
               </div>
+              </div>
 
-              <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-zinc-200 shadow-2xl py-3.5 px-4 sm:px-8">
+              <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-[#d7e8f4] bg-white/95 backdrop-blur-md py-3.5 px-4 sm:px-8 shadow-[0_-12px_40px_-24px_rgba(32,90,130,0.35)]">
                 <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
 
-                  <div className="flex items-center gap-3 text-base text-zinc-600">
-                    <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-800 shrink-0">
+                  <div className="flex items-center gap-3 text-sm text-zinc-600">
+                    <div className="w-10 h-10 rounded-2xl bg-[#eef7fc] border border-[#d7e8f4] flex items-center justify-center text-[#329AD4] shrink-0">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
                       </svg>
                     </div>
                     <div>
-                      <p className="font-bold text-zinc-900">Need Help?</p>
-                      <p>Call us at: <span className="font-semibold text-zinc-800">+1 808 695 8520</span></p>
+                      <p className="font-bold text-[#1e1d1b]">Need Help?</p>
+                      <p>Call us at: <span className="font-semibold text-[#1e1d1b]">+1 808 695 8520</span></p>
                     </div>
-                    <div className="hidden md:block pl-6 border-l border-zinc-200 text-zinc-500 font-medium">
-                      Get it as soon as <span className="font-bold text-zinc-800">Tuesday, Feb 27th</span> to <span className="font-bold text-zinc-800">02451</span>
+                    <div className="hidden md:block pl-6 border-l border-[#d7e8f4] text-zinc-500 font-medium">
+                      Get it as soon as <span className="font-bold text-[#1e1d1b]">Tuesday, Feb 27th</span> to <span className="font-bold text-[#1e1d1b]">02451</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <div className="text-right">
-                      <span className="text-base text-zinc-500 block">{cardData.quantity} cards</span>
-                      <span className="text-xl font-black text-zinc-900">
-                        $ {calculatedTotalPrice.toFixed(2)}
+                      <span className="text-xs text-zinc-500 block font-medium">{cardData.quantity} cards</span>
+                      <span className="text-xl font-black tracking-[-0.03em] text-[#1e1d1b]">
+                        ${calculatedTotalPrice.toFixed(2)}
                       </span>
                     </div>
 
@@ -4231,14 +4267,14 @@ export default function BusinessCardsCustomizeFlow({
                       aria-label="Card quantity"
                       value={cardData.quantity}
                       onChange={(e) => setCardData((prev) => ({ ...prev, quantity: Math.min(100000, Math.max(1, Math.round(Number(e.target.value) || 1))) }))}
-                      className="w-24 px-3 py-2.5 rounded-full border border-zinc-300 text-base font-bold text-zinc-800 bg-white focus:outline-none"
+                      className="w-20 sm:w-24 px-3 py-2.5 rounded-2xl border border-[#d7e8f4] text-sm font-bold text-[#1e1d1b] bg-white focus:outline-none focus:ring-2 focus:ring-[#329AD4]/25"
                     />
 
                     <button
                       type="button"
                       disabled={addingToCart}
                       onClick={handleAddToCartAndProceed}
-                      className="px-7 py-3 bg-[#329AD4] hover:bg-theme-darkblue text-white text-base font-bold rounded-full shadow-md transition-all cursor-pointer disabled:opacity-50"
+                      className="px-6 sm:px-7 py-3 bg-[#329AD4] hover:bg-[#2884b8] text-white text-sm font-bold rounded-2xl shadow-[0_10px_24px_-12px_rgba(50,154,212,0.9)] transition-all cursor-pointer disabled:opacity-50"
                     >
                       {addingToCart ? "Adding to Cart..." : "Add to cart →"}
                     </button>
@@ -4388,218 +4424,312 @@ export default function BusinessCardsCustomizeFlow({
             }}
           />
 
-          {/* Interactive Size Selection Modal */}
+          {/* Interactive Size Selection Modal — catalog first when no category, else sizes */}
           {isSizeModalOpen && (
             <div
               className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
-              onClick={() => setIsSizeModalOpen(false)}
+              onClick={() => {
+                // Require a category when arriving with none selected.
+                if (!selectedCategory && !selectedTemplate && !templateId) return;
+                setIsSizeModalOpen(false);
+              }}
             >
               <div
                 className="bg-white rounded-3xl shadow-2xl border border-zinc-200 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Modal Header */}
-                <div className="px-6 py-5 border-b border-zinc-100 flex items-center justify-between">
-                  <div>
+                <div className="px-6 py-5 border-b border-zinc-100 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
                     <h3 className="text-xl font-bold text-zinc-900 flex items-center gap-2">
-                      <svg className="w-5 h-5 text-[#329AD4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-[#329AD4] shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                       </svg>
-                      Select Product Size
+                      {sizeModalView === "catalog" ? "Select Product Category" : "Select Product Size"}
                     </h3>
                     <p className="text-xs text-zinc-500 mt-0.5">
-                      Choose standard dimensions for {selectedCategory?.name || selectedTemplate?.category || "your product"} or enter custom dimensions.
+                      {sizeModalView === "catalog"
+                        ? "Pick a catalog category, then choose a print size for your canvas."
+                        : `Choose standard dimensions for ${selectedCategory?.name || selectedTemplate?.category || "your product"} or enter custom dimensions.`}
                     </p>
                   </div>
                   <button
                     type="button"
-                    onClick={() => setIsSizeModalOpen(false)}
-                    className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer text-sm font-bold"
+                    onClick={() => {
+                      if (!selectedCategory && !selectedTemplate && !templateId) return;
+                      setIsSizeModalOpen(false);
+                    }}
+                    className={`w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors text-sm font-bold shrink-0 ${
+                      !selectedCategory && !selectedTemplate && !templateId ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+                    }`}
+                    title={!selectedCategory && !selectedTemplate && !templateId ? "Select a category first" : "Close"}
                   >
                     ✕
                   </button>
                 </div>
 
-                {/* Modal Body */}
                 <div className="p-6 overflow-y-auto space-y-6">
-                  {/* Preset Standard Sizes Grid */}
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                        Available Sizes ({selectedCategory?.name || selectedTemplate?.category || "Standard"})
-                      </h4>
-                      <span className="text-xs text-zinc-400 font-medium">{offeredSizes.length} sizes available</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {offeredSizes.map((s, idx) => {
-                        const isSelected =
-                          Math.round(Number(activeCanvasConfig.width)) === Math.round(s.width) &&
-                          Math.round(Number(activeCanvasConfig.height)) === Math.round(s.height);
-                        const cardRatio = s.width / s.height;
-
-                        return (
-                          <div
-                            key={idx}
-                            onClick={() => {
-                              handleSelectSize(s);
-                              setIsSizeModalOpen(false);
-                            }}
-                            className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                              isSelected
-                                ? "border-[#329AD4] bg-sky-50/50 shadow-xs ring-1 ring-[#329AD4]/20"
-                                : "border-zinc-200/80 hover:border-zinc-300 bg-white hover:bg-zinc-50/60"
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              {/* Visual miniature box illustrating card aspect ratio */}
-                              <div className="w-12 h-10 bg-zinc-100 rounded-lg flex items-center justify-center border border-zinc-200 shrink-0 overflow-hidden p-1">
-                                <div
-                                  style={{
-                                    width: cardRatio >= 1 ? "100%" : `${Math.max(20, Math.round(cardRatio * 100))}%`,
-                                    height: cardRatio < 1 ? "100%" : `${Math.max(20, Math.round((1 / cardRatio) * 100))}%`,
-                                    maxHeight: "26px",
-                                    maxWidth: "36px",
-                                  }}
-                                  className={`rounded-xs transition-colors ${
-                                    isSelected ? "bg-[#329AD4]" : "bg-zinc-400"
-                                  }`}
-                                />
-                              </div>
-
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <p className="text-sm font-bold text-zinc-900">{s.name}</p>
-                                  {isSelected && (
-                                    <span className="bg-[#329AD4] text-white text-[10px] font-bold px-1.5 py-0.2 rounded-xs">
-                                      Active
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-xs text-zinc-500 font-mono mt-0.5">
-                                  {s.width} × {s.height} {s.unit}
-                                  {s.unit === "mm" && (
-                                    <span className="text-zinc-400 ml-1.5 font-sans">
-                                      ({(s.width / 25.4).toFixed(1)}" × {(s.height / 25.4).toFixed(1)}")
-                                    </span>
-                                  )}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                              isSelected ? "border-[#329AD4] bg-[#329AD4] text-white" : "border-zinc-300"
-                            }`}>
-                              {isSelected && (
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                </svg>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Custom Dimensions Section */}
-                  <div className="pt-4 border-t border-zinc-200">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-xs font-bold text-zinc-700 uppercase tracking-wider flex items-center gap-2">
-                        <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+                  {sizeModalView === "catalog" ? (
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <svg className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        Custom Dimensions
-                      </h4>
-                      <button
-                        type="button"
-                        onClick={handleSwapOrientation}
-                        className="text-xs font-semibold text-[#329AD4] hover:underline flex items-center gap-1 cursor-pointer"
-                      >
-                        <svg className="w-3.5 h-3.5 rotate-90" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-                        </svg>
-                        <span>Swap Dimensions ({activeCanvasConfig.width >= activeCanvasConfig.height ? "Portrait" : "Landscape"})</span>
-                      </button>
-                    </div>
-
-                    <div className="bg-zinc-50 rounded-2xl p-4 border border-zinc-200 space-y-4">
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <div>
-                          <label className="text-xs font-semibold text-zinc-700 block mb-1">Width</label>
-                          <input
-                            type="number"
-                            min="10"
-                            max="5000"
-                            step="1"
-                            value={customWidth}
-                            onChange={(e) => setCustomWidth(Number(e.target.value) || 0)}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4]"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-xs font-semibold text-zinc-700 block mb-1">Height</label>
-                          <input
-                            type="number"
-                            min="10"
-                            max="5000"
-                            step="1"
-                            value={customHeight}
-                            onChange={(e) => setCustomHeight(Number(e.target.value) || 0)}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4]"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-xs font-semibold text-zinc-700 block mb-1">Unit</label>
-                          <select
-                            value={customUnit}
-                            onChange={(e) => setCustomUnit(e.target.value as CanvasUnit)}
-                            className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4] cursor-pointer"
-                          >
-                            <option value="mm">mm (millimeters)</option>
-                            <option value="cm">cm (centimeters)</option>
-                            <option value="in">in (inches)</option>
-                            <option value="px">px (pixels)</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="text-xs font-semibold text-zinc-700 block mb-1">Bleed / Safe Area</label>
-                          <div className="flex items-center gap-1.5">
-                            <input
-                              type="number"
-                              min="0"
-                              max="50"
-                              value={customBleed}
-                              onChange={(e) => {
-                                const val = Number(e.target.value) || 0;
-                                setCustomBleed(val);
-                                setCustomSafeArea(val);
-                              }}
-                              className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4]"
-                              placeholder="3"
-                            />
-                            <span className="text-xs font-mono text-zinc-400">{customUnit}</span>
-                          </div>
-                        </div>
+                        <input
+                          type="text"
+                          placeholder="Search categories..."
+                          value={categorySearchQuery}
+                          onChange={(e) => setCategorySearchQuery(e.target.value)}
+                          className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-10 pr-3 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-[#329AD4] focus:bg-white"
+                        />
                       </div>
 
-                      <div className="flex justify-end pt-1">
+                      {selectedCategory && (
                         <button
                           type="button"
-                          onClick={handleApplyCustomSize}
-                          className="px-5 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-2"
+                          onClick={() => setSizeModalView("sizes")}
+                          className="text-xs font-bold text-[#329AD4] hover:underline cursor-pointer"
                         >
-                          <span>Apply Custom Size</span>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                          </svg>
+                          ← Back to sizes for {selectedCategory.name}
+                        </button>
+                      )}
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {filteredCategoriesList.map((cat) => {
+                          const isActive = selectedCategory?._id === cat._id;
+                          return (
+                            <button
+                              key={cat._id}
+                              type="button"
+                              onClick={() => pickCategoryInModal(cat)}
+                              className={`text-left p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-center gap-3 ${
+                                isActive
+                                  ? "border-[#329AD4] bg-sky-50/50 ring-1 ring-[#329AD4]/20"
+                                  : "border-zinc-200/80 hover:border-zinc-300 bg-white hover:bg-zinc-50/60"
+                              }`}
+                            >
+                              <div className="w-14 h-11 rounded-xl overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0">
+                                {cat.image ? (
+                                  <img src={mediaSrc(cat.image) || cat.image} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full" style={{ backgroundColor: cat.background_color || "#1a1a1a" }} />
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-zinc-900 truncate">{cat.name}</p>
+                                <p className="text-xs text-zinc-500 font-mono mt-0.5">
+                                  {cat.canvas_width} × {cat.canvas_height} {cat.unit || "mm"}
+                                </p>
+                              </div>
+                              {isActive && (
+                                <span className="bg-[#329AD4] text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0">
+                                  Active
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {filteredCategoriesList.length === 0 && (
+                        <p className="text-sm text-zinc-500 text-center py-8">
+                          {categories.length === 0 ? "No categories available yet." : "No categories match your search."}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-sky-50 border border-sky-200/80 text-sm">
+                          <span className="text-zinc-500 font-medium">Category</span>
+                          <span className="font-bold text-[#329AD4]">
+                            {selectedCategory?.name || selectedTemplate?.category || "Standard"}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCategorySearchQuery("");
+                            setSizeModalView("catalog");
+                          }}
+                          className="text-xs font-bold text-[#329AD4] hover:underline cursor-pointer"
+                        >
+                          Change category
                         </button>
                       </div>
-                    </div>
-                  </div>
+
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
+                            Available Sizes ({selectedCategory?.name || selectedTemplate?.category || "Standard"})
+                          </h4>
+                          <span className="text-xs text-zinc-400 font-medium">{offeredSizes.length} sizes available</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {offeredSizes.map((s, idx) => {
+                            const isSelected =
+                              Math.round(Number(activeCanvasConfig.width)) === Math.round(s.width) &&
+                              Math.round(Number(activeCanvasConfig.height)) === Math.round(s.height);
+                            const cardRatio = s.width / Math.max(s.height, 1);
+
+                            return (
+                              <div
+                                key={idx}
+                                onClick={() => {
+                                  handleSelectSize(s);
+                                  setIsSizeModalOpen(false);
+                                }}
+                                className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                                  isSelected
+                                    ? "border-[#329AD4] bg-sky-50/50 shadow-xs ring-1 ring-[#329AD4]/20"
+                                    : "border-zinc-200/80 hover:border-zinc-300 bg-white hover:bg-zinc-50/60"
+                                }`}
+                              >
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <div className="w-12 h-10 bg-zinc-100 rounded-lg flex items-center justify-center border border-zinc-200 shrink-0 overflow-hidden p-1">
+                                    <div
+                                      style={{
+                                        width: cardRatio >= 1 ? "100%" : `${Math.max(20, Math.round(cardRatio * 100))}%`,
+                                        height: cardRatio < 1 ? "100%" : `${Math.max(20, Math.round((1 / cardRatio) * 100))}%`,
+                                        maxHeight: "26px",
+                                        maxWidth: "36px",
+                                      }}
+                                      className={`rounded-xs transition-colors ${
+                                        isSelected ? "bg-[#329AD4]" : "bg-zinc-400"
+                                      }`}
+                                    />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-sm font-bold text-zinc-900 truncate">{s.name}</p>
+                                      {isSelected && (
+                                        <span className="bg-[#329AD4] text-white text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0">
+                                          Active
+                                        </span>
+                                      )}
+                                    </div>
+                                    <p className="text-xs text-zinc-500 font-mono mt-0.5">
+                                      {s.width} × {s.height} {s.unit}
+                                      {s.unit === "mm" && (
+                                        <span className="text-zinc-400 ml-1.5 font-sans">
+                                          ({(s.width / 25.4).toFixed(1)}" × {(s.height / 25.4).toFixed(1)}")
+                                        </span>
+                                      )}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div
+                                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                    isSelected ? "border-[#329AD4] bg-[#329AD4] text-white" : "border-zinc-300"
+                                  }`}
+                                >
+                                  {isSelected && (
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                    </svg>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-zinc-200">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-xs font-bold text-zinc-700 uppercase tracking-wider flex items-center gap-2">
+                            <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+                            </svg>
+                            Custom Dimensions
+                          </h4>
+                          <button
+                            type="button"
+                            onClick={handleSwapOrientation}
+                            className="text-xs font-semibold text-[#329AD4] hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <svg className="w-3.5 h-3.5 rotate-90" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                            </svg>
+                            <span>Swap Dimensions ({activeCanvasConfig.width >= activeCanvasConfig.height ? "Portrait" : "Landscape"})</span>
+                          </button>
+                        </div>
+
+                        <div className="bg-zinc-50 rounded-2xl p-4 border border-zinc-200 space-y-4">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div>
+                              <label className="text-xs font-semibold text-zinc-700 block mb-1">Width</label>
+                              <input
+                                type="number"
+                                min="10"
+                                max="5000"
+                                step="1"
+                                value={customWidth}
+                                onChange={(e) => setCustomWidth(Number(e.target.value) || 0)}
+                                className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4]"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-semibold text-zinc-700 block mb-1">Height</label>
+                              <input
+                                type="number"
+                                min="10"
+                                max="5000"
+                                step="1"
+                                value={customHeight}
+                                onChange={(e) => setCustomHeight(Number(e.target.value) || 0)}
+                                className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4]"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-semibold text-zinc-700 block mb-1">Unit</label>
+                              <select
+                                value={customUnit}
+                                onChange={(e) => setCustomUnit(e.target.value as CanvasUnit)}
+                                className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4] cursor-pointer"
+                              >
+                                <option value="mm">mm (millimeters)</option>
+                                <option value="cm">cm (centimeters)</option>
+                                <option value="in">in (inches)</option>
+                                <option value="px">px (pixels)</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="text-xs font-semibold text-zinc-700 block mb-1">Bleed / Safe Area</label>
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="50"
+                                  value={customBleed}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value) || 0;
+                                    setCustomBleed(val);
+                                    setCustomSafeArea(val);
+                                  }}
+                                  className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-900 outline-none focus:border-[#329AD4]"
+                                  placeholder="3"
+                                />
+                                <span className="text-xs font-mono text-zinc-400">{customUnit}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end pt-1">
+                            <button
+                              type="button"
+                              onClick={handleApplyCustomSize}
+                              className="px-5 py-2.5 bg-[#329AD4] hover:bg-[#2884b8] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-2"
+                            >
+                              <span>Apply Custom Size</span>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

@@ -722,69 +722,47 @@ export default function ThreeDCardPreview({
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-between relative select-none overflow-hidden rounded-3xl group">
-      
-      {/* 3D WebGL Canvas Container */}
+    <div className="group relative flex h-full w-full select-none flex-col items-center justify-between overflow-hidden">
       <div
         ref={mountRef}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onWheel={handleWheel}
-        className={`w-full min-h-[420px] h-full flex items-center justify-center transition-cursor ${
+        className={`flex h-full min-h-[420px] w-full items-center justify-center transition-cursor ${
           isDragging ? "cursor-grabbing" : "cursor-grab"
         }`}
       />
 
-      {/* Top Banner Indicator & Theme Toggle */}
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2 pointer-events-none z-10">
-        <div className="min-w-0 inline-flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-white text-base font-medium shadow-lg pointer-events-auto">
-          <span className="w-2 h-2 shrink-0 rounded-full bg-emerald-400 animate-pulse" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-4">
+        <div className="pointer-events-auto inline-flex min-w-0 items-center gap-2 rounded-lg border border-white/15 bg-black/75 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
+          <span className="h-1.5 w-1.5 shrink-0 rounded-sm bg-[#064FE0]" />
           <span className="truncate">Drag to rotate · Scroll to zoom</span>
         </div>
 
         <button
           type="button"
           onClick={() => setStudioTheme(studioTheme === "dark" ? "light" : "dark")}
-          className="shrink-0 p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 transition-all pointer-events-auto cursor-pointer shadow-md text-base"
+          className="pointer-events-auto inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-white/15 bg-black/75 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md transition hover:bg-black/90"
           title="Toggle Studio Lighting Theme"
         >
-          {studioTheme === "dark" ? "☀️ Light" : "🌙 Dark"}
+          <svg className="h-3.5 w-3.5 text-[#064FE0]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            {studioTheme === "dark" ? (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05L5.636 5.636m12.728 0L16.95 7.05M7.05 16.95l-1.414 1.414M12 8a4 4 0 100 8 4 4 0 000-8z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+            )}
+          </svg>
+          {studioTheme === "dark" ? "Light" : "Dark"}
         </button>
       </div>
 
-      {/* Side Selector Pills Bar (for Multi-Side / Box Products) */}
-      {/* {totalSides > 2 && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/75 backdrop-blur-md p-1.5 rounded-2xl border border-white/15 shadow-2xl z-20 max-w-[calc(100%-2rem)] overflow-x-auto">
-          {Array.from({ length: totalSides }, (_, idx) => (
-            <button
-              key={`3d-side-${idx}`}
-              type="button"
-              onClick={() => {
-                if (onSideIndexChange) onSideIndexChange(idx);
-                if (onSideChange) onSideChange(idx === 1 ? "back" : "front");
-              }}
-              className={`px-3 py-1 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeIdx === idx
-                  ? "bg-[#55b2e7] text-black font-extrabold shadow-md"
-                  : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
-              }`}
-            >
-              {sidesNames[idx] || `Side ${idx + 1}`}
-            </button>
-          ))}
-        </div>
-      )} */}
-
-      {/* Bottom Interactive Control Toolbar */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/75 backdrop-blur-md p-1.5 rounded-2xl border border-white/15 shadow-2xl z-20 max-w-[calc(100%-1.5rem)] overflow-x-auto">
-        
-        {/* Zoom Controls */}
-        <div className="flex items-center gap-1 border-r border-white/20 pr-1.5 mr-0.5">
+      <div className="absolute bottom-4 left-1/2 z-20 flex max-w-[calc(100%-1.5rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-xl border border-white/15 bg-black/80 p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-md">
+        <div className="mr-0.5 flex items-center gap-1 border-r border-white/15 pr-1.5">
           <button
             type="button"
             onClick={handleZoomIn}
-            className="w-7 h-7 rounded-xl bg-white/10 hover:bg-white/20 text-white text-base font-bold transition-all cursor-pointer flex items-center justify-center"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-white/10 text-sm font-bold text-white transition hover:bg-[#064FE0]"
             title="Zoom In (+)"
           >
             +
@@ -792,7 +770,7 @@ export default function ThreeDCardPreview({
           <button
             type="button"
             onClick={handleZoomOut}
-            className="w-7 h-7 rounded-xl bg-white/10 hover:bg-white/20 text-white text-base font-bold transition-all cursor-pointer flex items-center justify-center"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-white/10 text-sm font-bold text-white transition hover:bg-[#064FE0]"
             title="Zoom Out (-)"
           >
             −
@@ -802,9 +780,9 @@ export default function ThreeDCardPreview({
         <button
           type="button"
           onClick={handleToggleFlip}
-          className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-base font-bold transition-all flex items-center gap-1.5 cursor-pointer text-xs"
+          className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064FE0] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#0439A8]"
         >
-          <svg className="w-3.5 h-3.5 text-[#55b2e7]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           <span>{totalSides > 2 ? "Next Side" : "Flip Card"}</span>
@@ -813,7 +791,7 @@ export default function ThreeDCardPreview({
         <button
           type="button"
           onClick={handleResetView}
-          className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-base font-bold transition-all cursor-pointer text-xs"
+          className="cursor-pointer rounded-lg bg-white/10 px-3.5 py-2 text-xs font-bold text-white transition hover:bg-white/20"
         >
           Reset View
         </button>

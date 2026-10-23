@@ -58,10 +58,19 @@ export default function CardOrderFields({
     }
   };
 
+  const tableFields =
+    fields?.length
+      ? fields
+      : [
+          { key: "name", header: "Name", sample: "", layerIds: [] as string[] },
+          { key: "title", header: "Title", sample: "", layerIds: [] as string[] },
+          { key: "email", header: "Email", sample: "", layerIds: [] as string[] },
+        ];
+
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <label htmlFor="card-quantity" className="text-base font-bold text-zinc-800 block">
+    <div className="space-y-5">
+      <div className="rounded-2xl border border-[#d7e8f4] bg-[#f7fbfe] p-4 sm:p-5 space-y-3">
+        <label htmlFor="card-quantity" className="text-xs font-bold uppercase tracking-[0.12em] text-zinc-500 block">
           How many cards
         </label>
         <input
@@ -71,7 +80,7 @@ export default function CardOrderFields({
           max={100000}
           value={quantity}
           onChange={(event) => setQuantity(Number(event.target.value))}
-          className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-base font-bold text-zinc-900 focus:border-[#329AD4] focus:outline-none"
+          className="w-full px-4 py-3 rounded-2xl border border-[#d7e8f4] bg-white text-lg font-black tracking-[-0.02em] text-[#1e1d1b] focus:border-[#329AD4] focus:outline-none focus:ring-2 focus:ring-[#329AD4]/20"
         />
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((preset) => (
@@ -79,31 +88,34 @@ export default function CardOrderFields({
               key={preset}
               type="button"
               onClick={() => setQuantity(preset)}
-              className={`px-3 py-1.5 text-base font-bold rounded-lg border cursor-pointer ${
+              className={`min-w-[3.25rem] px-3.5 py-2 text-sm font-bold rounded-xl border transition cursor-pointer ${
                 quantity === preset
-                  ? "bg-zinc-900 text-white border-zinc-900"
-                  : "bg-white border-zinc-200 text-zinc-700 hover:border-zinc-400"
+                  ? "bg-[#329AD4] text-white border-[#329AD4] shadow-[0_8px_18px_-10px_rgba(50,154,212,0.9)]"
+                  : "bg-white border-[#d7e8f4] text-zinc-700 hover:border-[#88c9ef]"
               }`}
             >
               {preset}
             </button>
           ))}
         </div>
-        <p className="text-base text-zinc-500">Type any quantity. Base price is ${basePrice.toFixed(2)} per card.</p>
+        <p className="text-sm text-zinc-500">
+          Type any quantity. Base price is{" "}
+          <span className="font-semibold text-[#1e1d1b]">${basePrice.toFixed(2)}</span> per card.
+        </p>
       </div>
 
-      <div className="border-t border-zinc-100 pt-4 space-y-3">
+      <div className="rounded-2xl border border-[#d7e8f4] bg-white p-4 sm:p-5 space-y-3.5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-base font-bold text-zinc-800">Employee list</p>
-            <p className="text-base text-zinc-500 mt-0.5">
+            <p className="text-sm font-bold text-[#1e1d1b]">Employee list</p>
+            <p className="text-sm text-zinc-500 mt-1 leading-relaxed">
               Upload an Excel or CSV sheet. Columns match this template&apos;s fields. Each row prints that person on the card.
             </p>
           </div>
           <button
             type="button"
             onClick={() => downloadSampleEmployeeSheet(fields)}
-            className="shrink-0 text-base font-bold text-[#329AD4] cursor-pointer"
+            className="shrink-0 text-sm font-bold text-[#329AD4] hover:text-[#2884b8] underline decoration-[#329AD4]/40 underline-offset-4 cursor-pointer"
           >
             Sample Excel
           </button>
@@ -113,7 +125,7 @@ export default function CardOrderFields({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={reading}
-          className="w-full py-2.5 border border-dashed border-zinc-300 hover:border-[#329AD4] text-base font-semibold text-zinc-700 rounded-xl cursor-pointer disabled:opacity-50"
+          className="w-full py-4 border-2 border-dashed border-[#b8e0f6] hover:border-[#329AD4] hover:bg-[#f0f8fd] text-sm font-semibold text-[#2172a0] rounded-2xl cursor-pointer disabled:opacity-50 transition"
         >
           {reading ? "Reading sheet..." : fileName ? `Replace ${fileName}` : "Upload Excel or CSV"}
         </button>
@@ -124,12 +136,12 @@ export default function CardOrderFields({
           className="hidden"
           onChange={(event) => handleFile(event.target.files?.[0])}
         />
-        {error && <p className="text-base font-semibold text-red-600">{error}</p>}
+        {error && <p className="text-sm font-semibold text-red-600">{error}</p>}
 
         {employees.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <p className="text-base font-bold text-zinc-700">{employees.length} people</p>
+              <p className="text-sm font-bold text-[#1e1d1b]">{employees.length} people</p>
               <button
                 type="button"
                 onClick={() => {
@@ -137,21 +149,19 @@ export default function CardOrderFields({
                   setActiveIndex(0);
                   onEmployees([]);
                 }}
-                className="text-base font-bold text-zinc-500 cursor-pointer"
+                className="text-sm font-bold text-zinc-500 hover:text-red-500 cursor-pointer"
               >
                 Clear
               </button>
             </div>
-            <div className="max-h-48 overflow-auto rounded-xl border border-zinc-200">
-              <table className="w-full text-left text-base">
-                <thead className="bg-zinc-50 text-zinc-500 sticky top-0">
+            <div className="max-h-48 overflow-auto rounded-2xl border border-[#d7e8f4]">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-[#f0f8fd] text-zinc-500 sticky top-0">
                   <tr>
-                    {(fields?.length ? fields : [
-                      { key: "name", header: "Name", sample: "", layerIds: [] },
-                      { key: "title", header: "Title", sample: "", layerIds: [] },
-                      { key: "email", header: "Email", sample: "", layerIds: [] },
-                    ]).map((field) => (
-                      <th key={field.header} className="px-2 py-1.5 font-semibold whitespace-nowrap">{field.header}</th>
+                    {tableFields.map((field) => (
+                      <th key={field.header} className="px-3 py-2 font-semibold whitespace-nowrap">
+                        {field.header}
+                      </th>
                     ))}
                   </tr>
                 </thead>
@@ -163,16 +173,12 @@ export default function CardOrderFields({
                         setActiveIndex(index);
                         onUseEmployee(employee);
                       }}
-                      className={`cursor-pointer border-t border-zinc-100 ${
-                        activeIndex === index ? "bg-sky-50" : "hover:bg-zinc-50"
+                      className={`cursor-pointer border-t border-[#e7f1f8] ${
+                        activeIndex === index ? "bg-[#eef7fc]" : "hover:bg-[#f7fbfe]"
                       }`}
                     >
-                      {(fields?.length ? fields : [
-                        { key: "name", header: "Name", sample: "", layerIds: ["1"] },
-                        { key: "title", header: "Title", sample: "", layerIds: ["2"] },
-                        { key: "email", header: "Email", sample: "", layerIds: ["4"] },
-                      ]).map((field) => (
-                        <td key={field.header} className="px-2 py-1.5 text-zinc-700 whitespace-nowrap">
+                      {tableFields.map((field) => (
+                        <td key={field.header} className="px-3 py-2 text-zinc-700 whitespace-nowrap">
                           {fieldValue(employee, field) || "—"}
                         </td>
                       ))}
@@ -181,7 +187,9 @@ export default function CardOrderFields({
                 </tbody>
               </table>
             </div>
-            <p className="text-base text-zinc-500">Click a person to preview their card. Quantity starts at one card per person — type another number if you need a different print run.</p>
+            <p className="text-sm text-zinc-500 leading-relaxed">
+              Click a person to preview their card. Quantity starts at one card per person — type another number if you need a different print run.
+            </p>
           </div>
         )}
       </div>

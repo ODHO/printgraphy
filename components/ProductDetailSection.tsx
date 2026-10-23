@@ -168,27 +168,27 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
   };
 
   return (
-    <section className="py-4 font-sans max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        
-        {/* Left Column: Image Gallery (LG: 6 cols) */}
-        <div className="lg:col-span-6 flex flex-col gap-4 sticky top-20">
-          
-          {/* Main Showcase Image */}
-          <div className="relative w-full aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden bg-[#ffffff] border border-zinc-200/80 shadow-xs group">
+    <section className="font-sans max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-start">
+        {/* Gallery */}
+        <div className="lg:col-span-6 xl:col-span-7 lg:sticky lg:top-24 flex flex-col gap-3 sm:gap-4">
+          <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] overflow-hidden rounded-[1.35rem] bg-white border border-[#d7e8f4] shadow-[0_18px_40px_-28px_rgba(32,90,130,0.45)] group">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(50,154,212,0.12),transparent_42%),linear-gradient(160deg,rgba(255,255,255,0.35),transparent_40%)]"
+            />
             <img
               src={currentMainImage}
               alt={product?.name || "Product Showcase Image"}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "/placeholder.jpg";
               }}
-              className="w-full h-full object-cover transition-all duration-300"
+              className="relative z-[1] w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
             />
 
-            {/* Favorite Heart Button */}
             <button
               onClick={toggleFavorite}
-              className="absolute top-4 right-4 p-2.5 rounded-full bg-white/90 hover:bg-white shadow-md transition-all cursor-pointer text-zinc-700 hover:text-red-500 z-10"
+              className="absolute top-4 right-4 z-10 grid h-11 w-11 place-items-center rounded-2xl bg-white/95 text-zinc-700 border border-white/80 shadow-sm transition hover:text-red-500 cursor-pointer"
               aria-label="Add to favorites"
             >
               <svg
@@ -203,50 +203,45 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
               </svg>
             </button>
 
-            {/* Toast Notification */}
             {toastMessage && (
-              <div className="absolute top-4 left-4 bg-zinc-900/90 text-white text-base font-bold px-3 py-1.5 rounded-lg shadow-lg backdrop-blur-xs animate-fade-in z-10">
+              <div className="absolute top-4 left-4 z-10 rounded-xl bg-[#1e1d1b]/92 px-3.5 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-sm animate-fade-in">
                 {toastMessage}
               </div>
             )}
 
-            {/* Previous Image Chevron Button */}
             {galleryList.length > 1 && (
-              <button
-                onClick={prevImage}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center text-zinc-700 transition-all opacity-80 group-hover:opacity-100 cursor-pointer"
-                aria-label="Previous Image"
-              >
-                <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-            )}
-
-            {/* Next Image Chevron Button */}
-            {galleryList.length > 1 && (
-              <button
-                onClick={nextImage}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center text-zinc-700 transition-all opacity-80 group-hover:opacity-100 cursor-pointer"
-                aria-label="Next Image"
-              >
-                <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-3 top-1/2 z-10 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-2xl bg-white/95 text-zinc-800 border border-white/80 shadow-sm opacity-0 transition group-hover:opacity-100 cursor-pointer"
+                  aria-label="Previous Image"
+                >
+                  <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-3 top-1/2 z-10 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-2xl bg-white/95 text-zinc-800 border border-white/80 shadow-sm opacity-0 transition group-hover:opacity-100 cursor-pointer"
+                  aria-label="Next Image"
+                >
+                  <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </>
             )}
           </div>
 
-          {/* Bottom Thumbnails Carousel Row */}
-          <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none">
             {galleryList.map((thumb, idx) => (
               <button
                 key={`${thumb}-${idx}`}
                 onClick={() => setActiveImageIndex(idx)}
-                className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer bg-white ${
+                className={`relative h-[4.25rem] w-[4.25rem] sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-2xl border-2 bg-white transition cursor-pointer ${
                   activeImageIndex === idx
-                    ? "border-[#329AD4] ring-2 ring-[#329AD4]/30 scale-95"
-                    : "border-zinc-200 hover:border-zinc-300 opacity-80 hover:opacity-100"
+                    ? "border-[#329AD4] shadow-[0_0_0_3px_rgba(50,154,212,0.18)]"
+                    : "border-[#d7e8f4] opacity-80 hover:opacity-100 hover:border-[#88c9ef]"
                 }`}
               >
                 <img
@@ -262,249 +257,208 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
           </div>
         </div>
 
-        {/* Right Column: Vistaprint Product Details & Variations (LG: 6 cols) */}
-        <div className="lg:col-span-6 flex flex-col space-y-6">
-          
-          {/* Header Title */}
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 tracking-tight leading-snug">
-              {product?.name || "Standard Business Cards"}
-            </h1>
+        {/* Buy panel */}
+        <div className="lg:col-span-6 xl:col-span-5">
+          <div className="rounded-[1.5rem] border border-[#d7e8f4] bg-white/90 p-5 sm:p-7 shadow-[0_20px_50px_-36px_rgba(32,90,130,0.55)] backdrop-blur-sm space-y-6">
+            <div className="space-y-3">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#329AD4]">
+                Printgraphy product
+              </p>
+              <h1 className="text-[1.85rem] sm:text-[2.15rem] font-black tracking-[-0.04em] leading-[1.08] text-[#1e1d1b]">
+                {product?.name || "Standard Business Cards"}
+              </h1>
 
-            {/* Ratings & Badges */}
-            <div className="flex items-center gap-3 flex-wrap text-base mt-2">
-              <div className="flex items-center gap-1.5">
-                {product?.reviewCount && product.reviewCount > 0 ? (
-                  <div className="flex text-yellow-400">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <svg
-                        key={star}
-                        className={`w-4 h-4 ${star <= Math.round(product.rating || 5) ? "fill-current" : "text-zinc-300 fill-current"}`}
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                ) : null}
-                <span
-                  onClick={() => document.getElementById("product-reviews-section")?.scrollIntoView({ behavior: "smooth" })}
-                  className="font-bold text-zinc-900 underline cursor-pointer hover:text-[#329AD4]"
-                >
-                  {product?.reviewCount && product.reviewCount > 0
-                    ? `${product.rating} (${product.reviewCount.toLocaleString()} ${product.reviewCount === 1 ? "review" : "reviews"})`
-                    : "No reviews yet (Write a review)"}
-                </span>
-              </div>
-
-              <span className="px-2.5 py-0.5 rounded-full border border-zinc-300 text-base font-bold text-zinc-700 bg-white shadow-2xs">
-                Samples available
-              </span>
-
-              <span className="text-base font-bold text-emerald-700 flex items-center gap-1 cursor-pointer hover:underline">
-                <svg className="w-3.5 h-3.5 fill-emerald-600" viewBox="0 0 20 20">
-                  <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z" />
-                </svg>
-                Better by Design 🛈
-              </span>
-            </div>
-          </div>
-
-          {/* Subtitle / Description */}
-          <p className="text-base sm:text-base text-zinc-600 leading-relaxed border-t border-zinc-100 pt-3">
-            {product?.description ||
-              "Introducing: The very-best-for-your-budget business cards. Easily create cards you can't wait to hand out."}
-          </p>
-
-          {/* Fast Shipping Callout */}
-          {/* <div className="text-base text-zinc-700 bg-zinc-50 border border-zinc-200/80 rounded-xl p-3">
-            Need your business cards right away? Explore next-day and 2-day delivery options with{" "}
-            <Link href="/browsedesigns" className="text-[#329AD4] font-bold hover:underline">
-              fast-shipping business cards
-            </Link>
-            . <span className="underline cursor-pointer">See details</span>
-          </div> */}
-
-          {/* Price Header */}
-          <div>
-            <div className="text-3xl font-black text-zinc-900 tracking-tight">
-              ${product?.price}
-            </div>
-            <div className="text-base text-zinc-500 font-semibold mt-0.5">
-              {product?.unitPrice}
-            </div>
-          </div>
-
-          {/* Delivery Estimate Box */}
-          {/* <div className="bg-white border border-zinc-200 rounded-2xl p-3.5 space-y-2.5 text-base text-zinc-800 shadow-2xs">
-            <div className="flex items-center justify-between font-bold border-b border-zinc-100 pb-2">
-              <span className="flex items-center gap-1.5">
-                <span>📍 Delivery to 02451</span>
-              </span>
-              <button className="text-base font-bold text-[#329AD4] hover:underline cursor-pointer">
-                More options
-              </button>
-            </div>
-            <div className="flex items-center justify-between font-medium">
-              <span className="flex items-center gap-2 font-semibold">
-                <span>🚚 Friday, Sep 25th</span>
-              </span>
-              <span className="font-bold text-zinc-900">$23.99 <span className="text-base text-zinc-500 font-normal">Fastest delivery</span></span>
-            </div>
-            <div className="flex items-center justify-between text-emerald-700 font-medium">
-              <span className="flex items-center gap-2 font-bold">
-                <span>📦 Wednesday, Oct 7th</span>
-              </span>
-              <span className="font-extrabold">$5.99 <span className="text-emerald-600 text-base font-bold">(Free over $100.00)</span></span>
-            </div>
-          </div> */}
-
-          {/* Product Variations (Vistaprint Style Grid) */}
-          {product?.variations && product.variations.length > 0 && (
-            <div className="space-y-6 pt-2">
-              {product.variations.map((vGroup) => {
-                const selectedVal = selectedVariations[vGroup.name];
-                const isCornerGroup = vGroup.name.toLowerCase().includes("corner");
-
-                return (
-                  <div key={vGroup._id || vGroup.name} className="space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-base font-black text-zinc-900 uppercase tracking-wide">
-                        {vGroup.name}*
-                      </label>
-                      {selectedVal && (
-                        <span className="text-base font-bold text-[#329AD4]">
-                          {selectedVal.name}
-                        </span>
-                      )}
+              <div className="flex items-center gap-2.5 flex-wrap text-sm">
+                <div className="flex items-center gap-1.5">
+                  {product?.reviewCount && product.reviewCount > 0 ? (
+                    <div className="flex text-amber-400">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <svg
+                          key={star}
+                          className={`w-4 h-4 ${star <= Math.round(product.rating || 5) ? "fill-current" : "text-zinc-300 fill-current"}`}
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
                     </div>
-
-                    {/* Vistaprint Card Grid */}
-                    <div
-                      className={`grid gap-3 ${
-                        isCornerGroup
-                          ? "grid-cols-2"
-                          : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-                      }`}
-                    >
-                      {vGroup.values.map((val) => {
-                        const isSelected = selectedVal?.name === val.name;
-                        const isFree = val.price === 0;
-
-                        return (
-                          <button
-                            key={val._id || val.name}
-                            type="button"
-                            onClick={() => handleSelectOption(vGroup.name, val)}
-                            className={`relative flex flex-col items-center justify-between p-3 min-h-[100px] rounded-xl border-2 transition-all cursor-pointer text-center bg-white group ${
-                              isSelected
-                                ? "border-[#329AD4] bg-[#e0f2fe]/40 shadow-xs ring-1 ring-[#329AD4]"
-                                : "border-zinc-200 hover:border-zinc-300"
-                            }`}
-                          >
-                            {/* Slanted Card Texture Thumbnail / Image Icon */}
-                            {val.image ? (
-                              <div className="w-12 h-12 rounded-lg overflow-hidden border border-zinc-200 mb-2 shadow-2xs">
-                                <img src={mediaSrc(val.image) || val.image} alt={val.name} className="w-full h-full object-cover" />
-                              </div>
-                            ) : isCornerGroup ? (
-                              <div
-                                className={`w-12 h-8 border-2 rounded-md mb-2 bg-white flex items-center justify-center shadow-2xs ${
-                                  val.name.toLowerCase().includes("rounded")
-                                    ? "rounded-lg border-[#329AD4]"
-                                    : "border-zinc-400 rounded-none"
-                                }`}
-                              />
-                            ) : (
-                              <div className="w-12 h-12 rounded-lg bg-zinc-100 border border-zinc-200 mb-2 flex items-center justify-center text-zinc-400 group-hover:scale-105 transition-transform">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="1.5"
-                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                  />
-                                </svg>
-                              </div>
-                            )}
-
-                            {/* Option Name & Price */}
-                            <div className="mt-auto">
-                              <span className="block text-base font-bold text-zinc-900 leading-snug line-clamp-1">
-                                {val.name}
-                              </span>
-                              <span
-                                className={`block text-base font-extrabold mt-0.5 ${
-                                  isFree ? "text-emerald-700 font-bold" : "text-zinc-600 font-semibold"
-                                }`}
-                              >
-                                {isFree ? "Free" : `+$${val.price.toFixed(2)}`}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Action CTA Buttons (Vistaprint Exact Design) */}
-          <div className="space-y-3 pt-4 border-t border-zinc-100">
-            <Link
-              href={getFlowUrl("/browsedesigns")}
-              className="w-full py-3.5 bg-[#55b2e7] hover:bg-[#55b2e7] text-white text-base font-extrabold rounded-xl shadow-md transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>Browse our templates</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </Link>
-
-            <Link
-              href={getFlowUrl("/customize")}
-              className="w-full py-3.5 border-2 border-zinc-800 hover:bg-zinc-900 hover:text-white text-zinc-900 text-base font-extrabold rounded-xl bg-white transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>Upload your design</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-              </svg>
-            </Link>
-
-            {/* Design Help Link */}
-            <div className="pt-2 text-center">
-              <Link
-                href={getFlowUrl("/quote")}
-                className="inline-flex items-center gap-2 text-base font-bold text-zinc-800 hover:text-[#329AD4] transition-colors"
-              >
-                <div className="flex -space-x-1.5">
-                  <span className="w-5 h-5 rounded-full bg-amber-400 text-base font-bold text-white flex items-center justify-center border border-white">
-                    👩
-                  </span>
-                  <span className="w-5 h-5 rounded-full bg-blue-500 text-base font-bold text-white flex items-center justify-center border border-white">
-                    👨
-                  </span>
-                  <span className="w-5 h-5 rounded-full bg-purple-500 text-base font-bold text-white flex items-center justify-center border border-white">
-                    👩‍🦰
+                  ) : null}
+                  <span
+                    onClick={() => document.getElementById("product-reviews-section")?.scrollIntoView({ behavior: "smooth" })}
+                    className="font-semibold text-[#1e1d1b] underline decoration-[#329AD4]/40 underline-offset-4 cursor-pointer hover:text-[#329AD4]"
+                  >
+                    {product?.reviewCount && product.reviewCount > 0
+                      ? `${product.rating} (${product.reviewCount.toLocaleString()} ${product.reviewCount === 1 ? "review" : "reviews"})`
+                      : "No reviews yet (Write a review)"}
                   </span>
                 </div>
-                <span className="underline">Let us design it for you from $10.00</span>
+
+                <span className="inline-flex items-center rounded-md border border-[#d7e8f4] bg-[#f0f8fd] px-2.5 py-1 text-xs font-bold text-[#2172a0]">
+                  Samples available
+                </span>
+
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 cursor-pointer hover:underline">
+                  <svg className="w-3.5 h-3.5 fill-emerald-600" viewBox="0 0 20 20">
+                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z" />
+                  </svg>
+                  Better by Design
+                </span>
+              </div>
+            </div>
+
+            <p className="text-[15px] text-zinc-600 leading-relaxed">
+              {product?.description ||
+                "Introducing: The very-best-for-your-budget business cards. Easily create cards you can't wait to hand out."}
+            </p>
+
+            <div className="rounded-2xl bg-[#f0f8fd] border border-[#d7e8f4] px-4 py-3.5">
+              <div className="text-[2rem] font-black tracking-[-0.04em] text-[#1e1d1b] leading-none">
+                ${product?.price}
+              </div>
+              <div className="mt-1.5 text-sm font-medium text-zinc-500">
+                {product?.unitPrice}
+              </div>
+            </div>
+
+            {product?.variations && product.variations.length > 0 && (
+              <div className="space-y-6">
+                {product.variations.map((vGroup) => {
+                  const selectedVal = selectedVariations[vGroup.name];
+                  const isCornerGroup = vGroup.name.toLowerCase().includes("corner");
+
+                  return (
+                    <div key={vGroup._id || vGroup.name} className="space-y-2.5">
+                      <div className="flex items-center justify-between gap-3">
+                        <label className="text-xs font-bold uppercase tracking-[0.12em] text-zinc-500">
+                          {vGroup.name}*
+                        </label>
+                        {selectedVal && (
+                          <span className="text-sm font-bold text-[#329AD4]">
+                            {selectedVal.name}
+                          </span>
+                        )}
+                      </div>
+
+                      <div
+                        className={`grid gap-2.5 ${
+                          isCornerGroup
+                            ? "grid-cols-2"
+                            : "grid-cols-2 sm:grid-cols-3"
+                        }`}
+                      >
+                        {vGroup.values.map((val) => {
+                          const isSelected = selectedVal?.name === val.name;
+                          const isFree = val.price === 0;
+
+                          return (
+                            <button
+                              key={val._id || val.name}
+                              type="button"
+                              onClick={() => handleSelectOption(vGroup.name, val)}
+                              className={`relative flex flex-col items-center justify-between p-3 min-h-[96px] rounded-2xl border transition cursor-pointer text-center bg-white group ${
+                                isSelected
+                                  ? "border-[#329AD4] bg-[#eef7fc] shadow-[0_0_0_3px_rgba(50,154,212,0.15)]"
+                                  : "border-[#d7e8f4] hover:border-[#88c9ef]"
+                              }`}
+                            >
+                              {val.image ? (
+                                <div className="w-11 h-11 rounded-xl overflow-hidden border border-[#d7e8f4] mb-2">
+                                  <img src={mediaSrc(val.image) || val.image} alt={val.name} className="w-full h-full object-cover" />
+                                </div>
+                              ) : isCornerGroup ? (
+                                <div
+                                  className={`w-11 h-7 border-2 mb-2 bg-white ${
+                                    val.name.toLowerCase().includes("rounded")
+                                      ? "rounded-lg border-[#329AD4]"
+                                      : "rounded-sm border-zinc-400"
+                                  }`}
+                                />
+                              ) : (
+                                <div className="w-11 h-11 rounded-xl bg-[#f0f8fd] border border-[#d7e8f4] mb-2 flex items-center justify-center text-[#55b2e7] transition-transform group-hover:scale-105">
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="1.5"
+                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                </div>
+                              )}
+
+                              <div className="mt-auto">
+                                <span className="block text-sm font-bold text-[#1e1d1b] leading-snug line-clamp-1">
+                                  {val.name}
+                                </span>
+                                <span
+                                  className={`block text-xs font-bold mt-0.5 ${
+                                    isFree ? "text-emerald-700" : "text-zinc-500"
+                                  }`}
+                                >
+                                  {isFree ? "Free" : `+$${val.price.toFixed(2)}`}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="space-y-3 border-t border-[#e7f1f8] pt-5">
+              <Link
+                href={getFlowUrl("/browsedesigns")}
+                className="w-full py-3.5 bg-[#329AD4] hover:bg-[#2884b8] text-white text-[15px] font-bold rounded-2xl transition text-center flex items-center justify-center gap-2 cursor-pointer shadow-[0_10px_24px_-12px_rgba(50,154,212,0.9)]"
+              >
+                <span>Browse our templates</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
               </Link>
+
+              <Link
+                href={getFlowUrl("/customize")}
+                className="w-full py-3.5 border border-[#1e1d1b] hover:bg-[#1e1d1b] hover:text-white text-[#1e1d1b] text-[15px] font-bold rounded-2xl bg-white transition text-center flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Upload your design</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+              </Link>
+
+              <div className="pt-1 text-center">
+                <Link
+                  href={getFlowUrl("/quote")}
+                  className="inline-flex items-center gap-2.5 text-sm font-bold text-[#1e1d1b] hover:text-[#329AD4] transition-colors"
+                >
+                  <span className="flex -space-x-1.5">
+                    <span className="h-6 w-6 rounded-full bg-[#55b2e7] text-[10px] font-bold text-white flex items-center justify-center border-2 border-white">
+                      A
+                    </span>
+                    <span className="h-6 w-6 rounded-full bg-[#329AD4] text-[10px] font-bold text-white flex items-center justify-center border-2 border-white">
+                      B
+                    </span>
+                    <span className="h-6 w-6 rounded-full bg-[#2172a0] text-[10px] font-bold text-white flex items-center justify-center border-2 border-white">
+                      C
+                    </span>
+                  </span>
+                  <span className="underline decoration-[#329AD4]/50 underline-offset-4">
+                    Let us design it for you from $10.00
+                  </span>
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              <img src="/merchants.png" alt="Accepted Payment Methods" className="w-full max-w-[17rem] opacity-90" />
             </div>
           </div>
-
-          {/* Payment Method Badges */}
-          <div className="pt-2">
-            <img src="/merchants.png" alt="Accepted Payment Methods" className="w-full max-w-xs" />
-          </div>
-
         </div>
-
       </div>
 
-      {/* Card Customization Options Modal */}
       <CardOptionsModal
         isOpen={isOptionsModalOpen}
         onClose={() => setIsOptionsModalOpen(false)}
@@ -515,7 +469,6 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
         }}
       />
 
-      {/* Interactive Card Creation Studio Screen */}
       <CardStudioModal
         isOpen={isStudioOpen}
         cardOptions={cardOptions}
@@ -525,7 +478,6 @@ export default function ProductDetailSection({ productId }: ProductDetailSection
           setIsOptionsModalOpen(true);
         }}
       />
-
     </section>
   );
 }
