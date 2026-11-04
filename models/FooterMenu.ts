@@ -22,39 +22,33 @@ export const DEFAULT_FOOTER_MENU_COLUMNS: Array<{
   title: string;
   order: number;
   isActive: boolean;
-  items: Omit<IFooterMenuItem, "_id">[ ];
+  items: Omit<IFooterMenuItem, "_id">[];
 }> = [
   {
-    title: "Site",
+    title: "Let Us Help",
     order: 0,
     isActive: true,
     items: [
-      { title: "Services", url: "/services", order: 0, isActive: true, openInNewTab: false },
-      { title: "eCommerce / Products", url: "/products", order: 1, isActive: true, openInNewTab: false },
-      { title: "Ordering", url: "/browsedesigns", order: 2, isActive: true, openInNewTab: false },
-      { title: "About", url: "/about", order: 3, isActive: true, openInNewTab: false },
-      { title: "Contact", url: "/contact", order: 4, isActive: true, openInNewTab: false },
+      { title: "My Account", url: "/dashboard/account", order: 0, isActive: true, openInNewTab: false },
+      { title: "Shipping", url: "/contact", order: 1, isActive: true, openInNewTab: false },
+      { title: "Contact & Support", url: "/contact", order: 2, isActive: true, openInNewTab: false },
+      { title: "Ideas & Advice", url: "/browsedesigns", order: 3, isActive: true, openInNewTab: false },
+      { title: "Accessibility", url: "/contact", order: 4, isActive: true, openInNewTab: false },
     ],
   },
   {
-    title: "The Group",
+    title: "Our Company",
     order: 1,
     isActive: true,
     items: [
-      { title: "Printgraphy — print & packaging", url: "#", order: 0, isActive: true, openInNewTab: false },
-      { title: "AxisBlu Intelligence — software", url: "#", order: 1, isActive: true, openInNewTab: false },
-      { title: "OnePoint Services — fulfillment", url: "#", order: 2, isActive: true, openInNewTab: false },
-      { title: "Kool Synergy — commercialization", url: "#", order: 3, isActive: true, openInNewTab: false },
-    ],
-  },
-  {
-    title: "Details",
-    order: 2,
-    isActive: true,
-    items: [
-      { title: "No minimums", url: "#", order: 0, isActive: true, openInNewTab: false },
-      { title: "Free file check", url: "#", order: 1, isActive: true, openInNewTab: false },
-      { title: "Ships nationwide", url: "#", order: 2, isActive: true, openInNewTab: false },
+      { title: "About Us", url: "/about", order: 0, isActive: true, openInNewTab: false },
+      { title: "Careers", url: "/contact", order: 1, isActive: true, openInNewTab: false },
+      { title: "Ambassador Program", url: "/contact", order: 2, isActive: true, openInNewTab: false },
+      { title: "PRINTGRAPHI Advantage", url: "/about", order: 3, isActive: true, openInNewTab: false },
+      { title: "For Investors", url: "/contact", order: 4, isActive: true, openInNewTab: false },
+      { title: "For Media", url: "/contact", order: 5, isActive: true, openInNewTab: false },
+      { title: "Sustainability", url: "/about", order: 6, isActive: true, openInNewTab: false },
+      { title: "Do Not Sell or Share My Info", url: "/privacy", order: 7, isActive: true, openInNewTab: false },
     ],
   },
 ];

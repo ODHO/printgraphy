@@ -5,58 +5,83 @@ import Link from "next/link";
 import Image from "next/image";
 import { mediaSrc } from "@/lib/mediaUrl";
 import { catalogImageFor } from "@/lib/catalogImages";
-import type { HomepageContent, HomepageLinkItem } from "@/lib/homepageContent";
+import type { HomepageContent } from "@/lib/homepageContent";
 
 interface TopSellerItem {
   _id?: string;
   label: string;
   img: string;
   href: string;
+  ctaLabel: string;
 }
 
 const defaultTopSellers: TopSellerItem[] = [
-  { label: "Standard Business Cards", img: "/card-design.png", href: "/product/business-cards" },
-  { label: "Flyers & Leaflets", img: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=600&q=80", href: "/product/flyers" },
-  { label: "Invitations & Cards", img: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80", href: "/product/invitations" },
-  { label: "Stickers & Labels", img: "/new-in-stickers-labels.png", href: "/product/stickers" },
-  { label: "Clothing & Apparel", img: "/new-in-clothing.png", href: "/product/t-shirts" },
-  { label: "Packaging & Boxes", img: "/new-in-packaging.png", href: "/product/mailer-boxes" },
+  { label: "Custom T-Shirts", img: "/catalog/apparel-totes-v2.png", href: "/clothing-bags", ctaLabel: "Customize" },
+  { label: "Shipping Packaging", img: "/catalog/packaging-v2.png", href: "/product/mailer-boxes", ctaLabel: "Customize" },
+  { label: "Outdoor Banners", img: "/catalog/signs-posters-v2.png", href: "/product/posters", ctaLabel: "Customize" },
+  { label: "Shopping Bags", img: "/catalog/apparel-totes-v2.png", href: "/clothing-bags", ctaLabel: "Customize" },
+  { label: "Celebration Invitations", img: "/catalog/print-collateral-v2.png", href: "/product/invitations", ctaLabel: "Customize" },
+  { label: "Feather Flags", img: "/catalog/signs-posters-v2.png", href: "/product/posters", ctaLabel: "Customize" },
 ];
 
-function getSafeImageSrc(img?: any, label?: string) {
-  if (label) return catalogImageFor(label);
-  if (!img) return "/placeholder.jpg";
-  if (typeof img === "object" && img.src) return img.src;
-  if (typeof img === "string") {
-    const trimmed = img.trim();
-    if (!trimmed) return "/placeholder.jpg";
+function resolveImage(img?: string, label?: string) {
+  const trimmed = (img || "").trim();
+  if (
+    trimmed &&
+    !trimmed.includes("placeholder") &&
+    trimmed !== "/slide.png" &&
+    trimmed !== "/placeholder.jpg"
+  ) {
     return mediaSrc(trimmed);
   }
-  return "/placeholder.jpg";
+  return catalogImageFor(label);
 }
 
 function TopSellerCard({ item }: { item: TopSellerItem }) {
-  const [imgSrc, setImgSrc] = useState<string>(getSafeImageSrc(item.img, item.label));
+  const [imgSrc, setImgSrc] = useState(() => resolveImage(item.img, item.label));
 
   useEffect(() => {
-    setImgSrc(getSafeImageSrc(item.img, item.label));
+    setImgSrc(resolveImage(item.img, item.label));
   }, [item.img, item.label]);
 
+  const local = imgSrc.startsWith("/") && !imgSrc.startsWith("/api/");
+
   return (
-    <Link href={item.href || "/"} className="flex flex-col group cursor-pointer">
-      <div className="relative w-full aspect-square rounded-[1.4rem] overflow-hidden bg-zinc-100 border border-black/5 group-hover:border-theme-blue/30 shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
-        <Image
-          src={imgSrc}
-          alt={item.label || "Product Image"}
-          fill
-          unoptimized
-          onError={() => setImgSrc("/placeholder.jpg")}
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+    <Link
+      href={item.href || "/"}
+      className="group flex flex-col overflow-hidden rounded-xl border border-[#e5e7eb] bg-white transition hover:border-[#99CAFF]"
+    >
+      <div className="relative aspect-square w-full overflow-hidden bg-[#E3F2FF]">
+        {local ? (
+          <Image
+            src={imgSrc}
+            alt={item.label || "Product"}
+            fill
+            unoptimized
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+            onError={() => setImgSrc(catalogImageFor(item.label))}
+            className="object-cover transition duration-500 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <img
+            src={imgSrc}
+            alt={item.label || "Product"}
+            onError={() => setImgSrc(catalogImageFor(item.label))}
+            className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          />
+        )}
       </div>
-      <p className="mt-3 text-base font-semibold text-[#1e1d1b] leading-snug group-hover:text-theme-blue transition-colors duration-200 line-clamp-2">
-        {item.label}
-      </p>
+      <div className="flex flex-col gap-1.5 px-3.5 py-3.5 sm:px-4 sm:py-4">
+        <h3 className="line-clamp-2 text-[13px] font-bold leading-snug text-[#111827] sm:text-sm">
+          {item.label}
+        </h3>
+        <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#004EE0] transition group-hover:text-[#042E7B]">
+          {item.ctaLabel || "Customize"}
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.25" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </span>
+      </div>
     </Link>
   );
 }
@@ -68,29 +93,25 @@ export default function TopSellers({
   topSellers?: HomepageContent["topSellers"];
   title?: string;
 }) {
-  const heading = topSellers?.title || title || "Our Top Sellers";
+  const heading = topSellers?.title || title || "Ready for your next idea";
   const cmsItems = topSellers?.items;
 
+  const mapCms = (list: NonNullable<typeof cmsItems>): TopSellerItem[] =>
+    list.map((it) => ({
+      label: it.label,
+      img: it.image,
+      href: it.href || "/",
+      ctaLabel: it.ctaLabel?.trim() || "Customize",
+    }));
+
   const [items, setItems] = useState<TopSellerItem[]>(() => {
-    if (Array.isArray(cmsItems) && cmsItems.length > 0) {
-      return cmsItems.map((it) => ({
-        label: it.label,
-        img: it.image,
-        href: it.href || "/",
-      }));
-    }
+    if (Array.isArray(cmsItems) && cmsItems.length > 0) return mapCms(cmsItems);
     return defaultTopSellers;
   });
 
   useEffect(() => {
     if (Array.isArray(cmsItems) && cmsItems.length > 0) {
-      setItems(
-        cmsItems.map((it) => ({
-          label: it.label,
-          img: it.image,
-          href: it.href || "/",
-        }))
-      );
+      setItems(mapCms(cmsItems));
       return;
     }
 
@@ -102,8 +123,9 @@ export default function TopSellers({
             data.products.map((p: any) => ({
               _id: p._id,
               label: p.name,
-              img: p.image || "/placeholder.jpg",
+              img: p.image || "",
               href: `/product/${p._id}`,
+              ctaLabel: "Customize",
             }))
           );
         }
@@ -112,17 +134,17 @@ export default function TopSellers({
   }, [cmsItems]);
 
   return (
-    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-16">
-      {/* Section Title */}
-      <h2 className="text-xl md:text-2xl font-extrabold text-zinc-900 mb-7">
-        {heading}
-      </h2>
+    <section className="bg-white py-12 sm:py-14">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="mb-8 text-2xl font-extrabold tracking-tight text-[#042E7B] sm:text-3xl md:text-[2rem]">
+          {heading}
+        </h2>
 
-      {/* 6-column grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-5">
-        {items.map((item, idx) => (
-          <TopSellerCard key={item._id || idx} item={item} />
-        ))}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-6 md:gap-4">
+          {items.map((item, idx) => (
+            <TopSellerCard key={item._id || `${item.label}-${idx}`} item={item} />
+          ))}
+        </div>
       </div>
     </section>
   );

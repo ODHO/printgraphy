@@ -15,22 +15,22 @@ interface CategoryItem {
 const CATEGORY_FALLBACKS: Record<string, string> = {
   "business cards": "/card-design.png",
   "business-cards": "/card-design.png",
-  "flyers": "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=600&q=80",
+  flyers: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=600&q=80",
   "flyers (a5)": "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=600&q=80",
-  "invitations": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",
+  invitations: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",
   "invitations & stationery": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",
-  "brochures": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
-  "postcards": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=600&q=80",
-  "posters": "https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?auto=format&fit=crop&w=600&q=80",
+  brochures: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+  postcards: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=600&q=80",
+  posters: "https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?auto=format&fit=crop&w=600&q=80",
   "signs, banners & posters": "https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?auto=format&fit=crop&w=600&q=80",
-  "stickers": "/new-in-stickers-labels.png",
+  stickers: "/new-in-stickers-labels.png",
   "stickers & labels": "/new-in-stickers-labels.png",
   "clothing & bags": "/new-in-clothing.png",
   "t-shirts": "/new-in-clothing.png",
   "promotional products": "/new-in-promo-products.png",
-  "mugs": "/new-in-promo-products.png",
+  mugs: "/new-in-promo-products.png",
   "mailer boxes": "/new-in-packaging.png",
-  "packaging": "/new-in-packaging.png",
+  packaging: "/new-in-packaging.png",
   "booklets & magazines": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
 };
 
@@ -57,25 +57,29 @@ function getCategoryFallbackImage(name: string, slug?: string): string {
   return "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80";
 }
 
-function resolveImageSrc(img?: string, name: string = "", slug?: string): string {
-  if (name || slug) return catalogImageFor(name, slug);
-  if (!img || typeof img !== "string") {
-    return getCategoryFallbackImage(name, slug);
-  }
+function isUsableImage(img?: string | null): boolean {
+  if (!img || typeof img !== "string") return false;
   const trimmed = img.trim();
-  if (
-    !trimmed ||
-    trimmed.includes("placeholder") ||
-    trimmed.includes("slide.png") ||
-    trimmed === "/slide.png" ||
-    trimmed === "/placeholder.jpg"
-  ) {
-    return getCategoryFallbackImage(name, slug);
+  if (!trimmed) return false;
+  if (trimmed.includes("placeholder")) return false;
+  if (trimmed.includes("slide.png") || trimmed === "/slide.png" || trimmed === "/placeholder.jpg") {
+    return false;
   }
-  return mediaSrc(trimmed);
+  return true;
 }
 
-function CategoryCardItem({ cat, idx }: { cat: CategoryItem; idx: number }) {
+/** Prefer DB/API image; fall back to catalog sample, then name-based fallbacks. */
+function resolveImageSrc(img?: string, name: string = "", slug?: string): string {
+  if (isUsableImage(img)) {
+    return mediaSrc(img!.trim()) || img!.trim();
+  }
+  // Catalog samples (local /catalog/*) are preferred when DB has no image
+  const catalog = catalogImageFor(name, slug);
+  if (isUsableImage(catalog)) return catalog;
+  return getCategoryFallbackImage(name, slug);
+}
+
+function CategoryCardItem({ cat }: { cat: CategoryItem }) {
   const fallback = getCategoryFallbackImage(cat.name, cat.slug);
   const initialSrc = resolveImageSrc(cat.image, cat.name, cat.slug);
   const [imgSrc, setImgSrc] = useState<string>(initialSrc);
@@ -96,43 +100,54 @@ function CategoryCardItem({ cat, idx }: { cat: CategoryItem; idx: number }) {
   const href = cat._id
     ? `/product/${cat._id}`
     : cat.slug
-    ? `/product/${cat.slug}`
-    : "/product/business-cards";
+      ? `/product/${cat.slug}`
+      : "/product/business-cards";
 
   return (
     <Link
       href={href}
-      className="flex-shrink-0 w-[160px] sm:w-[185px] md:w-[210px] snap-start flex flex-col group cursor-pointer transition-all duration-300"
+      className="flex w-[148px] flex-shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-[#dce3ec] bg-white transition hover:border-[#99CAFF] sm:w-[168px] md:w-[180px]"
     >
-      {/* Card Image Container */}
-      <div className="relative aspect-[4/3.5] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-sm group-hover:shadow-xl group-hover:shadow-slate-300/40 group-hover:border-theme-blue/50 transition-all duration-300 group-hover:-translate-y-1.5">
+      <div className="relative aspect-[4/3.6] w-full overflow-hidden bg-[#E3F2FF]">
         <img
           src={imgSrc}
           alt={cat.name}
           onError={handleImgError}
-          className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
+          className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
           loading="lazy"
         />
-
-        {/* Hover Dark Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-        {/* Explore Pill Badge */}
-        <div className="absolute bottom-3 right-3 px-3 py-1 text-xs font-semibold bg-white/95 text-slate-900 rounded-full shadow-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1 border border-slate-100">
-          <span>Explore</span>
-          <svg className="w-3 h-3 text-theme-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </div>
       </div>
-
-      {/* Card Text Label */}
-      <div className="mt-3.5 px-1 flex flex-col">
-        <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-theme-blue transition-colors duration-200 leading-snug line-clamp-2">
+      <div className="flex min-h-[52px] items-center justify-center border-t border-[#e8eef5] bg-white px-2.5 py-3">
+        <h3 className="line-clamp-2 text-center text-[13px] font-bold leading-snug text-[#111827] sm:text-sm">
           {cat.name}
         </h3>
       </div>
     </Link>
+  );
+}
+
+function NavArrow({
+  direction,
+  onClick,
+}: {
+  direction: "left" | "right";
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={direction === "left" ? "Scroll left" : "Scroll right"}
+      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-[#d7e0eb] bg-[#f4f7fb] text-[#042E7B] transition hover:border-[#99CAFF] hover:bg-[#E3F2FF] active:scale-95"
+    >
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        {direction === "left" ? (
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        ) : (
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        )}
+      </svg>
+    </button>
   );
 }
 
@@ -160,7 +175,7 @@ export default function CategoryCarousel() {
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
-      const scrollAmount = 340;
+      const scrollAmount = 360;
       scrollRef.current.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
@@ -169,72 +184,37 @@ export default function CategoryCarousel() {
   };
 
   return (
-    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-      <div className="flex items-center justify-between mb-6 px-1">
-        <div>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+    <section className="bg-white py-12 sm:py-14">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <h2 className="text-2xl font-extrabold tracking-tight text-[#042E7B] sm:text-3xl md:text-[2rem]">
             Explore all categories
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Browse our wide range of custom print products and materials
-          </p>
+
+          <div className="hidden items-center gap-2.5 sm:flex">
+            <NavArrow direction="left" onClick={() => scroll("left")} />
+            <NavArrow direction="right" onClick={() => scroll("right")} />
+          </div>
         </div>
 
-        {/* Carousel Buttons (Desktop Top Right) */}
-        <div className="hidden sm:flex items-center gap-2">
-          <button
-            onClick={() => scroll("left")}
-            aria-label="Scroll left"
-            className="w-9 h-9 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 rounded-full flex items-center justify-center shadow-sm transition-all duration-200 active:scale-95 cursor-pointer"
+        <div className="relative">
+          <div className="absolute top-1/2 left-0 z-10 flex -translate-y-1/2 sm:hidden">
+            <NavArrow direction="left" onClick={() => scroll("left")} />
+          </div>
+
+          <div
+            ref={scrollRef}
+            className="flex w-full gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide py-1"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            aria-label="Scroll right"
-            className="w-9 h-9 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 rounded-full flex items-center justify-center shadow-sm transition-all duration-200 active:scale-95 cursor-pointer"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+            {categories.map((cat, idx) => (
+              <CategoryCardItem key={cat._id || cat.slug || idx} cat={cat} />
+            ))}
+          </div>
+
+          <div className="absolute top-1/2 right-0 z-10 flex -translate-y-1/2 sm:hidden">
+            <NavArrow direction="right" onClick={() => scroll("right")} />
+          </div>
         </div>
-      </div>
-
-      <div className="relative group/carousel">
-        {/* Left Floating Arrow Button */}
-        <button
-          onClick={() => scroll("left")}
-          aria-label="Scroll left"
-          className="absolute -left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/95 backdrop-blur-md border border-slate-200 text-slate-800 hover:text-white hover:bg-slate-900 hover:border-slate-900 rounded-full flex sm:hidden items-center justify-center shadow-lg transition-all duration-200 active:scale-95 cursor-pointer"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        {/* Scrollable Cards Container */}
-        <div
-          ref={scrollRef}
-          className="w-full flex gap-4 sm:gap-5 md:gap-6 overflow-x-auto scroll-smooth scrollbar-hide py-3 px-1 snap-x snap-mandatory"
-        >
-          {categories.map((cat, idx) => (
-            <CategoryCardItem key={cat._id || cat.slug || idx} cat={cat} idx={idx} />
-          ))}
-        </div>
-
-        {/* Right Floating Arrow Button */}
-        <button
-          onClick={() => scroll("right")}
-          aria-label="Scroll right"
-          className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/95 backdrop-blur-md border border-slate-200 text-slate-800 hover:text-white hover:bg-slate-900 hover:border-slate-900 rounded-full flex sm:hidden items-center justify-center shadow-lg transition-all duration-200 active:scale-95 cursor-pointer"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
     </section>
   );

@@ -1,100 +1,87 @@
 "use client";
 
-import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { mediaSrc } from "@/lib/mediaUrl";
 import { catalogImageFor } from "@/lib/catalogImages";
 import type { HomepageContent } from "@/lib/homepageContent";
 
-export default function ShopByCollection({ collections }: { collections: HomepageContent["collections"] }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+function resolveCollectionImage(label: string, image?: string) {
+  const trimmed = (image || "").trim();
+  if (
+    trimmed &&
+    !trimmed.includes("placeholder") &&
+    trimmed !== "/slide.png" &&
+    trimmed !== "/placeholder.jpg"
+  ) {
+    return mediaSrc(trimmed);
+  }
+  return catalogImageFor(label);
+}
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -320 : 320,
-        behavior: "smooth",
-      });
-    }
-  };
+export default function ShopByCollection({
+  collections,
+}: {
+  collections: HomepageContent["collections"];
+}) {
+  const items = collections.items || [];
 
   return (
-    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Section Header */}
-      <div className="flex items-center justify-between mb-7">
-        <h2 className="text-2xl md:text-3xl font-black tracking-[-0.035em] text-[#1e1d1b]">
-          {collections.title}
-        </h2>
-        <a
-          href={collections.seeAllHref || "#"}
-          className="flex items-center gap-1.5 text-base font-semibold text-theme-blue hover:underline transition-colors"
-        >
-          {collections.seeAllLabel}
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            viewBox="0 0 24 24"
+    <section className="bg-[#f3f5f8] py-12 sm:py-14">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <h2 className="text-2xl font-extrabold tracking-tight text-[#042E7B] sm:text-3xl md:text-[2rem]">
+            {collections.title}
+          </h2>
+          <Link
+            href={collections.seeAllHref || "/business-cards"}
+            className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-[#004EE0] transition hover:text-[#042E7B] sm:text-base"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </a>
-      </div>
-
-      {/* Outer wrapper: light bg card */}
-      <div className="relative rounded-[2rem] bg-[#EAF5FB] px-10 py-8">
-        {/* Left Arrow */}
-        <button
-          onClick={() => scroll("left")}
-          aria-label="Scroll left"
-          className="absolute left-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-zinc-600 shadow-md transition-all duration-200 hover:scale-105 hover:border-theme-blue hover:text-theme-blue active:scale-95 cursor-pointer"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        {/* Scrollable Row */}
-        <div
-          ref={scrollRef}
-          className="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth"
-        >
-          {collections.items.map((item, idx) => {
-            const src = catalogImageFor(item.label);
-            const local = src.startsWith("/") && !src.startsWith("/api/");
-            return (
-            <a
-              key={idx}
-              href={item.href || "#"}
-              className="flex-shrink-0 w-[130px] sm:w-[150px] md:w-[160px] flex flex-col group cursor-pointer"
-            >
-              <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-white shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:-translate-y-1">
-                {local ? (
-                  <Image src={src} alt={item.label} fill sizes="160px" className="object-cover" />
-                ) : (
-                  <img src={src} alt={item.label} className="absolute inset-0 h-full w-full object-cover" />
-                )}
-              </div>
-              {/* Label */}
-              <p className="mt-3 text-base font-semibold text-[#1e1d1b] leading-snug group-hover:text-theme-blue transition-colors duration-200">
-                {item.label}
-              </p>
-            </a>
-          );})}
+            {collections.seeAllLabel}
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.25" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
 
-        {/* Right Arrow */}
-        <button
-          onClick={() => scroll("right")}
-          aria-label="Scroll right"
-          className="absolute right-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-zinc-600 shadow-md transition-all duration-200 hover:scale-105 hover:border-theme-blue hover:text-theme-blue active:scale-95 cursor-pointer"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+          {items.map((item, idx) => {
+            const src = resolveCollectionImage(item.label, item.image);
+            const local = src.startsWith("/") && !src.startsWith("/api/");
+
+            return (
+              <Link
+                key={`${item.href}-${item.label}-${idx}`}
+                href={item.href || "/business-cards"}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white transition hover:border-[#99CAFF]"
+              >
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#E3F2FF]">
+                  {local ? (
+                    <Image
+                      src={src}
+                      alt={item.label}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <img
+                      src={src}
+                      alt={item.label}
+                      className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                    />
+                  )}
+                </div>
+                <div className="flex items-center px-4 py-4 sm:px-5 sm:py-5">
+                  <h3 className="text-[15px] font-bold leading-snug text-[#1f2937] transition group-hover:text-[#004EE0] sm:text-base">
+                    {item.label}
+                  </h3>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

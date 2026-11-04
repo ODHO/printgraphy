@@ -20,11 +20,29 @@ export async function GET(req: NextRequest) {
     .select("-__v")
     .lean();
 
-  const themedCategories = categories.map((category) => ({
-    ...category,
-    image: catalogImageFor(category.name, category.slug),
-    galleryImages: [catalogImageFor(category.name, category.slug)],
-  }));
+  const isUsableImage = (value?: string | null) => {
+    const trimmed = String(value || "").trim();
+    if (!trimmed) return false;
+    if (trimmed.includes("placeholder")) return false;
+    if (trimmed === "/slide.png" || trimmed === "/placeholder.jpg") return false;
+    return true;
+  };
+
+  const themedCategories = categories.map((category) => {
+    const sample = catalogImageFor(category.name, category.slug);
+    const dbImage =
+      [category.image, (category as { mockup_image?: string }).mockup_image].find(isUsableImage) ||
+      sample;
+    const galleryFromDb = Array.isArray((category as { galleryImages?: string[] }).galleryImages)
+      ? ((category as { galleryImages?: string[] }).galleryImages || []).filter(isUsableImage)
+      : [];
+
+    return {
+      ...category,
+      image: dbImage,
+      galleryImages: galleryFromDb.length > 0 ? galleryFromDb : [dbImage],
+    };
+  });
 
   return NextResponse.json({ success: true, categories: themedCategories });
 }

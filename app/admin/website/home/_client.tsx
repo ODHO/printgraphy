@@ -2,17 +2,28 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { mediaSrc } from "@/lib/mediaUrl";
-import { DEFAULT_HOMEPAGE, type HomepageContent, type HomepageLinkItem, type HomepagePhoto } from "@/lib/homepageContent";
+import {
+  DEFAULT_HOMEPAGE,
+  type HomepageContent,
+  type HomepageLinkItem,
+  type HomepagePhoto,
+  type HomepageServiceItem,
+  type HomepageSpotlightItem,
+} from "@/lib/homepageContent";
 import { Button, Card, CardHeader, Icon, IconButton, PageHeader, Spinner, LoadingState, cx, inputClass, labelClass, type IconName } from "@/components/admin/ui";
 
 const SECTIONS = [
   { id: "hero", label: "Hero", icon: "sparkle", hint: "Headline, buttons and main image at the top of the page." },
   { id: "collections", label: "Collections", icon: "grid", hint: "Category tiles with a see-all link." },
-  { id: "topSellers", label: "Top sellers", icon: "star", hint: "Best-selling products row." },
-  { id: "tools", label: "Tools", icon: "layers", hint: "Four feature cards: tall, two stacked, tall." },
+  { id: "topSellers", label: "Ready for your next idea", icon: "star", hint: "“Ready for your next idea” row — title, image, Customize link per card." },
+  { id: "logoBanner", label: "Gift promo", icon: "banners", hint: "Split promo — text left, image right (e.g. best gifts)." },
+  { id: "newsletter", label: "Newsletter", icon: "mail", hint: "Email signup — image left, form right (15% off)." },
+  { id: "spotlight", label: "Ambassador spotlight", icon: "sparkle", hint: "Story cards with category, title, and image." },
+  { id: "tools", label: "Tools & services", icon: "services", hint: "6 service cards with icon, title, and description." },
   { id: "newIn", label: "New in", icon: "tag", hint: "Fresh arrivals carousel." },
-  { id: "logoBanner", label: "Logo banner", icon: "banners", hint: "Full-width promo banner with a call to action." },
   { id: "madeWith", label: "Made with Printgraphy", icon: "image", hint: "Social photo wall from customers." },
+  { id: "emailList", label: "Email list banner", icon: "mail", hint: "Full-width signup — image left, white form right." },
+  { id: "about", label: "About", icon: "pages", hint: "Company intro with Easy Design / Make It Match." },
 ] as const satisfies readonly { id: string; label: string; icon: IconName; hint: string }[];
 
 type SectionId = (typeof SECTIONS)[number]["id"];
@@ -146,7 +157,7 @@ export default function HomeEditor() {
     }
   };
 
-  const updateItems = (key: "collections" | "topSellers" | "tools" | "newIn", items: HomepageLinkItem[]) => {
+  const updateItems = (key: "collections" | "topSellers" | "newIn", items: HomepageLinkItem[]) => {
     setContent((prev) => ({ ...prev, [key]: { ...prev[key], items } }));
   };
 
@@ -266,11 +277,33 @@ export default function HomeEditor() {
 
               {section === "topSellers" && (
                 <>
-                  <Group title="Heading">
+                  <Group title="Heading" hint="Shown above the product cards on the home page.">
                     <TextField label="Heading" value={content.topSellers.title} onChange={(title) => setContent((prev) => ({ ...prev, topSellers: { ...prev.topSellers, title } }))} />
                   </Group>
-                  <Group title="Items">
-                    <ItemList items={content.topSellers.items || []} onChange={(items) => updateItems("topSellers", items)} />
+                  <Group title="Product cards" hint="Each card shows an image, product title, and a Customize link.">
+                    <div className="flex items-start gap-2.5 rounded-xl border border-[#dbeefb] bg-[#f0f8fd] px-4 py-3 text-xs text-[#1b5b80]">
+                      <Icon name="star" className="mt-px w-4 h-4 shrink-0" />
+                      <p>Aim for 6 cards for the desktop row. Reorder by removing and re-adding, or edit titles, images, and Customize destinations below.</p>
+                    </div>
+                    <TopSellerItemList items={content.topSellers.items || []} onChange={(items) => updateItems("topSellers", items)} />
+                  </Group>
+                </>
+              )}
+
+              {section === "spotlight" && (
+                <>
+                  <Group title="Heading">
+                    <TextField label="Heading" value={content.spotlight.title} onChange={(title) => setContent((prev) => ({ ...prev, spotlight: { ...prev.spotlight, title } }))} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <TextField label="Read more label" value={content.spotlight.seeAllLabel} onChange={(seeAllLabel) => setContent((prev) => ({ ...prev, spotlight: { ...prev.spotlight, seeAllLabel } }))} />
+                      <TextField label="Read more link" value={content.spotlight.seeAllHref} onChange={(seeAllHref) => setContent((prev) => ({ ...prev, spotlight: { ...prev.spotlight, seeAllHref } }))} />
+                    </div>
+                  </Group>
+                  <Group title="Story cards" hint="Aim for 4 cards in a row. Upload lifestyle or product images.">
+                    <SpotlightItemList
+                      items={content.spotlight.items || []}
+                      onChange={(items) => setContent((prev) => ({ ...prev, spotlight: { ...prev.spotlight, items } }))}
+                    />
                   </Group>
                 </>
               )}
@@ -279,13 +312,16 @@ export default function HomeEditor() {
                 <>
                   <Group title="Heading">
                     <TextField label="Heading" value={content.tools.title} onChange={(title) => setContent((prev) => ({ ...prev, tools: { ...prev.tools, title } }))} />
-                  </Group>
-                  <Group title="Items">
-                    <div className="flex items-start gap-2.5 rounded-xl border border-[#dbeefb] bg-[#f0f8fd] px-4 py-3 text-xs text-[#1b5b80]">
-                      <Icon name="layers" className="mt-px w-4 h-4 shrink-0" />
-                      <p>Four cards: tall, two stacked, tall. Keep four items so the layout stays intact.</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <TextField label="See-all label" value={content.tools.seeAllLabel} onChange={(seeAllLabel) => setContent((prev) => ({ ...prev, tools: { ...prev.tools, seeAllLabel } }))} />
+                      <TextField label="See-all link" value={content.tools.seeAllHref} onChange={(seeAllHref) => setContent((prev) => ({ ...prev, tools: { ...prev.tools, seeAllHref } }))} />
                     </div>
-                    <ItemList items={content.tools.items} onChange={(items) => updateItems("tools", items)} />
+                  </Group>
+                  <Group title="Service cards" hint="3×2 grid. Icon keys: briefcase, palette, box, user, chip, globe.">
+                    <ServiceItemList
+                      items={content.tools.items || []}
+                      onChange={(items) => setContent((prev) => ({ ...prev, tools: { ...prev.tools, items } }))}
+                    />
                   </Group>
                 </>
               )}
@@ -304,7 +340,7 @@ export default function HomeEditor() {
 
               {section === "logoBanner" && (
                 <>
-                  <Group title="Content">
+                  <Group title="Content" hint="Pale blue text panel on the left of the split promo.">
                     <TextField label="Heading" value={content.logoBanner.title} onChange={(title) => setContent((prev) => ({ ...prev, logoBanner: { ...prev.logoBanner, title } }))} />
                     <TextField label="Body" value={content.logoBanner.body} multiline onChange={(body) => setContent((prev) => ({ ...prev, logoBanner: { ...prev.logoBanner, body } }))} />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -312,8 +348,26 @@ export default function HomeEditor() {
                       <TextField label="Button link" value={content.logoBanner.ctaHref} onChange={(ctaHref) => setContent((prev) => ({ ...prev, logoBanner: { ...prev.logoBanner, ctaHref } }))} />
                     </div>
                   </Group>
-                  <Group title="Image">
-                    <ImageField label="Banner image" value={content.logoBanner.image} onChange={(image) => setContent((prev) => ({ ...prev, logoBanner: { ...prev.logoBanner, image } }))} />
+                  <Group title="Image" hint="Full-bleed photo on the right. Upload your gift lifestyle shot here.">
+                    <ImageField label="Promo image" value={content.logoBanner.image} onChange={(image) => setContent((prev) => ({ ...prev, logoBanner: { ...prev.logoBanner, image } }))} />
+                    <TextField label="Image alt text" value={content.logoBanner.imageAlt} onChange={(imageAlt) => setContent((prev) => ({ ...prev, logoBanner: { ...prev.logoBanner, imageAlt } }))} />
+                  </Group>
+                </>
+              )}
+
+              {section === "newsletter" && (
+                <>
+                  <Group title="Content" hint="Pale blue form panel on the right of the split block.">
+                    <TextField label="Heading" value={content.newsletter.title} onChange={(title) => setContent((prev) => ({ ...prev, newsletter: { ...prev.newsletter, title } }))} />
+                    <TextField label="Body / consent" value={content.newsletter.body} multiline onChange={(body) => setContent((prev) => ({ ...prev, newsletter: { ...prev.newsletter, body } }))} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <TextField label="Email placeholder" value={content.newsletter.placeholder} onChange={(placeholder) => setContent((prev) => ({ ...prev, newsletter: { ...prev.newsletter, placeholder } }))} />
+                      <TextField label="Submit button" value={content.newsletter.submitLabel} onChange={(submitLabel) => setContent((prev) => ({ ...prev, newsletter: { ...prev.newsletter, submitLabel } }))} />
+                    </div>
+                  </Group>
+                  <Group title="Image" hint="Full-bleed photo on the left. Upload your stationery/product shot here.">
+                    <ImageField label="Newsletter image" value={content.newsletter.image} onChange={(image) => setContent((prev) => ({ ...prev, newsletter: { ...prev.newsletter, image } }))} />
+                    <TextField label="Image alt text" value={content.newsletter.imageAlt} onChange={(imageAlt) => setContent((prev) => ({ ...prev, newsletter: { ...prev.newsletter, imageAlt } }))} />
                   </Group>
                 </>
               )}
@@ -329,6 +383,38 @@ export default function HomeEditor() {
                   </Group>
                   <Group title="Photos">
                     <PhotoList photos={content.madeWith.photos} onChange={(photos) => setContent((prev) => ({ ...prev, madeWith: { ...prev.madeWith, photos } }))} />
+                  </Group>
+                </>
+              )}
+
+              {section === "emailList" && (
+                <>
+                  <Group title="Content" hint="White panel on the right of the full-width split.">
+                    <TextField label="Eyebrow" value={content.emailList.eyebrow} onChange={(eyebrow) => setContent((prev) => ({ ...prev, emailList: { ...prev.emailList, eyebrow } }))} />
+                    <TextField label="Heading" value={content.emailList.title} onChange={(title) => setContent((prev) => ({ ...prev, emailList: { ...prev.emailList, title } }))} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <TextField label="Email placeholder" value={content.emailList.placeholder} onChange={(placeholder) => setContent((prev) => ({ ...prev, emailList: { ...prev.emailList, placeholder } }))} />
+                      <TextField label="Submit button" value={content.emailList.submitLabel} onChange={(submitLabel) => setContent((prev) => ({ ...prev, emailList: { ...prev.emailList, submitLabel } }))} />
+                    </div>
+                  </Group>
+                  <Group title="Image" hint="Full-bleed photo on the left.">
+                    <ImageField label="Banner image" value={content.emailList.image} onChange={(image) => setContent((prev) => ({ ...prev, emailList: { ...prev.emailList, image } }))} />
+                    <TextField label="Image alt text" value={content.emailList.imageAlt} onChange={(imageAlt) => setContent((prev) => ({ ...prev, emailList: { ...prev.emailList, imageAlt } }))} />
+                  </Group>
+                </>
+              )}
+
+              {section === "about" && (
+                <>
+                  <Group title="Intro">
+                    <TextField label="Heading" value={content.about.title} onChange={(title) => setContent((prev) => ({ ...prev, about: { ...prev.about, title } }))} />
+                    <TextField label="Body" value={content.about.body} multiline onChange={(body) => setContent((prev) => ({ ...prev, about: { ...prev.about, body } }))} />
+                  </Group>
+                  <Group title="Feature columns" hint="Two columns under the intro (e.g. Easy Design, Make It Match).">
+                    <AboutFeatureList
+                      features={content.about.features || []}
+                      onChange={(features) => setContent((prev) => ({ ...prev, about: { ...prev.about, features } }))}
+                    />
                   </Group>
                 </>
               )}
@@ -374,6 +460,148 @@ function ItemList({ items, onChange }: { items: HomepageLinkItem[]; onChange: (i
         ))}
       </div>
       <AddButton onClick={() => onChange([...items, { label: "", image: "", href: "/" }])}>Add item</AddButton>
+    </div>
+  );
+}
+
+function SpotlightItemList({
+  items,
+  onChange,
+}: {
+  items: HomepageSpotlightItem[];
+  onChange: (items: HomepageSpotlightItem[]) => void;
+}) {
+  const update = (index: number, patch: Partial<HomepageSpotlightItem>) => {
+    onChange(items.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
+  };
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        {items.map((item, index) => (
+          <div key={index} className="rounded-2xl border border-zinc-200 bg-zinc-50/40 p-4 space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EAF5FB] text-[11px] font-semibold text-[#2884b8]">{index + 1}</span>
+                <p className="truncate text-sm font-semibold text-zinc-800">{item.label || `Card ${index + 1}`}</p>
+              </div>
+              <IconButton icon="trash" label="Remove" tone="danger" onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))} />
+            </div>
+            <TextField label="Category" value={item.category} onChange={(category) => update(index, { category })} />
+            <TextField label="Title" value={item.label} onChange={(label) => update(index, { label })} />
+            <TextField label="Link" value={item.href} onChange={(href) => update(index, { href })} />
+            <ImageField label="Image" value={item.image} onChange={(image) => update(index, { image })} />
+          </div>
+        ))}
+      </div>
+      <AddButton onClick={() => onChange([...items, { category: "", label: "", image: "", href: "/" }])}>
+        Add story card
+      </AddButton>
+    </div>
+  );
+}
+
+function ServiceItemList({
+  items,
+  onChange,
+}: {
+  items: HomepageServiceItem[];
+  onChange: (items: HomepageServiceItem[]) => void;
+}) {
+  const update = (index: number, patch: Partial<HomepageServiceItem>) => {
+    onChange(items.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
+  };
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        {items.map((item, index) => (
+          <div key={index} className="rounded-2xl border border-zinc-200 bg-zinc-50/40 p-4 space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EAF5FB] text-[11px] font-semibold text-[#2884b8]">{index + 1}</span>
+                <p className="truncate text-sm font-semibold text-zinc-800">{item.label || `Service ${index + 1}`}</p>
+              </div>
+              <IconButton icon="trash" label="Remove" tone="danger" onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))} />
+            </div>
+            <TextField label="Title" value={item.label} onChange={(label) => update(index, { label })} />
+            <TextField label="Description" value={item.body} multiline onChange={(body) => update(index, { body })} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <TextField label="Icon key" value={item.icon} onChange={(icon) => update(index, { icon })} />
+              <TextField label="Link" value={item.href} onChange={(href) => update(index, { href })} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <AddButton onClick={() => onChange([...items, { label: "", body: "", href: "/quote", icon: "briefcase" }])}>
+        Add service card
+      </AddButton>
+    </div>
+  );
+}
+
+function TopSellerItemList({ items, onChange }: { items: HomepageLinkItem[]; onChange: (items: HomepageLinkItem[]) => void }) {
+  const update = (index: number, patch: Partial<HomepageLinkItem>) => {
+    onChange(items.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
+  };
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        {items.map((item, index) => (
+          <div key={index} className="rounded-2xl border border-zinc-200 bg-zinc-50/40 p-4 space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EAF5FB] text-[11px] font-semibold text-[#2884b8]">{index + 1}</span>
+                <p className="truncate text-sm font-semibold text-zinc-800">{item.label || `Card ${index + 1}`}</p>
+              </div>
+              <IconButton icon="trash" label="Remove" tone="danger" onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))} />
+            </div>
+            <TextField label="Product title" value={item.label} onChange={(label) => update(index, { label })} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <TextField
+                label="CTA label"
+                value={item.ctaLabel || "Customize"}
+                onChange={(ctaLabel) => update(index, { ctaLabel })}
+              />
+              <TextField label="Customize link" value={item.href} onChange={(href) => update(index, { href })} />
+            </div>
+            <ImageField label="Card image" value={item.image} onChange={(image) => update(index, { image })} />
+          </div>
+        ))}
+      </div>
+      <AddButton onClick={() => onChange([...items, { label: "", image: "", href: "/", ctaLabel: "Customize" }])}>
+        Add product card
+      </AddButton>
+    </div>
+  );
+}
+
+function AboutFeatureList({
+  features,
+  onChange,
+}: {
+  features: { title: string; body: string }[];
+  onChange: (features: { title: string; body: string }[]) => void;
+}) {
+  const update = (index: number, patch: Partial<{ title: string; body: string }>) => {
+    onChange(features.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
+  };
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        {features.map((feature, index) => (
+          <div key={index} className="rounded-2xl border border-zinc-200 bg-zinc-50/40 p-4 space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EAF5FB] text-[11px] font-semibold text-[#2884b8]">{index + 1}</span>
+                <p className="truncate text-sm font-semibold text-zinc-800">{feature.title || `Feature ${index + 1}`}</p>
+              </div>
+              <IconButton icon="trash" label="Remove" tone="danger" onClick={() => onChange(features.filter((_, itemIndex) => itemIndex !== index))} />
+            </div>
+            <TextField label="Title" value={feature.title} onChange={(title) => update(index, { title })} />
+            <TextField label="Body" value={feature.body} multiline onChange={(body) => update(index, { body })} />
+          </div>
+        ))}
+      </div>
+      <AddButton onClick={() => onChange([...features, { title: "", body: "" }])}>Add feature</AddButton>
     </div>
   );
 }

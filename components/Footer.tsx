@@ -3,7 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
+import { mediaSrc } from "@/lib/mediaUrl";
+import {
+  DEFAULT_FOOTER_CONTENT,
+  formatFooterCopyright,
+  type FooterContent,
+} from "@/lib/footerContent";
 
 interface FooterMenuItem {
   _id?: string;
@@ -24,44 +30,103 @@ interface FooterColumn {
 
 const DEFAULT_COLUMNS: FooterColumn[] = [
   {
-    title: "USEFUL LINKS",
+    title: "Let Us Help",
     order: 0,
     isActive: true,
     items: [
-      { title: "Home", url: "/", order: 0, isActive: true },
-      { title: "Deals", url: "/browsedesigns", order: 1, isActive: true },
-      { title: "Business Cards", url: "/business-cards", order: 2, isActive: true },
-      { title: "Post Cards", url: "/browsedesigns?category=Postcards", order: 3, isActive: true },
+      { title: "My Account", url: "/dashboard/account", order: 0, isActive: true },
+      { title: "Shipping", url: "/contact", order: 1, isActive: true },
+      { title: "Contact & Support", url: "/contact", order: 2, isActive: true },
+      { title: "Ideas & Advice", url: "/browsedesigns", order: 3, isActive: true },
+      { title: "Accessibility", url: "/contact", order: 4, isActive: true },
     ],
   },
   {
-    title: "EXPLORE MORE",
+    title: "Our Company",
     order: 1,
     isActive: true,
     items: [
       { title: "About Us", url: "/about", order: 0, isActive: true },
-      { title: "Contact", url: "/contact", order: 1, isActive: true },
-      { title: "FAQs", url: "/contact", order: 2, isActive: true },
+      { title: "Careers", url: "/contact", order: 1, isActive: true },
+      { title: "Ambassador Program", url: "/contact", order: 2, isActive: true },
+      { title: "PRINTGRAPHI Advantage", url: "/about", order: 3, isActive: true },
+      { title: "For Investors", url: "/contact", order: 4, isActive: true },
+      { title: "For Media", url: "/contact", order: 5, isActive: true },
+      { title: "Sustainability", url: "/about", order: 6, isActive: true },
+      { title: "Do Not Sell or Share My Info", url: "/privacy", order: 7, isActive: true },
     ],
   },
 ];
 
+function PaymentBadge({ label }: { label: string }) {
+  return (
+    <span className="inline-flex h-8 min-w-[52px] items-center justify-center rounded border border-white/15 bg-white/5 px-2 text-[9px] font-bold tracking-wide text-white/70">
+      {label}
+    </span>
+  );
+}
+
+function SocialIcon({ icon }: { icon: string }) {
+  const key = (icon || "").toLowerCase();
+  if (key === "facebook") {
+    return (
+      <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+        <path d="M14 9h3V6h-3c-1.6 0-3 1.4-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z" />
+      </svg>
+    );
+  }
+  if (key === "twitter" || key === "x") {
+    return (
+      <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+      </svg>
+    );
+  }
+  if (key === "instagram") {
+    return (
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <rect width="18" height="18" x="3" y="3" rx="5" />
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+      </svg>
+    );
+  }
+  return (
+    <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+      <path d="M12 2C6.5 2 2 6.5 2 12c0 4.2 2.6 7.8 6.3 9.2-.1-.8-.2-2 0-2.9.2-.8 1.3-5.4 1.3-5.4s-.3-.7-.3-1.6c0-1.5.9-2.6 2-2.6.9 0 1.4.7 1.4 1.5 0 .9-.6 2.3-.9 3.5-.3 1.1.5 1.9 1.5 1.9 1.8 0 3.2-1.9 3.2-4.6 0-2.4-1.7-4.1-4.2-4.1-2.9 0-4.5 2.1-4.5 4.3 0 .9.3 1.8.8 2.3.1.1.1.2.1.3l-.3 1.2c0 .2-.2.2-.3.1-1.3-.6-2.1-2.5-2.1-4 0-3.3 2.4-6.3 6.8-6.3 3.6 0 6.4 2.6 6.4 6 0 3.6-2.3 6.5-5.4 6.5-1.1 0-2-.5-2.4-1.2l-.7 2.5c-.2.9-.9 2-1.3 2.7 1 .3 2 .5 3.1.5 5.5 0 10-4.5 10-10S17.5 2 12 2z" />
+    </svg>
+  );
+}
+
+function SocialLink({ href, label, children }: { href: string; label: string; children: ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/80 transition hover:border-white/40 hover:bg-white/10 hover:text-white"
+    >
+      {children}
+    </a>
+  );
+}
+
 export default function Footer() {
   const pathname = usePathname();
   const year = new Date().getFullYear();
+  const [content, setContent] = useState<FooterContent>(DEFAULT_FOOTER_CONTENT);
   const [columns, setColumns] = useState<FooterColumn[]>(DEFAULT_COLUMNS);
 
   useEffect(() => {
-    fetch("/api/footer-menu")
+    fetch("/api/footer")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data?.success && Array.isArray(data.columns) && data.columns.length > 0) {
-          setColumns(data.columns);
-        }
+        if (!data?.success) return;
+        if (data.content) setContent(data.content);
+        if (Array.isArray(data.columns) && data.columns.length > 0) setColumns(data.columns);
       })
-      .catch(() => {
-        setColumns(DEFAULT_COLUMNS);
-      });
+      .catch(() => {});
   }, [pathname]);
 
   if (
@@ -73,118 +138,126 @@ export default function Footer() {
     return null;
   }
 
-  return (
-    <footer className="w-full bg-[#ffffff] px-4 sm:px-6 lg:px-8 pt-8 pb-0">
-      {/* Floating Card Footer with Rounded Top Corners and Side Margins */}
-      <div
-        className="max-w-[1440px] mx-auto rounded-t-[2rem] rounded-b-none p-8 sm:p-12 lg:p-14 text-black border border-black/10 shadow-[0_-8px_40px_rgba(31,29,27,0.06)]"
-        style={{ background: "#EAF5FB" }}
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
-          {/* Column 1 — Logo + Sustainability Note */}
-          <div className="flex flex-col gap-4">
-            <Link href="/" className="flex-shrink-0 w-fit">
-              <Image
-                src="/logo/logo.png"
-                alt="Printgraphy"
-                width={378}
-                height={108}
-                className="h-11 w-auto object-contain"
-              />
-            </Link>
-            <p className="text-xs sm:text-sm text-black/80 font-medium leading-relaxed max-w-[240px]">
-              Our paper is sourced from FSC-certified mills. We plant enough trees to more than double our paper usage.
-            </p>
-          </div>
+  const navColumns = columns.filter((c) => c.isActive !== false).slice(0, 3);
+  const logoSrc = mediaSrc(content.logo) || content.logo || "/logo/printgraphy-footer.png";
+  const logoLocal = logoSrc.startsWith("/") && !logoSrc.startsWith("/api/");
 
-          {/* Dynamic / Default Footer Columns */}
-          {columns.slice(0, 2).map((column) => (
-            <div key={column._id || column.title} className="flex flex-col gap-3.5">
-              <h3 className="text-sm font-extrabold tracking-[0.12em] uppercase text-black">
-                {column.title}
-              </h3>
-              <ul className="flex flex-col gap-2.5">
-                {(column.items || []).map((link, idx) => (
-                  <li key={link._id || `${link.title}-${idx}`}>
-                    <Link
-                      href={link.url || "#"}
-                      target={link.openInNewTab ? "_blank" : undefined}
-                      rel={link.openInNewTab ? "noopener noreferrer" : undefined}
-                      className="text-xs sm:text-sm font-medium text-black/85 hover:text-black hover:underline underline-offset-2 transition-colors inline-flex items-center gap-1.5"
-                    >
-                      <span>{link.title}</span>
-                      {link.openInNewTab && (
-                        <svg className="w-3 h-3 opacity-60" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      )}
-                    </Link>
-                  </li>
-                ))}
+  return (
+    <footer className="w-full bg-[#071A3D] text-white">
+      <div className="container mx-auto px-4 pt-12 pb-8 sm:px-6 sm:pt-14 lg:px-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <Link href="/" className="w-fit shrink-0">
+            {logoLocal ? (
+              <Image
+                src={logoSrc}
+                alt="Printgraphi"
+                width={200}
+                height={56}
+                className="h-10 w-auto object-contain sm:h-11"
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logoSrc} alt="Printgraphi" className="h-10 w-auto object-contain sm:h-11" />
+            )}
+          </Link>
+          <p className="max-w-sm text-sm font-medium text-white/75 sm:text-right sm:text-[15px]">
+            {content.tagline}
+          </p>
+        </div>
+
+        <div className="mt-10 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] lg:gap-12 items-baseline">
+          {navColumns.map((column) => (
+            <div key={column._id || column.title}>
+              <h3 className="text-sm font-bold text-white sm:text-[15px]">{column.title}</h3>
+              <ul className="mt-4 flex flex-col gap-2.5">
+                {(column.items || [])
+                  .filter((item) => item.isActive !== false)
+                  .map((link, idx) => (
+                    <li key={link._id || `${link.title}-${idx}`}>
+                      <Link
+                        href={link.url || "#"}
+                        target={link.openInNewTab ? "_blank" : undefined}
+                        rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                        className="text-sm text-white/65 transition hover:text-white"
+                      >
+                        {link.title}
+                      </Link>
+                    </li>
+                  ))}
               </ul>
             </div>
           ))}
 
-          {/* Column 4 — Contact & Social Icons */}
-          <div className="flex flex-col gap-3.5">
-            <h3 className="text-sm font-extrabold tracking-[0.12em] uppercase text-black">
-              CONTACT
-            </h3>
-            <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-black/90 pt-1">
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <rect width="20" height="16" x="2" y="4" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
-              <a href="mailto:support@printgraphi.com" className="hover:underline">
-                support@printgraphi.com
-              </a>
+          {content.trustpilot.enabled && (
+            <div className="flex lg:justify-end">
+              <div className="w-full max-w-[240px] rounded-xl border border-white/15 bg-[#04112a] px-5 py-4">
+                <p className="text-sm font-bold tracking-tight text-[#00b67a]">{content.trustpilot.brand}</p>
+                <div className="mt-2 flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className="flex h-5 w-5 items-center justify-center bg-[#00b67a] text-[10px] text-white"
+                      aria-hidden
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-2 text-sm font-semibold text-white">{content.trustpilot.ratingLabel}</p>
+                <p className="mt-0.5 text-xs text-white/55">{content.trustpilot.reviewText}</p>
+              </div>
             </div>
+          )}
+        </div>
 
-            {/* Social Icons (Pill/Circular badges) */}
-            <div className="flex items-center gap-2.5 pt-3">
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter / X"
-                className="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 text-black flex items-center justify-center transition-all"
-              >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 text-black flex items-center justify-center transition-all"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                </svg>
-              </a>
-              <a
-                href="https://discord.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Community"
-                className="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 text-black flex items-center justify-center transition-all"
-              >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-                </svg>
-              </a>
-            </div>
+        <div className="mt-14 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            {content.payments
+              .filter((p) => p.label?.trim())
+              .map((payment, idx) => (
+                <PaymentBadge key={`${payment.label}-${idx}`} label={payment.label} />
+              ))}
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            {content.social
+              .filter((s) => s.href?.trim())
+              .map((item, idx) => (
+                <SocialLink key={`${item.label}-${idx}`} href={item.href} label={item.label || "Social"}>
+                  <SocialIcon icon={item.icon} />
+                </SocialLink>
+              ))}
           </div>
         </div>
 
-        {/* Bottom subtle copyright note */}
-        <div className="mt-10 pt-6 border-t border-black/15 flex flex-col sm:flex-row items-center justify-between text-xs text-black/60 gap-2">
-          <p>US based, shipping nationwide.</p>
-          <p>© {year} Printgraphy. All rights reserved.</p>
+        <div className="mt-8 flex flex-col gap-4 border-t border-white/15 pt-6 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <a href={content.phoneHref || "#"} className="transition hover:text-white">
+              {content.phoneLabel}
+            </a>
+            <span className="hidden text-white/25 sm:inline" aria-hidden>
+              |
+            </span>
+            <Link href={content.privacyHref || "/privacy"} className="transition hover:text-white">
+              {content.privacyLabel}
+            </Link>
+            <span className="hidden text-white/25 sm:inline" aria-hidden>
+              |
+            </span>
+            <Link href={content.termsHref || "/terms"} className="transition hover:text-white">
+              {content.termsLabel}
+            </Link>
+          </div>
+
+          <p className="sm:text-center">{formatFooterCopyright(content.copyright, year)}</p>
+
+          <div className="flex items-center gap-1.5 sm:justify-end">
+            <svg className="h-3.5 w-3.5 text-white/60" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M3.5 9h17M3.5 15h17M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z" />
+            </svg>
+            <span>{content.regionLabel}</span>
+          </div>
         </div>
       </div>
     </footer>

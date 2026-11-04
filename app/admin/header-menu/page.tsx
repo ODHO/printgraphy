@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, type ReactNode } from "react";
+import { useState, useEffect, useCallback, type ReactNode, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { mediaSrc } from "@/lib/mediaUrl";
 import {
   Badge,
@@ -85,8 +86,15 @@ interface FooterColumn {
   items: FooterMenuItem[];
 }
 
-export default function AdminNavigationMenuPage() {
-  const [activeTab, setActiveTab] = useState<"header" | "footer">("header");
+function AdminNavigationMenuPageInner() {
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"header" | "footer">(
+    searchParams.get("tab") === "footer" ? "footer" : "header"
+  );
+
+  useEffect(() => {
+    if (searchParams.get("tab") === "footer") setActiveTab("footer");
+  }, [searchParams]);
 
   // ─── HEADER MENU STATE ────────────────────────────────────────────────────────
   const [headerItems, setHeaderItems] = useState<HeaderMenuItem[]>([]);
@@ -1560,6 +1568,14 @@ export default function AdminNavigationMenuPage() {
         </Modal>
       )}
     </div>
+  );
+}
+
+export default function AdminNavigationMenuPage() {
+  return (
+    <Suspense fallback={<LoadingState label="Loading menus..." />}>
+      <AdminNavigationMenuPageInner />
+    </Suspense>
   );
 }
 

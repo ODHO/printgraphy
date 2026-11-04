@@ -29,9 +29,21 @@ export async function GET(
     return NextResponse.json({ success: false, message: "Category not found." }, { status: 404 });
   }
 
-  const themedImage = catalogImageFor(category.name, category.slug);
+  const isUsableImage = (value?: string | null) => {
+    const trimmed = String(value || "").trim();
+    if (!trimmed) return false;
+    if (trimmed.includes("placeholder")) return false;
+    if (trimmed === "/slide.png" || trimmed === "/placeholder.jpg") return false;
+    return true;
+  };
+
+  const sample = catalogImageFor(category.name, category.slug);
+  const dbImage =
+    [category.image, (category as { mockup_image?: string }).mockup_image].find(isUsableImage) ||
+    sample;
+
   return NextResponse.json({
     success: true,
-    category: { ...category, image: themedImage, galleryImages: [themedImage] },
+    category: { ...category, image: dbImage, galleryImages: [dbImage] },
   });
 }
